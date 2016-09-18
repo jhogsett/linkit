@@ -1,10 +1,11 @@
 import serial 
 import time
-#import random
 import requests
 import json
+import sys
 
-url = 'https://circleci.com/api/v1.1/recent-builds?circle-token=dbdbe9b8e97157e37a162631baef5c63b14ee0bf&limit=72&offset=0'
+token = sys.argv[1]
+url = 'https://circleci.com/api/v1.1/recent-builds?circle-token=' + token + '&limit=72&offset=0'
 
 s = None
 def setup(): 
@@ -13,18 +14,12 @@ def setup():
   s.write("erase\0".encode())
 
 def loop(): 
-  # print "----------------"
-
   r = requests.get(url)
   r = r.text.encode('utf-8')
   j = json.loads(r)
 
 #print r.status_code
 #print r.headers['content-type']
-
-#  i = int(r.text)
-
-#  r = random.randint(0, 8)
 
   switcher = {
     "failed": "red\0",
@@ -35,18 +30,12 @@ def loop():
   }
 
   for x in range(0, 72):
-    #print x
     st = j[71-x]['status'].encode('ascii', 'ignore')
-    #print st
-
     color = switcher.get(st, "white\0")
     s.write(color.encode()) 
     time.sleep(0.01)
 
-#  time.sleep(0.01 + random.random() / 5.0)
-
   time.sleep(3)
-
 
 if __name__ == '__main__': 
   setup() 
