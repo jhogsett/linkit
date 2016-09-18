@@ -38,7 +38,7 @@ def loop():
 
 #  time.sleep(0.01 + random.random() / 5.0)
 
-  time.sleep(60)
+  time.sleep(5)
 
 
 if __name__ == '__main__': 
