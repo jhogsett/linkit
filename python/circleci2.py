@@ -28,14 +28,14 @@ def loop():
     "fixed": "blue\0",
     "no_tests": "white\0",              
     "retried": "orange\0", 
-    "timedout":"red\0",
+    "timedout":"purple\0",
     "canceled":"yellow\0",
-    "not_run":"white\0",
+    "not_run":"yellow\0",
     "running":"pink\0",
-    "queued":"magenta\0",
-    "scheduled":"purple\0",
+    "queued":"cyan\0",
+    "scheduled":"magenta\0",
     "not_running":"white\0",
-    "infrastructure_fail":"cyan\0"             
+    "infrastructure_fail":"purple\0"             
   }
 
   for x in range(0, 18):
@@ -43,18 +43,18 @@ def loop():
     oc = j[17-x]['outcome'].encode('ascii', 'ignore')
     st = j[17-x]['status'].encode('ascii', 'ignore')
 
-    color = switcher.get(lc, "black\0")
-    s.write(color.encode()) 
-    time.sleep(0.01)
-
-    color = switcher.get(oc, "black\0")
-    s.write(color.encode())
-    time.sleep(0.01)
-
-    color = switcher.get(st, "black\0")
-    s.write(color.encode())
-    time.sleep(0.01)
-
+    color = switcher.get(lc, "black\0")                
+    s.write(color.encode())                            
+    time.sleep(0.01)                                   
+                                                       
+    color = switcher.get(oc, "black\0")                
+    s.write(color.encode())                            
+    time.sleep(0.01)                                   
+       
+    color = switcher.get(st, "black\0")                
+    s.write(color.encode())                            
+    time.sleep(0.01)                                   
+           
     color = "black\0"
     s.write(color.encode())
     time.sleep(0.01)
