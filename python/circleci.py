@@ -35,7 +35,7 @@ def loop():
     s.write(color.encode()) 
     time.sleep(0.01)
 
-  time.sleep(3)
+  time.sleep(60)
 
 if __name__ == '__main__': 
   setup() 
