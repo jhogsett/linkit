@@ -24,18 +24,18 @@ def loop():
   switcher = {
     "failed": "red\0",
     "success": "green\0",
-    "finished": "green\0",
+    "finished": "seafoam\0",
     "fixed": "cyan\0",
-    "no_tests": "white\0",              
+    "no_tests": "gray\0",              
     "retried": "magenta\0", 
-    "timedout":"orange\0",
+    "timedout":"orange\0blink\0",
     "canceled":"yellow\0",
-    "not_run":"yellow\0",
-    "running":"blue\0",
-    "queued":"pink\0",
-    "scheduled":"purple\0",
-    "not_running":"white\0",
-    "infrastructure_fail":"black\0"             
+    "not_run":"ltblue\0blink\0",
+    "running":"blue\0blink\0",
+    "queued":"pink\0blink\0",
+    "scheduled":"purple\0blink\0",
+    "not_running":"white\0blink\0",
+    "infrastructure_fail":"ltgreen\0blink\0"             
   }
 
   for x in range(0, 18):
@@ -58,6 +58,9 @@ def loop():
     color = "black\0"
     s.write(color.encode())
     time.sleep(0.01)
+
+  s.write("flush\0".encode())                                                                   
+
   time.sleep(60)
 
 if __name__ == '__main__': 
