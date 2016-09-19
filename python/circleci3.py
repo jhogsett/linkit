@@ -4,16 +4,47 @@ import requests
 import json
 import sys
 
+job_limit = 16
+max_job = job_limit - 1
+
 token = sys.argv[1]
-url = 'https://circleci.com/api/v1.1/recent-builds?circle-token=' + token + '&limit=18&offset=0'
+url = 'https://circleci.com/api/v1.1/recent-builds?circle-token=' + token + '&limit=' + str(job_limit) + '&offset=0'
 
 s = None
+
+switcher = {                            
+  "failed": "red",                       
+  "success": "green",                    
+  "finished": "green",                 
+  "fixed": "orange",                       
+  "no_tests": "gray\0blink",                    
+  "retried": "magenta",                  
+  "timedout":"yellow\0blink",            
+  "canceled":"yellow",                   
+  "not_run":"ltblue\0blink",             
+  "running":"green\0blink",               
+  "queued":"pink\0blink",                
+  "scheduled":"purple\0blink",           
+  "not_running":"white\0blink",          
+  "infrastructure_fail":"red\0blink",
+  "none":"gray",                    
+  "spacer":"black"                       
+}   
+
 def setup(): 
   global s 
   s = serial.Serial("/dev/ttyS0", 57600) 
   s.write("erase\0".encode())
 
-def loop(): 
+def command(cmd_text):                     
+  color = switcher.get(cmd_text, "black")  
+  s.write((color + '\0').encode())         
+  time.sleep(0.01)  
+                                           
+def spacer():                              
+  command("spacer") 
+
+def loop():
   r = requests.get(url)
   r = r.text.encode('utf-8')
   j = json.loads(r)
@@ -21,46 +52,32 @@ def loop():
 #print r.status_code
 #print r.headers['content-type']
 
-  switcher = {
-    "failed": "red\0",
-    "success": "green\0",
-    "finished": "seafoam\0",
-    "fixed": "cyan\0",
-    "no_tests": "gray\0",              
-    "retried": "magenta\0", 
-    "timedout":"orange\0blink\0",
-    "canceled":"yellow\0",
-    "not_run":"ltblue\0blink\0",
-    "running":"blue\0blink\0",
-    "queued":"pink\0blink\0",
-    "scheduled":"purple\0blink\0",
-    "not_running":"white\0blink\0",
-    "infrastructure_fail":"ltgreen\0blink\0"             
-  }
+  for x in range(0, job_limit):
+    lc = j[max_job - x]['lifecycle']
+    oc = j[max_job - x]['outcome']
+    st = j[max_job - x]['status']
 
-  for x in range(0, 18):
-    lc = j[17-x]['lifecycle'].encode('ascii', 'ignore')
-    oc = j[17-x]['outcome'].encode('ascii', 'ignore')
-    st = j[17-x]['status'].encode('ascii', 'ignore')
+    if lc is not None:
+      lc = lc.encode('ascii', 'ignore')  
+      command(lc)
+    else:
+      command("none")
 
-    color = switcher.get(lc, "black\0")                
-    s.write(color.encode())                            
-    time.sleep(0.01)                                   
-                                                       
-    color = switcher.get(oc, "black\0")                
-    s.write(color.encode())                            
-    time.sleep(0.01)                                   
-       
-    color = switcher.get(st, "black\0")                
-    s.write(color.encode())                            
-    time.sleep(0.01)                                   
-           
-    color = "black\0"
-    s.write(color.encode())
-    time.sleep(0.01)
+    if oc is not None:                                  
+      oc = oc.encode('ascii', 'ignore')                                                                                                                                                                    
+      command(oc)                            
+    else:                                            
+      command("none") 
+      
+    if st is not None:
+      st = st.encode('ascii', 'ignore')                                                                                                                                                                    
+      command(st)
+    else:                                            
+      command("none") 
+    
+    spacer()  
 
   s.write("flush\0".encode())                                                                   
-
   time.sleep(60)
 
 if __name__ == '__main__': 
