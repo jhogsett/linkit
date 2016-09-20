@@ -28,7 +28,7 @@ switcher = {
   "scheduled":"purple",           
   "not_running":"white\0blink",          
   "infrastructure_fail":"white\0blink",
-  "missing":"ltblue\0blink",                    
+  "missing":"ltblue\0breathe",                    
   "spacer":"black"                       
 }   
 
