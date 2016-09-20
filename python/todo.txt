@@ -1,0 +1,4 @@
+special styling for "master" builds?
+CircleCI uses light blue for building
+detailed reporting on last 10 builds and final status only on another 24
+
