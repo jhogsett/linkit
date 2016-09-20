@@ -133,7 +133,7 @@ void push_color(rgb_color color, bool display = false){
   }
 }
 
-#define MAX_BLINK 5500
+#define MAX_BLINK 6667
 int blink_counter = 0;
 bool blink_state = true; // false means blank
 
@@ -141,7 +141,7 @@ void start_blinking(){
   states[0] = BLINK_ON;
 }
 
-#define BREATHE_TIME 325
+#define BREATHE_TIME 667
 #define BREATHE_BRIGHTNESS_MAX DEFAULT_BRIGHTNESS_PERCENT
 #define BREATHE_MAX_STEP 24 
 #define BREATHE_BRIGHTNESS_MIN 0
