@@ -22,14 +22,15 @@ switcher = {
   "retried": "orange",                  
   "timedout":"yellow\0blink",            
   "canceled":"pink",                   
-  "not_run":"gray\0blink",             
+  "not_run":"gray",             
   "running":"ltblue\0breathe",               
   "queued":"magenta\0breathe",                
   "scheduled":"purple",           
   "not_running":"white\0blink",          
   "infrastructure_fail":"white\0blink",
-  "missing":"ltblue\0breathe",                    
-  "spacer":"black"                       
+  "missing":"gray",                    
+  "spacer":"black",
+  "masterfailed":"red\0blink"                       
 }   
 
 def setup(): 
@@ -58,30 +59,56 @@ def loop():
   command("pause");
 
   for x in range(0, job_limit):
-
-    lc = j[max_job - x]['lifecycle']
-    oc = j[max_job - x]['outcome']
     st = j[max_job - x]['status']
 
-    if lc is not None:
-      lc = lc.encode('ascii', 'ignore')  
-      color_command(lc)
-    else:
-      color_command("missing")
+#    print "st: " + st
 
-    if oc is not None:                                  
-      oc = oc.encode('ascii', 'ignore')                                                                                                                                                                    
-      color_command(oc)                            
-    else:                                            
-      color_command("missing") 
+    if st == 'failed':
+      br = j[max_job - x]['branch']
+      if br == 'master':
+        color_command('masterfailed')
+        color_command('masterfailed')
+        color_command('masterfailed')
+      else: 
+        color_command('failed')
+        color_command('failed')
+        color_command('failed')
+    elif st == 'success':
+      color_command('success')
+      color_command('success')
+      color_command('success')
+    elif st == 'running':
+      color_command('running')           
+      color_command('running')           
+      color_command('running')  
+    else:
+      lc = j[max_job - x]['lifecycle']               
+      oc = j[max_job - x]['outcome']  
+
+      if lc is not None:
+#        print "lc: " + lc
+
+        lc = lc.encode('ascii', 'ignore')  
+        color_command(lc)
+      else:
+        color_command("missing")
+
+      if oc is not None:                                  
+#        print "oc: " + oc
+
+        oc = oc.encode('ascii', 'ignore')                                                                                                                                                                    
+        color_command(oc)                            
+      else:                                            
+        color_command("missing") 
       
-    if st is not None:
-      st = st.encode('ascii', 'ignore')                                                                                                                                                                    
-      color_command(st)
-    else:                                            
-      color_command("missing") 
+      if st is not None:
+        st = st.encode('ascii', 'ignore')                                                                                                                                                                    
+        color_command(st)
+      else:                                            
+        color_command("missing") 
     
     spacer()  
+#    print ""
 
   command("continue");
   command("flush");
