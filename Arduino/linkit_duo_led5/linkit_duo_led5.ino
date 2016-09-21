@@ -224,66 +224,73 @@ void loop(){
     breathe_step = 0;
     breathe_counter = 0;
 
-    if(is_command(str, "pause")){
-      paused = true;  
-    } else if(is_command(str, "continue")){
-      paused = false;
-    } else if(is_command(str, "erase")){
-      erase(true);
-    } else if(is_command(str, "red")){
-      push_color(red);
-    }
-    else if(is_command(str, "green")){
-      push_color(green);
-    }
-    else if(is_command(str, "blue")){
-      push_color(blue);
-    }
-    else if(is_command(str, "black")){
-      push_color(black);
-    }
-    else if(is_command(str, "yellow")){
-      push_color(yellow);
-    }
-    else if(is_command(str, "orange")){
-      push_color(orange);
-    }
-    else if(is_command(str, "purple")){
-      push_color(purple);
-    }
-    else if(is_command(str, "cyan")){
-      push_color(cyan);
-    }
-    else if(is_command(str, "magenta")){
-      push_color(magenta);
-    }
-    else if(is_command(str, "pink")){
-      push_color(pink);
-    }
-    else if(is_command(str, "white")){
-      push_color(white);
-    }
-    else if(is_command(str, "gray")){
-      push_color(gray);
-    }
-    else if(is_command(str, "ltgreen")){
-      push_color(ltgreen);
-    }
-    else if(is_command(str, "seafoam")){
-      push_color(seafoam);
-    }
-    else if(is_command(str, "ltblue")){
-      push_color(ltblue);
-    }
-    else if(is_command(str, "blink")){
-      start_blinking();
-    }
-    else if(is_command(str, "breathe")){
-      start_breathing();
-    }
-    else if(is_command(str, "flush")){
-      flush();
-    }
+    if     (is_command(str, "pause"))    paused = true;  
+    else if(is_command(str, "continue")) paused = false;
+    else if(is_command(str, "erase"))    erase(true);
+    else if(is_command(str, "blink"))    start_blinking();
+    else if(is_command(str, "breathe"))  start_breathing();
+    else if(is_command(str, "flush"))    flush();
+    else if(is_command(str, "red"))      push_color(red);
+    else if(is_command(str, "green"))    push_color(green);
+    else if(is_command(str, "blue"))     push_color(blue);
+    else if(is_command(str, "black"))    push_color(black);
+    else if(is_command(str, "yellow"))   push_color(yellow);
+    else if(is_command(str, "orange"))   push_color(orange);
+    else if(is_command(str, "purple"))   push_color(purple);
+    else if(is_command(str, "cyan"))     push_color(cyan);
+    else if(is_command(str, "magenta"))  push_color(magenta);
+    else if(is_command(str, "pink"))     push_color(pink);
+    else if(is_command(str, "white"))    push_color(white);
+    else if(is_command(str, "gray"))     push_color(gray);
+    else if(is_command(str, "ltgreen"))  push_color(ltgreen);
+    else if(is_command(str, "seafoam"))  push_color(seafoam);
+    else if(is_command(str, "ltblue"))   push_color(ltblue);
+    
+//
+//
+//    if(is_command(str, "pause")){
+//      paused = true;  
+//    } else if(is_command(str, "continue")){
+//      paused = false;
+//    } else if(is_command(str, "erase")){
+//      erase(true);
+//    } else if(is_command(str, "red")){
+//      push_color(red);
+//    } else if(is_command(str, "blink")){
+//      start_blinking();
+//    } else if(is_command(str, "breathe")){
+//      start_breathing();
+//    } else if(is_command(str, "flush")){
+//      flush();
+//    } else if(is_command(str, "green")){
+//      push_color(green);
+//    } else if(is_command(str, "blue")){
+//      push_color(blue);
+//    } else if(is_command(str, "black")){
+//      push_color(black);
+//    } else if(is_command(str, "yellow")){
+//      push_color(yellow);
+//    } else if(is_command(str, "orange")){
+//      push_color(orange);
+//    } else if(is_command(str, "purple")){
+//      push_color(purple);
+//    } else if(is_command(str, "cyan")){
+//      push_color(cyan);
+//    } else if(is_command(str, "magenta")){
+//      push_color(magenta);
+//    } else if(is_command(str, "pink")){
+//      push_color(pink);
+//    } else if(is_command(str, "white")){
+//      push_color(white);
+//    } else if(is_command(str, "gray")){
+//      push_color(gray);
+//    } else if(is_command(str, "ltgreen")){
+//      push_color(ltgreen);
+//    } else if(is_command(str, "seafoam")){
+//      push_color(seafoam);
+//    } else if(is_command(str, "ltblue")){
+//      push_color(ltblue);
+//    }
   } else {
     bool should_flush = false;
     
