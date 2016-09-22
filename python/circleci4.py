@@ -16,30 +16,30 @@ request_frequency = 15
 s = None
 
 color_map = {                            
-              "running": "ltblue\0breathe",           
+              "running": "ltblue|breathe",           
               "success": "green",                    
              "finished": "green",                 
                 "fixed": "seafoam",                       
                "failed": "red",              
              "no_tests": "gray",                    
               "retried": "yellow",                  
-             "timedout": "yellow\0blink",            
+             "timedout": "yellow|blink",            
              "canceled": "gray",                   
               "not_run": "gray",             
-               "queued": "purple\0breathe",                
+               "queued": "purple|breathe",                
             "scheduled": "purple",           
           "not_running": "pink",          
               "missing": "gray",                    
                "spacer": "black",
-         "masterfailed": "red\0blink",
-          "masterfixed": "green\0blink",                       
+         "masterfailed": "red|blink",
+          "masterfixed": "green|blink",                       
   "infrastructure_fail": "pink"        
 }   
 
 inter_command_delay = 0.02
 
 def command(cmd_text):
-  s.write((cmd_text + '\0').encode())   
+  s.write((cmd_text + '|').encode())   
   time.sleep(inter_command_delay)                       
 
 def get_color_cmd(color_cmd_text):
