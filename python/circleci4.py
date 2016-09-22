@@ -4,7 +4,7 @@ import requests
 import json
 import sys
 
-job_limit = 16
+job_limit = 18
 max_job = job_limit - 1
 
 token = sys.argv[1]
@@ -17,9 +17,9 @@ switcher = {
   "failed": "red",                       
   "success": "green",                    
   "finished": "green",                 
-  "fixed": "blue",                       
+  "fixed": "orange",                       
   "no_tests": "gray",                    
-  "retried": "orange",                  
+  "retried": "yellow",                  
   "timedout":"yellow\0blink",            
   "canceled":"pink",                   
   "not_run":"gray",             
@@ -30,7 +30,8 @@ switcher = {
   "infrastructure_fail":"white\0blink",
   "missing":"gray",                    
   "spacer":"black",
-  "masterfailed":"red\0blink"                       
+  "masterfailed":"red\0blink",
+  "masterfixed":"green\0blink"                       
 }   
 
 def setup(): 
@@ -63,9 +64,14 @@ def loop():
 
 #    print "st: " + st
 
+    br = j[max_job - x]['branch']
+    rp = j[max_job - x]['reponame']
+    master = br == 'master'
+    orders = rp == 'orders'
+    orders_master = master and orders
+
     if st == 'failed':
-      br = j[max_job - x]['branch']
-      if br == 'master':
+      if orders_master:
         color_command('masterfailed')
         color_command('masterfailed')
         color_command('masterfailed')
@@ -81,6 +87,15 @@ def loop():
       color_command('running')           
       color_command('running')           
       color_command('running')  
+    elif st == 'fixed':
+      if orders_master:
+        color_command('masterfixed')                                                                               
+        color_command('masterfixed')               
+        color_command('masterfixed')               
+      else:
+        color_command('fixed')               
+        color_command('fixed')                     
+        color_command('fixed')                     
     else:
       lc = j[max_job - x]['lifecycle']               
       oc = j[max_job - x]['outcome']  
