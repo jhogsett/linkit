@@ -4,12 +4,12 @@ PololuLedStrip<12> ledStrip;
 
 #define RANDOM_SEED_PIN A1
 
-#define LED_COUNT 72
+#define LED_COUNT 144
 #define MAX_LED (LED_COUNT)
 rgb_color colors[LED_COUNT];
 rgb_color render[LED_COUNT];
 
-int states[LED_COUNT];
+int effects[LED_COUNT];
 
 #define BRIGHTNESS_DIVISOR 20.0
 #define DEFAULT_BRIGHTNESS_PERCENT 20
@@ -68,7 +68,7 @@ void flood(rgb_color color){
 void erase(bool display = false){
   for(int i = 0; i < LED_COUNT; i++){
     colors[i] = black;
-    states[i] = 0;
+    effects[i] = 0;
   }
   if(display){
     ledStrip.write(colors, LED_COUNT); 
@@ -106,25 +106,78 @@ void setup_colors(bool swap = true){
 #define BLINK_ON 1
 #define BREATHE_ON 2
 
+// blink group
+#define BLINK_ON_1 11
+#define BLINK_ON_2 12
+#define BLINK_ON_3 13
+#define BLINK_ON_4 14
+#define BLINK_ON_5 15
+#define BLINK_ON_6 16
+
+#define STATIC_ON 21
+
 void push_color(rgb_color color, bool display = false){
   for(int i = MAX_LED - 1; i >= 1; i--){
     colors[i] = colors[i-1];
-    states[i] = states[i-1];
+    effects[i] = effects[i-1];
   }
   colors[0] = color;
-  states[0] = NO_STATE;
+  effects[0] = NO_STATE;
 
   if(display){
     ledStrip.write(colors, LED_COUNT); 
   }
 }
 
-#define MAX_BLINK 6667
+#define MAX_BLINK 6000
+#define BLINK_0 0
+#define BLINK_1 999
+#define BLINK_2 1999
+#define BLINK_3 2999
+#define BLINK_4 3999
+#define BLINK_5 4999
+#define BLINK_6 5999
 int blink_counter = 0;
 bool blink_state = true; // false means blank
 
+// blink group
+bool blink_state_1 = true; 
+bool blink_state_2 = true; 
+bool blink_state_3 = true; 
+bool blink_state_4 = true; 
+bool blink_state_5 = true; 
+bool blink_state_6 = true; 
+
 void start_blinking(){
-  states[0] = BLINK_ON;
+  effects[0] = BLINK_ON;
+}
+
+void start_blinking_1(){
+  effects[0] = BLINK_ON_1;
+}
+
+void start_blinking_2(){
+  effects[0] = BLINK_ON_2;
+}
+
+void start_blinking_3(){
+  effects[0] = BLINK_ON_3;
+}
+
+void start_blinking_4(){
+  effects[0] = BLINK_ON_4;
+}
+
+void start_blinking_5(){
+  effects[0] = BLINK_ON_5;
+}
+
+void start_blinking_6(){
+  effects[0] = BLINK_ON_6;
+}
+
+void start_blinking_r(){
+  effects[0] = BLINK_ON_1 + random((BLINK_ON_6 - BLINK_ON_1) + 1);
 }
 
 #define BREATHE_TIME 500
@@ -132,7 +185,7 @@ void start_blinking(){
 #define BREATHE_MAX_STEP 22 
 #define BREATHE_BRIGHTNESS_MIN 0
 #define DEFAULT_BRIGHTNESS_SCALE (DEFAULT_BRIGHTNESS_PERCENT / 100.0)
-#define MINIMUM_BRIGHTNESS_SCALE 0.03
+#define MINIMUM_BRIGHTNESS_SCALE 0.02
 
 int breathe_counter = 0;
 int breathe_step = 0;
@@ -167,7 +220,11 @@ float breathe_steps[] = {
 };
 
 void start_breathing(){
-  states[0] = BREATHE_ON;
+  effects[0] = BREATHE_ON;
+}
+
+void start_static(){
+  effects[0] = STATIC_ON;
 }
 
 rgb_color blend_colors(rgb_color color1, rgb_color color2){
@@ -214,7 +271,7 @@ void do_fade(float rate = FADE_RATE){
 void do_flood(){
   for(int i = 1; i < LED_COUNT; i++){
     colors[i] = colors[0];
-    states[i] = states[0];    
+    effects[i] = effects[0];    
   }
 }
 
@@ -226,16 +283,61 @@ int do_random(){
   push_color(random_color());
 }
 
+int do_mirror(){
+  for(int i = 0; i < LED_COUNT / 2; i++){
+    colors[LED_COUNT - i - 1] = colors[i];
+    effects[LED_COUNT - i - 1] = effects[i];
+  }
+}
+
 void setup_buffer(){
   for(int i = 0; i < LED_COUNT; i++){
-    if(states[i] == BLINK_ON){
+    if(effects[i] == BLINK_ON){
       if(blink_state){
         render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
       } else {
         render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
       }
-    } else if(states[i] == BREATHE_ON){
+    } else if(effects[i] == BLINK_ON_1){
+      if(blink_state_1){
+        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
+      } else {
+        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
+      }
+    } else if(effects[i] == BLINK_ON_2){
+      if(blink_state_2){
+        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
+      } else {
+        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
+      }
+    } else if(effects[i] == BLINK_ON_3){
+      if(blink_state_3){
+        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
+      } else {
+        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
+      }
+    } else if(effects[i] == BLINK_ON_4){
+      if(blink_state_4){
+        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
+      } else {
+        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
+      }
+    } else if(effects[i] == BLINK_ON_5){
+      if(blink_state_5){
+        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
+      } else {
+        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
+      }
+    } else if(effects[i] == BLINK_ON_6){
+      if(blink_state_6){
+        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
+      } else {
+        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
+      }
+    } else if(effects[i] == BREATHE_ON){
       render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE * breathe_steps[BREATHE_MAX_STEP - breathe_step]);
+    } else if(effects[i] == STATIC_ON){
+      render[i] = random_color();
     } else {
       render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);
     }
@@ -265,7 +367,7 @@ int random_seed(){
 }
 
 void setup() { 
-  Serial.begin(115200);  // open serial connection to USB Serial 
+  //Serial.begin(115200);  // open serial connection to USB Serial 
                          //port(connected to your computer)
   Serial1.begin(57600);  // open internal serial connection to 
                          //MT7688
@@ -290,26 +392,43 @@ void loop(){
     int c = Serial1.readBytesUntil('|', str, MAX_STRING_LENGTH);
     str[c] = 0;
 
-    // reset the states so the automatic render won't interfere
+    // reset the effects so the automatic render won't interfere
     blink_state = true;
+    blink_state_1 = false;
+    blink_state_2 = false;
+    blink_state_3 = false;
+    blink_state_4 = false;
+    blink_state_5 = false;
+    blink_state_6 = false;
     blink_counter = 0;
     breathe_step = 0;
     breathe_counter = 0;
+  
+    //Serial.println(str);
 
 // fast blink, breathe
 // static, flame
-// flame
-// tripple blink, rotating blink cycle, cop lights
 // invert hue, swing hue, back and forth between two arbitrary colors, rgb cube
 // rainbow colors incremental, or continuously changing
 // shooting up
 // push-down animation when a new build is seen (to emphasize its adding)
 // fade based on build time
+// change refresh rate based on time of day (afterhours it doesn't need to check that often)
+// show something if the data hasn't updated in a long time
+// automatically stop and restart the script at night
+// blink a/b
 
     if     (is_command(str, "pause"))    paused = true;  
     else if(is_command(str, "continue")) paused = false;
     else if(is_command(str, "erase"))    erase(true);
     else if(is_command(str, "blink"))    start_blinking();
+    else if(is_command(str, "blink1"))   start_blinking_1();
+    else if(is_command(str, "blink2"))   start_blinking_2();
+    else if(is_command(str, "blink3"))   start_blinking_3();
+    else if(is_command(str, "blink4"))   start_blinking_4();
+    else if(is_command(str, "blink5"))   start_blinking_5();
+    else if(is_command(str, "blink6"))   start_blinking_6();
+    else if(is_command(str, "blinkr"))   start_blinking_r();
     else if(is_command(str, "breathe"))  start_breathing();
     else if(is_command(str, "flush"))    flush();
     else if(is_command(str, "blend"))    do_blend();
@@ -319,6 +438,8 @@ void loop(){
     else if(is_command(str, "fade"))     do_fade();
     else if(is_command(str, "flood"))    do_flood();
     else if(is_command(str, "random"))   do_random();
+    else if(is_command(str, "mirror"))   do_mirror();
+    else if(is_command(str, "static"))   start_static();
     else if(is_command(str, "red"))      push_color(red);
     else if(is_command(str, "green"))    push_color(green);
     else if(is_command(str, "blue"))     push_color(blue);
@@ -335,12 +456,13 @@ void loop(){
     else if(is_command(str, "seafoam"))  push_color(seafoam);
     else if(is_command(str, "ltblue"))   push_color(ltblue);
     else if(is_command(str, "dkgray"))   push_color(dkgray);
+    else Serial.println("WTF");
     
   } else {
     bool should_flush = false;
     
     blink_counter = (blink_counter + 1) % MAX_BLINK;
-    if(blink_counter == 0){
+    if(blink_counter == BLINK_0){
       if(blink_state){
         blink_state = false;
       } else {
@@ -348,7 +470,43 @@ void loop(){
       }
       should_flush = true;
     }
-    
+
+    if(blink_counter == BLINK_1){
+      blink_state_6 = false;
+      blink_state_1 = true;
+      should_flush = true;
+    }
+
+    if(blink_counter == BLINK_2){
+      blink_state_1 = false;
+      blink_state_2 = true;
+      should_flush = true;
+    }
+
+    if(blink_counter == BLINK_3){
+      blink_state_2 = false;
+      blink_state_3 = true;
+      should_flush = true;
+    }
+
+    if(blink_counter == BLINK_4){
+      blink_state_3 = false;
+      blink_state_4 = true;
+      should_flush = true;
+    }
+
+    if(blink_counter == BLINK_5){
+      blink_state_4 = false;
+      blink_state_5 = true;
+      should_flush = true;
+    }
+
+    if(blink_counter == BLINK_6){
+      blink_state_5 = false;
+      blink_state_6 = true;
+      should_flush = true;
+    }
+
     breathe_counter = (breathe_counter + 1) % BREATHE_TIME;
     if(breathe_counter == 0){
       int next_breathe_step = breathe_step + breathe_direction;
