@@ -4,7 +4,7 @@ PololuLedStrip<12> ledStrip;
 
 #define RANDOM_SEED_PIN A1
 
-#define LED_COUNT 144
+#define LED_COUNT 64
 #define MAX_LED (LED_COUNT)
 rgb_color colors[LED_COUNT];
 rgb_color render[LED_COUNT];
@@ -103,10 +103,11 @@ void setup_colors(bool swap = true){
 }
 
 #define NO_STATE 0
-#define BLINK_ON 1
-#define BREATHE_ON 2
+#define BREATHE_ON 1
 
-// blink group
+#define BLINK_ON 2
+
+// blink group 1-6
 #define BLINK_ON_1 11
 #define BLINK_ON_2 12
 #define BLINK_ON_3 13
@@ -114,7 +115,14 @@ void setup_colors(bool swap = true){
 #define BLINK_ON_5 15
 #define BLINK_ON_6 16
 
-#define STATIC_ON 21
+// blink group a-b
+#define BLINK_ON_A 21
+#define BLINK_ON_B 22
+
+#define BLINK_MIN BLINK_ON 
+#define BLINK_MAX BLINK_ON_B
+
+#define STATIC_ON 101
 
 void push_color(rgb_color color, bool display = false){
   for(int i = MAX_LED - 1; i >= 1; i--){
@@ -137,43 +145,23 @@ void push_color(rgb_color color, bool display = false){
 #define BLINK_4 3999
 #define BLINK_5 4999
 #define BLINK_6 5999
+#define BLINK_A BLINK_1
+#define BLINK_B BLINK_4
 int blink_counter = 0;
 bool blink_state = true; // false means blank
 
-// blink group
+// blink groups
 bool blink_state_1 = true; 
 bool blink_state_2 = true; 
 bool blink_state_3 = true; 
 bool blink_state_4 = true; 
 bool blink_state_5 = true; 
 bool blink_state_6 = true; 
+bool blink_state_a = true; 
+bool blink_state_b = true; 
 
-void start_blinking(){
-  effects[0] = BLINK_ON;
-}
-
-void start_blinking_1(){
-  effects[0] = BLINK_ON_1;
-}
-
-void start_blinking_2(){
-  effects[0] = BLINK_ON_2;
-}
-
-void start_blinking_3(){
-  effects[0] = BLINK_ON_3;
-}
-
-void start_blinking_4(){
-  effects[0] = BLINK_ON_4;
-}
-
-void start_blinking_5(){
-  effects[0] = BLINK_ON_5;
-}
-
-void start_blinking_6(){
-  effects[0] = BLINK_ON_6;
+void start_effect(int effect){
+  effects[0] = effect;
 }
 
 void start_blinking_r(){
@@ -214,8 +202,6 @@ float breathe_steps[] = {
   0.0,
   0.0,  // a few extra make it feel more natural
   0.0,
-//  0.0,
-//  0.0,
   0,0
 };
 
@@ -240,16 +226,21 @@ void do_blend(){
   colors[1] = colors[0];
 }
 
+// only works proper used immediately after placing a standard color
 void do_max(){
   colors[0] = scale_color(colors[0], MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
 void do_dim(){
-  colors[0] = scale_color(colors[0], DIM_BRIGHTNESS_PERCENT / 100.0);
+  colors[0].red = colors[0].red >> 1;
+  colors[0].green = colors[0].green >> 1;
+  colors[0].blue = colors[0].blue >> 1;
 }
 
 void do_bright(){
-  colors[0] = scale_color(colors[0], BRIGHT_BRIGHTNESS_PERCENT / 100.0);
+  colors[0].red = colors[0].red << 1;
+  colors[0].green = colors[0].green << 1;
+  colors[0].blue = colors[0].blue << 1;
 }
 
 void fade(float rate = FADE_RATE){
@@ -279,68 +270,47 @@ rgb_color random_color(){
   return palette[random(NPRETTY_COLORS)];
 }
 
-int do_random(){
+void do_random(){
   push_color(random_color());
 }
 
-int do_mirror(){
+void do_mirror(){
   for(int i = 0; i < LED_COUNT / 2; i++){
     colors[LED_COUNT - i - 1] = colors[i];
     effects[LED_COUNT - i - 1] = effects[i];
   }
 }
 
+void do_repeat(){
+  push_color(colors[0]);
+  effects[0] = effects[1];
+}
+
 void setup_buffer(){
   for(int i = 0; i < LED_COUNT; i++){
-    if(effects[i] == BLINK_ON){
-      if(blink_state){
-        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
-      } else {
-        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
-      }
-    } else if(effects[i] == BLINK_ON_1){
-      if(blink_state_1){
-        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
-      } else {
-        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
-      }
-    } else if(effects[i] == BLINK_ON_2){
-      if(blink_state_2){
-        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
-      } else {
-        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
-      }
-    } else if(effects[i] == BLINK_ON_3){
-      if(blink_state_3){
-        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
-      } else {
-        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
-      }
-    } else if(effects[i] == BLINK_ON_4){
-      if(blink_state_4){
-        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
-      } else {
-        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
-      }
-    } else if(effects[i] == BLINK_ON_5){
-      if(blink_state_5){
-        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
-      } else {
-        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
-      }
-    } else if(effects[i] == BLINK_ON_6){
-      if(blink_state_6){
-        render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE); 
-      } else {
-        render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
-      }
-    } else if(effects[i] == BREATHE_ON){
-      render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE * breathe_steps[BREATHE_MAX_STEP - breathe_step]);
-    } else if(effects[i] == STATIC_ON){
-      render[i] = random_color();
-    } else {
-      render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);
+    int effect = effects[i];
+
+    if(effect ==  STATIC_ON) colors[i] = random_color();
+
+    if(effect >= BLINK_MIN && effect <= BLINK_MAX){
+      if((effect == BLINK_ON && blink_state) || 
+            (effect == BLINK_ON_1 && blink_state_1) || 
+            (effect == BLINK_ON_2 && blink_state_2) || 
+            (effect == BLINK_ON_3 && blink_state_3) || 
+            (effect == BLINK_ON_4 && blink_state_4) || 
+            (effect == BLINK_ON_5 && blink_state_5) || 
+            (effect == BLINK_ON_6 && blink_state_6) || 
+            (effect == BLINK_ON_A && blink_state_a) || 
+            (effect == BLINK_ON_B && blink_state_b)) {
+          render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);  
+        } else {
+          render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
+        }
     }
+    
+    else if(effects[i] == BREATHE_ON) render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE * breathe_steps[BREATHE_MAX_STEP - breathe_step]);
+
+    else render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);
   }
 }
 
@@ -378,7 +348,7 @@ void setup() {
   erase(true);
 }
 
-#define MAX_STRING_LENGTH 10
+#define MAX_STRING_LENGTH 16
 
 bool is_command(char *str, char *command){
   return strcmp(str, command) == 0;  
@@ -386,11 +356,13 @@ bool is_command(char *str, char *command){
 
 void loop(){ 
   char str[MAX_STRING_LENGTH];
+  char arg[MAX_STRING_LENGTH];
   rgb_color color;
 
   if(Serial1.available() > 0){
     int c = Serial1.readBytesUntil('|', str, MAX_STRING_LENGTH);
     str[c] = 0;
+    strcpy(arg, "");
 
     // reset the effects so the automatic render won't interfere
     blink_state = true;
@@ -400,6 +372,8 @@ void loop(){
     blink_state_4 = false;
     blink_state_5 = false;
     blink_state_6 = false;
+    blink_state_a = false;
+    blink_state_b = false;
     blink_counter = 0;
     breathe_step = 0;
     breathe_counter = 0;
@@ -417,19 +391,27 @@ void loop(){
 // show something if the data hasn't updated in a long time
 // automatically stop and restart the script at night
 // blink a/b
+// show something if the data has been unchanged for some time, like after hours
+// detect if the group of builds has been added to, then do an insertion animation
+// after pause, allow breathing and blinking to come to a halt first
+// rotation
+// transitions
+// if something is not recognized assume it's an argument for the next command
 
     if     (is_command(str, "pause"))    paused = true;  
     else if(is_command(str, "continue")) paused = false;
     else if(is_command(str, "erase"))    erase(true);
-    else if(is_command(str, "blink"))    start_blinking();
-    else if(is_command(str, "blink1"))   start_blinking_1();
-    else if(is_command(str, "blink2"))   start_blinking_2();
-    else if(is_command(str, "blink3"))   start_blinking_3();
-    else if(is_command(str, "blink4"))   start_blinking_4();
-    else if(is_command(str, "blink5"))   start_blinking_5();
-    else if(is_command(str, "blink6"))   start_blinking_6();
+    else if(is_command(str, "blink"))    start_effect(BLINK_ON);
+    else if(is_command(str, "blink1"))   start_effect(BLINK_ON_1);
+    else if(is_command(str, "blink2"))   start_effect(BLINK_ON_2);
+    else if(is_command(str, "blink3"))   start_effect(BLINK_ON_3);
+    else if(is_command(str, "blink4"))   start_effect(BLINK_ON_4);
+    else if(is_command(str, "blink5"))   start_effect(BLINK_ON_5);
+    else if(is_command(str, "blink6"))   start_effect(BLINK_ON_6);
     else if(is_command(str, "blinkr"))   start_blinking_r();
-    else if(is_command(str, "breathe"))  start_breathing();
+    else if(is_command(str, "blinka"))   start_effect(BLINK_ON_A);
+    else if(is_command(str, "blinkb"))   start_effect(BLINK_ON_B);
+    else if(is_command(str, "breathe"))  start_effect(BREATHE_ON);
     else if(is_command(str, "flush"))    flush();
     else if(is_command(str, "blend"))    do_blend();
     else if(is_command(str, "max"))      do_max();
@@ -439,6 +421,7 @@ void loop(){
     else if(is_command(str, "flood"))    do_flood();
     else if(is_command(str, "random"))   do_random();
     else if(is_command(str, "mirror"))   do_mirror();
+    else if(is_command(str, "repeat"))   do_repeat();
     else if(is_command(str, "static"))   start_static();
     else if(is_command(str, "red"))      push_color(red);
     else if(is_command(str, "green"))    push_color(green);
@@ -474,6 +457,8 @@ void loop(){
     if(blink_counter == BLINK_1){
       blink_state_6 = false;
       blink_state_1 = true;
+      blink_state_a = true;
+      blink_state_b = false;
       should_flush = true;
     }
 
@@ -492,6 +477,8 @@ void loop(){
     if(blink_counter == BLINK_4){
       blink_state_3 = false;
       blink_state_4 = true;
+      blink_state_a = false;
+      blink_state_b = true;
       should_flush = true;
     }
 
