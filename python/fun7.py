@@ -1,3 +1,6 @@
+#!/usr/bin/python
+
+
 import serial 
 import time
 import random
@@ -16,6 +19,7 @@ def setup():
 #  command("fade")
 #  time.sleep(2)
   command("erase")
+  time.sleep(0.1)
 
 blink_map = {
   0 : "blink1",

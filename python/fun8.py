@@ -30,11 +30,14 @@ def run():
   while True:
     command("pause")
 
-    for x in range(0, 64):
+    for x in range(0, 8):
       choice = random.randrange(0, 6)
-      blink = blink_map[choice]
-      command("random")
-      command(blink)
+      for y in range(0, 6):
+        blink = blink_map[choice]
+        command("random")
+        command(blink)
+      for y in range(0, 2):          
+        command('random|static')
 
     command("continue")
     time.sleep(10.0)

@@ -6,7 +6,7 @@ import requests
 import json
 import sys
 
-job_limit = 18
+job_limit = 16
 max_job = job_limit - 1
 
 token = sys.argv[1]

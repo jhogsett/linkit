@@ -1,10 +1,12 @@
+#!/usr/bin/python
+
 import serial 
 import time
 s = None
 def setup(): 
   global s 
   s = serial.Serial("/dev/ttyS0", 57600) 
-  s.write("erase|".encode())
+#  s.write("erase|".encode())
 
 def loop(): 
   color = raw_input('color: ')

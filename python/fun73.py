@@ -1,3 +1,6 @@
+#!/usr/bin/python
+
+
 import serial 
 import time
 import random
@@ -16,6 +19,7 @@ def setup():
 #  command("fade")
 #  time.sleep(2)
   command("erase")
+  time.sleep(0.1)
 
 blink_map = {
   0 : "blink1",
@@ -30,14 +34,19 @@ def run():
   while True:
     command("pause")
 
-    for x in range(0, 64):
-      choice = random.randrange(0, 6)
-      blink = blink_map[choice]
-      command("random")
-      command(blink)
+    command("random")
+    command("random")
+    command("blend")
+    command("random")
+    command("blend")
+    command("dim")
+    command("dim")
+    command("dim")
+    command("dim")
+    command("flood")
 
     command("continue")
-    time.sleep(10.0)
+    time.sleep(5.0)
 
 if __name__ == '__main__': 
   setup()
