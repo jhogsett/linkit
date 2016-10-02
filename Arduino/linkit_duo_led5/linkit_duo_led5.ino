@@ -4,7 +4,7 @@ PololuLedStrip<12> ledStrip;
 
 #define RANDOM_SEED_PIN A1
 
-#define LED_COUNT 64
+#define LED_COUNT 144
 #define MAX_LED (LED_COUNT)
 rgb_color colors[LED_COUNT];
 rgb_color render[LED_COUNT];
@@ -102,7 +102,7 @@ void setup_colors(bool swap = true){
   memcpy(adjusted_palette, palette, sizeof(palette));
 }
 
-#define NO_STATE 0
+#define NO_EFFECT 0
 #define BREATHE_ON 1
 
 #define BLINK_ON 2
@@ -130,7 +130,7 @@ void push_color(rgb_color color, bool display = false){
     effects[i] = effects[i-1];
   }
   colors[0] = color;
-  effects[0] = NO_STATE;
+  effects[0] = NO_EFFECT;
 
   if(display){
     ledStrip.write(colors, LED_COUNT); 
@@ -257,6 +257,9 @@ void do_fade(float rate = FADE_RATE){
     ledStrip.write(colors, LED_COUNT);
     delay(FADE_DELAY);
   }
+  for(int i = 0; i < LED_COUNT; i++){
+    effects[i] = NO_EFFECT;
+  }
 }
 
 void do_flood(){
@@ -281,12 +284,14 @@ void do_mirror(){
   }
 }
 
-void do_repeat(){
-  push_color(colors[0]);
-  effects[0] = effects[1];
+void do_repeat(int times = 1){
+  for(int i = 0; i < times; i++){
+    push_color(colors[0]);
+    effects[0] = effects[1];
+  }
 }
 
-void setup_buffer(){
+void render_buffer(){
   for(int i = 0; i < LED_COUNT; i++){
     int effect = effects[i];
 
@@ -322,7 +327,7 @@ bool paused = false;
 
 void flush(){
   if(!paused){
-    setup_buffer();
+    render_buffer();
     display_buffer();
   }
 }
@@ -362,7 +367,6 @@ void loop(){
   if(Serial1.available() > 0){
     int c = Serial1.readBytesUntil('|', str, MAX_STRING_LENGTH);
     str[c] = 0;
-    strcpy(arg, "");
 
     // reset the effects so the automatic render won't interfere
     blink_state = true;
@@ -390,13 +394,25 @@ void loop(){
 // change refresh rate based on time of day (afterhours it doesn't need to check that often)
 // show something if the data hasn't updated in a long time
 // automatically stop and restart the script at night
-// blink a/b
 // show something if the data has been unchanged for some time, like after hours
 // detect if the group of builds has been added to, then do an insertion animation
 // after pause, allow breathing and blinking to come to a halt first
 // rotation
 // transitions
 // if something is not recognized assume it's an argument for the next command
+// copy -- everything up to black is copied on top of black
+// repeat x the unrecognized argument as an integer
+// stop sign timing and opposite timing
+// reverse, inverse mirror
+// brief flash, or something, to alert to a new (green?) build
+// some way to visually tell which are changes from a little while ago (like the fading yellow highlight on web pages)
+
+    if(is_command(str, "repeat")){
+      int times = String(arg).toInt();
+      if(times == 0) times = 1;
+      do_repeat(times);
+      strcpy(arg, "");
+    }
 
     if     (is_command(str, "pause"))    paused = true;  
     else if(is_command(str, "continue")) paused = false;
@@ -421,7 +437,6 @@ void loop(){
     else if(is_command(str, "flood"))    do_flood();
     else if(is_command(str, "random"))   do_random();
     else if(is_command(str, "mirror"))   do_mirror();
-    else if(is_command(str, "repeat"))   do_repeat();
     else if(is_command(str, "static"))   start_static();
     else if(is_command(str, "red"))      push_color(red);
     else if(is_command(str, "green"))    push_color(green);
@@ -439,9 +454,10 @@ void loop(){
     else if(is_command(str, "seafoam"))  push_color(seafoam);
     else if(is_command(str, "ltblue"))   push_color(ltblue);
     else if(is_command(str, "dkgray"))   push_color(dkgray);
-    else Serial.println("WTF");
-    
-  } else {
+    else strcpy(arg, str);
+  } 
+  else 
+  {
     bool should_flush = false;
     
     blink_counter = (blink_counter + 1) % MAX_BLINK;
