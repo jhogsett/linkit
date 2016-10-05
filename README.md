@@ -61,9 +61,49 @@
     
     Now you can ssh in and type "cd dev" to get to that folder
     
+14. Create an SSH key (to use services such as github.com)
+
+    Generate your identity key
+
+    * dropbearkey -t rsa -f ~/.ssh/id_rsa
+
+    Convert public key from dropbear binary to openssh text
     
+    * dropbearkey -y -f ~/.ssh/id_rsa | head -n 2 | tail -1
+    
+    Copy the above public key and add it to your account at Github.com
+    
+15. Change the git ssh command to use Dropbear
+    
+    * echo "#!/bin/sh" > ~/.gitssh.sh
+    * echo "dbclient -y -i ~/.ssh/id_rsa \$\*" >> ~/.gitssh.sh
+    * chmod +x ~/.gitssh.sh
+    * echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
+    
+    Log out and back in
+    
+    * ^D
+    * ssh root@mylinkit.local
+    
+16. Clone a Github.com repository
 
+    * cd ~/dev
+    * git clone git@github.com:jhogsett/linkit.git
+    
+17. Install the Python Requests library for reaching the web
 
+    * pip install requests
+    
+18. Run a Python program to verify things are set up
+
+    * cd ~/dev/linkit/python
+    * python circleci5.py <YOURKEY>
+    
+    Tail the log file to see if it's reaching CirclCI
+    
+    * tail -f ~/dev/linkit/python/circleci.log
+    
+19. Customize the 'ls' command
 
 
 
