@@ -132,9 +132,13 @@ def loop():
     command("flush");
     time.sleep(request_frequency)
 
+  except requests.exceptions.ConnectionError:
+    logging.error("Connection error - retrying")
+    command("pause|blue|blink|flood|continue")
+    time.sleep(15)
   except Exception:
     logging.error(sys.exc_info()[0])
-    command("pause|red|blink|flood|continue")
+    command("pause|yellow|blink|flood|continue")
     raise
 
 if __name__ == '__main__': 
