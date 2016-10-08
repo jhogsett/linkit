@@ -25,7 +25,7 @@ unsigned char existence[VLED_COUNT];
 
 float ease[LED_COUNT];
 
-#define DELAY 2000
+#define DELAY 225
 #define FADE_RATE 0.75
 #define FADE_COUNT 20
 
@@ -398,24 +398,26 @@ void loop()
   }
 
   while(true){
-    delay(DELAY);
+    for(int j = 2; j < 16; j++){
+      delay(DELAY * 2);
 
-    int count = random(1,15)  * 4;
-
-    generate_elastic_ease(EASE_COUNT, EASE_EXPONENT);
-    for(int i = 0; i < EASE_COUNT; i++){
-      int pos = ease[i] * count;
-      delay(EASE_DELAY);
-      shift(pos);
-    }
-
-    delay(DELAY);
-
-    generate_power_ease(EASE_COUNT, EASE_EXPONENT);
-    for(int i = EASE_COUNT-1; i >= 0 ; i--){
-      int pos = ease[i] * count;
-      delay(EASE_DELAY);
-      shift(pos);
+      int count = j  * 4;
+  
+      generate_elastic_ease(EASE_COUNT, EASE_EXPONENT);
+      for(int i = 0; i < EASE_COUNT; i++){
+        int pos = ease[i] * count;
+        delay(EASE_DELAY);
+        shift(pos);
+      }
+  
+      delay(DELAY);
+  
+      generate_power_ease(EASE_COUNT, EASE_EXPONENT);
+      for(int i = EASE_COUNT-1; i >= 0 ; i--){
+        int pos = ease[i] * count;
+        delay(EASE_DELAY);
+        shift(pos);
+      }
     }
   }
 
