@@ -1,4 +1,5 @@
-//efade is broken, brightness wrong after demo animation
+// would be nice to shift-in the new pixels from the back buffer
+//efade is broken
 
 
 #include <PololuLedStrip.h>
@@ -10,7 +11,7 @@ PololuLedStrip<12> ledStrip;
 #define EASE_COUNT 32
 #define POWER_EASE_COUNT 24
 #define EASE_DELAY 2
-#define POWER_EASE_DELAY 2
+#define POWER_EASE_DELAY 1
 #define EASE_ANIM_MARGIN 15
 
 #define ANIM_LED_COUNT 64
@@ -159,7 +160,13 @@ void shift_buffer(rgb_color * buffer, bool include_effects = true, int max = ANI
   }
 }
 
-void push_color(rgb_color color, bool display = false, int effect = NO_EFFECT, rgb_color *buffer = colors, int max = ANIM_LED_COUNT){
+// for limiting effects to preserve later pixels
+int window = 0;
+
+void push_color(rgb_color color, bool display = false, int effect = NO_EFFECT, rgb_color *buffer = colors, int max = window){
+  if(max == 0){
+    max = ANIM_LED_COUNT;
+  }
   shift_buffer(buffer, true, max);
   
   buffer[0] = color;
@@ -588,6 +595,10 @@ int get_sub_args(char * args){
   sub_args[1] = atoi(arg);
 }
 
+void set_window(int width){
+  window = width;
+}
+
 void loop(){ 
   char str[MAX_STRING_LENGTH];
   char arg[MAX_STRING_LENGTH];
@@ -676,6 +687,7 @@ replay:
     else if(is_command(str, "eshift"))   do_elastic_shift(sub_args[0]);
     else if(is_command(str, "pshift"))   do_power_shift(sub_args[0]);
     else if(is_command(str, "pshifto"))  power_shift_object(sub_args[0], sub_args[1]);
+    else if(is_command(str, "window"))   set_window(sub_args[0]);
     else if(is_command(str, "demo"))     do_demo();
     else if(is_command(str, "static"))   start_static();
     else if(is_command(str, "red"))      push_color(red);
