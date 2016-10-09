@@ -596,6 +596,9 @@ int get_sub_args(char * args){
 }
 
 void set_window(int width){
+  if(width < 0){
+    width = 0;
+  }
   window = width;
 }
 
