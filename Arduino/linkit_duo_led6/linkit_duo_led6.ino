@@ -153,20 +153,20 @@ int random_effects[] = { NO_EFFECT, BREATHE_ON, RANDOM, BLINK_ON, BLINK_ON_1, BL
 void shift_buffer(rgb_color * buffer, bool include_effects = true, int max = ANIM_LED_COUNT){
   for(int i = max - 1; i >= 1; i--){
     buffer[i] = buffer[i-1];
-    if(include_effects){
+//    if(include_effects){
       effects[i] = effects[i-1];
-    }
+//    }
   }
 }
 
 void push_color(rgb_color color, bool display = false, int effect = NO_EFFECT, rgb_color *buffer = colors, int max = ANIM_LED_COUNT){
-  shift_buffer(buffer, effect = LEAVE_EFFECT ? false : true, max);
+  shift_buffer(buffer, true, max);
   
   buffer[0] = color;
 
-  if(effect != LEAVE_EFFECT){
+//  if(effect != LEAVE_EFFECT){
     effects[0] = effect;
-  }
+//  }
   
   if(display){
     display_buffer(buffer);
@@ -529,7 +529,7 @@ void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
     do_power_shift(window, window + DEMO_TOTAL_SIZE);
     window -= DEMO_TOTAL_SIZE;
 
-    int effect = BREATHE_ON; //random_effect();
+    int effect = random_effect();
 
     for(int j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
       set_color(j, color, false, effect);
