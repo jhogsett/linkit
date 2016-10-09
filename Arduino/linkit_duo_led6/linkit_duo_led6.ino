@@ -486,11 +486,11 @@ void do_elastic_shift(int count, int max = ANIM_LED_COUNT, bool display_only = f
     for(int i = 0; i < EASE_COUNT; i++){
       int pos = elastic_ease[i] * count;
       delay(EASE_DELAY);
-      shift(pos, max);
+      shift(pos+1, max);
     }
-    if(!display_only){
+//    if(!display_only){
       finalize_shift(count, max);
-    }
+//    }
   }
 }
 
@@ -502,9 +502,9 @@ void do_power_shift(int count, int max = ANIM_LED_COUNT, bool display_only = fal
       delay(POWER_EASE_DELAY);
       shift(pos+1, max);
     }
-    if(!display_only){
+//    if(!display_only){
       finalize_shift(count, max);
-    }
+//    }
   }
 }
 
@@ -513,6 +513,10 @@ void do_power_shift(int count, int max = ANIM_LED_COUNT, bool display_only = fal
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 
 // be able to reverse shift/animation direction
+
+void power_shift_object(int width, int shift){
+  do_power_shift(shift, shift + width);
+}
 
 void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
 
@@ -526,7 +530,12 @@ void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
   
   for(int i = 0; i < count; i++){
     rgb_color color = random_color();
-    do_power_shift(window, window + DEMO_TOTAL_SIZE);
+ 
+//    do_power_shift(window, window + DEMO_TOTAL_SIZE);
+//    //do_elastic_shift(window, window + DEMO_TOTAL_SIZE);
+
+    power_shift_object(DEMO_TOTAL_SIZE, window);
+    
     window -= DEMO_TOTAL_SIZE;
 
     int effect = random_effect();
@@ -567,6 +576,16 @@ void setup() {
 
 bool is_command(char *str, char *command){
   return strcmp(str, command) == 0;  
+}
+
+#define NUM_SUB_ARGS 2
+int sub_args[NUM_SUB_ARGS] = { 0, 0 };
+
+int get_sub_args(char * args){
+  char *arg = strtok(args, ",");
+  sub_args[0] = atoi(arg);
+  arg = strtok(NULL, ",");
+  sub_args[1] = atoi(arg);
 }
 
 void loop(){ 
@@ -623,8 +642,8 @@ replay:
 // separate velocities per type of animation
 
     if(is_command(str, "repeat")){
-      int times = String(arg).toInt();
-      if(times == 0) times = 1;
+      int times = sub_args[0];
+      if(times < 1) times = 1;
       do_repeat(times);
       strcpy(arg, "");
     }
@@ -654,8 +673,9 @@ replay:
     else if(is_command(str, "flood"))    do_flood();
     else if(is_command(str, "random"))   do_random();
     else if(is_command(str, "mirror"))   do_mirror();
-    else if(is_command(str, "eshift"))   do_elastic_shift(String(arg).toInt());
-    else if(is_command(str, "pshift"))   do_power_shift(String(arg).toInt());
+    else if(is_command(str, "eshift"))   do_elastic_shift(sub_args[0]);
+    else if(is_command(str, "pshift"))   do_power_shift(sub_args[0]);
+    else if(is_command(str, "pshifto"))  power_shift_object(sub_args[0], sub_args[1]);
     else if(is_command(str, "demo"))     do_demo();
     else if(is_command(str, "static"))   start_static();
     else if(is_command(str, "red"))      push_color(red);
@@ -674,7 +694,7 @@ replay:
     else if(is_command(str, "seafoam"))  push_color(seafoam);
     else if(is_command(str, "ltblue"))   push_color(ltblue);
     else if(is_command(str, "dkgray"))   push_color(dkgray);
-    else strcpy(arg, str);
+    else strcpy(arg, str); get_sub_args(arg);
 
     //strcpy(last, arg);
   } 
