@@ -89,6 +89,8 @@ def loop():
     j = json.loads(r)
 
     command("pause");
+    command("8|eshift");
+    time.sleep(0.5); 
 
     for x in range(0, job_limit):
       st = fix_missing(j[x]['status'])
