@@ -1,3 +1,5 @@
+//efade is broken, brightness wrong after demo animation
+
 
 #include <PololuLedStrip.h>
 PololuLedStrip<12> ledStrip;
@@ -5,8 +7,10 @@ PololuLedStrip<12> ledStrip;
 #define RANDOM_SEED_PIN A1
 
 #define EASE_EXPONENT 3 // cubic
-#define EASE_COUNT 64
-#define EASE_DELAY 4
+#define EASE_COUNT 32
+#define POWER_EASE_COUNT 24
+#define EASE_DELAY 2
+#define POWER_EASE_DELAY 2
 #define EASE_ANIM_MARGIN 15
 
 #define ANIM_LED_COUNT 64
@@ -14,10 +18,12 @@ PololuLedStrip<12> ledStrip;
 #define MAX_LED (LED_COUNT)
 rgb_color colors[LED_COUNT];
 rgb_color render[LED_COUNT];
+rgb_color backbuffer[LED_COUNT];
 
 int effects[LED_COUNT];
 
-float ease[ANIM_LED_COUNT];
+float elastic_ease[EASE_COUNT];
+float power_ease[EASE_COUNT];
 
 #define BRIGHTNESS_DIVISOR 15.0
 #define DEFAULT_BRIGHTNESS_PERCENT 20
@@ -48,8 +54,8 @@ rgb_color pink = {20, 0, 10};
 rgb_color dkgray = {5, 5, 5};
 
 #define NPALETTE 16
-#define NPRETTY_COLORS 13
-rgb_color palette[NPALETTE] = { white, red, orange, yellow, ltgreen, green, seafoam, cyan, ltblue, blue, purple, magenta, pink, black, gray, dkgray };
+#define NPRETTY_COLORS 12
+rgb_color palette[NPALETTE] = { red, orange, yellow, ltgreen, green, seafoam, cyan, ltblue, blue, purple, magenta, pink, white, black, gray, dkgray };
 rgb_color adjusted_palette[NPALETTE];
 
 rgb_color scale_color(rgb_color color, float scale){
@@ -75,13 +81,18 @@ void set_brightness(int brightness_percent = DEFAULT_BRIGHTNESS_PERCENT){
 //  }
 //}
 
+void display_buffer(rgb_color * pbuffer = render){
+  ledStrip.write(pbuffer, ANIM_LED_COUNT);  
+}
+
 void erase(bool display = false){
   for(int i = 0; i < ANIM_LED_COUNT; i++){
     colors[i] = black;
     effects[i] = 0;
   }
   if(display){
-    ledStrip.write(colors, ANIM_LED_COUNT); 
+    //ledStrip.write(colors, ANIM_LED_COUNT); 
+    display_buffer(colors);
   }
 }
 
@@ -112,6 +123,7 @@ void setup_colors(bool swap = true){
   memcpy(adjusted_palette, palette, sizeof(palette));
 }
 
+#define LEAVE_EFFECT -1
 #define NO_EFFECT 0
 #define BREATHE_ON 1
 #define RANDOM 2
@@ -135,18 +147,44 @@ void setup_colors(bool swap = true){
 
 #define STATIC_ON 101
 
-void push_color(rgb_color color, bool display = false){
-  for(int i = MAX_LED - 1; i >= 1; i--){
-    colors[i] = colors[i-1];
-    effects[i] = effects[i-1];
-  }
-  colors[0] = color;
-  effects[0] = NO_EFFECT;
+#define RANDOM_EFFECTS 12
+int random_effects[] = { NO_EFFECT, BREATHE_ON, RANDOM, BLINK_ON, BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4, BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B }; 
 
-  if(display){
-    ledStrip.write(colors, ANIM_LED_COUNT); 
+void shift_buffer(rgb_color * buffer, bool include_effects = true, int max = ANIM_LED_COUNT){
+  for(int i = max - 1; i >= 1; i--){
+    buffer[i] = buffer[i-1];
+    if(include_effects){
+      effects[i] = effects[i-1];
+    }
   }
 }
+
+void push_color(rgb_color color, bool display = false, int effect = NO_EFFECT, rgb_color *buffer = colors, int max = ANIM_LED_COUNT){
+  shift_buffer(buffer, effect = LEAVE_EFFECT ? false : true, max);
+  
+  buffer[0] = color;
+
+  if(effect != LEAVE_EFFECT){
+    effects[0] = effect;
+  }
+  
+  if(display){
+    display_buffer(buffer);
+  }
+}
+
+void set_color(int pos, rgb_color color, bool display = false, int effect = NO_EFFECT, rgb_color *buffer = colors){
+  buffer[pos] = color;
+
+  if(effect != LEAVE_EFFECT){
+    effects[pos] = effect;
+  }
+  
+  if(display){
+    display_buffer(buffer);
+  }
+}
+
 
 #define MAX_BLINK 6000
 #define BLINK_0 0
@@ -265,11 +303,36 @@ void fade(float rate = FADE_RATE){
 void do_fade(float rate = FADE_RATE){
   for(int i = 0; i < FADE_TIMES; i++){
     fade(rate);
-    ledStrip.write(colors, ANIM_LED_COUNT);
+    //ledStrip.write(colors, ANIM_LED_COUNT);
+    display_buffer(colors);
     delay(FADE_DELAY);
   }
+//  for(int i = 0; i < ANIM_LED_COUNT; i++){
+//    effects[i] = NO_EFFECT;
+//  }
+  erase();
+}
+
+void exhale_fade(int level){
+  unsigned char *p;
+  p = (unsigned char *)colors; 
+  for(int i = 0; i < ANIM_LED_COUNT * 3; i++){
+    *(p + i) *= breathe_steps[i];
+  }
+}
+
+void do_exhale_fade(){
+  for(int i = 0; i < BREATHE_MAX_STEP; i++){
+    exhale_fade(i);
+    display_buffer(colors);
+    delay(FADE_DELAY);
+  }
+  erase();
+}
+
+void copy_buffer(rgb_color *source, rgb_color *destination, int count = ANIM_LED_COUNT){
   for(int i = 0; i < ANIM_LED_COUNT; i++){
-    effects[i] = NO_EFFECT;
+    destination[i] = source[i];    
   }
 }
 
@@ -288,6 +351,10 @@ rgb_color random_color(){
   return palette[random(NPRETTY_COLORS)];
 }
 
+int random_effect(){
+  return random_effects[random(RANDOM_EFFECTS)];
+}
+
 void do_random(){
   push_color(random_color());
   effects[0] = RANDOM;
@@ -295,8 +362,8 @@ void do_random(){
 
 void do_mirror(){
   for(int i = 0; i < ANIM_LED_COUNT / 2; i++){
-    colors[ANIM_LED_COUNT - i - 1] = colors[i];
-    effects[ANIM_LED_COUNT - i - 1] = effects[i];
+    colors[(ANIM_LED_COUNT - 1) - i] = colors[i];
+    effects[(ANIM_LED_COUNT - 1) - i] = effects[i];
   }
 }
 
@@ -339,9 +406,9 @@ void render_buffer(){
   }
 }
 
-void display_buffer(){
-  ledStrip.write(render, ANIM_LED_COUNT);  
-}
+//void display_buffer(int i = 0){
+//  
+//}
 
 bool paused = false;
 
@@ -378,8 +445,8 @@ void generate_power_ease(int count, int power){
   float midpoint = count / 2;
   for(int i = 0; i < midpoint; i++){
     float percent = i / midpoint;
-    ease[i] = 0.5 * (ease_power_in(percent, power));
-    ease[i + int(midpoint)] = (0.5 * (ease_power_out(percent, power))) + 0.5;
+    power_ease[i] = 0.5 * (ease_power_in(percent, power));
+    power_ease[i + int(midpoint)] = (0.5 * (ease_power_out(percent, power))) + 0.5;
   }
 }
 
@@ -388,68 +455,96 @@ void generate_elastic_ease(int count, int power){
   float midpoint = count / 2;
   for(int i = 0; i < midpoint; i++){
     float percent = i / midpoint;
-    ease[i] = 0.5 * (ease_power_in(percent, power));
-    ease[i + int(midpoint)] = (0.5 * (ease_elastic_out(percent))) + 0.5;
+    elastic_ease[i] = 0.5 * (ease_power_in(percent, power));
+    elastic_ease[i + int(midpoint)] = (0.5 * (ease_elastic_out(percent))) + 0.5;
   }
 }
 
-void shift(int count){
+// animate by shifting frame (future: shift in from back buffer)
+void shift(int count, int max = ANIM_LED_COUNT){
   for(int i = 0; i < count; i++){
     render[i] = black;
   }
-  for(int i = count; i < ANIM_LED_COUNT; i++){
+  for(int i = count; i < max; i++){
     render[i] = scale_color(colors[i - count], DEFAULT_BRIGHTNESS_SCALE);
   }
 
-  ledStrip.write(render, ANIM_LED_COUNT);
+  display_buffer();
 }
 
-void unshift(int count){
-  for(int i = 0; i < ANIM_LED_COUNT - count; i++){
-    render[i] = scale_color(colors[i + count], DEFAULT_BRIGHTNESS_SCALE);    
+void finalize_shift(int count, int max){
+  for(int i = 0; i < count; i++){
+    push_color(black, false, NO_EFFECT, colors, max);
   }
-
-  ledStrip.write(render, ANIM_LED_COUNT);
 }
 
-void do_elastic_shift(int count){
+//    push_color(black, false, LEAVE_EFFECT, backbuffer);
+
+void do_elastic_shift(int count, int max = ANIM_LED_COUNT, bool display_only = false){
   count = count == 0 ? 1 : count;
   if(count >= 1){
     for(int i = 0; i < EASE_COUNT; i++){
-      int pos = ease[i] * count;
+      int pos = elastic_ease[i] * count;
       delay(EASE_DELAY);
-      shift(pos);
+      shift(pos, max);
     }
-    for(int i = 0; i < count; i++){
-      push_color(black);
+    if(!display_only){
+      finalize_shift(count, max);
     }
-
-//    for(int i = 0; i < ANIM_LED_COUNT; i++){
-//      colors[i] = render[i];
-//    }
-//    for(int i = 0; i < count; i++){
-//      effects[i] = NO_EFFECT;
-//    }
-//    for(int i = ANIM_LED_COUNT - 1; i >= count; i--){
-//      effects[i] = effects[i - count];
-//    }    
-
-    for(int i = 0; i < ANIM_LED_COUNT; i++){
-      int index = ANIM_LED_COUNT - 1;
-      if(i >= count){
-        effects[index] = effects[index - count];      
-      } else {
-        effects[index] = NO_EFFECT;      
-      }
-    }
-  } else {
-//    count *= -1;
-//    for(int i = 0; i < EASE_COUNT; i++){
-//      int pos = ease[i] * count;
-//      delay(EASE_DELAY);
-//      unshift(count - pos); // broken
-//    }
   }
+}
+
+void do_power_shift(int count, int max = ANIM_LED_COUNT, bool display_only = false){
+  count = count == 0 ? 1 : count;
+  if(count >= 1){
+    for(int i = 0; i < POWER_EASE_COUNT; i++){
+      int pos = power_ease[i] * count;
+      delay(POWER_EASE_DELAY);
+      shift(pos+1, max);
+    }
+    if(!display_only){
+      finalize_shift(count, max);
+    }
+  }
+}
+
+#define DEMO_OBJECT_SIZE 3
+#define DEMO_GAP_SIZE 1
+#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+
+// be able to reverse shift/animation direction
+
+void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
+
+  // set some pattern of colors and effects
+  // set window including last place it should animate to
+  // animate N positions
+  // during animation, render 
+
+  if(count < 1) count = 1;
+  int window = ANIM_LED_COUNT;
+  
+  for(int i = 0; i < count; i++){
+    rgb_color color = random_color();
+    do_power_shift(window, window + DEMO_TOTAL_SIZE);
+    window -= DEMO_TOTAL_SIZE;
+
+    int effect = BREATHE_ON; //random_effect();
+
+    for(int j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
+      set_color(j, color, false, effect);
+//      push_color(color, false, LEAVE_EFFECT, backbuffer);
+    }
+  }
+
+//  copy_buffer(backbuffer, colors);
+//  rgb_color color = random_color();
+//  int effect = random_effect();
+//
+//  // fill final position
+//  for(int j = 0; j < DEMO_OBJECT_SIZE; j++){
+//    set_color(j, color, false, effect);
+//  }
 }
 
 void setup() { 
@@ -461,11 +556,14 @@ void setup() {
 
   random_seed();
   setup_colors(false);
+  set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
   erase(true);
   generate_elastic_ease(EASE_COUNT, EASE_EXPONENT);
+  generate_power_ease(POWER_EASE_COUNT, EASE_EXPONENT);
+  do_demo();
 }
 
-#define MAX_STRING_LENGTH 16
+#define MAX_STRING_LENGTH 100
 
 bool is_command(char *str, char *command){
   return strcmp(str, command) == 0;  
@@ -474,12 +572,14 @@ bool is_command(char *str, char *command){
 void loop(){ 
   char str[MAX_STRING_LENGTH];
   char arg[MAX_STRING_LENGTH];
+  //char last[MAX_STRING_LENGTH];
   rgb_color color;
 
   if(Serial1.available() > 0){
     int c = Serial1.readBytesUntil('|', str, MAX_STRING_LENGTH);
     str[c] = 0;
 
+replay:
     // reset the effects so the automatic render won't interfere
     blink_state = true;
     blink_state_1 = false;
@@ -513,12 +613,14 @@ void loop(){
 // transitions
 // if something is not recognized assume it's an argument for the next command
 // copy -- everything up to black is copied on top of black
-// repeat x the unrecognized argument as an integer
 // stop sign timing and opposite timing
 // reverse, inverse mirror
 // brief flash, or something, to alert to a new (green?) build
 // some way to visually tell which are changes from a little while ago (like the fading yellow highlight on web pages)
 // demo - do random stuff
+// full frame animation in/out using back buffer
+// need a window on animations so later parts of buffer can remain untouched
+// separate velocities per type of animation
 
     if(is_command(str, "repeat")){
       int times = String(arg).toInt();
@@ -541,16 +643,20 @@ void loop(){
     else if(is_command(str, "blinka"))   start_effect(BLINK_ON_A);
     else if(is_command(str, "blinkb"))   start_effect(BLINK_ON_B);
     else if(is_command(str, "breathe"))  start_effect(BREATHE_ON);
+    //else if(is_command(str, "replay"))   { strcpy(arg, last); goto replay; }
     else if(is_command(str, "flush"))    flush();
     else if(is_command(str, "blend"))    do_blend();
     else if(is_command(str, "max"))      do_max();
     else if(is_command(str, "dim"))      do_dim();
     else if(is_command(str, "bright"))   do_bright();
     else if(is_command(str, "fade"))     do_fade();
+    else if(is_command(str, "efade"))    do_exhale_fade();
     else if(is_command(str, "flood"))    do_flood();
     else if(is_command(str, "random"))   do_random();
     else if(is_command(str, "mirror"))   do_mirror();
     else if(is_command(str, "eshift"))   do_elastic_shift(String(arg).toInt());
+    else if(is_command(str, "pshift"))   do_power_shift(String(arg).toInt());
+    else if(is_command(str, "demo"))     do_demo();
     else if(is_command(str, "static"))   start_static();
     else if(is_command(str, "red"))      push_color(red);
     else if(is_command(str, "green"))    push_color(green);
@@ -569,13 +675,15 @@ void loop(){
     else if(is_command(str, "ltblue"))   push_color(ltblue);
     else if(is_command(str, "dkgray"))   push_color(dkgray);
     else strcpy(arg, str);
+
+    //strcpy(last, arg);
   } 
   else 
   {
     bool should_flush = false;
     
     blink_counter = (blink_counter + 1) % MAX_BLINK;
-    if(blink_counter == BLINK_0){
+    if(blink_counter == BLINK_1){
       if(blink_state){
         blink_state = false;
       } else {
