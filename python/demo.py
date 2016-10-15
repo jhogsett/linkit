@@ -14,8 +14,8 @@ def command(cmd_text):
 def setup(): 
   global s 
   s = serial.Serial("/dev/ttyS0", 57600) 
-  command("pause|0|window|erase")
-#  time.sleep(animation_delay)
+  command("pause|64|window|erase")
+  time.sleep(animation_delay)
 
 def loop(): 
   for i in range(0, 64):
@@ -27,9 +27,11 @@ def loop():
       command("random")
     #command("1," + str((63-i) + 1) + "|pshifto")
     #time.sleep(animation_delay);
-  command("continue")
+  command("64|window|continue")
+  time.sleep(animation_delay)
+  command("pause")
 
 if __name__ == '__main__': 
   setup() 
-  #while True: 
-  loop()
+  while True: 
+    loop()
