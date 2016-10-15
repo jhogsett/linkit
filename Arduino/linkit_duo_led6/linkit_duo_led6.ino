@@ -14,7 +14,7 @@ PololuLedStrip<12> ledStrip;
 #define POWER_EASE_DELAY 1
 #define EASE_ANIM_MARGIN 15
 
-#define ANIM_LED_COUNT 64
+#define ANIM_LED_COUNT 72
 #define LED_COUNT (ANIM_LED_COUNT + EASE_ANIM_MARGIN)
 #define MAX_LED (LED_COUNT)
 rgb_color colors[LED_COUNT];
