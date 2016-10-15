@@ -224,6 +224,10 @@ void start_blinking_r(){
   effects[0] = BLINK_ON_1 + random((BLINK_ON_6 - BLINK_ON_1) + 1);
 }
 
+void start_effect_r(){
+  effects[0] = random_effects[random(RANDOM_EFFECTS)];
+}
+
 #define BREATHE_TIME 500
 #define BREATHE_BRIGHTNESS_MAX DEFAULT_BRIGHTNESS_PERCENT
 #define BREATHE_MAX_STEP 22 
@@ -654,6 +658,7 @@ replay:
 // full frame animation in/out using back buffer
 // need a window on animations so later parts of buffer can remain untouched
 // separate velocities per type of animation
+// reset command
 
     if(is_command(str, "repeat")){
       int times = sub_args[0];
@@ -676,6 +681,7 @@ replay:
     else if(is_command(str, "blinka"))   start_effect(BLINK_ON_A);
     else if(is_command(str, "blinkb"))   start_effect(BLINK_ON_B);
     else if(is_command(str, "breathe"))  start_effect(BREATHE_ON);
+    else if(is_command(str, "effectr"))  start_effect_r();
     //else if(is_command(str, "replay"))   { strcpy(arg, last); goto replay; }
     else if(is_command(str, "flush"))    flush();
     else if(is_command(str, "blend"))    do_blend();
