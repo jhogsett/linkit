@@ -8,6 +8,7 @@ s = None
 
 inter_command_delay = 0.05
 animation_delay = 0.275
+play_time = 10.0
 
 def command(cmd_text):
   s.write((cmd_text + '|').encode())   
@@ -34,12 +35,12 @@ def loop():
     cmd = ""
     if(i < 63):
       cmd = cmd + str(63-i) + "|window|"
-    cmd = cmd + color + "|" + str(osize - 1) + "|repeat|black"    
+    cmd = cmd + color + "|effectr|" + str(osize - 1) + "|repeat|black"    
     command(cmd)
 
 #  command(str(osize) + "," + str((63-i) + 1) + "|pshifto")
   command("64|window|continue")
-  time.sleep(animation_delay)
+  time.sleep(play_time)
   command("pause")
 
 if __name__ == '__main__': 
