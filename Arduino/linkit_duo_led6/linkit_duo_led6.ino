@@ -318,9 +318,6 @@ void do_fade(float rate = FADE_RATE){
     display_buffer(colors);
     delay(FADE_DELAY);
   }
-//  for(int i = 0; i < ANIM_LED_COUNT; i++){
-//    effects[i] = NO_EFFECT;
-//  }
   erase();
 }
 
@@ -417,10 +414,6 @@ void render_buffer(){
   }
 }
 
-//void display_buffer(int i = 0){
-//  
-//}
-
 bool paused = false;
 
 void flush(){
@@ -489,8 +482,6 @@ void finalize_shift(int count, int max){
   }
 }
 
-//    push_color(black, false, LEAVE_EFFECT, backbuffer);
-
 void do_elastic_shift(int count, int max = ANIM_LED_COUNT, bool display_only = false){
   count = count == 0 ? 1 : count;
   if(count >= 1){
@@ -499,9 +490,7 @@ void do_elastic_shift(int count, int max = ANIM_LED_COUNT, bool display_only = f
       delay(EASE_DELAY);
       shift(pos+1, max);
     }
-//    if(!display_only){
-      finalize_shift(count, max);
-//    }
+    finalize_shift(count, max);
   }
 }
 
@@ -513,9 +502,7 @@ void do_power_shift(int count, int max = ANIM_LED_COUNT, bool display_only = fal
       delay(POWER_EASE_DELAY);
       shift(pos+1, max);
     }
-//    if(!display_only){
-      finalize_shift(count, max);
-//    }
+    finalize_shift(count, max);
   }
 }
 
@@ -553,18 +540,26 @@ void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
 
     for(int j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
       set_color(j, color, false, effect);
-//      push_color(color, false, LEAVE_EFFECT, backbuffer);
     }
   }
+}
 
-//  copy_buffer(backbuffer, colors);
-//  rgb_color color = random_color();
-//  int effect = random_effect();
-//
-//  // fill final position
-//  for(int j = 0; j < DEMO_OBJECT_SIZE; j++){
-//    set_color(j, color, false, effect);
-//  }
+void reset(){
+  paused = false;
+  window = 0;
+  blink_counter = 0;
+  blink_state = true;
+  blink_state_1 = true; 
+  blink_state_2 = true; 
+  blink_state_3 = true; 
+  blink_state_4 = true; 
+  blink_state_5 = true; 
+  blink_state_6 = true; 
+  blink_state_a = true; 
+  blink_state_b = true; 
+  breathe_counter = 0;
+  breathe_step = 0;
+  breathe_direction = 1;
 }
 
 void setup() { 
@@ -575,6 +570,7 @@ void setup() {
   //pinMode(13, OUTPUT); // in MT7688, this maps to device 
 
   random_seed();
+//  reset();
   setup_colors(false);
   set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
   erase(true);
@@ -695,6 +691,7 @@ void loop(){
     else if(is_command(str, "pshift"))   do_power_shift(sub_args[0]);
     else if(is_command(str, "pshifto"))  power_shift_object(sub_args[0], sub_args[1]);
     else if(is_command(str, "window"))   set_window(sub_args[0]);
+    else if(is_command(str, "reset"))    reset();
     else if(is_command(str, "demo"))     do_demo();
     else if(is_command(str, "static"))   start_static();
     else if(is_command(str, "red"))      push_color(red);
