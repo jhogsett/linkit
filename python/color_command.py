@@ -7,9 +7,13 @@ import sys
 s = None
 inter_command_delay = 0.1
 
+def wait_for_ack():                         
+  while s.inWaiting() == 0:            
+    pass
+
 def command(cmd):
   s.write((cmd + '|').encode())
-  time.sleep(inter_command_delay);
+  wait_for_ack()
 
 def setup(): 
   global s 

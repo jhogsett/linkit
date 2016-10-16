@@ -47,9 +47,18 @@ color_map = {
 
 inter_command_delay = 0.01
 
+def flush_input():
+  s.read(s.inWaiting())
+
+def wait_for_ack():
+  while s.inWaiting() == 0:
+    pass
+  s.read(s.inWaiting())
+
 def command(cmd_text):
   s.write((cmd_text + '|').encode())   
-  time.sleep(inter_command_delay)                       
+  #time.sleep(inter_command_delay)                       
+  wait_for_ack()
 
 def get_color_cmd(color_cmd_text):
   if color_cmd_text is None:
@@ -79,18 +88,16 @@ def setup():
   global s
   s = serial.Serial("/dev/ttyS0", 57600)
   time.sleep(0.1)
+  flush_input()
   command("erase")
 
 def loop():
   try:
-
     r = requests.get(url)
     r = r.text.encode('utf-8')
     j = json.loads(r)
 
     command("pause");
-    command("8|eshift");
-    time.sleep(0.5); 
 
     for x in range(0, job_limit):
       st = fix_missing(j[x]['status'])
