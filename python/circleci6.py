@@ -86,10 +86,10 @@ def fix_missing(value):
 
 def setup():
   global s
-  s = serial.Serial("/dev/ttyS0", 57600)
+  s = serial.Serial("/dev/ttyS0", 115200)
   time.sleep(0.1)
   flush_input()
-  command("erase")
+  command("reset|erase")
 
 def loop():
   try:
