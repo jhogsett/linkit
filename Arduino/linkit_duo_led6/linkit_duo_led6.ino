@@ -570,7 +570,7 @@ void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
 void setup() { 
   //Serial.begin(115200);  // open serial connection to USB Serial 
                          //port(connected to your computer)
-  Serial1.begin(57600);  // open internal serial connection to 
+  Serial1.begin(115200);  // open internal serial connection to 
                          //MT7688
   //pinMode(13, OUTPUT); // in MT7688, this maps to device 
 
