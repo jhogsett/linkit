@@ -14,7 +14,7 @@ PololuLedStrip<12> ledStrip;
 #define POWER_EASE_DELAY 1
 #define EASE_ANIM_MARGIN 15
 
-#define ANIM_LED_COUNT 72
+#define ANIM_LED_COUNT 64
 #define LED_COUNT (ANIM_LED_COUNT + EASE_ANIM_MARGIN)
 #define MAX_LED (LED_COUNT)
 rgb_color colors[LED_COUNT];
@@ -616,7 +616,6 @@ void loop(){
     int c = Serial1.readBytesUntil('|', str, MAX_STRING_LENGTH);
     str[c] = 0;
 
-replay:
     // reset the effects so the automatic render won't interfere
     blink_state = true;
     blink_state_1 = false;
@@ -682,7 +681,6 @@ replay:
     else if(is_command(str, "blinkb"))   start_effect(BLINK_ON_B);
     else if(is_command(str, "breathe"))  start_effect(BREATHE_ON);
     else if(is_command(str, "effectr"))  start_effect_r();
-    //else if(is_command(str, "replay"))   { strcpy(arg, last); goto replay; }
     else if(is_command(str, "flush"))    flush();
     else if(is_command(str, "blend"))    do_blend();
     else if(is_command(str, "max"))      do_max();
@@ -717,8 +715,9 @@ replay:
     else if(is_command(str, "dkgray"))   push_color(dkgray);
     else strcpy(arg, str); get_sub_args(arg);
 
-    //strcpy(last, arg);
-  } 
+    if(Serial1.available() == 0)
+      Serial1.write("k");
+  }
   else 
   {
     bool should_flush = false;
