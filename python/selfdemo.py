@@ -6,17 +6,21 @@ import random
 
 s = None
 
-inter_command_delay = 0.05
-animation_delay = 0.275
+def flush_input():
+  s.read(s.inWaiting())
+
+def wait_for_ack():
+  while s.inWaiting() == 0:
+    pass
+  flush_input()
 
 def command(cmd_text):
-  s.write((cmd_text + '|').encode())   
-  time.sleep(inter_command_delay)  
+  s.write((cmd_text + ':').encode())   
+  wait_for_ack()
 
 def setup(): 
   global s 
-  s = serial.Serial("/dev/ttyS0", 57600) 
-  time.sleep(animation_delay)
+  s = serial.Serial("/dev/ttyS0", 115200) 
 
 def loop():
   command("demo")

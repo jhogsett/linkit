@@ -33,19 +33,16 @@ size_range_max = 8
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "random" ]
 
-effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
-
 def loop():
-  command("0,63:pshifto")
   osize = random.randrange(size_range_min, size_range_max) + 1
-  times = int(num_leds / osize) + 0	
+  times = int(num_leds / osize)
+  times = random.randrange(1, times)
   for i in range(0, times):
-    effect = effects[5 - (i % 6)]
     color = colors[random.randrange(0, num_colors)]                   
     command(str(osize) + "," + str(osize * (times - i))  + ":pshifto")          
     cmd = ""                                                          
     cmd = cmd + str(osize * (times - i)) + ":window:"                              
-    cmd = cmd + color + ":" + effect + ":" + str(osize - 1) + ":repeat:black"
+    cmd = cmd + color + ":effectr:" + str(osize - 1) + ":repeat:black"
     command(cmd)               
   command("64:window:continue")                                       
   time.sleep(play_time)                                               

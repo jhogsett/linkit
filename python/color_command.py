@@ -12,12 +12,12 @@ def wait_for_ack():
     pass
 
 def command(cmd):
-  s.write((cmd + '|').encode())
+  s.write((cmd + ':').encode())
   wait_for_ack()
 
 def setup(): 
   global s 
-  s = serial.Serial("/dev/ttyS0", 57600) 
+  s = serial.Serial("/dev/ttyS0", 115200) 
 
   if len(sys.argv) > 1:
     for arg in sys.argv:

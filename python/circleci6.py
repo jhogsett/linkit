@@ -16,6 +16,7 @@ logging.info("Circleci5.py started")
 
 job_limit = 16
 max_job = job_limit - 1
+max_leds = job_limit * 4
 
 token = sys.argv[1]
 url = 'https://circleci.com/api/v1.1/recent-builds?circle-token=' + token + '&limit=' + str(job_limit) + '&offset=0'
@@ -24,28 +25,26 @@ request_frequency = 15
 s = None
 
 color_map = {                            
-              "running": "ltblue|breathe",           
+              "running": "ltblue:breathe",           
               "success": "green",                    
              "finished": "green",                 
                 "fixed": "seafoam",                       
                "failed": "red",              
              "no_tests": "gray",                    
               "retried": "yellow",                  
-             "timedout": "yellow|blink",            
+             "timedout": "yellow:blink",            
              "canceled": "gray",                   
               "not_run": "gray",             
-               "queued": "purple|breathe",                
+               "queued": "purple:breathe",                
             "scheduled": "purple",           
           "not_running": "pink",          
               "missing": "gray",                    
                "spacer": "black",
-         "masterfailed": "red|blink",
-          "masterfixed": "green|blink",                       
+         "masterfailed": "red:blink",
+          "masterfixed": "green:blink",                       
   "infrastructure_fail": "pink",
-         "jerryrunning": "magenta|breathe"       
+         "jerryrunning": "magenta:breathe"       
 }   
-
-inter_command_delay = 0.01
 
 def flush_input():
   s.read(s.inWaiting())
@@ -53,11 +52,10 @@ def flush_input():
 def wait_for_ack():
   while s.inWaiting() == 0:
     pass
-  s.read(s.inWaiting())
+  flush_input()
 
 def command(cmd_text):
-  s.write((cmd_text + '|').encode())   
-  #time.sleep(inter_command_delay)                       
+  s.write((cmd_text + ':').encode())   
   wait_for_ack()
 
 def get_color_cmd(color_cmd_text):
@@ -84,14 +82,27 @@ def fix_missing(value):
   else:
     return value
 
+build_keys = None 
+
 def setup():
   global s
+  global build_keys
   s = serial.Serial("/dev/ttyS0", 115200)
+  build_keys = {}
   time.sleep(0.1)
   flush_input()
-  command("reset|erase")
+  command("::reset")
 
+oldest_first = True
+
+def translate_position(pos):
+  if oldest_first:                                                                
+    return (job_limit - 1) - pos                                                       
+  else:                                                                           
+    return pos 
+ 
 def loop():
+  global build_keys
   try:
     r = requests.get(url)
     r = r.text.encode('utf-8')
@@ -99,10 +110,23 @@ def loop():
 
     command("pause");
 
+    insert_count = 0                                                                  
+    for x in range(0, job_limit):                
+      y = translate_position(x)
+      key = j[y]['build_url']                                                         
+      if not build_keys.has_key(key):                                                 
+        insert_count += 4                                                             
+
+    command(str(max_leds - insert_count) + "," + str(insert_count) + ":pshifto")
+
+    build_keys = {} 
     for x in range(0, job_limit):
-      st = fix_missing(j[x]['status'])
-      lc = fix_missing(j[x]['lifecycle'])                     
-      oc = fix_missing(j[x]['outcome'])      
+      y = translate_position(x)                                                       
+      key = j[y]['build_url']
+      build_keys[key] = True
+      st = fix_missing(j[y]['status'])
+      lc = fix_missing(j[y]['lifecycle'])                     
+      oc = fix_missing(j[y]['outcome'])      
       br = j[x]['branch']
       rp = j[x]['reponame']
       cn = j[x]['committer_name']
@@ -131,23 +155,26 @@ def loop():
           color_command3('fixed')  
       elif oc == 'infrastructure_fail':
         color_command3('infrastructure_fail')             
+      elif oc == 'no_tests':
+        color_command3('no_tests')                                                                                                                                                               
+      elif oc == 'timedout':
+        color_command3('timedout')                                                                                                                                                               
       else:
           color_command(st)                
           color_command(oc)                            
           color_command(lc)                          
       spacer()  
 
-    command("continue");
-    command("flush");
+    command("continue:flush");
     time.sleep(request_frequency)
 
   except requests.exceptions.ConnectionError:
     logging.error("Connection error - retrying")
-    command("pause|blue|blink|flood|continue")
+    command("pause:blue:blink:flood:continue")
     time.sleep(15)
   except Exception:
     logging.error(sys.exc_info()[0])
-    command("pause|yellow|blink|flood|continue")
+    command("pause:yellow:blink:flood:continue")
     raise
 
 if __name__ == '__main__': 
