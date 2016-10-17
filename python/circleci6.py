@@ -30,19 +30,19 @@ color_map = {
              "finished": "green",                 
                 "fixed": "seafoam",                       
                "failed": "red",              
-             "no_tests": "gray",                    
-              "retried": "yellow",                  
+             "no_tests": "dkgray",                    
+              "retried": "pink",                  
              "timedout": "yellow:blink",            
-             "canceled": "gray",                   
-              "not_run": "gray",             
+             "canceled": "orange",                   
+              "not_run": "yellow",             
                "queued": "purple:breathe",                
-            "scheduled": "purple",           
-          "not_running": "pink",          
-              "missing": "gray",                    
+            "scheduled": "magenta:breathe",           
+          "not_running": "yellow",          
+              "missing": "white",                    
                "spacer": "black",
          "masterfailed": "red:blink",
           "masterfixed": "green:blink",                       
-  "infrastructure_fail": "pink",
+  "infrastructure_fail": "pink:blink",
          "jerryrunning": "magenta:breathe"       
 }   
 
@@ -161,6 +161,10 @@ def loop():
         color_command3('no_tests')                                                                                                                                                               
       elif oc == 'timedout':
         color_command3('timedout')                                                                                                                                                               
+      elif oc == 'canceled':
+        color_command3('canceled')
+      elif st == 'not_run':
+        color_command3('not_run') 
       else:
           color_command(st)                
           color_command(oc)                            
