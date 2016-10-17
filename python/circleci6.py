@@ -139,8 +139,6 @@ def loop():
       jh = cn == 'jerry'
       logging.info("st:" + st + " lc:" + lc + " oc:" + oc + " br:" + br + " rp:" + rp + " cn:" + cn)            
 
-      a = 1 / 0
-
       if st == 'failed':
         if orders_master:
           color_command3('masterfailed')
