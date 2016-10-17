@@ -7,6 +7,7 @@ import json
 import sys
 import logging
 import os
+import traceback
 
 script_path = os.getcwd()
 log_path = "/root/dev/linkit/python/circleci.log"
@@ -38,11 +39,11 @@ color_map = {
                "queued": "purple:breathe",                
             "scheduled": "magenta:breathe",           
           "not_running": "yellow",          
-              "missing": "white",                    
+              "missing": "dkgray",                    
                "spacer": "black",
          "masterfailed": "red:blink",
           "masterfixed": "green:blink",                       
-  "infrastructure_fail": "pink:blink",
+  "infrastructure_fail": "yellow:blink",
          "jerryrunning": "magenta:breathe"       
 }   
 
@@ -128,8 +129,8 @@ def loop():
       st = fix_missing(j[y]['status'])
       lc = fix_missing(j[y]['lifecycle'])                     
       oc = fix_missing(j[y]['outcome'])      
-      br = j[y]['branch']
-      rp = j[y]['reponame']
+      br = fix_missing(j[y]['branch'])
+      rp = fix_missing(j[y]['reponame'])
       cn = fix_missing(j[y]['committer_name'])
 
       master = br == 'master'
@@ -137,6 +138,8 @@ def loop():
       orders_master = master and orders
       jh = cn == 'jerry'
       logging.info("st:" + st + " lc:" + lc + " oc:" + oc + " br:" + br + " rp:" + rp + " cn:" + cn)            
+
+      a = 1 / 0
 
       if st == 'failed':
         if orders_master:
@@ -180,6 +183,7 @@ def loop():
     time.sleep(15)
   except Exception:
     logging.error(sys.exc_info()[0])
+    logging.error(traceback.format_tb(sys.exc_info()[2]))
     command("pause:yellow:blink:flood:continue")
     raise
 
