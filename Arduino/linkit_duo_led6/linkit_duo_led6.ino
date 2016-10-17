@@ -12,7 +12,7 @@ PololuLedStrip<12> ledStrip;
 #define POWER_EASE_COUNT 24
 #define EASE_DELAY 2
 #define POWER_EASE_DELAY 1
-#define EASE_ANIM_MARGIN 15
+#define EASE_ANIM_MARGIN 10
 
 #define ANIM_LED_COUNT 64
 #define LED_COUNT (ANIM_LED_COUNT + EASE_ANIM_MARGIN)
@@ -465,11 +465,12 @@ void generate_elastic_ease(int count, int power){
 }
 
 // animate by shifting frame (future: shift in from back buffer)
-void shift(int count, int max = ANIM_LED_COUNT){
+void shift(int count, int maxx = ANIM_LED_COUNT){
+  maxx = min(maxx, LED_COUNT);
   for(int i = 0; i < count; i++){
     render[i] = black;
   }
-  for(int i = count; i < max; i++){
+  for(int i = count; i < maxx; i++){
     render[i] = scale_color(colors[i - count], DEFAULT_BRIGHTNESS_SCALE);
   }
 
@@ -602,6 +603,8 @@ void set_window(int width){
   window = width;
 }
 
+#define DELIMITER_CHAR ':'
+
 void loop(){ 
   char str[MAX_STRING_LENGTH];
   char arg[MAX_STRING_LENGTH];
@@ -609,7 +612,7 @@ void loop(){
   rgb_color color;
 
   if(Serial1.available() > 0){
-    int c = Serial1.readBytesUntil('|', str, MAX_STRING_LENGTH);
+    int c = Serial1.readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH);
     str[c] = 0;
 
     // reset the effects so the automatic render won't interfere
@@ -654,6 +657,7 @@ void loop(){
 // need a window on animations so later parts of buffer can remain untouched
 // separate velocities per type of animation
 // reset command
+// restrict flood, etc. to window
 
     if(is_command(str, "repeat")){
       int times = sub_args[0];
