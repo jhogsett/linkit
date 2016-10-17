@@ -128,14 +128,15 @@ def loop():
       st = fix_missing(j[y]['status'])
       lc = fix_missing(j[y]['lifecycle'])                     
       oc = fix_missing(j[y]['outcome'])      
-      br = j[x]['branch']
-      rp = j[x]['reponame']
-      cn = j[x]['committer_name']
+      br = j[y]['branch']
+      rp = j[y]['reponame']
+      cn = fix_missing(j[y]['committer_name'])
+
       master = br == 'master'
       orders = rp == 'orders'
       orders_master = master and orders
       jh = cn == 'jerry'
-      logging.info("st:" + st + " lc:" + lc + " oc:" + oc + " br:" + br + " rp:" + rp)            
+      logging.info("st:" + st + " lc:" + lc + " oc:" + oc + " br:" + br + " rp:" + rp + " cn:" + cn)            
 
       if st == 'failed':
         if orders_master:
