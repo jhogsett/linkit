@@ -117,7 +117,8 @@ def loop():
       if not build_keys.has_key(key):                                                 
         insert_count += 4                                                             
 
-    command(str(max_leds - insert_count) + "," + str(insert_count) + ":pshifto")
+    if insert_count > 0:
+      command(str(max_leds - insert_count) + "," + str(insert_count) + ":pshifto")
 
     build_keys = {} 
     for x in range(0, job_limit):
@@ -165,7 +166,7 @@ def loop():
           color_command(lc)                          
       spacer()  
 
-    command("continue:flush");
+    command("continue:flush")
     time.sleep(request_frequency)
 
   except requests.exceptions.ConnectionError:
