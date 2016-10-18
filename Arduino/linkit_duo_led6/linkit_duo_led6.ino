@@ -26,7 +26,6 @@ int effects[LED_COUNT];
 float elastic_ease[EASE_COUNT];
 float power_ease[EASE_COUNT];
 
-#define BRIGHTNESS_DIVISOR 15.0
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #define DIM_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 2)
@@ -37,6 +36,7 @@ float power_ease[EASE_COUNT];
 #define FADE_TIMES 40
 
 // Standard colors
+#define BRIGHTNESS_DIVISOR 20.0
 rgb_color black = {0, 0, 0};
 rgb_color gray = {10, 10, 10};
 rgb_color white = {20, 20, 20};
@@ -65,6 +65,60 @@ rgb_color scale_color(rgb_color color, float scale){
     ((color.green / BRIGHTNESS_DIVISOR) * 255) * scale, 
     ((color.blue / BRIGHTNESS_DIVISOR) *255) * scale
   };
+}
+
+rgb_color unscale_color(rgb_color color, float scale){
+  return (rgb_color){
+    ((color.red / scale) / 255) * BRIGHTNESS_DIVISOR,
+    ((color.green / scale) / 255) * BRIGHTNESS_DIVISOR,
+    ((color.blue / scale) / 255) * BRIGHTNESS_DIVISOR,
+  };
+}
+
+rgb_color getRGB(int hue, int sat, int val) {
+  // hue: 0-359, sat: 0-255, val (lightness): 0-255
+  int r, g, b, base;
+
+  if (sat == 0) { // Achromatic color (gray).
+    r = val;
+    g = val;
+    b = val;
+  } else  {
+    base = ((255 - sat) * val)>>8;
+    switch(hue/60) {
+      case 0:
+        r = val;
+        g = (((val-base)*hue)/60)+base;
+        b = base;
+        break;
+      case 1:
+        r = (((val-base)*(60-(hue%60)))/60)+base;
+        g = val;
+        b = base;
+        break;
+      case 2:
+        r = base;
+        g = val;
+        b = (((val-base)*(hue%60))/60)+base;
+        break;
+      case 3:
+        r = base;
+        g = (((val-base)*(60-(hue%60)))/60)+base;
+        b = val;
+        break;
+      case 4:
+        r = (((val-base)*(hue%60))/60)+base;
+        g = base;
+        b = val;
+        break;
+      case 5:
+        r = val;
+        g = base;
+        b = (((val-base)*(60-(hue%60)))/60)+base;
+        break;
+    }
+  }
+  return (rgb_color){r, g, b};
 }
 
 void set_brightness(int brightness_percent = DEFAULT_BRIGHTNESS_PERCENT){
@@ -414,6 +468,7 @@ void render_buffer(){
   }
 }
 
+bool pausing = false;
 bool paused = false;
 
 void flush(){
@@ -545,7 +600,19 @@ void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
   }
 }
 
+void push_rgb_color(int red, int green, int blue){
+  rgb_color color = (rgb_color){red, green, blue}; 
+  color = unscale_color(color, DEFAULT_BRIGHTNESS_SCALE);
+  push_color(color);
+}
+
+void push_hsl_color(int hue, int sat, int lit){
+  rgb_color color = getRGB(hue, sat, lit);
+  push_rgb_color(color.red, color.green, color.blue);
+}
+
 void reset(){
+  pausing = false;
   paused = false;
   window = 0;
   blink_counter = 0;
@@ -586,14 +653,16 @@ bool is_command(char *str, char *command){
   return strcmp(str, command) == 0;  
 }
 
-#define NUM_SUB_ARGS 2
-int sub_args[NUM_SUB_ARGS] = { 0, 0 };
+#define NUM_SUB_ARGS 3
+int sub_args[NUM_SUB_ARGS] = { 0, 0, 0 };
 
 int get_sub_args(char * args){
   char *arg = strtok(args, ",");
   sub_args[0] = atoi(arg);
   arg = strtok(NULL, ",");
   sub_args[1] = atoi(arg);
+  arg = strtok(NULL, ",");
+  sub_args[2] = atoi(arg);
 }
 
 void set_window(int width){
@@ -658,6 +727,8 @@ void loop(){
 // separate velocities per type of animation
 // reset command
 // restrict flood, etc. to window
+// specify rgb value (hex?)
+// wipe = canned pshifto 0,anim num leds
 
     if(is_command(str, "repeat")){
       int times = sub_args[0];
@@ -667,6 +738,7 @@ void loop(){
     }
 
     if     (is_command(str, "pause"))    paused = true;  
+    else if(is_command(str, "pausew"))   pausing = true;  
     else if(is_command(str, "continue")) paused = false;
     else if(is_command(str, "erase"))    erase(true);
     else if(is_command(str, "blink"))    start_effect(BLINK_ON);
@@ -691,13 +763,15 @@ void loop(){
     else if(is_command(str, "flood"))    do_flood();
     else if(is_command(str, "random"))   do_random();
     else if(is_command(str, "mirror"))   do_mirror();
-    else if(is_command(str, "eshift"))   do_elastic_shift(sub_args[0]);
-    else if(is_command(str, "pshift"))   do_power_shift(sub_args[0]);
-    else if(is_command(str, "pshifto"))  power_shift_object(sub_args[0], sub_args[1]);
-    else if(is_command(str, "window"))   set_window(sub_args[0]);
+    else if(is_command(str, "eshift"))   { do_elastic_shift(sub_args[0]); strcpy(arg, ""); }
+    else if(is_command(str, "pshift"))   { do_power_shift(sub_args[0]); strcpy(arg, ""); }
+    else if(is_command(str, "pshifto"))  { power_shift_object(sub_args[0], sub_args[1]); strcpy(arg, ""); }
+    else if(is_command(str, "window"))   { set_window(sub_args[0]); strcpy(arg, ""); }
     else if(is_command(str, "reset"))    reset();
     else if(is_command(str, "demo"))     do_demo();
     else if(is_command(str, "static"))   start_static();
+    else if(is_command(str, "rgbcolor")) { push_rgb_color(sub_args[0], sub_args[1], sub_args[2]); strcpy(arg, ""); }
+    else if(is_command(str, "hslcolor")) { push_hsl_color(sub_args[0], sub_args[1], sub_args[2]); strcpy(arg, ""); }
     else if(is_command(str, "red"))      push_color(red);
     else if(is_command(str, "green"))    push_color(green);
     else if(is_command(str, "blue"))     push_color(blue);
@@ -714,9 +788,11 @@ void loop(){
     else if(is_command(str, "seafoam"))  push_color(seafoam);
     else if(is_command(str, "ltblue"))   push_color(ltblue);
     else if(is_command(str, "dkgray"))   push_color(dkgray);
-    else strcpy(arg, str); get_sub_args(arg);
+    else strcpy(arg, str); 
+    
+    get_sub_args(arg);
 
-    if(Serial1.available() == 0)
+    if(Serial1.available() == 0 && !pausing)
       Serial1.write("k");
   }
   else 
@@ -782,6 +858,8 @@ void loop(){
       breathe_step = breathe_step + breathe_direction;
       should_flush = true;
     }
+
+// if pausing, and breathing is blank and other blinks are not active (or active?) then finalize pause
     
     if(should_flush){
       flush();
