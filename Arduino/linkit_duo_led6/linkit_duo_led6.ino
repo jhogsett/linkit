@@ -14,7 +14,7 @@ PololuLedStrip<12> ledStrip;
 #define POWER_EASE_DELAY 1
 #define EASE_ANIM_MARGIN 10
 
-#define ANIM_LED_COUNT 64
+#define ANIM_LED_COUNT 72
 #define LED_COUNT (ANIM_LED_COUNT + EASE_ANIM_MARGIN)
 #define MAX_LED (LED_COUNT)
 rgb_color colors[LED_COUNT];
@@ -26,7 +26,7 @@ int effects[LED_COUNT];
 float elastic_ease[EASE_COUNT];
 float power_ease[EASE_COUNT];
 
-#define DEFAULT_BRIGHTNESS_PERCENT 20
+#define DEFAULT_BRIGHTNESS_PERCENT 25
 #define DIM_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 2)
 #define MAX_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 4)
@@ -318,14 +318,6 @@ float breathe_steps[] = {
   0.0,
   0,0
 };
-
-void start_breathing(){
-  effects[0] = BREATHE_ON;
-}
-
-void start_static(){
-  effects[0] = STATIC_ON;
-}
 
 rgb_color blend_colors(rgb_color color1, rgb_color color2){
   rgb_color result;
@@ -672,6 +664,10 @@ void set_window(int width){
   window = width;
 }
 
+void send_ack(){
+  Serial1.write("k");
+}
+
 #define DELIMITER_CHAR ':'
 
 void loop(){ 
@@ -769,7 +765,7 @@ void loop(){
     else if(is_command(str, "window"))   { set_window(sub_args[0]); strcpy(arg, ""); }
     else if(is_command(str, "reset"))    reset();
     else if(is_command(str, "demo"))     do_demo();
-    else if(is_command(str, "static"))   start_static();
+    else if(is_command(str, "static"))   start_effect(STATIC_ON); //start_static();
     else if(is_command(str, "rgbcolor")) { push_rgb_color(sub_args[0], sub_args[1], sub_args[2]); strcpy(arg, ""); }
     else if(is_command(str, "hslcolor")) { push_hsl_color(sub_args[0], sub_args[1], sub_args[2]); strcpy(arg, ""); }
     else if(is_command(str, "red"))      push_color(red);
@@ -793,7 +789,7 @@ void loop(){
     get_sub_args(arg);
 
     if(Serial1.available() == 0 && !pausing)
-      Serial1.write("k");
+      send_ack();
   }
   else 
   {
@@ -853,14 +849,17 @@ void loop(){
     if(breathe_counter == 0){
       int next_breathe_step = breathe_step + breathe_direction;
       if(next_breathe_step < 0 || next_breathe_step >= BREATHE_MAX_STEP){
+//        if(next_breathe_step >= BREATHE_MAX_STEP){
+        if(next_breathe_step < 0){
+          pausing = false;
+          send_ack();  
+        }
         breathe_direction *= -1;
       }
       breathe_step = breathe_step + breathe_direction;
       should_flush = true;
     }
 
-// if pausing, and breathing is blank and other blinks are not active (or active?) then finalize pause
-    
     if(should_flush){
       flush();
     }
