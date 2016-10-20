@@ -7,12 +7,16 @@ import sys
 s = None
 inter_command_delay = 0.1
 
-def wait_for_ack():                         
-  while s.inWaiting() == 0:            
-    pass
+def flush_input():                        
+  s.flushInput()
+                                        
+def wait_for_ack():                       
+  while s.inWaiting() <= 0:               
+    pass                                  
+  s.read(s.inWaiting())                   
 
-def command(cmd):
-  s.write((cmd + ':').encode())
+def command(cmd_text):
+  s.write((cmd_text + ':').encode())   
   wait_for_ack()
 
 def setup(): 
