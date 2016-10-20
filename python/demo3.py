@@ -34,13 +34,27 @@ num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "random" ]
 
 effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
+effect_index = 0
 
 def loop():
   command("0,63:pshifto")
   osize = random.randrange(size_range_min, size_range_max) + 1
   times = int(num_leds / osize) + 0	
+
+  midpoint = times / 2
+  effect_index = (midpoint + 1) % 6
+
+  if random.randrange(0, 2) == 0:
+    dir = 1
+  else:
+    dir = -1
+
   for i in range(0, times):
-    effect = effects[5 - (i % 6)]
+    effect = effects[effect_index]
+    if i < (times / 2):
+      effect_index = (effect_index - dir) % 6
+    else:
+      effect_index = (effect_index + dir) % 6
     color = colors[random.randrange(0, num_colors)]                   
     command(str(osize) + "," + str(osize * (times - i))  + ":pshifto")          
     cmd = ""                                                          
