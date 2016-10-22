@@ -11,20 +11,18 @@
 
 /*******************************************************************/
 
-#include <PololuLedStrip.h>
-
-
 #include "colors.h"
 #include "ease.h"
 #include "effects.h"
+#include "color_methods.h"
 #include "buffer.h"
 #include "fade.h"
 #include "render.h"
 #include "commands.h"
 #include "demo.h"
 #include "command_processor.h"
-
 #include "random.h"
+
 RandomSeed<RANDOM_SEED_PIN> randomizer;
 
 void setup() { 
@@ -46,12 +44,14 @@ void setup() {
 void loop(){ 
   rgb_color color;
 
-  if(received_command()){
+  CommandProcessor command_processor;
+
+  if(command_processor.received_command()){
     reset_effects();
-    dispatch_command(get_command(str));
+    command_processor.dispatch_command();
 
     if(Serial1.available() == 0) // only acknowledge when there are no more commands available
-      send_ack();
+      command_processor.send_ack();
   }
   else 
   {

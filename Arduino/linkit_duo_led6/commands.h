@@ -71,7 +71,15 @@ void do_mirror(){
 }
 
 void do_repeat(int times = 1){
-  times = times < 1 ? 1 : times;
+
+  if(times == 0)
+    push_color(green);
+  else if(times == 1)
+    push_color(blue);
+  else if(times == 2)
+    push_color(red);
+  
+  //times = times < 1 ? 1 : times;
   for(int i = 0; i < times; i++){
     if(effects[0] == RANDOM){
       push_color(random_color());

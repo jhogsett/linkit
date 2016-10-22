@@ -1,117 +1,9 @@
-/*******************************************************************/
 
 #define DELIMITER_CHAR ':'
 #define MAX_STRING_LENGTH 16
 #define NUM_SUB_ARGS 3
 
-char str[MAX_STRING_LENGTH];
-char arg[MAX_STRING_LENGTH];
-int sub_args[NUM_SUB_ARGS] = { 0, 0, 0 };
-
-bool received_command(){
-  if(Serial1.available() > 0){
-    int c = Serial1.readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH);
-    str[c] = 0;
-    return true;
-  } else {
-    return false;
-  }
-}
-
-bool str_equal(char *str1, char *str2){
-  int l = strlen(str1);
-  if(l != strlen(str2))
-    return false;
-
-  for(int i = 0; i < l; i++){
-    if(str1[i] != str2[i])
-      return false;
-  }
-  return true;
-}
-
-bool is_command(char *str, char *command){
-//  return strcmp(str, command) == 0;  
-  return str_equal(str, command);  
-}
-
-int get_sub_args(char * args){
-  char *arg = strtok(args, ",");
-  sub_args[0] = atoi(arg);
-  arg = strtok(NULL, ",");
-  sub_args[1] = atoi(arg);
-  arg = strtok(NULL, ",");
-  sub_args[2] = atoi(arg);
-}
-
-void save_args(char *str){
-  strcpy(arg, str); 
-  get_sub_args(arg);
-}
-
-void reset_args(){
-  strcpy(arg, "");
-}
-
-void send_ack(){
-  Serial1.write("k");
-}
-
 #define NUM_COMMANDS 51
-char *commands[] = {
-  "pause",
-  "continue",
-  "erase",
-  "blink",
-  "blink1",
-  "blink2",
-  "blink3",
-  "blink4",
-  "blink5",
-  "blink6",
-  "blinkr",
-  "blinka",
-  "blinkb",
-  "breathe",
-  "effectr",
-  "flush",
-  "blend",
-  "max",
-  "dim",
-  "bright",
-  "fade",
-  "efade",
-  "flood",
-  "random",
-  "mirror",
-  "eshift",
-  "pshift",
-  "pshifto",
-  "window",
-  "reset",
-  "demo",
-  "static",
-  "rgbcolor",
-  "hslcolor",
-  "red",
-  "green",
-  "blue",
-  "black",
-  "yellow",
-  "orange",  
-  "purple",
-  "cyan",
-  "magenta",
-  "pink",
-  "white",
-  "gray",
-  "ltgreen",
-  "seafoam",
-  "ltblue",
-  "dkgray",
-  "repeat"
-};
-
 #define CMD_NONE       0
 #define CMD_FIRST      1
 #define CMD_PAUSE      1
@@ -166,18 +58,150 @@ char *commands[] = {
 #define CMD_DKGRAY    50
 #define CMD_REPEAT    51
 
-int get_command(char *cmd){
+char *commands[] = {
+  "pause",
+  "continue",
+  "erase",
+  "blink",
+  "blink1",
+  "blink2",
+  "blink3",
+  "blink4",
+  "blink5",
+  "blink6",
+  "blinkr",
+  "blinka",
+  "blinkb",
+  "breathe",
+  "effectr",
+  "flush",
+  "blend",
+  "max",
+  "dim",
+  "bright",
+  "fade",
+  "efade",
+  "flood",
+  "random",
+  "mirror",
+  "eshift",
+  "pshift",
+  "pshifto",
+  "window",
+  "reset",
+  "demo",
+  "static",
+  "rgbcolor",
+  "hslcolor",
+  "red",
+  "green",
+  "blue",
+  "black",
+  "yellow",
+  "orange",  
+  "purple",
+  "cyan",
+  "magenta",
+  "pink",
+  "white",
+  "gray",
+  "ltgreen",
+  "seafoam",
+  "ltblue",
+  "dkgray",
+  "repeat"
+};
+
+char str[MAX_STRING_LENGTH];
+char arg[MAX_STRING_LENGTH];
+int sub_args[NUM_SUB_ARGS] = { 0, 0, 0 };
+
+class CommandProcessor 
+{
+  public:
+  static char str[];
+  static char arg[];
+  static int sub_args[];
+
+  bool received_command();
+  void send_ack();
+  int get_command();
+  void dispatch_command();
+
+  private:
+  void save_args();
+  bool str_equal(char *str1, char *str2);
+  bool is_command(char *str, char *command);
+  int get_sub_args();
+  void reset_args();
+};
+
+char CommandProcessor::str[MAX_STRING_LENGTH];
+char CommandProcessor::arg[MAX_STRING_LENGTH];
+int CommandProcessor::sub_args[NUM_SUB_ARGS] = { 0, 0, 0 };
+
+bool CommandProcessor::received_command(){
+  if(Serial1.available() > 0){
+    int c = Serial1.readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH);
+    str[c] = 0;
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void CommandProcessor::send_ack(){
+  Serial1.write("k");
+}
+
+void CommandProcessor::save_args(){
+  strcpy(arg, str); 
+  get_sub_args();
+}
+
+bool CommandProcessor::str_equal(char *str1, char *str2){
+  int l = strlen(str1);
+  if(l != strlen(str2))
+    return false;
+
+  for(int i = 0; i < l; i++){
+    if(str1[i] != str2[i])
+      return false;
+  }
+  return true;
+}
+
+bool CommandProcessor::is_command(char *str, char *command){
+  return str_equal(str, command);  
+}
+
+int CommandProcessor::get_sub_args(){
+  char *token = strtok(arg, ",");
+  sub_args[0] = atoi(token);
+  token = strtok(NULL, ",");
+  sub_args[1] = atoi(token);
+  token = strtok(NULL, ",");
+  sub_args[2] = atoi(token);
+}
+
+void CommandProcessor::reset_args(){
+  strcpy(arg, "");
+}
+
+int CommandProcessor::get_command(){
   for(int i = 0; i < NUM_COMMANDS; i++){
-    if(is_command(cmd, commands[i])){       //    if(strcmp(cmd, commands[i]) == 0){
+    if(is_command(str, commands[i])){
       return CMD_FIRST + i;
     }
   }
   return CMD_NONE;
 }
 
-void dispatch_command(int cmd){
+void CommandProcessor::dispatch_command(){
+  int cmd = get_command();
+  
   switch(cmd){
-    case CMD_NONE:      save_args(str);                                                       break;
+    case CMD_NONE:      save_args();                                                          break;
     case CMD_PAUSE:     paused = true;                                                        break;
     case CMD_CONTINUE:  paused = false;                                                       break;
     case CMD_ERASE:     erase(true);                                                          break;

@@ -1,5 +1,7 @@
 /*******************************************************************/
 
+#include <PololuLedStrip.h>
+
 PololuLedStrip<12> ledStrip;
 
 #define DEFAULT_BRIGHTNESS_SCALE (DEFAULT_BRIGHTNESS_PERCENT / 100.0)
