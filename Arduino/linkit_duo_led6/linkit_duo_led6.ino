@@ -14,7 +14,7 @@
 #include "colors.h"
 #include "ease.h"
 #include "effects.h"
-#include "color_methods.h"
+#include "color_math.h"
 #include "buffer.h"
 #include "fade.h"
 #include "render.h"
@@ -24,34 +24,31 @@
 #include "random.h"
 
 RandomSeed<RANDOM_SEED_PIN> randomizer;
+CommandProcessor command_processor;
+ColorMath color_math;
 
 void setup() { 
-  //Serial.begin(115200);   // open serial connection to USB Serial port(connected to your computer)
   Serial1.begin(115200);  // open internal serial connection to MT7688
-  //pinMode(13, OUTPUT);    // in MT7688, this maps to device 
-
-  //random_seed();
   randomizer.randomize();
   reset();
-  setup_colors(false);
-  set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
+  color_math.setup_colors(false);
+  color_math.set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
   erase(true);
-  //generate_elastic_ease(EASE_COUNT, EASE_EXPONENT);
   generate_power_ease(POWER_EASE_COUNT, EASE_EXPONENT);
   do_demo();
 }
 
 void loop(){ 
-  rgb_color color;
-  CommandProcessor command_processor;
-
   if(command_processor.received_command())
   {
+    // resync the effects to a blank state to minimize effects of pausing and restarting
     reset_effects();
+    
     command_processor.dispatch_command();
   }
   else 
   {
+    // process the effects and update the display if needed
     if(process_effects())
       flush();
   }

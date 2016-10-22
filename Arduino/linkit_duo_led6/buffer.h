@@ -3,6 +3,7 @@
 #include <PololuLedStrip.h>
 
 PololuLedStrip<12> ledStrip;
+extern ColorMath color_math;
 
 #define DEFAULT_BRIGHTNESS_SCALE (DEFAULT_BRIGHTNESS_PERCENT / 100.0)
 
@@ -58,12 +59,12 @@ void push_color(rgb_color color, bool display = false, int effect = NO_EFFECT, r
 
 void push_rgb_color(int red, int green, int blue){
   rgb_color color = (rgb_color){red, green, blue}; 
-  color = unscale_color(color, DEFAULT_BRIGHTNESS_SCALE);
+  color = color_math.unscale_color(color, DEFAULT_BRIGHTNESS_SCALE);
   push_color(color);
 }
 
 void push_hsl_color(int hue, int sat, int lit){
-  rgb_color color = hsl_to_rgb(hue, sat, lit);
+  rgb_color color = color_math.hsl_to_rgb(hue, sat, lit);
   push_rgb_color(color.red, color.green, color.blue);
 }
 
@@ -93,7 +94,7 @@ void shift(int count, int maxx = ANIM_LED_COUNT){
     render[i] = black;
   }
   for(int i = count; i < maxx; i++){
-    render[i] = scale_color(colors[i - count], DEFAULT_BRIGHTNESS_SCALE);
+    render[i] = color_math.scale_color(colors[i - count], DEFAULT_BRIGHTNESS_SCALE);
   }
 
   display_buffer();

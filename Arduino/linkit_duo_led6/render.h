@@ -1,10 +1,12 @@
 /*******************************************************************/
 
+extern ColorMath color_math;
+
 void render_buffer(){
   for(int i = 0; i < ANIM_LED_COUNT; i++){
     int effect = effects[i];
 
-    if(effect ==  STATIC_ON) colors[i] = random_color();
+    if(effect ==  STATIC_ON) colors[i] = color_math.random_color();
 
     if(effect >= BLINK_MIN && effect <= BLINK_MAX){
       if((effect == BLINK_ON && blink_state) || 
@@ -16,15 +18,15 @@ void render_buffer(){
             (effect == BLINK_ON_6 && blink_state_6) || 
             (effect == BLINK_ON_A && blink_state_a) || 
             (effect == BLINK_ON_B && blink_state_b)) {
-          render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);  
+          render[i] = color_math.scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);  
         } else {
-          render[i] = scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
+          render[i] = color_math.scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
         }
     }
     
-    else if(effects[i] == BREATHE_ON) render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE * breathe_steps[BREATHE_MAX_STEP - breathe_step]);
+    else if(effects[i] == BREATHE_ON) render[i] = color_math.scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE * breathe_steps[BREATHE_MAX_STEP - breathe_step]);
 
-    else render[i] = scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);
+    else render[i] = color_math.scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);
   }
 }
 
