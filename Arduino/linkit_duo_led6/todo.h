@@ -1,3 +1,5 @@
+/*******************************************************************/
+
 // fast blink, breathe
 // static, flame
 // invert hue, swing hue, back and forth between two arbitrary colors, rgb cube

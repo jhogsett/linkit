@@ -1,3 +1,5 @@
+/*******************************************************************/
+
 #define EASE_EXPONENT 3 // cubic
 #define EASE_COUNT 32
 #define POWER_EASE_COUNT 24

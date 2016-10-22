@@ -1,3 +1,5 @@
+/*******************************************************************/
+
 #define DEMO_OBJECT_SIZE 3
 #define DEMO_GAP_SIZE 1
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)

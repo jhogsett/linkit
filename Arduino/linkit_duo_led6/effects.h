@@ -1,3 +1,7 @@
+/*******************************************************************/
+
+#define LED_COUNT (ANIM_LED_COUNT + EASE_ANIM_MARGIN)
+
 #define LEAVE_EFFECT -1
 #define NO_EFFECT 0
 #define BREATHE_ON 1
@@ -101,4 +105,92 @@ float breathe_steps[] = {
   0,0
 };
 
+void reset_effects(){
+  // reset the effects so the automatic render won't interfere
+  blink_state = true;
+  blink_state_1 = false;
+  blink_state_2 = false;
+  blink_state_3 = false;
+  blink_state_4 = false;
+  blink_state_5 = false;
+  blink_state_6 = false;
+  blink_state_a = false;
+  blink_state_b = false;
+  blink_counter = 0;
+  breathe_step = 0;
+  breathe_counter = 0;
+}
+
+bool process_blinking(){
+  bool should_flush = false;
+  
+  blink_counter = (blink_counter + 1) % MAX_BLINK;
+  if(blink_counter == BLINK_1){
+    if(blink_state){
+      blink_state = false;
+    } else {
+      blink_state = true;
+    }
+    should_flush = true;
+  }
+
+  if(blink_counter == BLINK_1){
+    blink_state_6 = false;
+    blink_state_1 = true;
+    blink_state_a = true;
+    blink_state_b = false;
+    should_flush = true;
+  }
+
+  if(blink_counter == BLINK_2){
+    blink_state_1 = false;
+    blink_state_2 = true;
+    should_flush = true;
+  }
+
+  if(blink_counter == BLINK_3){
+    blink_state_2 = false;
+    blink_state_3 = true;
+    should_flush = true;
+  }
+
+  if(blink_counter == BLINK_4){
+    blink_state_3 = false;
+    blink_state_4 = true;
+    blink_state_a = false;
+    blink_state_b = true;
+    should_flush = true;
+  }
+
+  if(blink_counter == BLINK_5){
+    blink_state_4 = false;
+    blink_state_5 = true;
+    should_flush = true;
+  }
+
+  if(blink_counter == BLINK_6){
+    blink_state_5 = false;
+    blink_state_6 = true;
+    should_flush = true;
+  }
+
+  breathe_counter = (breathe_counter + 1) % BREATHE_TIME;
+  if(breathe_counter == 0){
+    int next_breathe_step = breathe_step + breathe_direction;
+    if(next_breathe_step < 0 || next_breathe_step >= BREATHE_MAX_STEP){
+
+#ifdef EXPERIMENTAL
+//        if(next_breathe_step >= BREATHE_MAX_STEP){
+      if(next_breathe_step < 0){
+        pausing = false;
+        send_ack();  
+      }
+#endif
+      breathe_direction *= -1;
+    }
+    breathe_step = breathe_step + breathe_direction;
+    should_flush = true;
+  }
+  return should_flush;
+}
 

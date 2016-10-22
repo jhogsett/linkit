@@ -1,3 +1,5 @@
+/*******************************************************************/
+
 // Standard colors
 #define BRIGHTNESS_DIVISOR 20.0
 rgb_color black = {0, 0, 0};

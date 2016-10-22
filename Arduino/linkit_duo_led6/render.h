@@ -1,3 +1,5 @@
+/*******************************************************************/
+
 void render_buffer(){
   for(int i = 0; i < ANIM_LED_COUNT; i++){
     int effect = effects[i];

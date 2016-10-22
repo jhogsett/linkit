@@ -1,3 +1,7 @@
+/*******************************************************************/
+
+#define RANDOM_SEED_PIN A1
+
 // Compute a random seed by sampling an unconnected analog input pin 
 int random_seed(){
   int seed = analogRead(RANDOM_SEED_PIN);

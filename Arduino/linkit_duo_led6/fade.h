@@ -1,3 +1,5 @@
+/*******************************************************************/
+
 #define FADE_RATE 0.9999
 #define FADE_DELAY 10
 #define FADE_TIMES 40
