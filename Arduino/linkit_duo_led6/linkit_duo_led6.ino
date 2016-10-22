@@ -12,7 +12,8 @@
 /*******************************************************************/
 
 #include <PololuLedStrip.h>
-#include "random.h"
+
+
 #include "colors.h"
 #include "ease.h"
 #include "effects.h"
@@ -23,12 +24,16 @@
 #include "demo.h"
 #include "command_processor.h"
 
+#include "random.h"
+RandomSeed<RANDOM_SEED_PIN> randomizer;
+
 void setup() { 
   //Serial.begin(115200);   // open serial connection to USB Serial port(connected to your computer)
   Serial1.begin(115200);  // open internal serial connection to MT7688
   //pinMode(13, OUTPUT);    // in MT7688, this maps to device 
 
-  random_seed();
+  //random_seed();
+  randomizer.randomize();
   reset();
   setup_colors(false);
   set_brightness(DEFAULT_BRIGHTNESS_PERCENT);

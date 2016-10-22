@@ -1,7 +1,7 @@
 /*******************************************************************/
 
 #define DELIMITER_CHAR ':'
-#define MAX_STRING_LENGTH 100
+#define MAX_STRING_LENGTH 16
 #define NUM_SUB_ARGS 3
 
 char str[MAX_STRING_LENGTH];

@@ -6,7 +6,7 @@ PololuLedStrip<12> ledStrip;
 
 rgb_color colors[LED_COUNT];
 rgb_color render[LED_COUNT];
-rgb_color backbuffer[LED_COUNT];
+//rgb_color backbuffer[LED_COUNT];
 
 void display_buffer(rgb_color * pbuffer = render){
   ledStrip.write(pbuffer, ANIM_LED_COUNT);  
