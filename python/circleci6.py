@@ -8,6 +8,7 @@ import sys
 import logging
 import os
 import traceback
+import sys
 
 script_path = os.getcwd()
 log_path = "/root/dev/linkit/python/circleci.log"
@@ -19,7 +20,11 @@ job_limit = 16
 max_job = job_limit - 1
 max_leds = job_limit * 4
 
-token = sys.argv[1]
+try:
+  token = sys.argv[1]
+except Exception:
+  sys.exit("\nNo API key supplied!\n")
+
 url = 'https://circleci.com/api/v1.1/recent-builds?circle-token=' + token + '&limit=' + str(job_limit) + '&offset=0'
 request_frequency = 15
 
@@ -37,8 +42,8 @@ color_map = {
              "canceled": "orange",                   
               "not_run": "yellow",             
                "queued": "purple:breathe",                
-            "scheduled": "magenta:breathe",           
-          "not_running": "yellow",          
+            "scheduled": "ltgreen:breathe",           
+          "not_running": "purple:blink",          
               "missing": "dkgray",                    
                "spacer": "black",
          "masterfailed": "red:blink",
@@ -102,6 +107,12 @@ def translate_position(pos):
   else:                                                                           
     return pos 
  
+def get_value(json, value_name):                                                                    
+  try:                                                                                              
+    return fix_missing(json[value_name])                                                                         
+  except Exception:                                                                                 
+    return "missing"                                                                                
+               
 def loop():
   global build_keys
   try:
@@ -114,7 +125,7 @@ def loop():
     insert_count = 0                                                                  
     for x in range(0, job_limit):                
       y = translate_position(x)
-      key = j[y]['build_url']                                                         
+      key = get_value(j[y], 'build_url')                                                         
       if not build_keys.has_key(key):                                                 
         insert_count += 4                                                             
 
@@ -124,14 +135,14 @@ def loop():
     build_keys = {} 
     for x in range(0, job_limit):
       y = translate_position(x)                                                       
-      key = j[y]['build_url']
+      key = get_value(j[y], 'build_url')
       build_keys[key] = True
-      st = fix_missing(j[y]['status'])
-      lc = fix_missing(j[y]['lifecycle'])                     
-      oc = fix_missing(j[y]['outcome'])      
-      br = fix_missing(j[y]['branch'])
-      rp = fix_missing(j[y]['reponame'])
-      cn = fix_missing(j[y]['committer_name'])
+      st = get_value(j[y], 'status')
+      lc = get_value(j[y], 'lifecycle')                     
+      oc = get_value(j[y], 'outcome')      
+      br = get_value(j[y], 'branch')
+      rp = get_value(j[y], 'reponame')
+      cn = get_value(j[y], 'committer_name')
 
       master = br == 'master'
       orders = rp == 'orders'
@@ -166,6 +177,8 @@ def loop():
         color_command3('canceled')
       elif st == 'not_run':
         color_command3('not_run') 
+      elif st == 'not_running':
+        color_command3('not_running')
       else:
           color_command(st)                
           color_command(oc)                            
@@ -179,6 +192,8 @@ def loop():
     logging.error("Connection error - retrying")
     command("pause:blue:blink:flood:continue")
     time.sleep(15)
+  except KeyboardInterrupt:
+    sys.exit("\nExiting...\n")
   except Exception:
     logging.error(sys.exc_info()[0])
     logging.error(traceback.format_tb(sys.exc_info()[2]))
