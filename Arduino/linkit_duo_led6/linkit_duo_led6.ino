@@ -1,14 +1,15 @@
-
-#define ANIM_LED_COUNT 64
-#define DEFAULT_BRIGHTNESS_PERCENT 25
-
 /*******************************************************************/
 
-#define MAX_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 4)
+// visible led count
+#define ANIM_LED_COUNT 64
+
+// standard brightness
+#define DEFAULT_BRIGHTNESS_PERCENT 25
+
+// brightness scale for blinking leds in the off state
 #define MINIMUM_BRIGHTNESS_SCALE 0.02
-#define DIM_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT / 2)
-#define BRIGHT_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 2)
-#define MAX_LED (LED_COUNT)
+
+/*******************************************************************/
 
 #include <PololuLedStrip.h>
 #include "random.h"
@@ -21,10 +22,6 @@
 #include "commands.h"
 #include "demo.h"
 #include "command_processor.h"
-
-#ifdef EXPERIMENTAL
-bool pausing = false;
-#endif
 
 void setup() { 
   //Serial.begin(115200);   // open serial connection to USB Serial port(connected to your computer)
@@ -40,7 +37,6 @@ void setup() {
   generate_power_ease(POWER_EASE_COUNT, EASE_EXPONENT);
   do_demo();
 }
-
 
 void loop(){ 
   rgb_color color;

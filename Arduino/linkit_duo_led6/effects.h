@@ -178,14 +178,6 @@ bool process_blinking(){
   if(breathe_counter == 0){
     int next_breathe_step = breathe_step + breathe_direction;
     if(next_breathe_step < 0 || next_breathe_step >= BREATHE_MAX_STEP){
-
-#ifdef EXPERIMENTAL
-//        if(next_breathe_step >= BREATHE_MAX_STEP){
-      if(next_breathe_step < 0){
-        pausing = false;
-        send_ack();  
-      }
-#endif
       breathe_direction *= -1;
     }
     breathe_step = breathe_step + breathe_direction;

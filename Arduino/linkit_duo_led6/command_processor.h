@@ -8,16 +8,6 @@ char str[MAX_STRING_LENGTH];
 char arg[MAX_STRING_LENGTH];
 int sub_args[NUM_SUB_ARGS] = { 0, 0, 0 };
 
-void reset(){
-#ifdef EXPERIMENTAL
-  pausing = false;
-#endif
-  paused = false;
-  window = 0;
-  reset_effects();
-  breathe_direction = 1;
-}
-
 bool received_command(){
   if(Serial1.available() > 0){
     int c = Serial1.readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH);

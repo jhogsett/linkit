@@ -1,5 +1,9 @@
 /*******************************************************************/
 
+#define MAX_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 4)
+#define DIM_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT / 2)
+#define BRIGHT_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 2)
+
 bool paused = false;
 
 void do_blend(){
@@ -111,5 +115,12 @@ void flush(){
     render_buffer();
     display_buffer();
   }
+}
+
+void reset(){
+  paused = false;
+  window = 0;
+  reset_effects();
+  breathe_direction = 1;
 }
 
