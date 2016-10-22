@@ -23,7 +23,7 @@ def setup():
 
 brightness = 25
 saturation = 255
-step = 15
+step = 30
 
 def loop(): 
   for i in xrange(0, 360, step):
@@ -33,9 +33,8 @@ def loop():
     command(str((i + 180) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
     command(str((i + 240) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
     command(str((i + 300) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
-    command("black:black")
-    command("continue");
-    time.sleep(0.04);
+    command("black:black:continue:flush");
+    #time.sleep(0.04);
     command("pause");
 
 if __name__ == '__main__': 

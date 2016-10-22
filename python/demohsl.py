@@ -23,7 +23,7 @@ def setup():
 
 brightness = 50
 saturation = 255
-step = 1
+step = 15
 
 def loop(): 
   for i in xrange(0, 360, step):
