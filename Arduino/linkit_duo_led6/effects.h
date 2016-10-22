@@ -121,7 +121,7 @@ void reset_effects(){
   breathe_counter = 0;
 }
 
-bool process_blinking(){
+bool process_effects(){
   bool should_flush = false;
   
   blink_counter = (blink_counter + 1) % MAX_BLINK;

@@ -43,22 +43,17 @@ void setup() {
 
 void loop(){ 
   rgb_color color;
-
   CommandProcessor command_processor;
 
-  if(command_processor.received_command()){
+  if(command_processor.received_command())
+  {
     reset_effects();
     command_processor.dispatch_command();
-
-    if(Serial1.available() == 0) // only acknowledge when there are no more commands available
-      command_processor.send_ack();
   }
   else 
   {
-    if(process_blinking()){
+    if(process_effects())
       flush();
-    }
   }
 }
-
 
