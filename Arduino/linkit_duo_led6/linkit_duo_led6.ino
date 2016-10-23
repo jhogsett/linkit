@@ -34,7 +34,6 @@
 #include "random.h"
 #include "auto_brightness.h"
 
-
 PololuLedStrip<DATA_OUT_PIN> ledStrip;
 RandomSeed<RANDOM_SEED_PIN> randomizer;
 CommandProcessor command_processor;
@@ -55,7 +54,7 @@ void setup() {
 void loop(){ 
   if(command_processor.received_command())
   {
-    // resync the effects to a blank state to minimize effects of pausing and restarting
+    // resync the effects to a blank state to minimize visual artifacts of pausing and restarting
     reset_effects();
     
     command_processor.dispatch_command();
