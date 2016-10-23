@@ -21,16 +21,14 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   command("::pause:reset:erase")
 
-brightness = 50
+brightness = 33
 saturation = 255
-step = 15
+step = 1
 
 def loop(): 
   for i in xrange(0, 360, step):
     command(str(i) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
-    command("continue");
-    time.sleep(0.04);
-    command("pause");
+    command("continue:flush:pause");
 
 if __name__ == '__main__': 
   setup() 

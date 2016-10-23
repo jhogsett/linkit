@@ -25,7 +25,7 @@ def setup():
   global s 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
-  command("continue:pause:64:window:erase")
+  command("::pause:64:window:erase")
 
 size_range_min = 1
 size_range_max = 8
@@ -59,9 +59,9 @@ def loop():
     command(str(osize) + "," + str(osize * (times - i))  + ":pshifto")          
     cmd = ""                                                          
     cmd = cmd + str(osize * (times - i)) + ":window:"                              
-    cmd = cmd + color + ":" + effect + ":" + str(osize - 1) + ":repeat:black"
+    cmd = cmd + color + ":" + effect + ":" + str(osize - 2) + ":repeat:black"
     command(cmd)               
-  command("64:window:continue")                                       
+  command("64:window:continue:flush")                                       
   time.sleep(play_time)                                               
   command("pause")  
 
