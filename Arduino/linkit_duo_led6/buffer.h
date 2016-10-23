@@ -1,9 +1,7 @@
 /*******************************************************************/
 
-#include <PololuLedStrip.h>
-
-PololuLedStrip<12> ledStrip;
 extern ColorMath color_math;
+extern PololuLedStrip<DATA_OUT_PIN> ledStrip;
 
 #define DEFAULT_BRIGHTNESS_SCALE (DEFAULT_BRIGHTNESS_PERCENT / 100.0)
 

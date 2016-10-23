@@ -1,5 +1,14 @@
 /*******************************************************************/
 
+// floating pin for seeding the RNG
+#define RANDOM_SEED_PIN A1
+
+// photocell pin for auto-brightness setting
+#define LIGHT_SENSOR_PIN A0
+
+// data out pin for sending color data to the LEDs
+#define DATA_OUT_PIN 12
+
 // visible led count
 #define ANIM_LED_COUNT 64
 
@@ -11,6 +20,7 @@
 
 /*******************************************************************/
 
+#include <PololuLedStrip.h>
 #include "colors.h"
 #include "ease.h"
 #include "effects.h"
@@ -22,10 +32,14 @@
 #include "demo.h"
 #include "command_processor.h"
 #include "random.h"
+#include "auto_brightness.h"
 
+
+PololuLedStrip<DATA_OUT_PIN> ledStrip;
 RandomSeed<RANDOM_SEED_PIN> randomizer;
 CommandProcessor command_processor;
 ColorMath color_math;
+AutoBrightness<LIGHT_SENSOR_PIN> auto_brightness;
 
 void setup() { 
   Serial1.begin(115200);  // open internal serial connection to MT7688

@@ -1,4 +1,3 @@
-#define RANDOM_SEED_PIN A1
 #define RANDOM_SEED_SAMPLES 16
 
 template<unsigned char pin> class RandomSeed
