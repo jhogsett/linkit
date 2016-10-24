@@ -1,6 +1,6 @@
 /*******************************************************************/
 
-extern ColorMath color_math;
+//extern ColorMath color_math;
 
 #define DEMO_OBJECT_SIZE 3
 #define DEMO_GAP_SIZE 1
@@ -11,7 +11,7 @@ void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
   int window = ANIM_LED_COUNT;
   
   for(int i = 0; i < count; i++){
-    rgb_color color = color_math.random_color();
+    rgb_color color = ColorMath::random_color();
     power_shift_object(DEMO_TOTAL_SIZE, window);
     window -= DEMO_TOTAL_SIZE;
     int effect = random_effect();

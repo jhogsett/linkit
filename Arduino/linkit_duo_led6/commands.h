@@ -4,18 +4,18 @@
 #define DIM_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 2)
 
-extern ColorMath color_math;
+//extern ColorMath color_math;
 
 bool paused = false;
 
 void do_blend(){
-  colors[0] = color_math.blend_colors(colors[0], colors[1]);
+  colors[0] = ColorMath::blend_colors(colors[0], colors[1]);
   colors[1] = colors[0];
 }
 
 // only works properly when used immediately after placing a standard color
 void do_max(){
-  colors[0] = color_math.scale_color(colors[0], MAX_BRIGHTNESS_PERCENT / 100.0);
+  colors[0] = ColorMath::scale_color(colors[0], MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
 void do_dim(){
@@ -52,7 +52,7 @@ void do_exhale_fade(){
 void do_flood(){
   for(int i = 1; i < ANIM_LED_COUNT; i++){
     if(effects[0] == RANDOM){
-      colors[i] = color_math.random_color();
+      colors[i] = ColorMath::random_color();
     } else {
       colors[i] = colors[0];
     }
@@ -61,7 +61,7 @@ void do_flood(){
 }
 
 void do_random(){
-  push_color(color_math.random_color());
+  push_color(ColorMath::random_color());
   effects[0] = RANDOM;
 }
 
@@ -76,7 +76,7 @@ void do_repeat(int times = 1){
   times = (times < 1) ? 1 : times;
   for(int i = 0; i < times; i++){
     if(effects[0] == RANDOM){
-      push_color(color_math.random_color());
+      push_color(ColorMath::random_color());
     } else {
       push_color(colors[0]);
     }

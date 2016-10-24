@@ -21,31 +21,32 @@
 /*******************************************************************/
 
 #include <PololuLedStrip.h>
-#include "colors.h"
+#include <random_seed.h>
+#include <auto_brightness.h>
+#include <color_math.h>
+#include <colors.h>
+
 #include "ease.h"
 #include "effects.h"
-#include "color_math.h"
 #include "buffer.h"
 #include "fade.h"
 #include "render.h"
 #include "commands.h"
 #include "demo.h"
 #include "command_processor.h"
-#include "random.h"
-#include "auto_brightness.h"
 
 PololuLedStrip<DATA_OUT_PIN> ledStrip;
 RandomSeed<RANDOM_SEED_PIN> randomizer;
 CommandProcessor command_processor;
-ColorMath color_math;
+//ColorMath color_math;
 AutoBrightness<LIGHT_SENSOR_PIN> auto_brightness;
 
 void setup() { 
   Serial1.begin(115200);  // open internal serial connection to MT7688
   randomizer.randomize();
   reset();
-  color_math.setup_colors(false);
-  color_math.set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
+  ColorMath::setup_colors(false);
+  ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
   erase(true);
   generate_power_ease(POWER_EASE_COUNT, EASE_EXPONENT);
   do_demo();
