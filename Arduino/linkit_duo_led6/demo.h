@@ -1,6 +1,3 @@
-/*******************************************************************/
-
-//extern ColorMath color_math;
 
 #define DEMO_OBJECT_SIZE 3
 #define DEMO_GAP_SIZE 1

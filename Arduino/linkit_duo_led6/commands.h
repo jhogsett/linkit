@@ -1,10 +1,7 @@
-/*******************************************************************/
 
 #define MAX_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 4)
 #define DIM_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (DEFAULT_BRIGHTNESS_PERCENT * 2)
-
-//extern ColorMath color_math;
 
 bool paused = false;
 

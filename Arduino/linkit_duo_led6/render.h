@@ -1,6 +1,3 @@
-/*******************************************************************/
-
-//extern ColorMath color_math;
 
 void render_buffer(){
   for(int i = 0; i < ANIM_LED_COUNT; i++){
