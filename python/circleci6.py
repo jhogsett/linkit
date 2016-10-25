@@ -40,7 +40,7 @@ color_map = {
               "retried": "pink",                  
              "timedout": "yellow:blink",            
              "canceled": "orange",                   
-              "not_run": "yellow",             
+              "not_run": "gray",             
                "queued": "purple:breathe",                
             "scheduled": "ltgreen:breathe",           
           "not_running": "purple:blink",          
