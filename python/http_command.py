@@ -31,14 +31,16 @@ class Handler(BaseHTTPRequestHandler):
 
       #self.wfile.write("Received: " + self.path)
       #self.wfile.write("\nQuery: " + req.query)
-      #self.wfile.write("\nasdf: " + args['asdf'][0])
-      #self.wfile.write("\nfdsa: " + args['fdsa'][0])
 
-      cmd = args['cmd'][0]
-      self.wfile.write("Sending command: " + cmd + "\n") 
+      print args
+
+      for cmd in args['cmd']:
+        self.wfile.write("Sending command: " + cmd + "... ") 
+        self.wfile.flush()
+        command(cmd)           
+        self.wfile.write("sent\n")
+
       self.wfile.close()
-
-      command(cmd)
 
     else:
       self.send_response(404)
