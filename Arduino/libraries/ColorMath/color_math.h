@@ -1,15 +1,21 @@
+#ifndef COLOR_MATH_H
+#define COLOR_MATH_H
+
+#include <PololuLedStrip.h>
+#include <colors.h>
+
 class ColorMath
 {
   public:
-  void setup_colors(bool swap);
-  void set_brightness(int brightness_percent);
-  rgb_color random_color();
-  rgb_color scale_color(rgb_color color, float scale);
-  rgb_color unscale_color(rgb_color color, float scale);
-  rgb_color hsl_to_rgb(int hue, int sat, int val);
-  rgb_color add_color(rgb_color color1, rgb_color color2);
-  rgb_color subtract_color(rgb_color color1, rgb_color color2);
-  rgb_color blend_colors(rgb_color color1, rgb_color color2);
+  static void setup_colors(bool swap);
+  static void set_brightness(int brightness_percent);
+  static rgb_color random_color();
+  static rgb_color scale_color(rgb_color color, float scale);
+  static rgb_color unscale_color(rgb_color color, float scale);
+  static rgb_color hsl_to_rgb(int hue, int sat, int val);
+  static rgb_color add_color(rgb_color color1, rgb_color color2);
+  static rgb_color subtract_color(rgb_color color1, rgb_color color2);
+  static rgb_color blend_colors(rgb_color color1, rgb_color color2);
 };
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
@@ -120,3 +126,4 @@ rgb_color ColorMath::random_color(){
   return palette[random(NPRETTY_COLORS)];
 }
 
+#endif

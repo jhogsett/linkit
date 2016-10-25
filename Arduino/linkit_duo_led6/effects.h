@@ -1,4 +1,3 @@
-/*******************************************************************/
 
 #define LED_COUNT (ANIM_LED_COUNT + EASE_ANIM_MARGIN)
 

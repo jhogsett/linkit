@@ -1,7 +1,11 @@
+#ifndef COLORS_H
+#define COLORS_H
+
 #include <PololuLedStrip.h>
 
-// Standard colors
 #define BRIGHTNESS_DIVISOR 20.0
+
+// Standard colors
 rgb_color black = {0, 0, 0};
 rgb_color gray = {10, 10, 10};
 rgb_color white = {20, 20, 20};
@@ -24,4 +28,4 @@ rgb_color dkgray = {5, 5, 5};
 rgb_color palette[NPALETTE] = { red, orange, yellow, ltgreen, green, seafoam, cyan, ltblue, blue, purple, magenta, pink, white, black, gray, dkgray };
 rgb_color adjusted_palette[NPALETTE];
 
-
+#endif
