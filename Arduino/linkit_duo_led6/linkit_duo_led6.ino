@@ -8,25 +8,26 @@
 
 #include <color_math.h>
 #include <colors.h>
+#include <command_processor.h>
 
 // visible led count
 #define ANIM_LED_COUNT 64
 
-
 // brightness scale for blinking leds in the off state
 #define MINIMUM_BRIGHTNESS_SCALE 0.02
 
-#include "ease.h"
-#include "effects.h"
+#include "ease.h" /* ready to classify */
+#include "effects.h" /* needs ANIM_LED_COUNT, EASE_ANIM_MARGIN */
 
 #define DATA_OUT_PIN 12 // data out pin for sending color data to the LEDs
-#include "buffer.h"
+#include "buffer.h" /* needs ledStrip, DEFAULT_BRIGHTNESS_PERCENT, LED_COUNT, ANIM_LED_COUNT, effects[], ... */
 
-#include "fade.h"
+#include "fade.h"   /* needs ANIM_LED_COUNT */
 #include "render.h"
+#include "command_defs.h"
 #include "commands.h"
-#include "demo.h"
-#include "command_processor.h"
+#include "demo.h" /* needs ANIM_LED_COUNT and a bunch of other stuff */
+#include "dispatch_command.h"
 
 #define RANDOM_SEED_PIN A1 // floating pin for seeding the RNG
 #define LIGHT_SENSOR_PIN A0 // photocell pin for auto-brightness setting
@@ -37,13 +38,15 @@ AutoBrightness<LIGHT_SENSOR_PIN> auto_brightness;
 CommandProcessor command_processor;
 
 void setup() { 
-  Serial1.begin(115200);  // open internal serial connection to MT7688
   randomizer.randomize();
-  reset();
   ColorMath::setup_colors(false);
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
-  erase(true);
+  // open internal serial connection to MT7688
+  Serial1.begin(115200);
+  command_processor.begin(&Serial1, commands, NUM_COMMANDS);
   generate_power_ease(POWER_EASE_COUNT, EASE_EXPONENT);
+  reset();
+  erase(true);
   do_demo();
 }
 
@@ -52,8 +55,8 @@ void loop(){
   {
     // resync the effects to a blank state to minimize visual artifacts of pausing and restarting
     reset_effects();
-    
-    command_processor.dispatch_command();
+    dispatch_command(command_processor.get_command());
+    command_processor.acknowledge_command();
   }
   else 
   {
