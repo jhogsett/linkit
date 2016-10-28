@@ -84,9 +84,9 @@ void do_repeat(int times = 1){
 void do_elastic_shift(int count, int max = ANIM_LED_COUNT, bool display_only = false){
   count = count == 0 ? 1 : count;
   if(count >= 1){
-    for(int i = 0; i < EASE_COUNT; i++){
-      int pos = elastic_ease[i] * count;
-      delay(EASE_DELAY);
+    for(int i = 0; i < ElasticEase::ease_count(); i++){
+      int pos = ElasticEase::ease[i] * count;
+      delay(ElasticEase::ease_delay());
       shift(pos+1, max);
     }
     finalize_shift(count, max);
@@ -96,9 +96,9 @@ void do_elastic_shift(int count, int max = ANIM_LED_COUNT, bool display_only = f
 void do_power_shift(int count, int max = ANIM_LED_COUNT, bool display_only = false){
   count = count == 0 ? 1 : count;
   if(count >= 1){
-    for(int i = 0; i < POWER_EASE_COUNT; i++){
-      int pos = power_ease[i] * count;
-      delay(POWER_EASE_DELAY);
+    for(int i = 0; i < PowerEase::ease_count(); i++){
+      int pos = PowerEase::ease[i] * count;
+      delay(PowerEase::ease_delay());
       shift(pos+1, max);
     }
     finalize_shift(count, max);
