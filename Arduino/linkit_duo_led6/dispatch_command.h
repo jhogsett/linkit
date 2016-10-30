@@ -12,7 +12,7 @@ void dispatch_command(int cmd){
       paused = false;                                                       
       break;
     case CMD_ERASE:     
-      Buffer::erase(true);                                                          
+      buffer.erase(true);                                                          
       break;
     case CMD_BLINK:     
       start_effect(BLINK_ON);                                               
@@ -93,7 +93,7 @@ void dispatch_command(int cmd){
       command_processor.reset_args();           
       break;
     case CMD_WINDOW:    
-      Buffer::set_window(command_processor.sub_args[0]); 
+      buffer.set_window(command_processor.sub_args[0]); 
       command_processor.reset_args();                                
       break;
     case CMD_RESET:     
@@ -106,60 +106,60 @@ void dispatch_command(int cmd){
       start_effect(STATIC_ON);                                                                                                                      
       break;
     case CMD_RGBCOLOR:  
-      Buffer::push_rgb_color(command_processor.sub_args[0], command_processor.sub_args[1], command_processor.sub_args[2]); 
+      buffer.push_rgb_color(command_processor.sub_args[0], command_processor.sub_args[1], command_processor.sub_args[2]); 
       command_processor.reset_args();  
       break;
     case CMD_HSLCOLOR:  
-      Buffer::push_hsl_color(command_processor.sub_args[0], command_processor.sub_args[1], command_processor.sub_args[2]); 
+      buffer.push_hsl_color(command_processor.sub_args[0], command_processor.sub_args[1], command_processor.sub_args[2]); 
       command_processor.reset_args();  
       break;
     case CMD_RED:       
-      Buffer::push_color(red);                                                      
+      buffer.push_color(red);                                                      
       break;
     case CMD_GREEN:     
-      Buffer::push_color(green);                                                    
+      buffer.push_color(green);                                                    
       break;
     case CMD_BLUE:      
-      Buffer::push_color(blue);                                                     
+      buffer.push_color(blue);                                                     
       break;
     case CMD_BLACK:     
-      Buffer::push_color(black);                                                    
+      buffer.push_color(black);                                                    
       break;
     case CMD_YELLOW:    
-      Buffer::push_color(yellow);                                                   
+      buffer.push_color(yellow);                                                   
       break;
     case CMD_ORANGE:    
-      Buffer::push_color(orange);                                                   
+      buffer.push_color(orange);                                                   
       break;
     case CMD_PURPLE:    
-      Buffer::push_color(purple);                                                   
+      buffer.push_color(purple);                                                   
       break;
     case CMD_CYAN:      
-      Buffer::push_color(cyan);                                                     
+      buffer.push_color(cyan);                                                     
       break;
     case CMD_MAGENTA:   
-      Buffer::push_color(magenta);                                                  
+      buffer.push_color(magenta);                                                  
       break; 
     case CMD_PINK:      
-      Buffer::push_color(pink);                                                     
+      buffer.push_color(pink);                                                     
       break; 
     case CMD_WHITE:     
-      Buffer::push_color(white);                                                    
+      buffer.push_color(white);                                                    
       break; 
     case CMD_GRAY:      
-      Buffer::push_color(gray);                                                     
+      buffer.push_color(gray);                                                     
       break;
     case CMD_LTGREEN:   
-      Buffer::push_color(ltgreen);                                                  
+      buffer.push_color(ltgreen);                                                  
       break;
     case CMD_SEAFOAM:   
-      Buffer::push_color(seafoam);                                                  
+      buffer.push_color(seafoam);                                                  
       break;
     case CMD_LTBLUE:    
-      Buffer::push_color(ltblue);                                                   
+      buffer.push_color(ltblue);                                                   
       break;
     case CMD_DKGRAY:    
-      Buffer::push_color(dkgray);                                                   
+      buffer.push_color(dkgray);                                                   
       break;
     case CMD_REPEAT:    
       do_repeat(command_processor.sub_args[0]); 

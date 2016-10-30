@@ -1,11 +1,13 @@
 #ifndef RENDER_H
 #define RENDER_H
 
+extern rgb_color colors[LED_COUNT];
+
 void render_buffer(){
   for(int i = 0; i < ANIM_LED_COUNT; i++){
     int effect = effects[i];
 
-    if(effect ==  STATIC_ON) Buffer::colors[i] = ColorMath::random_color();
+    if(effect ==  STATIC_ON) colors[i] = ColorMath::random_color();
 
     if(effect >= BLINK_MIN && effect <= BLINK_MAX){
       if((effect == BLINK_ON && blink_state) || 
@@ -17,15 +19,15 @@ void render_buffer(){
             (effect == BLINK_ON_6 && blink_state_6) || 
             (effect == BLINK_ON_A && blink_state_a) || 
             (effect == BLINK_ON_B && blink_state_b)) {
-          Buffer::render[i] = ColorMath::scale_color(Buffer::colors[i], DEFAULT_BRIGHTNESS_SCALE);  
+          Buffer::render[i] = ColorMath::scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);  
         } else {
-          Buffer::render[i] = ColorMath::scale_color(Buffer::colors[i], MINIMUM_BRIGHTNESS_SCALE);
+          Buffer::render[i] = ColorMath::scale_color(colors[i], MINIMUM_BRIGHTNESS_SCALE);
         }
     }
     
-    else if(effects[i] == BREATHE_ON) Buffer::render[i] = ColorMath::scale_color(Buffer::colors[i], DEFAULT_BRIGHTNESS_SCALE * breathe_steps[BREATHE_MAX_STEP - breathe_step]);
+    else if(effects[i] == BREATHE_ON) Buffer::render[i] = ColorMath::scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE * breathe_steps[BREATHE_MAX_STEP - breathe_step]);
 
-    else Buffer::render[i] = ColorMath::scale_color(Buffer::colors[i], DEFAULT_BRIGHTNESS_SCALE);
+    else Buffer::render[i] = ColorMath::scale_color(colors[i], DEFAULT_BRIGHTNESS_SCALE);
   }
 }
 
