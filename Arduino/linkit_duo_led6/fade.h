@@ -5,7 +5,7 @@
 
 void fade(float rate = FADE_RATE){
   unsigned char *p;
-  p = (unsigned char *)colors; 
+  p = (unsigned char *)Buffer::colors; 
   for(int i = 0; i < ANIM_LED_COUNT * 3; i++){
     *(p + i) *= rate;
   }

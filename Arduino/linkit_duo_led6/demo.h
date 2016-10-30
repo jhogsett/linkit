@@ -13,7 +13,7 @@ void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
     window -= DEMO_TOTAL_SIZE;
     int effect = random_effect();
     for(int j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
-      set_color(j, color, false, effect);
+      Buffer::set_color(j, color, false, effect);
     }
   }
 }

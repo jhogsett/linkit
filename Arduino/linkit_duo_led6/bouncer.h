@@ -43,7 +43,5 @@ void vacate_position(int pos, int set, int id){
        existence[j][i] = 0;
     }
   }
-
-  
 };
 
