@@ -80,7 +80,7 @@ rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {
   return (rgb_color){r, g, b};
 }
 
-void ColorMath::set_brightness(int brightness_percent = DEFAULT_BRIGHTNESS_PERCENT){
+void ColorMath::set_brightness(int brightness_percent){
   float percent = brightness_percent / 100.0;
   for(int i = 0; i < NPALETTE; i++){
     adjusted_palette[i] = scale_color(palette[i], percent);
