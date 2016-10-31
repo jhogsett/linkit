@@ -172,13 +172,9 @@ class Buffer
       render[i] = black;
     }
     for(int i = count; i < maxx; i++){
-      // simple substitute for rendering
-      // might work to slice out rendering of one position to maintain current blink/breate mode
-      // pass in renderer, or use default if none
-      //render[i] = ColorMath::scale_color(buffer[i - count], DEFAULT_BRIGHTNESS_SCALE);
-
-      // full render,
+      // full render, slower, demo looks worse but looks good in normal operation
       //render[i] = Render::render(buffer[i - count], effects[i - count]);
+      render[i] = Render::fast_render(buffer[i - count], effects[i - count]);
     }
   
     display_buffer();
