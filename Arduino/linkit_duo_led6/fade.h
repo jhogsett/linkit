@@ -13,6 +13,22 @@ void fade(float rate = FADE_RATE){
   }
 }
 
+void fade_fast(){
+  unsigned char *p;
+  p = (unsigned char *)colors; 
+  for(int i = 0; i < LED_COUNT * 3; i++){
+    *(p + i) = *(p + i) >> 1;
+  }
+}
+
+//void fade_fast2(int rate = FADE_RATE){
+//  unsigned char *p;
+//  p = (unsigned char *)colors; 
+//  for(int i = 0; i < LED_COUNT * 3; i++){
+//    *(p + i) = max(0, *(p + i) - rate);
+//  }
+//}
+
 void exhale_fade(int level){
 //  unsigned char *p;
 //  p = (unsigned char *)colors; 

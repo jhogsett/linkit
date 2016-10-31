@@ -24,3 +24,5 @@
 // efade is broken
 // be able to reverse shift/animation direction
 // screen saver
+// audo brightness, set brightness
+

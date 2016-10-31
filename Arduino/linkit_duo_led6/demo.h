@@ -9,9 +9,9 @@ void do_demo(int count = ANIM_LED_COUNT / DEMO_TOTAL_SIZE){
   
   for(int i = 0; i < count; i++){
     rgb_color color = ColorMath::random_color();
-    power_shift_object(DEMO_TOTAL_SIZE, window);
+    do_power_shift_object(DEMO_TOTAL_SIZE, window);
     window -= DEMO_TOTAL_SIZE;
-    int effect = random_effect();
+    int effect = EffectsProcessor::random_effect();
     for(int j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
       buffer.set_color(j, color, false, effect);
     }

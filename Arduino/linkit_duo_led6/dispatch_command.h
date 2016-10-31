@@ -15,40 +15,40 @@ void dispatch_command(int cmd){
       buffer.erase(true);                                                          
       break;
     case CMD_BLINK:     
-      start_effect(BLINK_ON);                                               
+      effects_processor.start_effect(BLINK_ON);                                               
       break;
     case CMD_BLINK1:    
-      start_effect(BLINK_ON_1);                                             
+      effects_processor.start_effect(BLINK_ON_1);                                             
       break;
     case CMD_BLINK2:    
-      start_effect(BLINK_ON_2);                                             
+      effects_processor.start_effect(BLINK_ON_2);                                             
       break;
     case CMD_BLINK3:    
-      start_effect(BLINK_ON_3);                                             
+      effects_processor.start_effect(BLINK_ON_3);                                             
       break;
     case CMD_BLINK4:    
-      start_effect(BLINK_ON_4);                                             
+      effects_processor.start_effect(BLINK_ON_4);                                             
       break;
     case CMD_BLINK5:    
-      start_effect(BLINK_ON_5);                                            
+      effects_processor.start_effect(BLINK_ON_5);                                            
       break;
     case CMD_BLINK6:    
-      start_effect(BLINK_ON_6);                                             
+      effects_processor.start_effect(BLINK_ON_6);                                             
       break;
     case CMD_BLINKR:    
-      start_blinking_r();                                                   
+      effects_processor.start_blinking_r();                                                   
       break;
     case CMD_BLINKA:    
-      start_effect(BLINK_ON_A);                                             
+      effects_processor.start_effect(BLINK_ON_A);                                             
       break;
     case CMD_BLINKB:    
-      start_effect(BLINK_ON_B);                                             
+      effects_processor.start_effect(BLINK_ON_B);                                             
       break;
     case CMD_BREATHE:   
-      start_effect(BREATHE_ON);                                             
+      effects_processor.start_effect(BREATHE_ON);                                             
       break;
     case CMD_EFFECTR:   
-      start_effect_r();                                                     
+      effects_processor.start_effect_r();                                                     
       break;
     case CMD_FLUSH:     
       flush();                                                              
@@ -89,7 +89,7 @@ void dispatch_command(int cmd){
       command_processor.reset_args();                            
       break;
     case CMD_PSHIFTO:   
-      power_shift_object(command_processor.sub_args[0], command_processor.sub_args[1]); 
+      do_power_shift_object(command_processor.sub_args[0], command_processor.sub_args[1]); 
       command_processor.reset_args();           
       break;
     case CMD_WINDOW:    
@@ -103,7 +103,7 @@ void dispatch_command(int cmd){
       do_demo();                                                                                                                                    
       break;
     case CMD_STATIC:    
-      start_effect(STATIC_ON);                                                                                                                      
+      effects_processor.start_effect(STATIC_ON);                                                                                                                      
       break;
     case CMD_RGBCOLOR:  
       buffer.push_rgb_color(command_processor.sub_args[0], command_processor.sub_args[1], command_processor.sub_args[2]); 

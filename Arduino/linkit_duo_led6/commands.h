@@ -5,6 +5,8 @@
 
 extern rgb_color colors[LED_COUNT];
 extern Buffer buffer;
+extern int effects[LED_COUNT];
+extern EffectsProcessor effects_processor;
 
 bool paused = false;
 
@@ -83,7 +85,7 @@ void do_repeat(int times = 1){
   }
 }
 
-void do_elastic_shift(int count, int max = ANIM_LED_COUNT, bool display_only = false){
+void do_elastic_shift(int count, int max = ANIM_LED_COUNT){
   count = count == 0 ? 1 : count;
   if(count >= 1){
     for(int i = 0; i < ElasticEase::ease_count(); i++){
@@ -95,7 +97,7 @@ void do_elastic_shift(int count, int max = ANIM_LED_COUNT, bool display_only = f
   }
 }
 
-void do_power_shift(int count, int max = ANIM_LED_COUNT, bool display_only = false){
+void do_power_shift(int count, int max = ANIM_LED_COUNT){
   count = count == 0 ? 1 : count;
   if(count >= 1){
     for(int i = 0; i < PowerEase::ease_count(); i++){
@@ -107,13 +109,13 @@ void do_power_shift(int count, int max = ANIM_LED_COUNT, bool display_only = fal
   }
 }
 
-void power_shift_object(int width, int shift){
+void do_power_shift_object(int width, int shift){
   do_power_shift(shift, shift + width);
 }
 
 void flush(){
   if(!paused){
-    render_buffer();
+    Render::render_buffer(colors, effects);
     buffer.display_buffer();
   }
 }
@@ -121,7 +123,6 @@ void flush(){
 void reset(){
   paused = false;
   buffer.set_window(0);
-  reset_effects();
-  breathe_direction = 1;
+  effects_processor.reset_effects();
 }
 

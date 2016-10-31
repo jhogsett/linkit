@@ -16,10 +16,16 @@
 #define ANIM_LED_COUNT 64             // visible led count
 #define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
 
-#include "effects.h"                  /* needs ANIM_LED_COUNT, EASE_ANIM_MARGIN */
+#include <blink_effects.h>
+#include <breathe_effects.h>
+
+BlinkEffects blink_effects;
+BreatheEffects breathe_effects;
+
+#include <effects_processor.h>                  /* needs ANIM_LED_COUNT, EASE_ANIM_MARGIN */
 #include <buffer.h>                   /* needs ledStrip, DEFAULT_BRIGHTNESS_PERCENT, LED_COUNT, ANIM_LED_COUNT, effects[], ... */
 #include "fade.h"                     /* needs ANIM_LED_COUNT */
-#include "render.h"
+#include <render.h>
 #include "command_defs.h"
 #include "commands.h"
 #include "demo.h"                     /* needs ANIM_LED_COUNT and a bunch of other stuff */
@@ -30,21 +36,27 @@ RandomSeed<RANDOM_SEED_PIN> randomizer;
 AutoBrightness<LIGHT_SENSOR_PIN> auto_brightness;
 CommandProcessor command_processor;
 rgb_color colors[LED_COUNT];
+Buffer buffer;
 
-Buffer buffer; // how to generalize for multiple led strips? the type is different for different data out pins so a single pointer can't be passed
+int effects[LED_COUNT];
+//int existence[LED_COUNT];
+EffectsProcessor effects_processor;
 
 void setup() { 
   randomizer.randomize();
-  ColorMath::setup_colors(false);
+  ColorMath::begin(false);
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
   Serial1.begin(115200); // open internal serial connection to MT7688
   command_processor.begin(&Serial1, commands, NUM_COMMANDS);
   PowerEase::generate_power_ease();
   ElasticEase::generate_elastic_ease();
-  // auto_brightnesss.begin(pass in the constant)
+  auto_brightness.begin();
   reset();
-  buffer.begin(&ledStrip, colors);
+  buffer.begin(&ledStrip, colors, effects); //, existence);
   buffer.erase(true);
+  blink_effects.begin();
+  breathe_effects.begin();
+  effects_processor.begin(effects);
   do_demo();
 }
 
@@ -52,14 +64,14 @@ void loop(){
   if(command_processor.received_command())
   {
     // resync the effects to a blank state to minimize visual artifacts of pausing and restarting
-    reset_effects();
+    effects_processor.reset_effects();
     dispatch_command(command_processor.get_command());
     command_processor.acknowledge_command();
   }
   else 
   {
     // process the effects and update the display if needed
-    if(process_effects())
+    if(effects_processor.process_effects())
       flush();
   }
 }
