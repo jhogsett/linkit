@@ -7,7 +7,7 @@
 class ColorMath
 {
   public:
-  static void setup_colors(bool swap);
+  static void begin(bool swap_r_and_g);
   static void set_brightness(int brightness_percent);
   static rgb_color random_color();
   static rgb_color scale_color(rgb_color color, float scale);
@@ -103,8 +103,9 @@ rgb_color ColorMath::subtract_color(rgb_color color1, rgb_color color2){
   return new_color;
 }
 
-void ColorMath::setup_colors(bool swap = true){
-  if(swap == true){
+// some sets have red and green swapped, usually false for led strips
+void ColorMath::begin(bool swap_r_and_g = true){
+  if(swap_r_and_g == true){
     for(int i = 0; i < NPALETTE; i++){
       unsigned char value = palette[i].red;
       palette[i].red = palette[i].green;  

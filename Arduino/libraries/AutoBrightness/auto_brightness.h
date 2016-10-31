@@ -7,10 +7,9 @@
 #include <color_math.h>
 
 // Automatic brightness minimum and maximum setting
-#define MIN_BRIGHTNESS_PERCENT 10
-#define MAX_BRIGHTNESS_PERCENT 100
-#define BRIGHTNESS_PERCENT_RANGE (MAX_BRIGHTNESS_PERCENT - MIN_BRIGHTNESS_PERCENT)
-#define DEFAULT_BRIGHTNESS_PERCENT MIN_BRIGHTNESS_PERCENT
+#define DEFAULT_MIN_BRIGHTNESS 10
+#define DEFAULT_MAX_BRIGHTNESS 100
+#define DEFAULT_BRIGHTNESS_RANGE (DEFAULT_MAX_BRIGHTNESS - DEFAULT_MIN_BRIGHTNESS)
 
 // Automatic brightness ligth samples
 #define LIGHT_SAMPLE_COUNT 5
@@ -18,18 +17,30 @@
 
 template<unsigned char pin> class AutoBrightness
 {
-  static int light_samples[];
-
   public:
+  void begin(int min_brightness = DEFAULT_MIN_BRIGHTNESS, int max_brightness = DEFAULT_MAX_BRIGHTNESS);
   void auto_adjust_brightness();
 
   private:
+  static int min_brightness;
+  static int max_brightness;
+  static int brightness_range;
+  static int light_samples[];
   int get_average_light_level();
   int get_next_light_sample();
   int get_one_light_sample();
 };
 
 template<unsigned char pin> int AutoBrightness<pin>::light_samples[LIGHT_SAMPLE_COUNT] = {0,0,0,0,0};
+template<unsigned char pin> int AutoBrightness<pin>::min_brightness = DEFAULT_MIN_BRIGHTNESS;
+template<unsigned char pin> int AutoBrightness<pin>::max_brightness = DEFAULT_MAX_BRIGHTNESS;
+template<unsigned char pin> int AutoBrightness<pin>::brightness_range = DEFAULT_BRIGHTNESS_RANGE;
+
+template<unsigned char pin> void AutoBrightness<pin>::begin(int min_brightness, int max_brightness){
+  this->min_brightness = min_brightness;
+  this->max_brightness = max_brightness;
+  this->brightness_range = max_brightness - min_brightness;
+}
 
 template<unsigned char pin> int AutoBrightness<pin>::get_average_light_level(){
   int result;
@@ -60,8 +71,8 @@ template<unsigned char pin> void AutoBrightness<pin>::auto_adjust_brightness(){
   // 1023 = complete darkness, 0 = infinite brightness
 
   float detected_brightness = (1023.0 - light_level) / 1024.0;
-  int ranged_brightness_percent = int(BRIGHTNESS_PERCENT_RANGE * detected_brightness);
+  int ranged_brightness_percent = int(brightness_range * detected_brightness);
 
-  ColorMath::set_brightness(MIN_BRIGHTNESS_PERCENT + ranged_brightness_percent);
+  ColorMath::set_brightness(min_brightness + ranged_brightness_percent);
 }
 #endif
