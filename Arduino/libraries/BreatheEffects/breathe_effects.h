@@ -24,8 +24,6 @@ class BreatheEffects
   int breathe_time = BREATHE_TIME;
   int breathe_counter = 0;
   int breathe_direction = 1;
-
-  
 };
 
 // ruby: (0..90).step(5).each { |i| puts (Math.cos(i * Math::PI / 180)).round(4) }
