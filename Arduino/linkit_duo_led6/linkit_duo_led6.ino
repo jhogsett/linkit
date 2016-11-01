@@ -6,6 +6,9 @@
 #include <command_processor.h>
 #include <power_ease.h>
 #include <elastic_ease.h>
+#include <blink_effects.h>
+#include <breathe_effects.h>
+#include <effects_processor.h>                  /* needs ANIM_LED_COUNT, EASE_ANIM_MARGIN */
 
 #define DEFAULT_BRIGHTNESS_PERCENT 25 // standard brightness
 #define MINIMUM_BRIGHTNESS_PERCENT 2  // brightness scale for blinking leds in the off state
@@ -15,15 +18,9 @@
 
 #define ANIM_LED_COUNT 64             // visible led count
 #define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
+#define LED_COUNT (ANIM_LED_COUNT + EASE_ANIM_MARGIN)
 
-#include <blink_effects.h>
-#include <breathe_effects.h>
-
-BlinkEffects blink_effects;
-BreatheEffects breathe_effects;
-
-#include <effects_processor.h>                  /* needs ANIM_LED_COUNT, EASE_ANIM_MARGIN */
-#include <buffer.h>                   /* needs ledStrip, DEFAULT_BRIGHTNESS_PERCENT, LED_COUNT, ANIM_LED_COUNT, effects[], ... */
+#include <buffer.h>                   /* needs LED_COUNT, ledStrip, DEFAULT_BRIGHTNESS_PERCENT, ANIM_LED_COUNT, effects[], ... */
 #include "fade.h"                     /* needs ANIM_LED_COUNT */
 #include <render.h>
 #include "command_defs.h"
@@ -31,32 +28,39 @@ BreatheEffects breathe_effects;
 #include "demo.h"                     /* needs ANIM_LED_COUNT and a bunch of other stuff */
 #include "dispatch_command.h"
 
+rgb_color colors[LED_COUNT];
+rgb_color render[LED_COUNT];
+int effects[LED_COUNT];
+//int existence[LED_COUNT];
+
 PololuLedStrip<DATA_OUT_PIN> ledStrip;
 RandomSeed<RANDOM_SEED_PIN> randomizer;
 AutoBrightness<LIGHT_SENSOR_PIN> auto_brightness;
 CommandProcessor command_processor;
-rgb_color colors[LED_COUNT];
-Buffer buffer;
-
-int effects[LED_COUNT];
-//int existence[LED_COUNT];
+BlinkEffects blink_effects;
+BreatheEffects breathe_effects;
 EffectsProcessor effects_processor;
+Buffer buffer;
+Render renderer;
 
 void setup() { 
-  randomizer.randomize();
-  ColorMath::begin(false);
-  ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
+  auto_brightness.begin();
   Serial1.begin(115200); // open internal serial connection to MT7688
   command_processor.begin(&Serial1, commands, NUM_COMMANDS);
-  PowerEase::generate_power_ease();
-  ElasticEase::generate_elastic_ease();
-  auto_brightness.begin();
-  reset();
-  buffer.begin(&ledStrip, colors, effects); //, existence);
-  buffer.erase(true);
+  ColorMath::begin(false);
+  buffer.begin(&ledStrip, DEFAULT_BRIGHTNESS_PERCENT, &renderer, colors, render, effects); //, existence);
   blink_effects.begin();
   breathe_effects.begin();
-  effects_processor.begin(effects);
+  effects_processor.begin(effects, &blink_effects, &breathe_effects);
+  renderer.begin(&blink_effects, &breathe_effects);
+
+  randomizer.randomize();
+  ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
+  PowerEase::generate_power_ease();
+  ElasticEase::generate_elastic_ease();
+
+  reset();
+  buffer.erase(true);
   do_demo();
 }
 

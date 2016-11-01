@@ -7,6 +7,8 @@ extern rgb_color colors[LED_COUNT];
 extern Buffer buffer;
 extern int effects[LED_COUNT];
 extern EffectsProcessor effects_processor;
+extern rgb_color render[LED_COUNT];
+extern Render renderer;
 
 bool paused = false;
 
@@ -115,7 +117,7 @@ void do_power_shift_object(int width, int shift){
 
 void flush(){
   if(!paused){
-    Render::render_buffer(colors, effects);
+    renderer.render_buffer(render, colors, effects);
     buffer.display_buffer();
   }
 }
