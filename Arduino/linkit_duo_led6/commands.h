@@ -117,7 +117,7 @@ void do_power_shift_object(int width, int shift){
 
 void flush(){
   if(!paused){
-    renderer.render_buffer(render, colors, effects);
+    renderer.render_buffer(render, colors, ANIM_LED_COUNT, effects);
     buffer.display_buffer();
   }
 }

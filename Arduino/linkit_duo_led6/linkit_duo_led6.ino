@@ -8,24 +8,14 @@
 #include <elastic_ease.h>
 #include <blink_effects.h>
 #include <breathe_effects.h>
-#include <effects_processor.h>                  /* needs ANIM_LED_COUNT, EASE_ANIM_MARGIN */
-
-#define DEFAULT_BRIGHTNESS_PERCENT 25 // standard brightness
-#define MINIMUM_BRIGHTNESS_PERCENT 2  // brightness scale for blinking leds in the off state
-#define DATA_OUT_PIN 12               // data out pin for sending color data to the LEDs
-#define RANDOM_SEED_PIN A1            // floating pin for seeding the RNG
-#define LIGHT_SENSOR_PIN A0           // photocell pin for auto-brightness setting
-
-#define ANIM_LED_COUNT 64             // visible led count
-#define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
-#define LED_COUNT (ANIM_LED_COUNT + EASE_ANIM_MARGIN)
-
-#include <buffer.h>                   /* needs LED_COUNT, ledStrip, DEFAULT_BRIGHTNESS_PERCENT, ANIM_LED_COUNT, effects[], ... */
-#include "fade.h"                     /* needs ANIM_LED_COUNT */
+#include <effects_processor.h>
+#include <buffer.h>
 #include <render.h>
+#include "config.h"
+#include "fade.h"
 #include "command_defs.h"
 #include "commands.h"
-#include "demo.h"                     /* needs ANIM_LED_COUNT and a bunch of other stuff */
+#include "demo.h"
 #include "dispatch_command.h"
 
 rgb_color colors[LED_COUNT];
@@ -48,11 +38,11 @@ void setup() {
   Serial1.begin(115200); // open internal serial connection to MT7688
   command_processor.begin(&Serial1, commands, NUM_COMMANDS);
   ColorMath::begin(false);
-  buffer.begin(&ledStrip, DEFAULT_BRIGHTNESS_PERCENT, &renderer, colors, render, effects); //, existence);
+  buffer.begin(&ledStrip, DEFAULT_BRIGHTNESS_PERCENT, LED_COUNT, ANIM_LED_COUNT, &renderer, colors, render, effects); //, existence);
   blink_effects.begin();
   breathe_effects.begin();
   effects_processor.begin(effects, &blink_effects, &breathe_effects);
-  renderer.begin(&blink_effects, &breathe_effects);
+  renderer.begin(&blink_effects, &breathe_effects, DEFAULT_BRIGHTNESS_PERCENT, MINIMUM_BRIGHTNESS_PERCENT);
 
   randomizer.randomize();
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
