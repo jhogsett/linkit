@@ -1,4 +1,7 @@
 extern CommandProcessor command_processor;
+extern EffectsProcessor effects_processor;
+extern Commands commands;
+extern Buffer buffer;
 
 void dispatch_command(int cmd){
   switch(cmd){
@@ -6,10 +9,10 @@ void dispatch_command(int cmd){
       command_processor.save_args();                                        
       break;
     case CMD_PAUSE:     
-      paused = true;                                                        
+      commands.pause();
       break;
     case CMD_CONTINUE:  
-      paused = false;                                                       
+      commands.resume();
       break;
     case CMD_ERASE:     
       buffer.erase(true);                                                          
@@ -51,45 +54,45 @@ void dispatch_command(int cmd){
       effects_processor.start_effect_r();                                                     
       break;
     case CMD_FLUSH:     
-      flush();                                                              
+      commands.flush();                                                              
       break;
     case CMD_BLEND:     
-      do_blend();                                                           
+      commands.do_blend();                                                           
       break;
     case CMD_MAX:         
-      do_max();                                                             
+      commands.do_max();                                                             
       break;
     case CMD_DIM:       
-      do_dim();                                                             
+      commands.do_dim();                                                             
       break;
     case CMD_BRIGHT:    
-      do_bright();                                                          
+      commands.do_bright();                                                          
       break;
     case CMD_FADE:      
-      do_fade();                                                            
+      commands.do_fade();                                                            
       break;
     case CMD_EFADE:     
-      do_exhale_fade();                                                     
+      commands.do_exhale_fade();                                                     
       break;
     case CMD_FLOOD:     
-      do_flood();                                                           
+      commands.do_flood();                                                           
       break;
     case CMD_RANDOM:    
-      do_random();                                                          
+      commands.do_random();                                                          
       break; 
     case CMD_MIRROR:    
-      do_mirror();                                                          
+      commands.do_mirror();                                                          
       break;
     case CMD_ESHIFT:    
-      do_elastic_shift(command_processor.sub_args[0]); 
+      commands.do_elastic_shift(command_processor.sub_args[0]); 
       command_processor.reset_args();                          
       break;
     case CMD_PSHIFT:    
-      do_power_shift(command_processor.sub_args[0]);  
+      commands.do_power_shift(command_processor.sub_args[0]);  
       command_processor.reset_args();                            
       break;
     case CMD_PSHIFTO:   
-      do_power_shift_object(command_processor.sub_args[0], command_processor.sub_args[1]); 
+      commands.do_power_shift_object(command_processor.sub_args[0], command_processor.sub_args[1]); 
       command_processor.reset_args();           
       break;
     case CMD_WINDOW:    
@@ -97,10 +100,10 @@ void dispatch_command(int cmd){
       command_processor.reset_args();                                
       break;
     case CMD_RESET:     
-      reset();                                                              
+      commands.reset();                                                              
       break;
     case CMD_DEMO:      
-      do_demo();                                                                                                                                    
+      commands.do_demo();                                                                                                                                    
       break;
     case CMD_STATIC:    
       effects_processor.start_effect(STATIC_ON);                                                                                                                      
@@ -162,7 +165,7 @@ void dispatch_command(int cmd){
       buffer.push_color(dkgray);                                                   
       break;
     case CMD_REPEAT:    
-      do_repeat(command_processor.sub_args[0]); 
+      commands.do_repeat(command_processor.sub_args[0]); 
       command_processor.reset_args();                                 
       break;
   }

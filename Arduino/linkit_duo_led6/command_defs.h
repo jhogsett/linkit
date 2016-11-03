@@ -55,7 +55,7 @@
 #define CMD_DKGRAY    50
 #define CMD_REPEAT    51
 
-char* commands[] = {
+char* command_strings[] = {
   "pause",
   "continue",
   "erase",

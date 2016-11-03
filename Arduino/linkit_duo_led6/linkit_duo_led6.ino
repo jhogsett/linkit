@@ -11,12 +11,12 @@
 #include <effects_processor.h>
 #include <buffer.h>
 #include <render.h>
-#include "config.h"
-#include "fade.h"
 #include "command_defs.h"
 #include "commands.h"
-#include "demo.h"
 #include "dispatch_command.h"
+
+#include "config.h"
+
 
 rgb_color colors[LED_COUNT];
 rgb_color render[LED_COUNT];
@@ -32,26 +32,28 @@ BreatheEffects breathe_effects;
 EffectsProcessor effects_processor;
 Buffer buffer;
 Render renderer;
+Commands commands;
 
 void setup() { 
   auto_brightness.begin();
   Serial1.begin(115200); // open internal serial connection to MT7688
-  command_processor.begin(&Serial1, commands, NUM_COMMANDS);
+  command_processor.begin(&Serial1, command_strings, NUM_COMMANDS);
   ColorMath::begin(false);
-  buffer.begin(&ledStrip, DEFAULT_BRIGHTNESS_PERCENT, LED_COUNT, ANIM_LED_COUNT, &renderer, colors, render, effects); //, existence);
+  buffer.begin(&ledStrip, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, LED_COUNT, ANIM_LED_COUNT, &renderer, colors, render, effects); //, existence);
   blink_effects.begin();
   breathe_effects.begin();
   effects_processor.begin(effects, &blink_effects, &breathe_effects);
   renderer.begin(&blink_effects, &breathe_effects, DEFAULT_BRIGHTNESS_PERCENT, MINIMUM_BRIGHTNESS_PERCENT);
+  commands.begin(&buffer, &renderer, &effects_processor, DEFAULT_BRIGHTNESS_PERCENT, ANIM_LED_COUNT, colors, render, effects);
 
   randomizer.randomize();
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
   PowerEase::generate_power_ease();
   ElasticEase::generate_elastic_ease();
 
-  reset();
+  commands.reset();
   buffer.erase(true);
-  do_demo();
+  commands.do_demo();
 }
 
 void loop(){ 
@@ -66,7 +68,7 @@ void loop(){
   {
     // process the effects and update the display if needed
     if(effects_processor.process_effects())
-      flush();
+      commands.flush();
   }
 }
 
