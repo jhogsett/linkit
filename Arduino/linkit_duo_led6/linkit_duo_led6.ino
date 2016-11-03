@@ -14,9 +14,7 @@
 #include "command_defs.h"
 #include "commands.h"
 #include "dispatch_command.h"
-
 #include "config.h"
-
 
 rgb_color colors[LED_COUNT];
 rgb_color render[LED_COUNT];
@@ -40,11 +38,11 @@ void setup() {
   command_processor.begin(&Serial1, command_strings, NUM_COMMANDS);
   ColorMath::begin(false);
   buffer.begin(&ledStrip, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, LED_COUNT, ANIM_LED_COUNT, &renderer, colors, render, effects); //, existence);
+  commands.begin(&buffer, &renderer, &effects_processor, DEFAULT_BRIGHTNESS_PERCENT, ANIM_LED_COUNT, colors, render, effects);
   blink_effects.begin();
   breathe_effects.begin();
   effects_processor.begin(effects, &blink_effects, &breathe_effects);
   renderer.begin(&blink_effects, &breathe_effects, DEFAULT_BRIGHTNESS_PERCENT, MINIMUM_BRIGHTNESS_PERCENT);
-  commands.begin(&buffer, &renderer, &effects_processor, DEFAULT_BRIGHTNESS_PERCENT, ANIM_LED_COUNT, colors, render, effects);
 
   randomizer.randomize();
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
