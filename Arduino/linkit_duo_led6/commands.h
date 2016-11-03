@@ -29,6 +29,7 @@ class Commands
   void do_dim();
   void do_bright();
   void do_fade();
+  void do_wipe();
   void do_exhale_fade();
   void do_flood();
   void do_random();
@@ -38,7 +39,7 @@ class Commands
   void do_power_shift(int count, int max);
   void do_power_shift_object(int width, int shift);
   void do_demo();
-  void flush();
+  void flush(bool force_display);
   void reset();
 
   private:
@@ -114,7 +115,8 @@ void Commands::do_exhale_fade(){
 }
 
 void Commands::do_flood(){
-  for(int i = 1; i < visible_led_count; i++){
+  int max = min(visible_led_count, buffer->get_window());
+  for(int i = 1; i < max; i++){
     if(effects[0] == RANDOM){
       colors[i] = ColorMath::random_color();
     } else {
@@ -174,12 +176,20 @@ void Commands::do_power_shift(int count, int max = 0){
   }
 }
 
+// width = width from the origin the shift will occur within, 
+//         including the new space shifted into
+// shift = how far to move
+// the two should add up to no more than the visible led count
 void Commands::do_power_shift_object(int width, int shift){
   do_power_shift(shift, shift + width);
 }
 
-void Commands::flush(){
-  if(!paused){
+void Commands::do_wipe(){
+  do_power_shift_object(0, visible_led_count);
+}
+
+void Commands::flush(bool force_display = false){
+  if(force_display || !paused){
     renderer->render_buffer(render, colors, visible_led_count, effects);
     buffer->display_buffer();
   }
@@ -187,7 +197,7 @@ void Commands::flush(){
 
 void Commands::reset(){
   paused = false;
-  buffer->set_window(0);
+  buffer->set_window(visible_led_count);
   effects_processor->reset_effects();
 }
 

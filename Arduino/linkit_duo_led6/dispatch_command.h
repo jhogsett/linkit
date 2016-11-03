@@ -54,7 +54,7 @@ void dispatch_command(int cmd){
       effects_processor.start_effect_r();                                                     
       break;
     case CMD_FLUSH:     
-      commands.flush();                                                              
+      commands.flush(true);                                                              
       break;
     case CMD_BLEND:     
       commands.do_blend();                                                           
@@ -71,8 +71,8 @@ void dispatch_command(int cmd){
     case CMD_FADE:      
       commands.do_fade();                                                            
       break;
-    case CMD_EFADE:     
-      commands.do_exhale_fade();                                                     
+    case CMD_WIPE:     
+      commands.do_wipe();                                                     
       break;
     case CMD_FLOOD:     
       commands.do_flood();                                                           
