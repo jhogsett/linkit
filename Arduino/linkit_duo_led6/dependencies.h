@@ -18,15 +18,13 @@
 #include "commands.h"
 #include "config.h"
 
-extern Config config;
-
 class Dependencies
 {
   public:
+  static Config config;
   static rgb_color colors[config.led_count];
   static rgb_color render[config.led_count];
   static int effects[config.led_count];
-
   static PololuLedStrip<DATA_OUT_PIN> ledStrip;
   static RandomSeed<RANDOM_SEED_PIN> randomizer;
   static AutoBrightness<LIGHT_SENSOR_PIN> auto_brightness;
@@ -37,9 +35,23 @@ class Dependencies
   static Buffer buffer;
   static Render renderer;
   static Commands commands;
-
   void begin();
 };
+
+rgb_color Dependencies::colors[config.led_count];
+rgb_color Dependencies::render[config.led_count];
+int Dependencies::effects[config.led_count];
+Config Dependencies::config;
+PololuLedStrip<DATA_OUT_PIN> Dependencies::ledStrip;
+RandomSeed<RANDOM_SEED_PIN> Dependencies::randomizer;
+AutoBrightness<LIGHT_SENSOR_PIN> Dependencies::auto_brightness;
+CommandProcessor Dependencies::command_processor;
+BlinkEffects Dependencies::blink_effects;
+BreatheEffects Dependencies::breathe_effects;
+EffectsProcessor Dependencies::effects_processor;
+Buffer Dependencies::buffer;
+Render Dependencies::renderer;
+Commands Dependencies::commands;
 
 void Dependencies::begin(){
   Serial1.begin(BAUD_RATE); // open internal serial connection to MT7688
@@ -52,27 +64,10 @@ void Dependencies::begin(){
   breathe_effects.begin();
   effects_processor.begin(effects, &this->blink_effects, &this->breathe_effects);
   renderer.begin(&this->blink_effects, &this->breathe_effects, config.default_brightness_percent, config.minimum_brightness_percent);
-
   randomizer.randomize();
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
   PowerEase::generate_power_ease();
   ElasticEase::generate_elastic_ease();
 }
-
-rgb_color Dependencies::colors[config.led_count];
-rgb_color Dependencies::render[config.led_count];
-int Dependencies::effects[config.led_count];
-
-PololuLedStrip<DATA_OUT_PIN> Dependencies::ledStrip;
-RandomSeed<RANDOM_SEED_PIN> Dependencies::randomizer;
-AutoBrightness<LIGHT_SENSOR_PIN> Dependencies::auto_brightness;
-CommandProcessor Dependencies::command_processor;
-BlinkEffects Dependencies::blink_effects;
-BreatheEffects Dependencies::breathe_effects;
-EffectsProcessor Dependencies::effects_processor;
-Buffer Dependencies::buffer;
-Render Dependencies::renderer;
-Commands Dependencies::commands;
-
 #endif
 

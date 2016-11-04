@@ -1,10 +1,4 @@
-//extern CommandProcessor command_processor;
-//extern EffectsProcessor effects_processor;
-//extern Commands commands;
-//extern Buffer buffer;
-
 #include "dependencies.h"
-
 extern Dependencies dependencies;
 
 void dispatch_command(int cmd){

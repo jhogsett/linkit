@@ -1,8 +1,6 @@
-#include "config.h"
 #include "dependencies.h"
 #include "dispatch_command.h"
 
-Config config;
 Dependencies dependencies;
 
 void setup() { 
@@ -17,7 +15,7 @@ void loop(){
   {
     // resync the effects to a blank state to minimize visual artifacts of pausing and restarting
     dependencies.effects_processor.reset_effects();
-    dispatch_command(dependencies.command_processor.get_command());
+    ::dispatch_command(dependencies.command_processor.get_command());
     dependencies.command_processor.acknowledge_command();
   }
   else 
