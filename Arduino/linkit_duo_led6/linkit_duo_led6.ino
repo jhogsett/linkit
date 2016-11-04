@@ -1,24 +1,8 @@
-#include <PololuLedStrip.h>
-#include <random_seed.h>
-#include <auto_brightness.h>
-#include <color_math.h>
-#include <colors.h>
-#include <command_processor.h>
-#include <power_ease.h>
-#include <elastic_ease.h>
-#include <blink_effects.h>
-#include <breathe_effects.h>
-#include <effects_processor.h>
-#include <buffer.h>
-#include <render.h>
-#include "command_defs.h"
-#include "commands.h"
+#include "config.h"
+#include "dependencies.h"
 #include "dispatch_command.h"
 
-#include "config.h"
 Config config;
-
-#include "dependencies.h"
 Dependencies dependencies;
 
 void setup() { 
