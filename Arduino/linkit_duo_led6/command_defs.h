@@ -1,3 +1,5 @@
+#ifndef COMMANDS_DEF_H
+#define COMMANDS_DEF_H
 
 #define NUM_COMMANDS 51
 
@@ -108,4 +110,6 @@ char* command_strings[] = {
   "dkgray",
   "repeat"
 };
+
+#endif
 

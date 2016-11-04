@@ -21,6 +21,7 @@
 
 
 // python:
+// ci-skip build status is "not_run"
 // fade based on build time
 // change refresh rate based on time of day (afterhours it doesn't need to check that often)
 // show something if the data hasn't updated in a long time

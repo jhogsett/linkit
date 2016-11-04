@@ -1,12 +1,6 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#include <PololuLedStrip.h>
-#include <buffer.h>
-#include <render.h>
-#include <effects_processor.h>
-#include <color_math.h>
-
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
