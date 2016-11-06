@@ -15,23 +15,10 @@
 class Buffer
 {
   public:
-  PololuLedStripBase *ledStrip;
-  rgb_color *buffer;
-  static rgb_color *render;
-  int *effects;
-  float default_brightness_scale;
-  Render *renderer;
-  int safety_led_count;
-  int visible_led_count;
-
 #ifdef EXISTENCE_ENABLED
-  int *existence;
-#endif
-
-#ifdef EXISTENCE_ENABLED
-  void begin(PololuLedStripBase *ledStrip, int default_brightness, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence);
+  void begin(PololuLedStripBase *ledStrip, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence);
 #else
-  void begin(PololuLedStripBase *ledStrip, int default_brightness, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects);
+  void begin(PololuLedStripBase *ledStrip, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects);
 #endif
 
   void display_buffer(rgb_color * pbuffer);
@@ -43,18 +30,35 @@ class Buffer
   void finalize_shift(int count, int max);
   void set_color(int pos, rgb_color color, bool display, int effect);
   void set_window(int width);
+  void fade(float rate);
+  void fade_fast();
+  int get_window();
 
   private:
-  int window;
+  PololuLedStripBase *ledStrip;
+  rgb_color *buffer;
+  static rgb_color *render;
+  int *effects;
+  float default_brightness_scale;
+  Render *renderer;
+  int safety_led_count;
+  int visible_led_count;
+  float fade_rate;
+
+#ifdef EXISTENCE_ENABLED
+  int *existence;
+#endif
+
+  int window = 0;
   void shift_buffer(rgb_color * buffer, int max);
 };
 
 rgb_color *Buffer::render;
 
 #ifdef EXISTENCE_ENABLED
-void Buffer::begin(PololuLedStripBase *ledStrip, int default_brightness, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence){
+void Buffer::begin(PololuLedStripBase *ledStrip, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence){
 #else
-void Buffer::begin(PololuLedStripBase *ledStrip, int default_brightness, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects){
+void Buffer::begin(PololuLedStripBase *ledStrip, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects){
 #endif
 
   this->ledStrip = ledStrip;
@@ -70,6 +74,9 @@ void Buffer::begin(PololuLedStripBase *ledStrip, int default_brightness, int saf
   this->renderer = renderer;
   this->safety_led_count = safety_led_count;
   this->visible_led_count = visible_led_count;
+  this->fade_rate = fade_rate;
+
+  this->window = this->visible_led_count;
 }
 
 void Buffer::display_buffer(rgb_color * pbuffer = render){
@@ -90,7 +97,24 @@ void Buffer::erase(bool display = false){
     display_buffer(buffer);
   }
 }
-  
+
+void Buffer::fade(float rate = 0.0){
+  rate = (rate == 0.0) ? fade_rate : rate;
+  unsigned char *p;
+  p = (unsigned char *)buffer;
+  for(int i = 0; i < visible_led_count * 3; i++){
+    *(p + i) *= rate;
+  }
+}
+
+void Buffer::fade_fast(){
+  unsigned char *p;
+  p = (unsigned char *)buffer;
+  for(int i = 0; i < visible_led_count * 3; i++){
+    *(p + i) = *(p + i) >> 1;
+  }
+}
+
 void Buffer::shift_buffer(rgb_color * buffer, int max /* = ANIM_LED_COUNT*/){
   for(int i = max - 1; i >= 1; i--){
     buffer[i] = buffer[i-1];
@@ -108,10 +132,7 @@ void Buffer::push_color(rgb_color color, bool display = false, int effect = NO_E
 #else
 void Buffer::push_color(rgb_color color, bool display = false, int effect = NO_EFFECT, int max = 0){
 #endif
-
-  if(max == 0){
-    max = (window > 0) ? window : visible_led_count;
-  }
+  max = (max == 0) ? window : max;
 
   shift_buffer(buffer, max);
 
@@ -160,15 +181,16 @@ void Buffer::set_color(int pos, rgb_color color, bool display = false, int effec
   }
 }
   
-void Buffer::set_window(int width){
-  if(width < 0){
-    width = 0;
-  }
-  window = width;
+void Buffer::set_window(int window){
+  this->window = (window < 1 || window > visible_led_count) ? visible_led_count : window;
 }
-  
+
+int Buffer::get_window(){
+  return window;
+}
+
 // animate by shifting frame (future: shift in from back buffer)
-void Buffer::shift(int count, int maxx /*= ANIM_LED_COUNT*/){
+void Buffer::shift(int count, int maxx){
   maxx = min(maxx, safety_led_count);
   for(int i = 0; i < count; i++){
     render[i] = black;

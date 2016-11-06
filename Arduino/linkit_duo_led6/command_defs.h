@@ -1,3 +1,5 @@
+#ifndef COMMANDS_DEF_H
+#define COMMANDS_DEF_H
 
 #define NUM_COMMANDS 51
 
@@ -24,7 +26,7 @@
 #define CMD_DIM       19
 #define CMD_BRIGHT    20
 #define CMD_FADE      21
-#define CMD_EFADE     22
+#define CMD_WIPE      22
 #define CMD_FLOOD     23  
 #define CMD_RANDOM    24
 #define CMD_MIRROR    25
@@ -55,7 +57,7 @@
 #define CMD_DKGRAY    50
 #define CMD_REPEAT    51
 
-char* commands[] = {
+char* command_strings[] = {
   "pause",
   "continue",
   "erase",
@@ -77,7 +79,7 @@ char* commands[] = {
   "dim",
   "bright",
   "fade",
-  "efade",
+  "wipe",
   "flood",
   "random",
   "mirror",
@@ -108,4 +110,6 @@ char* commands[] = {
   "dkgray",
   "repeat"
 };
+
+#endif
 
