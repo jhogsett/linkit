@@ -21,9 +21,9 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   command("::pause:reset:erase")
 
-brightness = 25
+brightness = 10
 saturation = 255
-step = 6
+step = 1
 
 def loop(): 
   for i in xrange(0, 360, step):
@@ -33,7 +33,7 @@ def loop():
     command(str((i + 180) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
     command(str((i + 240) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
     command(str((i + 300) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
-    command("black:black:continue:flush");
+    command("black:continue:flush");
     command("pause");
 
 if __name__ == '__main__': 
