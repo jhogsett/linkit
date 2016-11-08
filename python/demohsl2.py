@@ -28,15 +28,18 @@ step = 1
 def loop(): 
   for i in xrange(0, 360, step):
     command(str(i) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
-    command(str((i + 60) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
-    command(str((i + 120) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
+    command(str((i + 45) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
+    command(str((i + 90) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
+    command(str((i + 135) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
     command(str((i + 180) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
-    command(str((i + 240) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
-    command(str((i + 300) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
-    command("black:continue:flush");
-    command("pause");
+    command(str((i + 225) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
+    command(str((i + 270) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
+    command(str((i + 315) % 360) + "," + str(saturation) + "," + str(brightness) + ":hslcolor");
+    command("continue:flush")
+    command("pause")
 
-if __name__ == '__main__': 
-  setup() 
-  while True: 
+if __name__ == '__main__':
+  setup()
+  while True:
     loop()
+
