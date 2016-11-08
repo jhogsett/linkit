@@ -16,8 +16,11 @@
 #define BLINK_ON_A 21
 #define BLINK_ON_B 22
 
+// pulse blink
+#define BLINK_ON_P 23
+
 #define BLINK_MIN BLINK_ON 
-#define BLINK_MAX BLINK_ON_B
+#define BLINK_MAX BLINK_ON_P
 
 #define MAX_BLINK 6000
 #define BLINK_0 0
@@ -29,6 +32,10 @@
 #define BLINK_6 5999
 #define BLINK_A BLINK_1
 #define BLINK_B BLINK_4
+
+#define BLINK_PULSE_TIME 200
+#define BLINK_P_1 BLINK_1
+#define BLINK_P_0 (BLINK_1 + BLINK_PULSE_TIME)
 
 class BlinkEffects
 {
@@ -42,6 +49,7 @@ class BlinkEffects
   bool blink_state_6 = true; 
   bool blink_state_a = true; 
   bool blink_state_b = true; 
+  bool blink_state_p = true;
 
   void begin(int max_blink);
   void reset();
@@ -69,6 +77,7 @@ void BlinkEffects::reset(){
   blink_state_6 = false;
   blink_state_a = false;
   blink_state_b = false;
+  blink_state_p = false;
   blink_counter = 0;
 }
 
@@ -88,8 +97,14 @@ bool BlinkEffects::process(){
   if(blink_counter == BLINK_1){
     blink_state_1 = true;
     blink_state_a = true;
+    blink_state_p = true;
     blink_state_6 = false;
     blink_state_b = false;
+    should_flush = true;
+  }
+
+  if(blink_counter == BLINK_P_0){
+    blink_state_p = false;
     should_flush = true;
   }
 
@@ -141,11 +156,11 @@ bool BlinkEffects::blink_on(int effect){
       (effect == BLINK_ON_5 && blink_state_5) || 
       (effect == BLINK_ON_6 && blink_state_6) || 
       (effect == BLINK_ON_A && blink_state_a) || 
-      (effect == BLINK_ON_B && blink_state_b)) {
-    return true;  
+      (effect == BLINK_ON_B && blink_state_b) ||
+      (effect == BLINK_ON_P && blink_state_p)) {
+    return true;
   }
   return false;
 }
 
 #endif
-

@@ -13,7 +13,7 @@
 class EffectsProcessor
 {
   public:
-  /*const*/ static int random_effects[RANDOM_EFFECTS];
+  const static int random_effects[RANDOM_EFFECTS];
   int *effects;
   BlinkEffects *blink_effects;
   BreatheEffects *breathe_effects;
@@ -28,7 +28,7 @@ class EffectsProcessor
   bool process_effects();
 };
 
-int EffectsProcessor::random_effects[] = { NO_EFFECT, BREATHE_ON, RANDOM, BLINK_ON, BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4, BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B };
+const int EffectsProcessor::random_effects[] = { NO_EFFECT, BREATHE_ON, RANDOM, BLINK_ON, BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4, BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B }; //, BLINK_ON_P };
 
 void EffectsProcessor::begin(int *effects, BlinkEffects *blink_effects, BreatheEffects *breathe_effects){
   this->effects = effects;
