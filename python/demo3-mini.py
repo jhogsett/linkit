@@ -8,6 +8,7 @@ s = None
 
 num_leds = 8
 play_time = 5.0
+frame_time = 0.05
 
 def flush_input():                        
   s.flushInput()
@@ -61,6 +62,7 @@ def loop():
     cmd = cmd + str(osize * (times - i)) + ":window:"                              
     cmd = cmd + color + ":" + effect + ":" 
     command(cmd)               
+    time.sleep(frame_time)
   command("8:window:continue:flush")                                       
   time.sleep(play_time)                                               
   command("pause")  
