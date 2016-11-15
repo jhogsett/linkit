@@ -8,8 +8,10 @@ class Render
   rgb_color render(rgb_color color, int effect);
   rgb_color fast_render(rgb_color color, int effect);
   void render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, int count, int *effects);
+  void render_buffer_low_power(rgb_color *dest_buffer, rgb_color *src_buffer, int count, int *effects, int position);
 
   private:
+  static rgb_color black;
   BlinkEffects *blink_effects;
   BreatheEffects *breathe_effects;
   float default_brightness_scale;
@@ -19,6 +21,8 @@ class Render
   rgb_color get_static();
   rgb_color get_default(rgb_color);
 };
+
+rgb_color Render::black = {0, 0, 0};
 
 void Render::begin(BlinkEffects *blink_effects, BreatheEffects *breathe_effects, int default_brightness, int minimum_brightness){
     this->blink_effects = blink_effects;
@@ -69,6 +73,16 @@ rgb_color Render::fast_render(rgb_color color, int _effect){
 void Render::render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, int count, int *effects){
   for(int i = 0; i < count; i++)
     dest_buffer[i] = render(src_buffer[i], effects[i]);
+}
+
+void Render::render_buffer_low_power(rgb_color *dest_buffer, rgb_color *src_buffer, int count, int *effects, int position){
+  for(int i = 0; i < count; i++){
+    if(i == position){
+      dest_buffer[i] = render(src_buffer[i], effects[i]);
+    } else {
+      dest_buffer[i] = black;
+    }
+  }
 }
 
 #endif
