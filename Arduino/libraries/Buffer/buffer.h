@@ -16,9 +16,9 @@ class Buffer
 {
   public:
 #ifdef EXISTENCE_ENABLED
-  void begin(PololuLedStripBase *ledStrip, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence);
+  void begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence);
 #else
-  void begin(PololuLedStripBase *ledStrip, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects);
+  void begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects);
 #endif
 
   void display_buffer(rgb_color * pbuffer);
@@ -33,9 +33,11 @@ class Buffer
   void fade(float rate);
   void fade_fast();
   int get_window();
+  int set_display(int display);
 
   private:
-  PololuLedStripBase *ledStrip;
+  PololuLedStripBase **ledStrips;
+  int current_strip;
   rgb_color *buffer;
   static rgb_color *render;
   int *effects;
@@ -56,12 +58,13 @@ class Buffer
 rgb_color *Buffer::render;
 
 #ifdef EXISTENCE_ENABLED
-void Buffer::begin(PololuLedStripBase *ledStrip, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence){
+void Buffer::begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence){
 #else
-void Buffer::begin(PololuLedStripBase *ledStrip, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects){
+void Buffer::begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects){
 #endif
 
-  this->ledStrip = ledStrip;
+  this->ledStrips = ledStrips;
+  this->current_strip = 0;
   this->buffer = buffer;
   this->render = render;
   this->default_brightness_scale = default_brightness / 100.0;
@@ -80,7 +83,7 @@ void Buffer::begin(PololuLedStripBase *ledStrip, int default_brightness, float f
 }
 
 void Buffer::display_buffer(rgb_color * pbuffer = render){
-  ledStrip->write(pbuffer, visible_led_count);
+  ledStrips[current_strip]->write(pbuffer, visible_led_count);
 }
   
 void Buffer::erase(bool display = false){
@@ -187,6 +190,10 @@ void Buffer::set_window(int window){
 
 int Buffer::get_window(){
   return window;
+}
+
+int Buffer::set_display(int display){
+  current_strip = display;
 }
 
 // animate by shifting frame (future: shift in from back buffer)
