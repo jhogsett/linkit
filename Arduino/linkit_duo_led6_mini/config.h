@@ -5,8 +5,8 @@
 #define RANDOM_SEED_PIN A1            // floating pin for seeding the RNG
 #define LIGHT_SENSOR_PIN A0           // photocell pin for auto-brightness setting
 
-#define DEFAULT_BRIGHTNESS_PERCENT 4 // standard brightness
-#define MINIMUM_BRIGHTNESS_PERCENT 1  // brightness scale for blinking leds in the off state
+#define DEFAULT_BRIGHTNESS_PERCENT 6 // standard brightness
+#define MINIMUM_BRIGHTNESS_PERCENT 2  // brightness scale for blinking leds in the off state
 #define FADE_RATE 0.9999
 
 #define ANIM_LED_COUNT 8              // visible led count
@@ -29,4 +29,4 @@ class Config
 };
 
 #endif
-
+  

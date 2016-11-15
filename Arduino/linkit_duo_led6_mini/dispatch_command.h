@@ -166,6 +166,15 @@ void dispatch_command(int cmd){
       dependencies.commands.do_repeat(dependencies.command_processor.sub_args[0]); 
       dependencies.command_processor.reset_args();                                 
       break;
+    case CMD_BLINKP:
+      dependencies.effects_processor.start_effect(BLINK_ON_P);                                               
+      break;
+    case CMD_LOPOWER:
+      dependencies.commands.low_power();                                               
+      break;
+    case CMD_HIPOWER:
+      dependencies.commands.high_power();                                               
+      break;
   }
 }
 

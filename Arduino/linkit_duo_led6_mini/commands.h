@@ -13,6 +13,8 @@
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 125
 
+#define LOW_POWER_TIME 50
+
 class Commands
 {
   public:
@@ -36,6 +38,8 @@ class Commands
   void do_demo();
   void flush(bool force_display);
   void reset();
+  void low_power();
+  void high_power();
 
   private:
   Buffer *buffer;
@@ -48,6 +52,11 @@ class Commands
   bool paused = false;
   int default_brightness;
   int visible_led_count;
+  bool low_power_mode = false;
+  int low_power_position = 0;
+  int low_power_timer = 0;
+
+  void advance_low_power_position();
 };
 
 void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, int *effects){
@@ -67,6 +76,13 @@ void Commands::pause(){
 
 void Commands::resume(){
   paused = false;
+}
+
+void Commands::low_power(){
+  low_power_mode = true;
+}
+void Commands::high_power(){
+  low_power_mode = false;
 }
 
 void Commands::do_blend(){
@@ -183,9 +199,20 @@ void Commands::do_wipe(){
   do_power_shift_object(0, visible_led_count);
 }
 
+void Commands::advance_low_power_position(){
+  if(low_power_timer++ % LOW_POWER_TIME == 0){
+    low_power_position = ++low_power_position % visible_led_count;    
+  }
+}
+
 void Commands::flush(bool force_display = false){
   if(force_display || !paused){
-    renderer->render_buffer(render, colors, visible_led_count, effects);
+    if(low_power_mode){
+      renderer->render_buffer_low_power(render, colors, visible_led_count, effects, low_power_position);
+      advance_low_power_position();
+    } else {
+      renderer->render_buffer(render, colors, visible_led_count, effects);
+    }
     buffer->display_buffer();
   }
 }

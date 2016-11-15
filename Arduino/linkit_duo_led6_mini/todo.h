@@ -5,6 +5,8 @@
 // strobe / flash
 // audo brightness, set brightness
 
+// have a low-power mode, low brightness and/or scanning the LEDs one by one until turned off.
+
 // rainbow colors incremental, or continuously changing
 // rotation
 // transitions
@@ -29,3 +31,27 @@
 // brief flash, or something, to alert to a new (green?) build
 // some way to visually tell which are changes from a little while ago (like the fading yellow highlight on web pages)
 
+
+/*
+
+python: 
+
+if there's no new builds, display an alternate low power version
+- dim for all the colors
+- breathing and blinking still happen normally
+
+seems like it would be better to let the arduino handle the low power rendering so the python script isn't in charge of an effect.
+
+
+lowpower command means:
+
+ - could be: normal display effects, but all-but-one LEDs are blacked out (or not rendered).
+ - the position rendered would vary slowly and go low-high (not back and forth)
+
+ opposite name? normal
+
+ flush can call the alternate low-power rendering 
+
+
+ 
+*/
