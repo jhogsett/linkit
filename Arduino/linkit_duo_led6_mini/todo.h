@@ -1,3 +1,27 @@
+// multiple pin outputs
+// create an array of led strips on specific pins
+// create command to switch to a particular pin for the next commands
+// reset should put at first in array
+// figure out how to specify the led strip for buffer.h
+// pin#:display
+
+
+
+// turn on pin
+// pin#:pinon
+// pin#:pinoff
+
+
+
+
+// cleanup
+// look for ints that can be chars: byte is the type to use
+
+
+// would be nice to set strip orientation remotely
+
+
+
 // after pause, allow breathing and blinking to come to a halt first
 // restrict flood, etc. to window
 // reverse, inverse mirror

@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS 54
+#define NUM_COMMANDS 55
 
 #define CMD_NONE       0
 #define CMD_FIRST      1
@@ -59,6 +59,7 @@
 #define CMD_BLINKP    52
 #define CMD_LOPOWER   53
 #define CMD_HIPOWER   54
+#define CMD_DISPLAY   55
 
 char* command_strings[] = {
   "pause",
@@ -114,7 +115,8 @@ char* command_strings[] = {
   "repeat",
   "blinkp",
   "lopower",
-  "hipower"
+  "hipower",
+  "display"
 };
 
 #endif

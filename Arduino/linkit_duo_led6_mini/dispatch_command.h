@@ -175,6 +175,10 @@ void dispatch_command(int cmd){
     case CMD_HIPOWER:
       dependencies.commands.high_power();                                               
       break;
+    case CMD_DISPLAY:    
+      dependencies.commands.set_display(dependencies.command_processor.sub_args[0]); 
+      dependencies.command_processor.reset_args();                                 
+      break;
   }
 }
 

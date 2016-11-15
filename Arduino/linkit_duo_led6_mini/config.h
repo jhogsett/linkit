@@ -1,7 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define DATA_OUT_PIN 12               // data out pin for sending color data to the LEDs
+#define NUM_DISPLAYS 3                // how many physical LED strips there are (all expected to have the same # of LEDs)
+
+#define DISPLAY_PIN1 12
+#define DISPLAY_PIN2 11
+#define DISPLAY_PIN3 10
+
+//#define DATA_OUT_PIN 12               // data out pin for sending color data to the LEDs
+
 #define RANDOM_SEED_PIN A1            // floating pin for seeding the RNG
 #define LIGHT_SENSOR_PIN A0           // photocell pin for auto-brightness setting
 
@@ -17,7 +24,14 @@
 class Config
 {
   public:
-  static const int data_out_pin = DATA_OUT_PIN;
+
+  // old
+//  static const int data_out_pin = DATA_OUT_PIN;
+
+  // new
+  static const int num_displays = NUM_DISPLAYS;
+  static constexpr int display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2, DISPLAY_PIN3};  
+
   static const int random_seed_pin = RANDOM_SEED_PIN;
   static const int light_sensor_pin = LIGHT_SENSOR_PIN;
   static const int default_brightness_percent = DEFAULT_BRIGHTNESS_PERCENT;

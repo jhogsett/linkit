@@ -40,6 +40,7 @@ class Commands
   void reset();
   void low_power();
   void high_power();
+  void set_display(int display);
 
   private:
   Buffer *buffer;
@@ -83,6 +84,10 @@ void Commands::low_power(){
 }
 void Commands::high_power(){
   low_power_mode = false;
+}
+
+void Commands::set_display(int display){
+  buffer->set_display(display);
 }
 
 void Commands::do_blend(){
@@ -219,7 +224,9 @@ void Commands::flush(bool force_display = false){
 
 void Commands::reset(){
   paused = false;
+  low_power_mode = false;
   buffer->set_window(visible_led_count);
+  buffer->set_display(0);
   effects_processor->reset_effects();
 }
 
