@@ -2,6 +2,8 @@
 extern Dependencies dependencies;
 
 void dispatch_command(int cmd){
+  bool reset_args = false;
+  
   switch(cmd){
     case CMD_NONE:      
       dependencies.command_processor.save_args();                                        
@@ -83,19 +85,19 @@ void dispatch_command(int cmd){
       break;
     case CMD_ESHIFT:    
       dependencies.commands.do_elastic_shift(dependencies.command_processor.sub_args[0]); 
-      dependencies.command_processor.reset_args();                          
+      reset_args = true;
       break;
     case CMD_PSHIFT:    
       dependencies.commands.do_power_shift(dependencies.command_processor.sub_args[0]);  
-      dependencies.command_processor.reset_args();                            
+      reset_args = true;
       break;
     case CMD_PSHIFTO:   
       dependencies.commands.do_power_shift_object(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]); 
-      dependencies.command_processor.reset_args();           
+      reset_args = true;
       break;
     case CMD_WINDOW:    
       dependencies.buffer.set_window(dependencies.command_processor.sub_args[0]); 
-      dependencies.command_processor.reset_args();                                
+      reset_args = true;
       break;
     case CMD_RESET:     
       dependencies.commands.reset();                                                              
@@ -108,11 +110,11 @@ void dispatch_command(int cmd){
       break;
     case CMD_RGBCOLOR:  
       dependencies.buffer.push_rgb_color(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]); 
-      dependencies.command_processor.reset_args();  
+      reset_args = true;
       break;
     case CMD_HSLCOLOR:  
       dependencies.buffer.push_hsl_color(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]); 
-      dependencies.command_processor.reset_args();  
+      reset_args = true;
       break;
     case CMD_RED:       
       dependencies.buffer.push_color(red);                                                      
@@ -164,7 +166,7 @@ void dispatch_command(int cmd){
       break;
     case CMD_REPEAT:    
       dependencies.commands.do_repeat(dependencies.command_processor.sub_args[0]); 
-      dependencies.command_processor.reset_args();                                 
+      reset_args = true;
       break;
     case CMD_BLINKP:
       dependencies.effects_processor.start_effect(BLINK_ON_P);                                               
@@ -177,8 +179,19 @@ void dispatch_command(int cmd){
       break;
     case CMD_DISPLAY:    
       dependencies.commands.set_display(dependencies.command_processor.sub_args[0]); 
-      dependencies.command_processor.reset_args();                                 
+      reset_args = true;
       break;
-  }
+    case CMD_PINON:    
+      dependencies.commands.set_pin(dependencies.command_processor.sub_args[0], true); 
+      reset_args = true;
+      break;
+    case CMD_PINOFF:    
+      dependencies.commands.set_pin(dependencies.command_processor.sub_args[0], false); 
+      reset_args = true;
+      break;
+    }
+
+  if(reset_args)
+    dependencies.command_processor.reset_args();                                 
 }
 

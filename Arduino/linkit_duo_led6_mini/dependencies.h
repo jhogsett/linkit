@@ -25,12 +25,10 @@ class Dependencies
   static rgb_color colors[config.led_count];
   static rgb_color render[config.led_count];
   static int effects[config.led_count];
-  
   static PololuLedStrip<config.display_pins[0]> ledStrip;
   static PololuLedStrip<config.display_pins[1]> ledStrip2;
   static PololuLedStrip<config.display_pins[2]> ledStrip3;
   static PololuLedStripBase* ledStrips[config.num_displays];
-  
   static RandomSeed<RANDOM_SEED_PIN> randomizer;
   static AutoBrightness<LIGHT_SENSOR_PIN> auto_brightness;
   static CommandProcessor command_processor;
@@ -47,12 +45,10 @@ rgb_color Dependencies::colors[config.led_count];
 rgb_color Dependencies::render[config.led_count];
 int Dependencies::effects[config.led_count];
 Config Dependencies::config;
-
 PololuLedStrip<DISPLAY_PIN1> Dependencies::ledStrip;
 PololuLedStrip<DISPLAY_PIN2> Dependencies::ledStrip2;
 PololuLedStrip<DISPLAY_PIN3> Dependencies::ledStrip3;
 PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip, &Dependencies::ledStrip2, &Dependencies::ledStrip3};
- 
 RandomSeed<RANDOM_SEED_PIN> Dependencies::randomizer;
 AutoBrightness<LIGHT_SENSOR_PIN> Dependencies::auto_brightness;
 CommandProcessor Dependencies::command_processor;
@@ -68,10 +64,7 @@ void Dependencies::begin(){
   auto_brightness.begin();
   command_processor.begin(&Serial1, command_strings, NUM_COMMANDS);
   ColorMath::begin(false);
-
-  //ledStrips = {&ledStrip, &ledStrip2, &ledStrip3};
   buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, colors, render, effects); //, existence);
-
   commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, colors, render, effects);
   blink_effects.begin();
   breathe_effects.begin();

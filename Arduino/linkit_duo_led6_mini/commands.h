@@ -41,6 +41,7 @@ class Commands
   void low_power();
   void high_power();
   void set_display(int display);
+  void set_pin(int pin, bool on);
 
   private:
   Buffer *buffer;
@@ -88,6 +89,11 @@ void Commands::high_power(){
 
 void Commands::set_display(int display){
   buffer->set_display(display);
+}
+
+void Commands::set_pin(int pin, bool on){
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, on ? HIGH : LOW);  
 }
 
 void Commands::do_blend(){

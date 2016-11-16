@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS 55
+#define NUM_COMMANDS 57
 
 #define CMD_NONE       0
 #define CMD_FIRST      1
@@ -60,6 +60,8 @@
 #define CMD_LOPOWER   53
 #define CMD_HIPOWER   54
 #define CMD_DISPLAY   55
+#define CMD_PINON     56
+#define CMD_PINOFF    57
 
 char* command_strings[] = {
   "pause",
@@ -116,7 +118,9 @@ char* command_strings[] = {
   "blinkp",
   "lopower",
   "hipower",
-  "display"
+  "display",
+  "pinon",
+  "pinoff"
 };
 
 #endif

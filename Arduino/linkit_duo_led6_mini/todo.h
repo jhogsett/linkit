@@ -1,9 +1,3 @@
-// multiple pin outputs
-// create an array of led strips on specific pins
-// create command to switch to a particular pin for the next commands
-// reset should put at first in array
-// figure out how to specify the led strip for buffer.h
-// pin#:display
 
 
 
@@ -12,7 +6,7 @@
 // pin#:pinoff
 
 
-
+// in going in and out of lo/hi power, reset the position counter
 
 // cleanup
 // look for ints that can be chars: byte is the type to use
@@ -20,7 +14,11 @@
 
 // would be nice to set strip orientation remotely
 
+// synchronize effects each time the low power led positions changes
 
+// Python: also show the high power mode if any of the statuses change
+
+// detect when external power is applied
 
 // after pause, allow breathing and blinking to come to a halt first
 // restrict flood, etc. to window
@@ -45,6 +43,8 @@
 // invert hue, swing hue, back and forth between two arbitrary colors, rgb cube
 // shooting up
 
+// transition: all leds get sucked into one LED position
+
 
 // python:
 // ci-skip build status is "not_run"
@@ -54,6 +54,8 @@
 // show something if the data has been unchanged for some time, like after hours
 // brief flash, or something, to alert to a new (green?) build
 // some way to visually tell which are changes from a little while ago (like the fading yellow highlight on web pages)
+
+// should time out after a while if the ACK is not received and just assume it, could be the Arduino side was reset 
 
 
 /*
