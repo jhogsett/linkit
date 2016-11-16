@@ -41,6 +41,8 @@
     * click the "upgrade firmware" button on the Linkit webUI
     * point to the lks7688.img firmware file
     * click Upgrade & Restart
+    * wait 3 minutes while the chip upgrades the firmware (showing a continuously blinking wifi LED)
+    * wait 30 seconds for the OS to boot (showing a solid wifi LED for 30 seconds)
 
 9. Set the chip to "station" mode instead of "access point" mode
 
@@ -50,12 +52,14 @@
 
     In terminal, ssh to root@mylinkit.local with the password you set above
   
+    _Note: if you have ssh'd into a different linkit board, you may need to delete its entry from ~/.ssh/known_hosts_  
+  
 11. Add a micro SD card for storage.
 
     _Note: the chip comes with a small amount of NAND Flash storage. But unlike a typical Flash drive, there is no usage leveling and atomic writes. Because NAND Flash storage has a limited number of erase/write cycles, it's best to use the NAND Flash drive only for critical use.
     
     * Power off the device
-    * Insert a pre-formatted Micro SD card into the slot. I've had success with 1GB and 4GB cards.
+    * Insert a pre-formatted (FAT32) Micro SD card into the slot. I've had success with 1GB and 4GB cards.
     * Boot up the device
     * SSH in and confirm you can navigate to /Media/SD-P1 and see a usable drive
 
