@@ -4,8 +4,8 @@
 #define DELIMITER_CHAR ':'
 #define MAX_STRING_LENGTH 20
 #define NUM_SUB_ARGS 3
-#define CMD_NONE       0
-#define CMD_FIRST      1
+#define CMD_NONE 0
+#define CMD_FIRST 1
 
 class CommandProcessor 
 {
@@ -96,6 +96,9 @@ int CommandProcessor::get_sub_args(){
 
 void CommandProcessor::reset_args(){
   strcpy(arg, "");
+  sub_args[0] = 0;
+  sub_args[1] = 0;
+  sub_args[2] = 0;
 }
 
 int CommandProcessor::get_command(){

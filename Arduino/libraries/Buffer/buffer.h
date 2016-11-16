@@ -118,7 +118,7 @@ void Buffer::fade_fast(){
   }
 }
 
-void Buffer::shift_buffer(rgb_color * buffer, int max /* = ANIM_LED_COUNT*/){
+void Buffer::shift_buffer(rgb_color * buffer, int max){
   for(int i = max - 1; i >= 1; i--){
     buffer[i] = buffer[i-1];
     effects[i] = effects[i-1];
