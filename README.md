@@ -18,7 +18,7 @@
 
 4. Change your wifi settings to use the Linkit access point.
 
-    When connected, the orange LED will blink three times per second.
+    When connected, the orange LED will blink three times, pause and repeat.
 
 5. In your browser, go to http://mylinkit.local
 
@@ -31,6 +31,16 @@
     Follow these instructions to update the board's firmware: https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688/get_started/7688_duo/update/
     
     _Note: after updating, you'll need to start over again at step #1_ 
+
+    * Firmware downloads page: https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688/sdt_intro/index.gsp
+
+    _Note: the firmware image file ends with a .img extension that Mac OS thinks is a disk image. This is just the firmware images and the .img cannot be opened as if it is a disk image on Mac._
+    
+    In general, you will
+    * switch back to the Linkit access point
+    * click the "upgrade firmware" button on the Linkit webUI
+    * point to the lks7688.img firmware file
+    * click Upgrade & Restart
 
 9. Set the chip to "station" mode instead of "access point" mode
 
