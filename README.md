@@ -79,13 +79,14 @@
 
     Generate your identity key
 
+    * mkdir ~/.ssh
     * dropbearkey -t rsa -f ~/.ssh/id_rsa
 
     Convert public key from dropbear binary to openssh text
     
     * dropbearkey -y -f ~/.ssh/id_rsa | head -n 2 | tail -1
     
-    Copy the above public key and add it to your account at Github.com
+    Copy the public key that's output and add it to your account at Github.com
     
 15. Change the git ssh command to use Dropbear
     
