@@ -135,9 +135,13 @@
         
 21. Customize the 'ls' command
 
-    Edit your shell profile and add an alias to customize the _ls_ command.
+    Edit your profile and add an alias to customize the _ls_ command.
 
-    * vim /etc/profile
+    * vim /etc/profile (for all users)
+    
+    or
+    
+    * vim /root/.profile (for root user)
     
     Then add
     
@@ -145,7 +149,7 @@
     
     Then log out and back in.
     
-    Add any other profile scripts to this file (there is no _.bashrc_).
+    Add any other profile scripts to either file (there is no _.bashrc_).
     
 22. Add your SSH key so you don't have to enter a password 
 
@@ -154,5 +158,61 @@
     * vim /etc/dropbear/authorized_keys
     
     Add your key and save the file. Then, log out and back in, and if it worked, you won't be asked for a password.
+
+23. Add a CircleCI API token to the environment
+
+    * Edit your profile as in step #21 
+    * add export KEY={THE KEY}
+
+24. Create a service start-up script for a Python script
+
+    To have a script automatically start up on system boot, create a script such as the following 
+
+    _Tip: place your Python script in `/root` so it can be started up even if the SD card has not finished initializing_
+
+    * vim /etc/init.d/circleci
+    
+    Example script:
+    
+    ```bash
+    #!/bin/sh /etc/rc.common
+ 
+SCRIPT_NAME="Build Status"
+SCRIPT_PATH="/root/circleci6.py $KEY"
+LOG_FILE="/tmp/circleci.log"
+START=99
+STOP=10
+ 
+start() {       
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}                
+ 
+stop() {         
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PATH`
+}
+```
+    * chmod +x /etc/init.d/circleci
+
+    Enable or disable the automatic start up with:
+    
+    * /etc/init.d/circcleci enable
+    * /etc/init.d/circcleci disable
+    
+    When enabled, new start up and shutdown scripts can be seen in /etc/rc.d such as:
+    
+    ```K10circleci -> ../init.d/circleci```
+    ```S99circleci -> ../init.d/circleci```
+
+    Now you can start and stop the service by using:
+    
+    * /etc/init.d/circleci start
+    * /etc/init.d/circleci stop
+    * /etc/init.d/circleci restart
+
+    _Notes:_
+    
+    * The START and STOP variables specify where in the start up and shutdown process this script is handled. The higher the number, the later in the process the script is handled.
 
 #### Links
