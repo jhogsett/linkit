@@ -312,6 +312,10 @@
     
 #### Links
 
-    * MediaTek Starter Guide: https://labs.mediatek.com/fileMedia/download/4ef033b8-80ca-4cdb-9ad6-1c23836c63de
+    * MediaTek Starter Guide: 
+    
+    https://labs.mediatek.com/fileMedia/download/4ef033b8-80ca-4cdb-9ad6-1c23836c63de
+    
     * MediaTek Software and Tools
-https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688/sdt_intro/index.gsp
+    
+    https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688/sdt_intro/index.gsp
