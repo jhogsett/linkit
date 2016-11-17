@@ -188,25 +188,24 @@
     
     Example script:
     
-    ```bash
-    #!/bin/sh /etc/rc.common
- 
-SCRIPT_NAME="Build Status"
-SCRIPT_PATH="/root/circleci6.py $KEY"
-LOG_FILE="/tmp/circleci.log"
-START=99
-STOP=10
- 
-start() {       
-        echo "Starting $SCRIPT_NAME"
-        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
-}                
- 
-stop() {         
-        echo "Stopping $SCRIPT_NAME"
-        killall -9 `basename $SCRIPT_PATH`
-}
-```
+        #!/bin/sh /etc/rc.common
+
+        SCRIPT_NAME="Build Status"
+        SCRIPT_PATH="/root/circleci6.py $KEY"
+        LOG_FILE="/tmp/circleci.log"
+        START=99
+        STOP=10
+
+        start() {       
+                echo "Starting $SCRIPT_NAME"
+                $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+        }                
+
+        stop() {         
+                echo "Stopping $SCRIPT_NAME"
+                killall -9 `basename $SCRIPT_PATH`
+        }
+
     * chmod +x /etc/init.d/circleci
 
     Enable or disable the automatic start up with:
@@ -217,6 +216,7 @@ stop() {
     When enabled, new start up and shutdown scripts can be seen in /etc/rc.d such as:
     
     ```K10circleci -> ../init.d/circleci```
+    
     ```S99circleci -> ../init.d/circleci```
 
     Now you can start and stop the service by using:
