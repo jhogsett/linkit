@@ -28,7 +28,7 @@ empties = num_leds - ((repeats + 1) * stops)
 
 
 def setup():
-  global s, stops, repeats, empties
+  global s, stops, repeats, empties, step, brightness
   s = serial.Serial("/dev/ttyS0", 115200) 
   command("::pause:reset:erase")
 
@@ -36,6 +36,12 @@ def setup():
     stops = int(sys.argv[1])
     repeats = (num_leds / stops) - 1
     empties = num_leds - ((repeats + 1) * stops)
+
+  if len(sys.argv) > 2:
+    step = int(sys.argv[2])
+
+  if len(sys.argv) > 3:
+    brightness = int(sys.argv[3])
 
 def angle(step, stop):
   return (((360 / stops) * stop) + step) % 360
