@@ -147,5 +147,12 @@
     
     Add any other profile scripts to this file (there is no _.bashrc_).
     
+22. Add your SSH key so you don't have to enter a password 
+
+    Get your SSH public key. On a Mac it should be /Users/USERNAME/.ssh/id_rsa.pub
+    
+    * vim /etc/dropbear/authorized_keys
+    
+    Add your key and save the file. Then, log out and back in, and if it worked, you won't be asked for a password.
 
 #### Links
