@@ -201,7 +201,7 @@
         #!/bin/sh /etc/rc.common
 
         SCRIPT_NAME="Build Status"
-        SCRIPT_PATH="/root/circleci6.py $KEY"
+        SCRIPT_PATH="/root/circleci6.py {YOUR KEY}"
         LOG_FILE="/tmp/circleci.log"
         START=99
         STOP=10
@@ -215,6 +215,8 @@
                 echo "Stopping $SCRIPT_NAME"
                 killall -9 `basename $SCRIPT_PATH`
         }
+
+    _Note: the ENV var `$KEY` cannot be used because it is only loaded when there's a login_
 
     * chmod +x /etc/init.d/circleci
 
