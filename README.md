@@ -289,7 +289,7 @@
     
     Then go to http://mylinkit.local/cgi-bin/test.cgi and it should say “Hello World” along the date & time
 
-    _Tip:_ If the name `mylinkit.local` cannot be resolved, so the following to restart the multicast DNS (mDNS) service:
+    _Tip:_ If the name `mylinkit.local` cannot be resolved, do the following to restart the multicast DNS (mDNS) service:
     
     * /etc/init.d/avahi-daemon
 
