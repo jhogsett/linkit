@@ -88,6 +88,10 @@
     
     Copy the public key that's output and add it to your account at Github.com
     
+    See: https://forum.openwrt.org/viewtopic.php?id=47551
+    
+    And: https://groups.google.com/forum/#!msg/beagleboard/h6XiKjT9-ZI/xgA0kIGViKgJ
+    
 1. Change the git ssh command to use Dropbear
     
     * echo "#!/bin/sh" > ~/.gitssh.sh
@@ -108,6 +112,8 @@
 1. Install the Python Requests library for reaching the web
 
     * pip install requests
+    
+    See: http://docs.python-requests.org/en/master/
     
 1. Run a Python program to verify things are set up
 
@@ -165,6 +171,8 @@
     
     Add any other profile scripts to either file (there is no _.bashrc_).
     
+    See: http://www.cesareriva.com/openwrt-shell-alias/
+    
 1. Add your SSH key so you don't have to enter a password 
 
     Get your SSH public key. On a Mac it should be /Users/USERNAME/.ssh/id_rsa.pub
@@ -172,6 +180,8 @@
     * vim /etc/dropbear/authorized_keys
     
     Add your key and save the file. Then, log out and back in, and if it worked, you won't be asked for a password.
+
+    See: https://wiki.openwrt.org/doc/howto/dropbear.public-key.auth
 
 1. Add a CircleCI API token to the environment
 
@@ -293,4 +303,15 @@
     
     * /etc/init.d/avahi-daemon
 
+1. Safe Shutdown
+
+    * Openwrt doesn't have the `shutdown` command
+    * Use the `sync` command to flush data to the SD card before removing power
+    
+    See: https://labs.mediatek.com/forums/posts/list/3605.page
+    
 #### Links
+
+    * MediaTek Starter Guide: https://labs.mediatek.com/fileMedia/download/4ef033b8-80ca-4cdb-9ad6-1c23836c63de
+    * MediaTek Software and Tools
+https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688/sdt_intro/index.gsp
