@@ -117,11 +117,35 @@
     Tail the log file to see if it's reaching CirclCI
     
     * tail -f ~/dev/linkit/python/circleci.log
+  
+19. Establish your Git identify
+
+    Before you can commit changes, you need to let Git know who you are.
+
+    * git config --global user.email "{YOUR EMAIL}"
+    * git config --global user.name "{YOUR FULL NAME}"
+  
+20. Set up Git for pulling and pushing commits
+
+    A _git pull_ is a _git fetch_ followed by a _git merge_. To do the merge, Git needs to know how. (One might think this would have been set up correctly to begin with, since Git comes pre-installed.)
+
+    * ln -s $(which git) /usr/lib/git-core/git
     
-19. Customize the 'ls' command
+    See: https://community.onion.io/topic/785/git-error-merge-not-found
+        
+21. Customize the 'ls' command
 
+    Edit your shell profile and add an alias to customize the _ls_ command.
 
-
-
+    * vim /etc/profile
+    
+    Then add
+    
+    * alias ls='ls -al' (or your desired customization)
+    
+    Then log out and back in.
+    
+    Add any other profile scripts to this file (there is no _.bashrc_).
+    
 
 #### Links
