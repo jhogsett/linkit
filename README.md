@@ -112,7 +112,7 @@
 18. Run a Python program to verify things are set up
 
     * cd ~/dev/linkit/python
-    * python circleci5.py <YOURKEY>
+    * python circleci5.py {YOURKEY}
     
     Tail the log file to see if it's reaching CirclCI
     
