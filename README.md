@@ -185,7 +185,7 @@
 
 1. Add a CircleCI API token to the environment
 
-    * Edit your profile as in step #22
+    * Edit the all users profile as in step #22
     * add export KEY={THE KEY}
 
 1. Create a service start-up script for a Python script
