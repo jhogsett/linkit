@@ -211,8 +211,8 @@ stop() {
 
     Enable or disable the automatic start up with:
     
-    * /etc/init.d/circcleci enable
-    * /etc/init.d/circcleci disable
+    * /etc/init.d/circleci enable
+    * /etc/init.d/circleci disable
     
     When enabled, new start up and shutdown scripts can be seen in /etc/rc.d such as:
     
@@ -228,6 +228,7 @@ stop() {
     _Notes:_
     
     * The START and STOP variables specify where in the start up and shutdown process this script is handled. The higher the number, the later in the process the script is handled.
+    * I had to add `-9` to the `killall` command to have it successfully shutdwon the running Python script
 
 1. Set up a cron job to restart the script hourly
 
@@ -245,5 +246,52 @@ stop() {
     * 0 */1 * * * /etc/init.d/circleci restart
 
     The service will be restarted hourly at the top of the hour
+
+1. Install the Screen utility
+
+    * opkg update
+    * opkg install screen
+
+    Starting a screen session:
+    
+    * screen -S {NAME}
+
+    Disconnecting from a screen session you want to reconnect to later:
+    
+    * ^A^D
+    
+    Reconnecting to the session
+    
+    * screen -x {NAME}
+    
+    Disconnect and stop the screen session
+    
+    * ^D
+
+1. Getting a simple CGI script running
+
+    * vim /www/cgi-bin/test.cgi
+    
+    Then add:
+    
+```bash    
+#!/bin/ash
+echo "Content-type: text/html"
+echo ""
+echo "<html><head><title>Bash as CGI"
+echo "</title></head><body>"
+echo "<h1>Hello world</h1>"
+echo "Today is $(date)"
+echo "</body></html>"
+```
+    Then do:
+    
+    * chmod +x test.cgi
+    
+    Then go to http://mylinkit.local/cgi-bin/test.cgi and it should say “Hello World” along the date & time
+
+    _Tip:_ If the name `mylinkit.local` cannot be resolved, so the following to restart the multicast DNS (mDNS) service:
+    
+    * /etc/init.d/avahi-daemon
 
 #### Links
