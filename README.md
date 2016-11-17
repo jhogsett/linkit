@@ -10,23 +10,23 @@
     
     The leftmost connector is a USB out connection. An OTG (on the go) USB adaptor is required to use it.
 
-2. Wait for it to boot up
+1. Wait for it to boot up
 
     On powering up, the chip's orange LED will blink once, then stay lit for about 30 seconds while it boots. After that it will blink on and off for a few seconds. When that stops, it's ready.
 
-3. Check your computer wifi settings and look for an access point called "Linkit_Smart_xxxx_xxxxxx" (the x's will be hexadecimal digits).
+1. Check your computer wifi settings and look for an access point called "Linkit_Smart_xxxx_xxxxxx" (the x's will be hexadecimal digits).
 
-4. Change your wifi settings to use the Linkit access point.
+1. Change your wifi settings to use the Linkit access point.
 
     When connected, the orange LED will blink three times, pause and repeat.
 
-5. In your browser, go to http://mylinkit.local
+1. In your browser, go to http://mylinkit.local
 
-6. You'll get a "please set a password" prompt. Set a password for the board.
+1. You'll get a "please set a password" prompt. Set a password for the board.
 
-7. Next you'll be asked to log in 
+1. Next you'll be asked to log in 
 
-8. Update the board's firmware (switch back to your main wifi access point as needed)
+1. Update the board's firmware (switch back to your main wifi access point as needed)
 
     Follow these instructions to update the board's firmware: https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688/get_started/7688_duo/update/
     
@@ -44,17 +44,17 @@
     * wait 3 minutes while the chip upgrades the firmware (showing a continuously blinking wifi LED)
     * wait 30 seconds for the OS to boot (showing a solid wifi LED for 30 seconds)
 
-9. Set the chip to "station" mode instead of "access point" mode
+1. Set the chip to "station" mode instead of "access point" mode
 
     In the chip's web UI click on "Network" (the right right of "System Information". Then select Station mode, choose your main wifi access point and enter the passcode.
   
-10. Confirm you can SSH into the device
+1. Confirm you can SSH into the device
 
     In terminal, ssh to root@mylinkit.local with the password you set above
   
     _Note: if you have ssh'd into a different linkit board, you may need to delete its entry from ~/.ssh/known_hosts_  
   
-11. Add a micro SD card for storage.
+1. Add a micro SD card for storage.
 
     _Note: the chip comes with a small amount of NAND Flash storage. But unlike a typical Flash drive, there is no usage leveling and atomic writes. Because NAND Flash storage has a limited number of erase/write cycles, it's best to use the NAND Flash drive only for critical use.
     
@@ -63,19 +63,19 @@
     * Boot up the device
     * SSH in and confirm you can navigate to /Media/SD-P1 and see a usable drive
 
-12. Create a dev folder
+1. Create a dev folder
 
     * cd /Media/SD-P1
     * mkdir dev
     
-13. Link to the dev folder in the root directory
+1. Link to the dev folder in the root directory
 
     * cd ~
     * ln -s /Media/SD-P1/dev dev
     
     Now you can ssh in and type "cd dev" to get to that folder
     
-14. Create an SSH key (to use services such as github.com)
+1. Create an SSH key (to use services such as github.com)
 
     Generate your identity key
 
@@ -88,7 +88,7 @@
     
     Copy the public key that's output and add it to your account at Github.com
     
-15. Change the git ssh command to use Dropbear
+1. Change the git ssh command to use Dropbear
     
     * echo "#!/bin/sh" > ~/.gitssh.sh
     * echo "dbclient -y -i ~/.ssh/id_rsa \$\*" >> ~/.gitssh.sh
@@ -100,16 +100,16 @@
     * ^D
     * ssh root@mylinkit.local
     
-16. Clone a Github.com repository
+1. Clone a Github.com repository
 
     * cd ~/dev
     * git clone git@github.com:jhogsett/linkit.git
     
-17. Install the Python Requests library for reaching the web
+1. Install the Python Requests library for reaching the web
 
     * pip install requests
     
-18. Run a Python program to verify things are set up
+1. Run a Python program to verify things are set up
 
     * cd ~/dev/linkit/python
     * python circleci5.py {YOURKEY}
@@ -118,22 +118,36 @@
     
     * tail -f ~/dev/linkit/python/circleci.log
   
-19. Establish your Git identify
+1. Establish your Git identify
 
     Before you can commit changes, you need to let Git know who you are.
 
     * git config --global user.email "{YOUR EMAIL}"
     * git config --global user.name "{YOUR FULL NAME}"
   
-20. Set up Git for pulling and pushing commits
+1. Set up Git for pulling and pushing commits
 
     A _git pull_ is a _git fetch_ followed by a _git merge_. To do the merge, Git needs to know how. (One might think this would have been set up correctly to begin with, since Git comes pre-installed.)
 
     * ln -s $(which git) /usr/lib/git-core/git
     
     See: https://community.onion.io/topic/785/git-error-merge-not-found
-        
-21. Customize the 'ls' command
+  
+1. Fix Git diff command
+
+    As installed, the diff command displays differences by opening them in the default editor, including the terminal color codes. It's completely useless.
+    
+    This command will change it to show properly on the console:
+    
+    * git config --global core.pager cat
+
+    see: http://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using-a-pager 
+    
+    and: http://stackoverflow.com/questions/17077973/how-to-make-git-diff-write-to-stdout
+
+    _Note: I'm not sure how to make it use `less` like on a Mac_
+
+1. Customize the 'ls' command
 
     Edit your profile and add an alias to customize the _ls_ command.
 
@@ -151,7 +165,7 @@
     
     Add any other profile scripts to either file (there is no _.bashrc_).
     
-22. Add your SSH key so you don't have to enter a password 
+1. Add your SSH key so you don't have to enter a password 
 
     Get your SSH public key. On a Mac it should be /Users/USERNAME/.ssh/id_rsa.pub
     
@@ -159,12 +173,12 @@
     
     Add your key and save the file. Then, log out and back in, and if it worked, you won't be asked for a password.
 
-23. Add a CircleCI API token to the environment
+1. Add a CircleCI API token to the environment
 
-    * Edit your profile as in step #21 
+    * Edit your profile as in step #22
     * add export KEY={THE KEY}
 
-24. Create a service start-up script for a Python script
+1. Create a service start-up script for a Python script
 
     To have a script automatically start up on system boot, create a script such as the following 
 
@@ -214,5 +228,22 @@ stop() {
     _Notes:_
     
     * The START and STOP variables specify where in the start up and shutdown process this script is handled. The higher the number, the later in the process the script is handled.
+
+1. Set up a cron job to restart the script hourly
+
+    First, start up the cron daemon and have it start up automatically on restart
+    
+    * /etc/init.d/cron start
+    * /etc/init.d/cron enable
+
+    Then edit the cron table
+
+    * crontab -e
+    
+    Add
+    
+    * 0 */1 * * * /etc/init.d/circleci restart
+
+    The service will be restarted hourly at the top of the hour
 
 #### Links
