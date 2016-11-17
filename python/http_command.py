@@ -25,21 +25,22 @@ class Handler(BaseHTTPRequestHandler):
 
     if req.path == '/command':
       self.send_response(200)
-      self.send_header("Content-type", "text/plain")
+      self.send_header("Content-type", "text/html")
       self.end_headers()
       args = urlparse.parse_qs(req.query)            
 
-      #self.wfile.write("Received: " + self.path)
-      #self.wfile.write("\nQuery: " + req.query)
-
       print args
 
-      for cmd in args['cmd']:
-        self.wfile.write("Sending command: " + cmd + "... ") 
-        self.wfile.flush()
-        command(cmd)           
-        self.wfile.write("sent\n")
+      if 'cmd' in args:
+        command("::pause:reset")
+        for cmd in args['cmd']:
+          command(cmd)           
+        command("flush:continue")
 
+      f = open('http_command.html', 'r')                    
+      self.wfile.write(f.read())  
+      f.close                     
+        
       self.wfile.close()
 
     else:
