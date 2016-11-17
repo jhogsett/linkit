@@ -310,6 +310,8 @@
     
     See: https://labs.mediatek.com/forums/posts/list/3605.page
 
+    _Note: The `reboot` command can be used to reboot the Openwrt OS_
+
 #### Links
 
 * MediaTek Starter Guide: 
