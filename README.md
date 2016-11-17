@@ -309,13 +309,13 @@
     * Use the `sync` command to flush data to the SD card before removing power
     
     See: https://labs.mediatek.com/forums/posts/list/3605.page
-    
+
 #### Links
 
-    * MediaTek Starter Guide: 
-    
-    https://labs.mediatek.com/fileMedia/download/4ef033b8-80ca-4cdb-9ad6-1c23836c63de
-    
-    * MediaTek Software and Tools
-    
-    https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688/sdt_intro/index.gsp
+* MediaTek Starter Guide: 
+   
+https://labs.mediatek.com/fileMedia/download/4ef033b8-80ca-4cdb-9ad6-1c23836c63de
+   
+* MediaTek Software and Tools
+   
+https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688/sdt_intro/index.gsp
