@@ -6,7 +6,7 @@ import random
 
 s = None
 
-num_leds = 64
+num_leds = 72
 play_time = 5.0
 
 def flush_input():                        
@@ -37,7 +37,7 @@ effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
 effect_index = 0
 
 def loop():
-  command("0,63:pshifto")
+  command("0,71:pshifto")
   osize = random.randrange(size_range_min, size_range_max) + 1
   times = int(num_leds / osize) + 0	
 
@@ -61,7 +61,7 @@ def loop():
     cmd = cmd + str(osize * (times - i)) + ":window:"                              
     cmd = cmd + color + ":" + effect + ":" + str(osize - 2) + ":repeat:black"
     command(cmd)               
-  command("64:window:continue:flush")                                       
+  command("72:window:continue:flush")                                       
   time.sleep(play_time)                                               
   command("pause")  
 
