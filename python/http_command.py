@@ -7,6 +7,9 @@ import serial
 import time                         
 import sys  
 from subprocess import call
+import os
+
+script_path = os.getcwd()
 
 global s
 s = None                            
@@ -43,7 +46,7 @@ class Handler(BaseHTTPRequestHandler):
           print sys
           call(sys, shell=True)
 
-      f = open('http_command.html', 'r')                    
+      f = open(script_path + '/http_command.html', 'r')                    
       self.wfile.write(f.read())  
       f.close                     
         
