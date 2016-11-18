@@ -1,0 +1,17 @@
+#!/bin/sh /etc/rc.common
+ 
+SCRIPT_NAME="Build Status"
+SCRIPT_PATH="/root/circleci6.py YOURKEY!"
+LOG_FILE="/tmp/circleci.log"
+START=99
+STOP=10
+ 
+start() {       
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}                
+ 
+stop() {         
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PATH`
+}

@@ -8,8 +8,13 @@ import time
 import sys  
 from subprocess import call
 import os
+from socket import error as socket_error
 
-script_path = os.getcwd()
+global webpage
+if len(sys.argv) > 1:
+  webpage = sys.argv[1]
+else:
+  webpage = os.getcwd() + '/http_command.html'
 
 global s
 s = None                            
@@ -46,7 +51,7 @@ class Handler(BaseHTTPRequestHandler):
           print sys
           call(sys, shell=True)
 
-      f = open(script_path + '/http_command.html', 'r')                    
+      f = open(webpage, 'r')                    
       self.wfile.write(f.read())  
       f.close                     
         
@@ -60,7 +65,16 @@ class Handler(BaseHTTPRequestHandler):
       self.wfile.close()                             
 
 s = serial.Serial("/dev/ttyS0", 115200)
-httpd = SocketServer.TCPServer(("", 8080), Handler)
+
+while(True):
+  try:
+    httpd = SocketServer.TCPServer(("", 8080), Handler)
+  except socket_error,e:
+    print "Error: " + str(e) + " - retrying"
+    time.sleep(5)
+    continue
+  break; 
+
 print "Listening..."
 httpd.serve_forever()
 
