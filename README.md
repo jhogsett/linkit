@@ -314,6 +314,14 @@
 
     _Note: The `reboot` command can be used to reboot the Openwrt OS_
 
+#### TODO
+
+1. Formatting the SD card for Linux FS
+
+1. Extending the root file system onto the SD card
+
+1. Installing Ruby
+
 #### Links
 
 * MediaTek Starter Guide: 

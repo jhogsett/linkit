@@ -6,6 +6,10 @@ import urlparse
 import serial                       
 import time                         
 import sys  
+from subprocess import call
+import os
+
+script_path = os.getcwd()
 
 global s
 s = None                            
@@ -29,7 +33,7 @@ class Handler(BaseHTTPRequestHandler):
       self.end_headers()
       args = urlparse.parse_qs(req.query)            
 
-      print args
+#      print args
 
       if 'cmd' in args:
         command("::pause:reset")
@@ -37,7 +41,12 @@ class Handler(BaseHTTPRequestHandler):
           command(cmd)           
         command("flush:continue")
 
-      f = open('http_command.html', 'r')                    
+      if 'sys' in args:
+        for sys in args['sys']:
+          print sys
+          call(sys, shell=True)
+
+      f = open(script_path + '/http_command.html', 'r')                    
       self.wfile.write(f.read())  
       f.close                     
         

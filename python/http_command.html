@@ -1,43 +1,77 @@
 <!DOCTYPE html>
-<html>
-<head></head>
+<html lang="en">
+<head>
+  <title>Linkit LED Controller</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+</head>
 <body>
-  <h3>Wearable Linkit</h1>
-  <ul>
-
-    <li>
-      <a href="/command?cmd=demo">Demo</a> 
-    </li>
-
-    <li>
-      <a href="/command?cmd=erase&cmd=0,0,255:hslcolor&cmd=7:repeat">All White</a> 
-    </li>
-
-    <li>
-      <a href="/command?cmd=erase&cmd=0,255,255:hslcolor:blink&cmd=7:repeat">All Red Blinking</a> 
-    </li>
-
-    <li>
-      <a href="/command?cmd=erase&cmd=240,255,255:hslcolor:breathe&cmd=7:repeat">All Blue Breathing</a> 
-    </li>
-
-    <li>
-      <a href="/command?cmd=fade">Fade</a> 
-    </li>
-
-    <li>
-      <a href="/command?cmd=wipe">Wipe</a> 
-    </li>
-
-    <li>
-      <a href="/command?cmd=erase&cmd=red:bright:blinkb:2:repeat&cmd=white:bright:blink:1:repeat&cmd=blue:bright:blinka:2:repeat">Cops</a>
-    </li>
-
-    <li>
-      <a href="/command?cmd=erase&cmd=:white:breathe:purple:blink6:blue:blink5:green:blink4:yellow:blink3:orange:blink2:red:blink1:white:breathe">Gaydar</a>
-    </li>
-
-  </ul>
+  <div class="container-fluid">
+    <h1>Wearable Linkit <small>IoT!</small></h1>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=demo"><span class="glyphicon glyphicon-upload"></span> Built-In Demo</a></div>
+      <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=0,0,255:hslcolor&cmd=7:repeat"><span class="glyphicon glyphicon-upload"></span> Flashlight</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=0,255,255:hslcolor:blink&cmd=7:repeat"><span class="glyphicon glyphicon-upload"></span> Warning Light</a></div>
+      <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=240,255,255:hslcolor:breathe&cmd=7:repeat"><span class="glyphicon glyphicon-upload"></span> Blue Beacon</a> </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=white:bright:bright:blinkr:white:bright:bright:blinkr:white:bright:bright:blinkr:white:bright:bright:blinkr:white:bright:bright:blinkr:white:bright:bright:blinkr:white:bright:bright:blinkr:white:bright:bright:blinkr"><span class="glyphicon glyphicon-upload"></span> Strobe</a></div>
+      <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=red:bright:bright:blinkr:red:bright:bright:blinkr:red:bright:bright:blinkr:white:bright:bright:blinkr:white:bright:bright:blinkr:blue:bright:bright:blinkr:blue:bright:bright:blinkr:blue:bright:bright:blinkr"><span class="glyphicon glyphicon-upload"></span> The Cops!</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=:white:breathe:purple:blink6:blue:blink5:green:blink4:yellow:blink3:orange:blink2:red:blink1:white:breathe"><span class="glyphicon glyphicon-upload"></span> Gaydar</a></div>
+      <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=cyan:blinkb:cyan:blink6:cyan:blink5:cyan:blink4:cyan:blink3:cyan:blink2:cyan:blink1:cyan:blinka"><span class="glyphicon glyphicon-upload"></span> Scanner</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=random:flood"><span class="glyphicon glyphicon-upload"></span> Random</a></div>
+      <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=random:static:flood"><span class="glyphicon glyphicon-upload"></span> Static</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=red:bright:bright:repeat:black:green:bright:bright:repeat:black:blue:bright:bright:repeat"><span class="glyphicon glyphicon-upload"></span> RGB</a></div>
+      <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=erase&cmd=cyan:bright:bright:repeat:black:magenta:bright:bright:repeat:black:yellow:bright:bright:repeat"><span class="glyphicon glyphicon-upload"></span> CMY</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=fade"><span class="glyphicon glyphicon-upload"></span> Fade Erasure</a></div>
+      <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=wipe"><span class="glyphicon glyphicon-upload"></span> Wipe Erasure</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=hipower"><span class="glyphicon glyphicon-upload"></span> Always On</a></div>
+      <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=lopower"><span class="glyphicon glyphicon-upload"></span> Screen Saver</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?cmd=erase&sys=/etc/init.d/circleci+start"><span class="glyphicon glyphicon-upload"></span> Start Monitor</a></div>
+      <div class="col-xs-6"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?cmd=erase&sys=/etc/init.d/circleci+stop"><span class="glyphicon glyphicon-upload"></span> Stop Monitor</a></div>
+    </div>
+  </div>
 </body>
 </html>
-
