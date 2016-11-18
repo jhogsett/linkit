@@ -16,7 +16,7 @@ print "logging to " + log_path
 logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 logging.info("Circleci5.py started")
 
-job_limit = 16
+job_limit = 18
 max_job = job_limit - 1
 max_leds = job_limit * 4
 
@@ -41,7 +41,7 @@ color_map = {
              "timedout": "yellow:blink",            
              "canceled": "orange",                   
               "not_run": "gray",             
-               "queued": "purple:breathe",                
+               "queued": "purple:blink",                
             "scheduled": "ltgreen:breathe",           
           "not_running": "purple:blink",          
               "missing": "dkgray",                    
@@ -179,6 +179,8 @@ def loop():
         color_command3('not_run') 
       elif st == 'not_running':
         color_command3('not_running')
+      elif st == 'queued':
+        color_command3('queued');
       else:
           color_command(st)                
           color_command(oc)                            
