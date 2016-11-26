@@ -18,7 +18,7 @@
 #define LIGHT_SENSOR_PIN A0           // photocell pin for auto-brightness setting
 
 #ifdef WEARABLE
-#define DEFAULT_BRIGHTNESS_PERCENT  6 // standard brightness
+#define DEFAULT_BRIGHTNESS_PERCENT 10 // standard brightness
 #else
 #define DEFAULT_BRIGHTNESS_PERCENT 25 // standard brightness
 #endif
@@ -30,6 +30,18 @@
 #define ANIM_LED_COUNT  8             // visible led count
 #else
 #define ANIM_LED_COUNT 72             // visible led count
+#endif
+
+#ifdef WEARABLE
+#define DEMO_OBJECT_SIZE 1
+#define DEMO_GAP_SIZE 0
+#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+#define DEMO_DELAY 125
+#else
+#define DEMO_OBJECT_SIZE 3
+#define DEMO_GAP_SIZE 1
+#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+#define DEMO_DELAY 0
 #endif
 
 #define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs

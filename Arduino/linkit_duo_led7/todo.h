@@ -8,8 +8,6 @@
 
 // animation routines may be inefficient
 
-// in going in and out of lo/hi power, reset the position counter
-
 // would be nice for force it to hi power
 
 // cleanup
@@ -32,9 +30,6 @@
 // reverse, inverse mirror
 // copy -- everything up to black is copied on top of black
 // strobe / flash
-// audo brightness, set brightness
-
-// have a low-power mode, low brightness and/or scanning the LEDs one by one until turned off.
 
 // rainbow colors incremental, or continuously changing
 // rotation
@@ -43,7 +38,6 @@
 // full frame animation in/out using back buffer
 // efade is broken
 // be able to reverse shift/animation direction
-// screen saver
 // fast blink, breathe
 // static, flame
 // stop sign timing and opposite timing

@@ -1,17 +1,14 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#include "config.h"
+
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
 
 #define FADE_TIMES 40
 #define FADE_DELAY 10
-
-#define DEMO_OBJECT_SIZE 3
-#define DEMO_GAP_SIZE 1
-#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
-#define DEMO_DELAY 0
 
 #define LOW_POWER_TIME 50
 
@@ -85,9 +82,12 @@ void Commands::resume(){
 
 void Commands::low_power(){
   low_power_mode = true;
-  low_power_position = 0;
-  low_power_timer = 0;
+
+  // it's too jarring to reset these
+  // low_power_position = 0;
+  // low_power_timer = 0;
 }
+
 void Commands::high_power(){
   low_power_mode = false;
 }
@@ -103,7 +103,11 @@ void Commands::set_pin(int pin, bool on){
 
 void Commands::set_brightness_level(int level){
   if(level == 0){
+#ifdef WEARABLE
+    level = default_brightness;
+#else
     level = auto_brightness->get_auto_brightness_level();
+#endif
   }
   ColorMath::set_brightness(level);    
   renderer->set_default_brightness(level);
