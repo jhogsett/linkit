@@ -1,12 +1,23 @@
+// wipe command should do a real rendering so it looks right
+// -- it does now, but when the command comes in it resets the blinking effects, 
+//    so you don't seem them during the wipe
 
+// seems like it should be simple to change the orientation
 
+// zones
+
+// animation routines may be inefficient
 
 // in going in and out of lo/hi power, reset the position counter
+
+// would be nice for force it to hi power
 
 // cleanup
 // look for ints that can be chars: byte is the type to use
 
-// zones
+// demo mode - keeps going until non-demo command.
+
+// hide/show (goes all black or back to rendering)
 
 // would be nice to set strip orientation remotely
 

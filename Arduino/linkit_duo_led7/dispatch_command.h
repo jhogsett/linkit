@@ -189,6 +189,10 @@ void dispatch_command(int cmd){
       dependencies.commands.set_pin(dependencies.command_processor.sub_args[0], false); 
       reset_args = true;
       break;
+    case CMD_LEVEL:
+      dependencies.commands.set_brightness_level(dependencies.command_processor.sub_args[0]); 
+      reset_args = true;
+      break;
     }
 
   if(reset_args)

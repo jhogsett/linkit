@@ -18,7 +18,7 @@
 class Commands
 {
   public:
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, int *effects);
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, int *effects, AutoBrightnessBase *auto_brightness);
   void pause();
   void resume();
   void do_blend();
@@ -33,8 +33,8 @@ class Commands
   void do_mirror();
   void do_repeat(int times);
   void do_elastic_shift(int count, int max);
-  void do_power_shift(int count, int max);
-  void do_power_shift_object(int width, int shift);
+  void do_power_shift(int count, int max, bool fast_render);
+  void do_power_shift_object(int width, int shift, bool fast_render);
   void do_demo();
   void flush(bool force_display);
   void reset();
@@ -42,6 +42,7 @@ class Commands
   void high_power();
   void set_display(int display);
   void set_pin(int pin, bool on);
+  void set_brightness_level(int level = 0);
 
   private:
   Buffer *buffer;
@@ -57,11 +58,12 @@ class Commands
   bool low_power_mode = false;
   int low_power_position = 0;
   int low_power_timer = 0;
+  AutoBrightnessBase *auto_brightness;
 
   void advance_low_power_position();
 };
 
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, int *effects){
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, int *effects, AutoBrightnessBase *auto_brightness){
   this->buffer = buffer;
   this->renderer = renderer;
   this->effects_processor = effects_processor;
@@ -70,6 +72,7 @@ void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects
   this->effects = effects;
   this->default_brightness = default_brightness;
   this->visible_led_count = visible_led_count;
+  this->auto_brightness = auto_brightness;
 }
 
 void Commands::pause(){
@@ -82,6 +85,8 @@ void Commands::resume(){
 
 void Commands::low_power(){
   low_power_mode = true;
+  low_power_position = 0;
+  low_power_timer = 0;
 }
 void Commands::high_power(){
   low_power_mode = false;
@@ -94,6 +99,14 @@ void Commands::set_display(int display){
 void Commands::set_pin(int pin, bool on){
   pinMode(pin, OUTPUT);
   digitalWrite(pin, on ? HIGH : LOW);  
+}
+
+void Commands::set_brightness_level(int level){
+  if(level == 0){
+    level = auto_brightness->get_auto_brightness_level();
+  }
+  ColorMath::set_brightness(level);    
+  renderer->set_default_brightness(level);
 }
 
 void Commands::do_blend(){
@@ -185,14 +198,14 @@ void Commands::do_elastic_shift(int count, int max = 0){
   }
 }
 
-void Commands::do_power_shift(int count, int max = 0){
+void Commands::do_power_shift(int count, int max = 0, bool fast_render = true){
   max = (max == 0) ? visible_led_count : max;
   count = count == 0 ? 1 : count;
   if(count >= 1){
     for(int i = 0; i < PowerEase::ease_count(); i++){
       int pos = PowerEase::ease[i] * count;
       delay(PowerEase::ease_delay());
-      buffer->shift(pos+1, max);
+      buffer->shift(pos+1, max, fast_render);
     }
     buffer->finalize_shift(count, max);
   }
@@ -202,12 +215,12 @@ void Commands::do_power_shift(int count, int max = 0){
 //         including the new space shifted into
 // shift = how far to move
 // the two should add up to no more than the visible led count
-void Commands::do_power_shift_object(int width, int shift){
-  do_power_shift(shift, shift + width);
+void Commands::do_power_shift_object(int width, int shift, bool fast_render = true){
+  do_power_shift(shift, shift + width, fast_render);
 }
 
 void Commands::do_wipe(){
-  do_power_shift_object(0, visible_led_count);
+  do_power_shift_object(0, visible_led_count, false);
 }
 
 void Commands::advance_low_power_position(){
@@ -234,6 +247,7 @@ void Commands::reset(){
   buffer->set_window(visible_led_count);
   buffer->set_display(0);
   effects_processor->reset_effects();
+  set_brightness_level(default_brightness);
 }
 
 void Commands::do_demo(){

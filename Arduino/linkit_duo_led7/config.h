@@ -4,6 +4,10 @@
 // enable to change settings for the 8-LED wearable version
 // #define WEARABLE
 
+// should have the auto-brightness range here
+#define AUTO_BRIGHTNESS_MIN 3
+#define AUTO_BRIGHTNESS_MAX 33
+
 #define NUM_DISPLAYS 3                // how many physical LED strips there are (all expected to have the same # of LEDs)
 
 #define DISPLAY_PIN1 12
