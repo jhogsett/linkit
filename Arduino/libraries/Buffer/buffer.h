@@ -26,7 +26,7 @@ class Buffer
   void push_color(rgb_color color, bool display, int effect, int max);
   void push_rgb_color(int red, int green, int blue);
   void push_hsl_color(int hue, int sat, int lit);
-  void shift(int count, int maxx);
+  void shift(int count, int maxx, bool fast_render);
   void finalize_shift(int count, int max);
   void set_color(int pos, rgb_color color, bool display, int effect);
   void set_window(int width);
@@ -197,18 +197,16 @@ int Buffer::set_display(int display){
 }
 
 // animate by shifting frame (future: shift in from back buffer)
-void Buffer::shift(int count, int maxx){
+void Buffer::shift(int count, int maxx, bool fast_render = true){
   maxx = min(maxx, safety_led_count);
   for(int i = 0; i < count; i++){
     render[i] = black;
   }
   for(int i = count; i < maxx; i++){
-#ifdef USE_FULL_RENDER
-    // full render, slower, demo looks worse but looks good in normal operation
-    render[i] = renderer->render(buffer[i - count], effects[i - count]);
-#else
-    render[i] = renderer->fast_render(buffer[i - count], effects[i - count]);
-#endif
+    if(fast_render)
+      render[i] = renderer->fast_render(buffer[i - count], effects[i - count]);
+    else
+      render[i] = renderer->render(buffer[i - count], effects[i - count]);
   }
 
   display_buffer();
