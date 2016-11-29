@@ -15,11 +15,20 @@
 #define LIGHT_SAMPLE_COUNT 5
 #define LIGHT_SAMPLE_DELAY 10
 
-template<unsigned char pin> class AutoBrightness
+class AutoBrightnessBase
+{
+  public:
+  void virtual begin(int min_brightness = DEFAULT_MIN_BRIGHTNESS, int max_brightness = DEFAULT_MAX_BRIGHTNESS) = 0;
+  void virtual auto_adjust_brightness() = 0;
+  int virtual get_auto_brightness_level() = 0;
+};
+
+template<unsigned char pin> class AutoBrightness : public AutoBrightnessBase
 {
   public:
   void begin(int min_brightness = DEFAULT_MIN_BRIGHTNESS, int max_brightness = DEFAULT_MAX_BRIGHTNESS);
   void auto_adjust_brightness();
+  int get_auto_brightness_level();
 
   private:
   static int min_brightness;
@@ -66,13 +75,14 @@ template<unsigned char pin> int AutoBrightness<pin>::get_one_light_sample() {
   return analogRead(pin);  
 }
 
-template<unsigned char pin> void AutoBrightness<pin>::auto_adjust_brightness(){
+// 1023 = complete darkness, 0 = infinite brightness
+template<unsigned char pin> int AutoBrightness<pin>::get_auto_brightness_level(){
   int light_level = get_average_light_level();
-  // 1023 = complete darkness, 0 = infinite brightness
-
   float detected_brightness = (1023.0 - light_level) / 1024.0;
-  int ranged_brightness_percent = int(brightness_range * detected_brightness);
+  return min_brightness + int(brightness_range * detected_brightness);
+}
 
-  ColorMath::set_brightness(min_brightness + ranged_brightness_percent);
+template<unsigned char pin> void AutoBrightness<pin>::auto_adjust_brightness(){
+  ColorMath::set_brightness(get_auto_brightness_level());
 }
 #endif

@@ -7,6 +7,7 @@ void setup() {
   dependencies.begin();
   dependencies.commands.reset();
   dependencies.buffer.erase(true);
+  dependencies.commands.set_brightness_level();
   dependencies.commands.do_demo();
 }
 

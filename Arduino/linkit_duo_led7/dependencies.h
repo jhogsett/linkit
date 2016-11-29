@@ -46,7 +46,6 @@ class Dependencies
   static RandomSeed<RANDOM_SEED_PIN> randomizer;
 
   // auto-brightness setting hardware driver
-  // (this is here for incubation, but auto-brightness is not in use)
   static AutoBrightness<LIGHT_SENSOR_PIN> auto_brightness;
 
   // processes incoming commands
@@ -124,8 +123,7 @@ void Dependencies::begin(){
   Serial1.begin(BAUD_RATE); 
 
   // start up auto-brightness hardware driver
-  // (this is here for incubation, but auto-brightness is not in use)
-  auto_brightness.begin();
+  auto_brightness.begin(AUTO_BRIGHTNESS_MIN, AUTO_BRIGHTNESS_MAX);
 
   // start up command processor, listening on the serial port and looking for the passed commands
   command_processor.begin(&Serial1, command_strings, NUM_COMMANDS);
@@ -141,7 +139,7 @@ void Dependencies::begin(){
   buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, colors, render, effects); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
-  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, colors, render, effects);
+  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, colors, render, effects, &this->auto_brightness);
 
   // set up the blink effects counter and states
   blink_effects.begin();

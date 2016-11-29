@@ -1,12 +1,21 @@
+// wipe command should do a real rendering so it looks right
+// -- it does now, but when the command comes in it resets the blinking effects, 
+//    so you don't seem them during the wipe
 
+// seems like it should be simple to change the orientation
 
+// zones
 
-// in going in and out of lo/hi power, reset the position counter
+// animation routines may be inefficient
+
+// would be nice for force it to hi power
 
 // cleanup
 // look for ints that can be chars: byte is the type to use
 
-// zones
+// demo mode - keeps going until non-demo command.
+
+// hide/show (goes all black or back to rendering)
 
 // would be nice to set strip orientation remotely
 
@@ -21,9 +30,6 @@
 // reverse, inverse mirror
 // copy -- everything up to black is copied on top of black
 // strobe / flash
-// audo brightness, set brightness
-
-// have a low-power mode, low brightness and/or scanning the LEDs one by one until turned off.
 
 // rainbow colors incremental, or continuously changing
 // rotation
@@ -32,7 +38,6 @@
 // full frame animation in/out using back buffer
 // efade is broken
 // be able to reverse shift/animation direction
-// screen saver
 // fast blink, breathe
 // static, flame
 // stop sign timing and opposite timing

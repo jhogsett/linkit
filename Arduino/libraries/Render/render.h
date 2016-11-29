@@ -9,6 +9,8 @@ class Render
   rgb_color fast_render(rgb_color color, int effect);
   void render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, int count, int *effects);
   void render_buffer_low_power(rgb_color *dest_buffer, rgb_color *src_buffer, int count, int *effects, int position);
+  void set_default_brightness(int brightness);
+  void set_minimum_brightness(int brightness);
 
   private:
   static rgb_color black;
@@ -83,6 +85,16 @@ void Render::render_buffer_low_power(rgb_color *dest_buffer, rgb_color *src_buff
       dest_buffer[i] = black;
     }
   }
+}
+
+#define RESTRICT_TO_0_100(n) (max(0, min(100, n)))
+
+void Render::set_default_brightness(int brightness){
+  default_brightness_scale = RESTRICT_TO_0_100(brightness) / 100.0;
+}
+
+void Render::set_minimum_brightness(int brightness){
+  minimum_brightness_scale = RESTRICT_TO_0_100(brightness) / 100.0;
 }
 
 #endif
