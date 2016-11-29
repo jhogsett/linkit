@@ -10,9 +10,9 @@
 
 #define NUM_DISPLAYS 3                // how many physical LED strips there are (all expected to have the same # of LEDs)
 
-#define DISPLAY_PIN1 12
-#define DISPLAY_PIN2 11
-#define DISPLAY_PIN3 10
+#define DISPLAY_PIN1 11
+#define DISPLAY_PIN2 9
+#define DISPLAY_PIN3 12
 
 #define RANDOM_SEED_PIN A1            // floating pin for seeding the RNG
 #define LIGHT_SENSOR_PIN A0           // photocell pin for auto-brightness setting
@@ -29,7 +29,7 @@
 #ifdef WEARABLE
 #define ANIM_LED_COUNT  8             // visible led count
 #else
-#define ANIM_LED_COUNT 72             // visible led count
+#define ANIM_LED_COUNT 93             // visible led count
 #endif
 
 #ifdef WEARABLE

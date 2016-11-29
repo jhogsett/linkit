@@ -32,7 +32,7 @@ class Dependencies
   static rgb_color render[config.led_count];
 
   // effect styling per LED position
-  static int effects[config.led_count];
+  static char effects[config.led_count];
 
   // pin-specific LED hardware drivers
   static PololuLedStrip<config.display_pins[0]> ledStrip1;
@@ -81,7 +81,7 @@ rgb_color Dependencies::colors[config.led_count];
 rgb_color Dependencies::render[config.led_count];
 
 // effect styling per LED position
-int Dependencies::effects[config.led_count];
+char Dependencies::effects[config.led_count];
 
 // pin-specific LED hardware drivers
 PololuLedStrip<DISPLAY_PIN1> Dependencies::ledStrip1;
