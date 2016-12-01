@@ -15,7 +15,7 @@
 class Commands
 {
   public:
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, int *effects, AutoBrightnessBase *auto_brightness);
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, char *effects, AutoBrightnessBase *auto_brightness);
   void pause();
   void resume();
   void do_blend();
@@ -48,7 +48,7 @@ class Commands
 
   rgb_color *colors;
   rgb_color *render;
-  int *effects;
+  char *effects;
   bool paused = false;
   int default_brightness;
   int visible_led_count;
@@ -60,7 +60,7 @@ class Commands
   void advance_low_power_position();
 };
 
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, int *effects, AutoBrightnessBase *auto_brightness){
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, char *effects, AutoBrightnessBase *auto_brightness){
   this->buffer = buffer;
   this->renderer = renderer;
   this->effects_processor = effects_processor;

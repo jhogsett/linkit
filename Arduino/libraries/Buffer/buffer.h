@@ -16,9 +16,9 @@ class Buffer
 {
   public:
 #ifdef EXISTENCE_ENABLED
-  void begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence);
+  void begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, char *effects, int *existence);
 #else
-  void begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects);
+  void begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, char *effects);
 #endif
 
   void display_buffer(rgb_color * pbuffer);
@@ -40,7 +40,7 @@ class Buffer
   int current_strip;
   rgb_color *buffer;
   static rgb_color *render;
-  int *effects;
+  char *effects;
   float default_brightness_scale;
   Render *renderer;
   int safety_led_count;
@@ -58,9 +58,9 @@ class Buffer
 rgb_color *Buffer::render;
 
 #ifdef EXISTENCE_ENABLED
-void Buffer::begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects, int *existence){
+void Buffer::begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, char *effects, int *existence){
 #else
-void Buffer::begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, int *effects){
+void Buffer::begin(PololuLedStripBase **ledStrips, int default_brightness, float fade_rate, int safety_led_count, int visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, char *effects){
 #endif
 
   this->ledStrips = ledStrips;
