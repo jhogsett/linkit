@@ -7,6 +7,7 @@ import random
 s = None
 
 num_leds = 93
+play_time = 0.0
 
 def flush_input():                        
   s.flushInput()
@@ -49,22 +50,30 @@ def shift_colors():
   for i in xrange(5, 0, -1):
     chosen_colors[i] = chosen_colors[i-1]
 
-def place_color(window, color):          
-  command(str(window) + ":window:" + color + ":flood")
-                                                      
-def place_colors():                                   
-  place_color(93, chosen_colors[0])                   
-  place_color(61, chosen_colors[1])                   
-  place_color(37, chosen_colors[2])                   
-  place_color(21, chosen_colors[3])                   
-  place_color(9, chosen_colors[4])                    
-  place_color(1, chosen_colors[5])     
+def clear_colors():
+  for j in range(0,6):        
+    chosen_colors[j] = "black"
+
+color = "black"
+last_color = "black"
+
+def display1():
+  global color, last_color
+
+  while True:                     
+    color = random_color()        
+    if color != last_color:       
+      break  
+  command(random_color() + ":flood:flush")
+  command("black:flood:flush")
+  last_color = color
+
+def display2():
+  command(random_color() + ":92:repeat:flush")
+  command("black:92:repeat:flush")
 
 def loop():
-  shift_colors()
-  chosen_colors[0] = random_color()
-  place_colors()
-  command("flush")                                       
+  display1()
 
 if __name__ == '__main__': 
   setup() 

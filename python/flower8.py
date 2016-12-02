@@ -49,22 +49,48 @@ def shift_colors():
   for i in xrange(5, 0, -1):
     chosen_colors[i] = chosen_colors[i-1]
 
-def place_color(window, color):          
+def clear_colors():
+  for j in range(0,6):        
+    chosen_colors[j] = "black"
+
+def place_color(window, color):
   command(str(window) + ":window:" + color + ":flood")
-                                                      
-def place_colors():                                   
-  place_color(93, chosen_colors[0])                   
-  place_color(61, chosen_colors[1])                   
-  place_color(37, chosen_colors[2])                   
-  place_color(21, chosen_colors[3])                   
-  place_color(9, chosen_colors[4])                    
-  place_color(1, chosen_colors[5])     
+
+def place_colors():
+  place_color(93, chosen_colors[0])
+  command("flush")
+  place_color(61, chosen_colors[1])
+  command("flush")
+  place_color(37, chosen_colors[2])
+  command("flush")
+  place_color(21, chosen_colors[3])
+  command("flush")
+  place_color(9, chosen_colors[4])
+  command("flush")
+  place_color(1, chosen_colors[5])
+  command("flush")
+
+def display():
+  place_colors()
+
+color = "black"
+last_color = "black"
 
 def loop():
-  shift_colors()
-  chosen_colors[0] = random_color()
-  place_colors()
-  command("flush")                                       
+  global color, last_color  
+
+  for i in range(0, 6):            
+    command(last_color + ":flood")     
+    for j in range(0, i+1):        
+      chosen_colors[5-j] = color   
+    display()    
+
+  last_color = color
+
+  while True:
+    color = random_color() 
+    if color != last_color:
+      break                             
 
 if __name__ == '__main__': 
   setup() 

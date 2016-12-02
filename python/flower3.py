@@ -54,16 +54,20 @@ def clear_colors():
   for j in range(0,6):        
     chosen_colors[j] = "black"
 
+def place_color(window, color):          
+  command(str(window) + ":window:" + color + ":flood")
+                                                      
+def place_colors():                                   
+  place_color(93, chosen_colors[0])                   
+  place_color(61, chosen_colors[1])                   
+  place_color(37, chosen_colors[2])                   
+  place_color(21, chosen_colors[3])                   
+  place_color(9, chosen_colors[4])                    
+  place_color(1, chosen_colors[5])     
+
 def display():
-  command("::pause")                      
-  command(chosen_colors[0] + ":31:repeat")
-  command(chosen_colors[1] + ":23:repeat")
-  command(chosen_colors[2] + ":15:repeat")
-  command(chosen_colors[3] + ":11:repeat")
-  command(chosen_colors[4] + ":7:repeat") 
-  command(chosen_colors[5])              
-  command("continue:flush")
-#  time.sleep(play_time)  
+  place_colors()
+  command("flush")
 
 def loop():
   color = random_color()
