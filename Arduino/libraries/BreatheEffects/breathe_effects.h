@@ -11,19 +11,19 @@
 class BreatheEffects
 {
   public:
-  int breathe_step = 0;
+  byte breathe_step = 0;
   static float breathe_steps[];
 
   void begin(int breathe_time);
   void reset();
   bool process();
-  bool is_breathe_effect(int effect);
+  bool is_breathe_effect(byte effect);
   float breathe_ratio();
  
   private:
   int breathe_time = BREATHE_TIME;
   int breathe_counter = 0;
-  int breathe_direction = 1;
+  char breathe_direction = 1;
 };
 
 // ruby: (0..90).step(5).each { |i| puts (Math.cos(i * Math::PI / 180)).round(4) }
@@ -77,7 +77,7 @@ bool BreatheEffects::process(){
   return should_flush;
 }
 
-bool BreatheEffects::is_breathe_effect(int effect){
+bool BreatheEffects::is_breathe_effect(byte effect){
   return effect == BREATHE_ON;
 }
 

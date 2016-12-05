@@ -1,6 +1,10 @@
 #ifndef COLOR_MATH_H
 #define COLOR_MATH_H
 
+// eanble to support palettes
+// to do: disable palettes
+#define USE_PALETTES
+
 #include <PololuLedStrip.h>
 #include <colors.h>
 
@@ -8,11 +12,11 @@ class ColorMath
 {
   public:
   static void begin(bool swap_r_and_g);
-  static void set_brightness(int brightness_percent);
+  static void set_brightness(byte brightness_percent);
   static rgb_color random_color();
   static rgb_color scale_color(rgb_color color, float scale);
   static rgb_color unscale_color(rgb_color color, float scale);
-  static rgb_color hsl_to_rgb(int hue, int sat, int val);
+  static rgb_color hsl_to_rgb(int hue, byte sat, byte val);
   static rgb_color add_color(rgb_color color1, rgb_color color2);
   static rgb_color subtract_color(rgb_color color1, rgb_color color2);
   static rgb_color blend_colors(rgb_color color1, rgb_color color2);
@@ -35,7 +39,7 @@ rgb_color ColorMath::unscale_color(rgb_color color, float scale){
 }
 
 // hue: 0-359, sat: 0-255, val (lightness): 0-255
-rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {
+rgb_color ColorMath::hsl_to_rgb(int hue, byte sat, byte val) {
   int r, g, b, base;
 
   if (sat == 0) { // Achromatic color (gray).
@@ -80,12 +84,14 @@ rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {
   return (rgb_color){r, g, b};
 }
 
-void ColorMath::set_brightness(int brightness_percent){
+#ifdef USE_PALETTES
+void ColorMath::set_brightness(byte brightness_percent){
   float percent = brightness_percent / 100.0;
-  for(int i = 0; i < NPALETTE; i++){
+  for(byte i = 0; i < NPALETTE; i++){
     adjusted_palette[i] = scale_color(palette[i], percent);
   }
 }
+#endif
 
 rgb_color ColorMath::add_color(rgb_color color1, rgb_color color2){
   rgb_color new_color;
@@ -105,14 +111,19 @@ rgb_color ColorMath::subtract_color(rgb_color color1, rgb_color color2){
 
 // some sets have red and green swapped, usually false for led strips
 void ColorMath::begin(bool swap_r_and_g = true){
+
+ // to do: need to enable color swapping at drawing point
+
+#ifdef USE_PALETTES
   if(swap_r_and_g == true){
-    for(int i = 0; i < NPALETTE; i++){
+    for(byte i = 0; i < NPALETTE; i++){
       unsigned char value = palette[i].red;
       palette[i].red = palette[i].green;  
       palette[i].green = value;
     }
   }
   memcpy(adjusted_palette, palette, sizeof(palette));
+#endif
 }
 
 rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2){
@@ -123,8 +134,12 @@ rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2){
   return result;
 }
 
+#ifdef USE_PALETTES
+// needed in renderer
 rgb_color ColorMath::random_color(){
   return palette[random(NPRETTY_COLORS)];
 }
+
+#endif
 
 #endif
