@@ -1,3 +1,23 @@
+// move command for placement, like:
+//    red:57:move
+
+// swap command like move (or instead of)
+
+// zones
+// - set up as a config option
+// - specifies [0] + offset for insertion
+// - and window for restriction
+// like:
+//    1:zone:red:2:zone:blue
+// zone 0, the default is always the entire window
+
+
+
+
+
+
+
+
 // wipe command should do a real rendering so it looks right
 // -- it does now, but when the command comes in it resets the blinking effects, 
 //    so you don't seem them during the wipe

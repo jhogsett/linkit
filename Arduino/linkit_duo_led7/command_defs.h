@@ -64,7 +64,6 @@
 #define CMD_PINOFF    57
 #define CMD_LEVEL     58
 
-
 char* command_strings[] = {
   "pause",
   "continue",
