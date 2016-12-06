@@ -12,7 +12,7 @@ class CommandProcessor
   public:
   char str[MAX_STRING_LENGTH];
   char arg[MAX_STRING_LENGTH];
-  byte sub_args[NUM_SUB_ARGS];
+  int sub_args[NUM_SUB_ARGS];
   char **commands; 
   byte num_commands;
   HardwareSerial *serial;
@@ -29,7 +29,7 @@ class CommandProcessor
   private:
   bool str_equal(char *str1, char *str2);
   bool is_command(char *str, char *command);
-  int get_sub_args();
+  void get_sub_args();
 };
 
 void CommandProcessor::begin(HardwareSerial *serial, char **commands, byte num_commands){
@@ -85,7 +85,7 @@ bool CommandProcessor::is_command(char *str, char *command){
   return str_equal(str, command);  
 }
 
-int CommandProcessor::get_sub_args(){
+void CommandProcessor::get_sub_args(){
   char *token = strtok(arg, ",");
   sub_args[0] = atoi(token);
   token = strtok(NULL, ",");

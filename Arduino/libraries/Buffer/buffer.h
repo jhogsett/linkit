@@ -28,7 +28,7 @@ class Buffer
   void erase(bool display);
   void push_color(rgb_color color, bool display, byte effect, byte max);
   void push_rgb_color(byte red, byte green, byte blue);
-  void push_hsl_color(int hue, byte sat, byte lit);
+  void push_hsl_color(int hue, int sat, int lit);
   void shift(byte count, byte maxx, bool fast_render);
   void finalize_shift(byte count, byte max);
   void set_color(byte pos, rgb_color color, bool display, byte effect);
@@ -151,7 +151,7 @@ void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_
   shift_buffer(buffer, max);
 
   // to do: offset by zone
-  buffer[0] = color;
+  buffer[0] = ColorMath::correct_color(color);
   effects[0] = effect;
 
 #ifdef EXISTENCE_ENABLED
@@ -169,7 +169,7 @@ void Buffer::push_rgb_color(byte red, byte green, byte blue){
   push_color(color);
 }
 
-void Buffer::push_hsl_color(int hue, byte sat, byte lit){
+void Buffer::push_hsl_color(int hue, int sat, int lit){
   rgb_color color = ColorMath::hsl_to_rgb(hue, sat, lit);
   push_rgb_color(color.red, color.green, color.blue);
 }
@@ -179,7 +179,7 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
 #else
 void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT){
 #endif
-  buffer[pos] = color;
+  buffer[pos] = ColorMath::correct_color(color);
   
   if(effect != LEAVE_EFFECT){
     effects[pos] = effect;

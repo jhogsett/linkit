@@ -16,11 +16,17 @@ class ColorMath
   static rgb_color random_color();
   static rgb_color scale_color(rgb_color color, float scale);
   static rgb_color unscale_color(rgb_color color, float scale);
-  static rgb_color hsl_to_rgb(int hue, byte sat, byte val);
+  static rgb_color hsl_to_rgb(int hue, int sat, int val);
   static rgb_color add_color(rgb_color color1, rgb_color color2);
   static rgb_color subtract_color(rgb_color color1, rgb_color color2);
   static rgb_color blend_colors(rgb_color color1, rgb_color color2);
+  static rgb_color correct_color(rgb_color color);
+
+  private:
+  static bool swap_r_and_g;
 };
+
+bool ColorMath::swap_r_and_g;
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
   return (rgb_color){
@@ -39,7 +45,7 @@ rgb_color ColorMath::unscale_color(rgb_color color, float scale){
 }
 
 // hue: 0-359, sat: 0-255, val (lightness): 0-255
-rgb_color ColorMath::hsl_to_rgb(int hue, byte sat, byte val) {
+rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {
   int r, g, b, base;
 
   if (sat == 0) { // Achromatic color (gray).
@@ -111,18 +117,17 @@ rgb_color ColorMath::subtract_color(rgb_color color1, rgb_color color2){
 
 // some sets have red and green swapped, usually false for led strips
 void ColorMath::begin(bool swap_r_and_g = true){
-
- // to do: need to enable color swapping at drawing point
+  ColorMath::swap_r_and_g = swap_r_and_g;
 
 #ifdef USE_PALETTES
-  if(swap_r_and_g == true){
-    for(byte i = 0; i < NPALETTE; i++){
-      unsigned char value = palette[i].red;
-      palette[i].red = palette[i].green;  
-      palette[i].green = value;
-    }
-  }
-  memcpy(adjusted_palette, palette, sizeof(palette));
+//  if(swap_r_and_g == true){
+//    for(byte i = 0; i < NPALETTE; i++){
+//      unsigned char value = palette[i].red;
+//      palette[i].red = palette[i].green;
+//      palette[i].green = value;
+//    }
+//  }
+//  memcpy(adjusted_palette, palette, sizeof(palette));
 #endif
 }
 
@@ -132,6 +137,15 @@ rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2){
   result.green = (color1.green + color2.green) / 2;
   result.blue = (color1.blue + color2.blue) / 2;
   return result;
+}
+
+rgb_color ColorMath::correct_color(rgb_color color){
+  if(swap_r_and_g){
+    byte swap = color.red;
+    color.red = color.green;
+    color.green = swap;
+  }
+    return color;
 }
 
 #ifdef USE_PALETTES
