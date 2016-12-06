@@ -179,13 +179,19 @@ void Commands::do_mirror(){
 
 void Commands::do_repeat(byte times = 1){
   times = (times < 1) ? 1 : times;
+
+  // the stored color has been red/green corrected, so
+  // to repeat it, first uncorrect it by swapping
+  rgb_color color = ColorMath::correct_color(colors[0]);
+  
+  byte effect = effects[0];
   for(byte i = 0; i < times; i++){
     if(effects[0] == RANDOM){
       buffer->push_color(ColorMath::random_color());
     } else {
-      buffer->push_color(colors[0]);
+      buffer->push_color(color);
     }
-    effects[0] = effects[1];
+    effects[0] = effect;
   }
 }
 

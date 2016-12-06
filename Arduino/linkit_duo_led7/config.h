@@ -19,8 +19,8 @@
 
 #define NUM_DISPLAYS 3                // how many physical LED strips there are (all expected to have the same # of LEDs)
 
-#define DISPLAY_PIN1 11
-#define DISPLAY_PIN2 9
+#define DISPLAY_PIN1 12
+#define DISPLAY_PIN2 11
 #define DISPLAY_PIN3 10
 
 #define RANDOM_SEED_PIN A1            // floating pin for seeding the RNG
@@ -32,9 +32,9 @@
 #elif defined(DISK93)
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #elif defined(STRAND1)
-#define DEFAULT_BRIGHTNESS_PERCENT 50
+#define DEFAULT_BRIGHTNESS_PERCENT 25
 #elif defined(STRAND2)
-#define DEFAULT_BRIGHTNESS_PERCENT 50
+#define DEFAULT_BRIGHTNESS_PERCENT 25
 #else
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #endif
@@ -62,6 +62,11 @@
 #define DEMO_DELAY 125
 #elif defined(DISC93)
 #define DEMO_OBJECT_SIZE 3
+#define DEMO_GAP_SIZE 0
+#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+#define DEMO_DELAY 35
+#elif defined(STRAND2)
+#define DEMO_OBJECT_SIZE 10
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 35

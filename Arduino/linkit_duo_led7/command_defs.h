@@ -1,6 +1,13 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
+// enable for full command set
+// #define FULL_COMMAND_SET
+
+// enable for minimal friendly command set
+#define MINIMAL_COMMAND_SET
+
+#if defined(FULL_COMMAND_SET)
 #define NUM_COMMANDS 58
 
 #define CMD_NONE       0
@@ -124,6 +131,88 @@ char* command_strings[] = {
   "pinoff",
   "level"
 };
+#elif defined(MINIMAL_COMMAND_SET)
+#define NUM_COMMANDS 36
+
+#define CMD_NONE       0
+#define CMD_FIRST      1
+
+#define CMD_RESET      1
+#define CMD_DISPLAY    2
+#define CMD_ERASE      3
+#define CMD_LEVEL      4
+#define CMD_FLUSH      5
+#define CMD_PAUSE      6
+#define CMD_CONTINUE   7
+#define CMD_REPEAT     8
+#define CMD_DEMO       9
+#define CMD_BLACK     10
+#define CMD_RED       11
+#define CMD_GREEN     12
+#define CMD_BLUE      13
+#define CMD_YELLOW    14
+#define CMD_ORANGE    15
+#define CMD_PURPLE    16
+#define CMD_WHITE     17
+#define CMD_RANDOM    18
+#define CMD_RGBCOLOR  19
+#define CMD_HSLCOLOR  20
+#define CMD_BLINK     21
+#define CMD_BLINK1    22
+#define CMD_BLINK2    23
+#define CMD_BLINK3    24
+#define CMD_BLINK4    25
+#define CMD_BLINK5    26
+#define CMD_BLINK6    27
+#define CMD_BLINKR    28
+#define CMD_BLINKA    29
+#define CMD_BLINKB    30
+#define CMD_BREATHE   31
+#define CMD_FLOOD     32  
+#define CMD_FADE      33
+#define CMD_WIPE      34
+#define CMD_PSHIFTO   35
+#define CMD_WINDOW    36
+
+char* command_strings[] = {
+  "reset",
+  "display",
+  "erase",
+  "level",
+  "flush",
+  "pause",
+  "continue",
+  "repeat",
+  "demo",
+  "black",
+  "red",
+  "green",
+  "blue",
+  "yellow",
+  "orange",  
+  "purple",
+  "white",
+  "random",
+  "rgbcolor",
+  "hslcolor",
+  "blink",
+  "blink1",
+  "blink2",
+  "blink3",
+  "blink4",
+  "blink5",
+  "blink6",
+  "blinkr",
+  "blinka",
+  "blinkb",
+  "breathe",
+  "flood",
+  "fade",
+  "wipe",
+  "pshifto",
+  "window"
+};
+#endif
 
 #endif
 

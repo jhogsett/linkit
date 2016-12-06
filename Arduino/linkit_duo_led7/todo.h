@@ -11,7 +11,7 @@
 //    1:zone:red:2:zone:blue
 // zone 0, the default is always the entire window
 
-
+// hide / show
 
 
 
