@@ -14,9 +14,9 @@
 #include <effects_processor.h>
 #include <buffer.h>
 #include <render.h>
+#include "config.h"
 #include "command_defs.h"
 #include "commands.h"
-#include "config.h"
 
 class Dependencies
 {

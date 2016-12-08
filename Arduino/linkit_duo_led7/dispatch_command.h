@@ -79,7 +79,8 @@ void dispatch_command(int cmd){
       dependencies.commands.do_flood();                                                           
       break;
     case CMD_RANDOM:    
-      dependencies.commands.do_random();                                                          
+      dependencies.commands.do_random(dependencies.command_processor.sub_args[0]);                                                          
+      reset_args = true;
       break; 
     case CMD_MIRROR:    
       dependencies.commands.do_mirror();                                                          
@@ -262,7 +263,8 @@ void dispatch_command(int cmd){
       dependencies.buffer.push_color(white);                                                    
       break; 
     case CMD_RANDOM:    
-      dependencies.commands.do_random();                                                          
+      dependencies.commands.do_random(dependencies.command_processor.sub_args[0]);                                                          
+      reset_args = true;
       break; 
     case CMD_RGBCOLOR:  
       dependencies.buffer.push_rgb_color(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]); 
@@ -305,6 +307,9 @@ void dispatch_command(int cmd){
     case CMD_BREATHE:   
       dependencies.effects_processor.start_effect(BREATHE_ON);                                             
       break;
+    case CMD_EFFECTR:   
+      dependencies.effects_processor.start_effect_r();                                                     
+      break;
     case CMD_FLOOD:     
       dependencies.commands.do_flood();                                                           
       break;
@@ -322,6 +327,14 @@ void dispatch_command(int cmd){
       dependencies.buffer.set_window(dependencies.command_processor.sub_args[0]); 
       reset_args = true;
       break;
+#ifdef WEARABLE
+    case CMD_LOPOWER:
+      dependencies.commands.low_power();                                               
+      break;
+    case CMD_HIPOWER:
+      dependencies.commands.high_power();                                               
+      break;
+#endif
     }
 
   if(reset_args)
