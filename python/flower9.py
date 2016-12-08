@@ -69,9 +69,12 @@ def display():
   command("flush")
 
 def loop():
-  color = "purple:bright:bright:blink"
-  for i in range(0, 6):
-    chosen_colors[5 - i] = color + str(i + 1) 
+  chosen_colors[0] = "red:blink5"
+  chosen_colors[1] = "orange:blink4"     
+  chosen_colors[2] = "green:blink3"     
+  chosen_colors[3] = "blue:blink2"     
+  chosen_colors[4] = "purple:blink1"     
+  chosen_colors[5] = "purple:blink1"     
   display()
   exit()  
 

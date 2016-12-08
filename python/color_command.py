@@ -29,8 +29,13 @@ def setup():
     exit()    
 
 def loop(): 
-  cmd = raw_input('command: ')
-  command(cmd)
+  try:
+    cmd = raw_input('command: ')
+    command(cmd)
+  except KeyboardInterrupt:                                                                         
+    sys.exit("\nExiting...\n")                                                    
+  except Exception:                           
+    raise  
 
 if __name__ == '__main__': 
   setup() 

@@ -6,8 +6,8 @@ import random
 
 s = None
 
-num_leds = 93
-play_time = 5.0
+num_leds = 100
+play_time = 15.0
 
 def flush_input():                        
   s.flushInput()
@@ -25,14 +25,14 @@ def setup():
   global s 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
-  command("::pause:reset:10:level:wipe")
+  command("::pause:reset:25:level:wipe")
 
-size_range_min = 1
-size_range_max = 4
+size_range_min = 2
+size_range_max = 13
 
-num_colors = 12
-colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "random" ]
-
+num_colors = 6
+colors = [ "red", "orange", "yellow", "green", "blue", "purple" ]
+         
 effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
 effect_index = 0
 
@@ -54,15 +54,15 @@ def loop():
     effect_index = (effect_index - dir) % 6
 #    else:
 #      effect_index = (effect_index + dir) % 6
-    color = colors[random.randrange(0, num_colors)]                   
-#    command(str(osize) + "," + str(osize * (times - i))  + ":pshifto")          
+    color = colors[random.randrange(0, num_colors)]              
+    command(str(osize) + "," + str(osize * (times - i))  + ":pshifto")          
     cmd = ""                                                          
-#    cmd = cmd + str(osize * (times - i)) + ":window:"                              
+    cmd = cmd + str(osize * (times - i)) + ":window:"                              
     cmd = cmd + color + ":" + effect
     if(osize > 1):
       cmd = cmd + ":" + str(osize - 1) + ":repeat"
     command(cmd)               
-  command("93:window:continue:flush")                                       
+  command("0:window:continue:flush")                                       
   time.sleep(play_time)                                               
   command("::pause:wipe")  
 

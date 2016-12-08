@@ -3,3 +3,5 @@ CircleCI uses light blue for building
 detailed reporting on last 10 builds and final status only on another 24
 
 'requests.exceptions.ConnectionError'>
+
+add 'redo' command to color_command.py so a failed command line doesn't have to be retyped

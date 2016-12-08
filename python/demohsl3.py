@@ -18,14 +18,13 @@ def command(cmd_text):
   s.write((cmd_text + ':').encode())   
   wait_for_ack()
 
-num_leds = 72                            
-brightness = 50                             
+num_leds = 100                           
+brightness = 63                             
 saturation = 255                            
 step = 1                                    
 stops = 6                                     
 repeats = (num_leds / stops) - 1              
 empties = num_leds - ((repeats + 1) * stops)  
-
 
 def setup():
   global s, stops, repeats, empties, step, brightness

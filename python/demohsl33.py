@@ -49,7 +49,7 @@ def loop():
   d = 0
   for i in xrange(0, 360, step):
 
-    command(str(d % 2) + ":display")
+    command(str(d % 3) + ":display")
     d += 1
 
     for j in range(0, stops):
