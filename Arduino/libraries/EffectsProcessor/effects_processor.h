@@ -13,30 +13,30 @@
 class EffectsProcessor
 {
   public:
-  const static int random_effects[RANDOM_EFFECTS];
-  char *effects;
+  const static byte random_effects[RANDOM_EFFECTS];
+  byte *effects;
   BlinkEffects *blink_effects;
   BreatheEffects *breathe_effects;
 
-  static int random_effect();
+  static byte random_effect();
 
-  void begin(char *effects, BlinkEffects *blink_effects, BreatheEffects *breathe_effects);
-  void start_effect(int effect);
+  void begin(byte *effects, BlinkEffects *blink_effects, BreatheEffects *breathe_effects);
+  void start_effect(byte effect);
   void start_blinking_r();
   void start_effect_r();
   void reset_effects();
   bool process_effects();
 };
 
-const int EffectsProcessor::random_effects[] = { NO_EFFECT, BREATHE_ON, RANDOM, BLINK_ON, BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4, BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B }; //, BLINK_ON_P };
+const byte EffectsProcessor::random_effects[] = { NO_EFFECT, BREATHE_ON, RANDOM, BLINK_ON, BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4, BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B }; //, BLINK_ON_P };
 
-void EffectsProcessor::begin(char *effects, BlinkEffects *blink_effects, BreatheEffects *breathe_effects){
+void EffectsProcessor::begin(byte *effects, BlinkEffects *blink_effects, BreatheEffects *breathe_effects){
   this->effects = effects;
   this->blink_effects = blink_effects;
   this->breathe_effects = breathe_effects;
 }
 
-void EffectsProcessor::start_effect(int effect) {
+void EffectsProcessor::start_effect(byte effect) {
   effects[0] = effect;
 }
 
@@ -44,7 +44,7 @@ void EffectsProcessor::start_blinking_r() {
   effects[0] = BLINK_ON_1 + random((BLINK_ON_6 - BLINK_ON_1) + 1);
 }
 
-int EffectsProcessor::random_effect() {
+byte EffectsProcessor::random_effect() {
   return random_effects[random(RANDOM_EFFECTS)];
 }
 

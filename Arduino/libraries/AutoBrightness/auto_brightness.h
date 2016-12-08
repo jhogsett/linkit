@@ -8,7 +8,7 @@
 
 // Automatic brightness minimum and maximum setting
 #define DEFAULT_MIN_BRIGHTNESS 10
-#define DEFAULT_MAX_BRIGHTNESS 100
+#define DEFAULT_MAX_BRIGHTNESS 90
 #define DEFAULT_BRIGHTNESS_RANGE (DEFAULT_MAX_BRIGHTNESS - DEFAULT_MIN_BRIGHTNESS)
 
 // Automatic brightness ligth samples
@@ -18,47 +18,47 @@
 class AutoBrightnessBase
 {
   public:
-  void virtual begin(int min_brightness = DEFAULT_MIN_BRIGHTNESS, int max_brightness = DEFAULT_MAX_BRIGHTNESS) = 0;
+  void virtual begin(byte min_brightness = DEFAULT_MIN_BRIGHTNESS, byte max_brightness = DEFAULT_MAX_BRIGHTNESS) = 0;
   void virtual auto_adjust_brightness() = 0;
-  int virtual get_auto_brightness_level() = 0;
+  byte virtual get_auto_brightness_level() = 0;
 };
 
-template<unsigned char pin> class AutoBrightness : public AutoBrightnessBase
+template<byte pin> class AutoBrightness : public AutoBrightnessBase
 {
   public:
-  void begin(int min_brightness = DEFAULT_MIN_BRIGHTNESS, int max_brightness = DEFAULT_MAX_BRIGHTNESS);
+  void begin(byte min_brightness = DEFAULT_MIN_BRIGHTNESS, byte max_brightness = DEFAULT_MAX_BRIGHTNESS);
   void auto_adjust_brightness();
-  int get_auto_brightness_level();
+  byte get_auto_brightness_level();
 
   private:
-  static int min_brightness;
-  static int max_brightness;
-  static int brightness_range;
+  static byte min_brightness;
+  static byte max_brightness;
+  static byte brightness_range;
   static int light_samples[];
   int get_average_light_level();
   int get_next_light_sample();
   int get_one_light_sample();
 };
 
-template<unsigned char pin> int AutoBrightness<pin>::light_samples[LIGHT_SAMPLE_COUNT] = {0,0,0,0,0};
-template<unsigned char pin> int AutoBrightness<pin>::min_brightness = DEFAULT_MIN_BRIGHTNESS;
-template<unsigned char pin> int AutoBrightness<pin>::max_brightness = DEFAULT_MAX_BRIGHTNESS;
-template<unsigned char pin> int AutoBrightness<pin>::brightness_range = DEFAULT_BRIGHTNESS_RANGE;
+template<byte pin> int AutoBrightness<pin>::light_samples[LIGHT_SAMPLE_COUNT] = {0,0,0,0,0};
+template<byte pin> byte AutoBrightness<pin>::min_brightness = DEFAULT_MIN_BRIGHTNESS;
+template<byte pin> byte AutoBrightness<pin>::max_brightness = DEFAULT_MAX_BRIGHTNESS;
+template<byte pin> byte AutoBrightness<pin>::brightness_range = DEFAULT_BRIGHTNESS_RANGE;
 
-template<unsigned char pin> void AutoBrightness<pin>::begin(int min_brightness, int max_brightness){
+template<byte pin> void AutoBrightness<pin>::begin(byte min_brightness, byte max_brightness){
   this->min_brightness = min_brightness;
   this->max_brightness = max_brightness;
   this->brightness_range = max_brightness - min_brightness;
 }
 
-template<unsigned char pin> int AutoBrightness<pin>::get_average_light_level(){
+template<byte pin> int AutoBrightness<pin>::get_average_light_level(){
   int result;
   for(int i = 0; i < LIGHT_SAMPLE_COUNT; i++){
     result = get_next_light_sample();  
   }
 }
 
-template<unsigned char pin> int AutoBrightness<pin>::get_next_light_sample(){
+template<byte pin> int AutoBrightness<pin>::get_next_light_sample(){
   int accum = 0;
   for(int i = LIGHT_SAMPLE_COUNT-1; i > 0; i--){
     light_samples[i] = light_samples[i-1];
@@ -70,19 +70,19 @@ template<unsigned char pin> int AutoBrightness<pin>::get_next_light_sample(){
   return accum / LIGHT_SAMPLE_COUNT;
 }
 
-template<unsigned char pin> int AutoBrightness<pin>::get_one_light_sample() {
+template<byte pin> int AutoBrightness<pin>::get_one_light_sample() {
   delay(LIGHT_SAMPLE_DELAY);
   return analogRead(pin);  
 }
 
 // 1023 = complete darkness, 0 = infinite brightness
-template<unsigned char pin> int AutoBrightness<pin>::get_auto_brightness_level(){
+template<byte pin> byte AutoBrightness<pin>::get_auto_brightness_level(){
   int light_level = get_average_light_level();
   float detected_brightness = (1023.0 - light_level) / 1024.0;
   return min_brightness + int(brightness_range * detected_brightness);
 }
 
-template<unsigned char pin> void AutoBrightness<pin>::auto_adjust_brightness(){
+template<byte pin> void AutoBrightness<pin>::auto_adjust_brightness(){
   ColorMath::set_brightness(get_auto_brightness_level());
 }
 #endif

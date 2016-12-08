@@ -14,10 +14,10 @@ class CommandProcessor
   char arg[MAX_STRING_LENGTH];
   int sub_args[NUM_SUB_ARGS];
   char **commands; 
-  int num_commands;
+  byte num_commands;
   HardwareSerial *serial;
 
-  void begin(HardwareSerial *serial, char *commands[], int num_commands);
+  void begin(HardwareSerial *serial, char *commands[], byte num_commands);
   bool input_available();
   bool received_command();
   void acknowledge_command();
@@ -29,10 +29,10 @@ class CommandProcessor
   private:
   bool str_equal(char *str1, char *str2);
   bool is_command(char *str, char *command);
-  int get_sub_args();
+  void get_sub_args();
 };
 
-void CommandProcessor::begin(HardwareSerial *serial, char **commands, int num_commands){
+void CommandProcessor::begin(HardwareSerial *serial, char **commands, byte num_commands){
   this->serial = serial;
   this->commands = commands;
   this->num_commands = num_commands;
@@ -85,7 +85,7 @@ bool CommandProcessor::is_command(char *str, char *command){
   return str_equal(str, command);  
 }
 
-int CommandProcessor::get_sub_args(){
+void CommandProcessor::get_sub_args(){
   char *token = strtok(arg, ",");
   sub_args[0] = atoi(token);
   token = strtok(NULL, ",");
@@ -102,7 +102,7 @@ void CommandProcessor::reset_args(){
 }
 
 int CommandProcessor::get_command(){
-  for(int i = 0; i < num_commands; i++){
+  for(byte i = 0; i < num_commands; i++){
     if(is_command(str, commands[i])){
       return CMD_FIRST + i;
     }

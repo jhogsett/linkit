@@ -32,7 +32,7 @@ class Dependencies
   static rgb_color render[config.led_count];
 
   // effect styling per LED position
-  static char effects[config.led_count];
+  static byte effects[config.led_count];
 
   // pin-specific LED hardware drivers
   static PololuLedStrip<config.display_pins[0]> ledStrip1;
@@ -81,7 +81,7 @@ rgb_color Dependencies::colors[config.led_count];
 rgb_color Dependencies::render[config.led_count];
 
 // effect styling per LED position
-char Dependencies::effects[config.led_count];
+byte Dependencies::effects[config.led_count];
 
 // pin-specific LED hardware drivers
 PololuLedStrip<DISPLAY_PIN1> Dependencies::ledStrip1;
@@ -130,7 +130,11 @@ void Dependencies::begin(){
 
   // start up the color math class
   // false = don't swap red & green
+#if defined(STRAND1) || defined(STRAND2)
+  ColorMath::begin(true);
+#else  
   ColorMath::begin(false);
+#endif
 
   // establish the default brightness for color scaling
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);

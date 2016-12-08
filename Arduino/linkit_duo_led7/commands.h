@@ -15,7 +15,7 @@
 class Commands
 {
   public:
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, char *effects, AutoBrightnessBase *auto_brightness);
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, rgb_color *colors, rgb_color *render, byte *effects, AutoBrightnessBase *auto_brightness);
   void pause();
   void resume();
   void do_blend();
@@ -28,18 +28,18 @@ class Commands
   void do_flood();
   void do_random();
   void do_mirror();
-  void do_repeat(int times);
-  void do_elastic_shift(int count, int max);
-  void do_power_shift(int count, int max, bool fast_render);
-  void do_power_shift_object(int width, int shift, bool fast_render);
+  void do_repeat(byte times);
+  void do_elastic_shift(byte count, byte max);
+  void do_power_shift(byte count, byte max, bool fast_render);
+  void do_power_shift_object(byte width, byte shift, bool fast_render);
   void do_demo();
   void flush(bool force_display);
   void reset();
   void low_power();
   void high_power();
-  void set_display(int display);
-  void set_pin(int pin, bool on);
-  void set_brightness_level(int level = 0);
+  void set_display(byte display);
+  void set_pin(byte pin, bool on);
+  void set_brightness_level(byte level = 0);
 
   private:
   Buffer *buffer;
@@ -48,19 +48,19 @@ class Commands
 
   rgb_color *colors;
   rgb_color *render;
-  char *effects;
+  byte *effects;
   bool paused = false;
-  int default_brightness;
-  int visible_led_count;
+  byte default_brightness;
+  byte visible_led_count;
   bool low_power_mode = false;
-  int low_power_position = 0;
-  int low_power_timer = 0;
+  byte low_power_position = 0;
+  byte low_power_timer = 0;
   AutoBrightnessBase *auto_brightness;
 
   void advance_low_power_position();
 };
 
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, int default_brightness, int visible_led_count, rgb_color *colors, rgb_color *render, char *effects, AutoBrightnessBase *auto_brightness){
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, rgb_color *colors, rgb_color *render, byte *effects, AutoBrightnessBase *auto_brightness){
   this->buffer = buffer;
   this->renderer = renderer;
   this->effects_processor = effects_processor;
@@ -92,18 +92,18 @@ void Commands::high_power(){
   low_power_mode = false;
 }
 
-void Commands::set_display(int display){
+void Commands::set_display(byte display){
   buffer->set_display(display);
 }
 
-void Commands::set_pin(int pin, bool on){
+void Commands::set_pin(byte pin, bool on){
   pinMode(pin, OUTPUT);
   digitalWrite(pin, on ? HIGH : LOW);  
 }
 
-void Commands::set_brightness_level(int level){
+void Commands::set_brightness_level(byte level){
   if(level == 0){
-#ifdef WEARABLE
+#if defined(WEARABLE) || defined(DISC93) || defined(STRAND1) || defined(STRAND2)
     level = default_brightness;
 #else
     level = auto_brightness->get_auto_brightness_level();
@@ -155,7 +155,7 @@ void Commands::do_exhale_fade(){
 
 void Commands::do_flood(){
   int max = min(visible_led_count, buffer->get_window());
-  for(int i = 1; i < max; i++){
+  for(byte i = 1; i < max; i++){
     if(effects[0] == RANDOM){
       colors[i] = ColorMath::random_color();
     } else {
@@ -171,30 +171,36 @@ void Commands::do_random(){
 }
 
 void Commands::do_mirror(){
-  for(int i = 0; i < visible_led_count / 2; i++){
+  for(byte i = 0; i < visible_led_count / 2; i++){
     colors[(visible_led_count - 1) - i] = colors[i];
     effects[(visible_led_count - 1) - i] = effects[i];
   }
 }
 
-void Commands::do_repeat(int times = 1){
+void Commands::do_repeat(byte times = 1){
   times = (times < 1) ? 1 : times;
-  for(int i = 0; i < times; i++){
+
+  // the stored color has been red/green corrected, so
+  // to repeat it, first uncorrect it by swapping
+  rgb_color color = ColorMath::correct_color(colors[0]);
+  
+  byte effect = effects[0];
+  for(byte i = 0; i < times; i++){
     if(effects[0] == RANDOM){
       buffer->push_color(ColorMath::random_color());
     } else {
-      buffer->push_color(colors[0]);
+      buffer->push_color(color);
     }
-    effects[0] = effects[1];
+    effects[0] = effect;
   }
 }
 
-void Commands::do_elastic_shift(int count, int max = 0){
+void Commands::do_elastic_shift(byte count, byte max = 0){
   max = (max == 0) ? visible_led_count : max;
   count = count == 0 ? 1 : count;
   if(count >= 1){
-    for(int i = 0; i < ElasticEase::ease_count(); i++){
-      int pos = ElasticEase::ease[i] * count;
+    for(byte i = 0; i < ElasticEase::ease_count(); i++){
+      byte pos = ElasticEase::ease[i] * count;
       delay(ElasticEase::ease_delay());
       buffer->shift(pos+1, max);
     }
@@ -202,12 +208,12 @@ void Commands::do_elastic_shift(int count, int max = 0){
   }
 }
 
-void Commands::do_power_shift(int count, int max = 0, bool fast_render = true){
+void Commands::do_power_shift(byte count, byte max = 0, bool fast_render = true){
   max = (max == 0) ? visible_led_count : max;
   count = count == 0 ? 1 : count;
   if(count >= 1){
-    for(int i = 0; i < PowerEase::ease_count(); i++){
-      int pos = PowerEase::ease[i] * count;
+    for(byte i = 0; i < PowerEase::ease_count(); i++){
+      byte pos = PowerEase::ease[i] * count;
       delay(PowerEase::ease_delay());
       buffer->shift(pos+1, max, fast_render);
     }
@@ -219,7 +225,7 @@ void Commands::do_power_shift(int count, int max = 0, bool fast_render = true){
 //         including the new space shifted into
 // shift = how far to move
 // the two should add up to no more than the visible led count
-void Commands::do_power_shift_object(int width, int shift, bool fast_render = true){
+void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = true){
   do_power_shift(shift, shift + width, fast_render);
 }
 
@@ -258,12 +264,12 @@ void Commands::do_demo(){
   int count = visible_led_count / DEMO_TOTAL_SIZE;  
   int window = visible_led_count;
   
-  for(int i = 0; i < count; i++){
+  for(byte i = 0; i < count; i++){
     rgb_color color = ColorMath::random_color();
     do_power_shift_object(DEMO_TOTAL_SIZE, window);
     window -= DEMO_TOTAL_SIZE;
-    int effect = EffectsProcessor::random_effect();
-    for(int j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
+    byte effect = EffectsProcessor::random_effect();
+    for(byte j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
       buffer->set_color(j, color, false, effect);
     }
     delay(DEMO_DELAY);
