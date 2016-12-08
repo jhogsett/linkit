@@ -111,7 +111,7 @@ void Buffer::fade(float rate = 0.0){
   byte *p;
   p = (byte *)buffer;
   // to do: restrict to current zone
-  for(byte i = 0; i < visible_led_count * 3; i++){
+  for(int i = 0; i < visible_led_count * 3; i++){
     *(p + i) *= rate;
   }
 }

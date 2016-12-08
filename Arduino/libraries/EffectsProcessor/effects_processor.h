@@ -6,9 +6,10 @@
 
 #define LEAVE_EFFECT -1
 #define NO_EFFECT 0
-#define RANDOM 2
+#define RANDOM1 1
+#define RANDOM2 2
 #define STATIC_ON 101
-#define RANDOM_EFFECTS 12
+#define RANDOM_EFFECTS 11
 
 class EffectsProcessor
 {
@@ -28,7 +29,7 @@ class EffectsProcessor
   bool process_effects();
 };
 
-const byte EffectsProcessor::random_effects[] = { NO_EFFECT, BREATHE_ON, RANDOM, BLINK_ON, BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4, BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B }; //, BLINK_ON_P };
+const byte EffectsProcessor::random_effects[] = { NO_EFFECT, BREATHE_ON, BLINK_ON, BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4, BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B }; //, BLINK_ON_P };
 
 void EffectsProcessor::begin(byte *effects, BlinkEffects *blink_effects, BreatheEffects *breathe_effects){
   this->effects = effects;
