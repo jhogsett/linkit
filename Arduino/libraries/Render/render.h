@@ -18,6 +18,7 @@ class Render
   BreatheEffects *breathe_effects;
   float default_brightness_scale;
   float minimum_brightness_scale;
+
   rgb_color get_blink(rgb_color color, byte effect);
   rgb_color get_breathe(rgb_color color);
   rgb_color get_static();
