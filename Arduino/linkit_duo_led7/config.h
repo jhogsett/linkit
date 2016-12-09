@@ -1,27 +1,15 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// enable to change settings for the 8-LED wearable version
-// #define WEARABLE
-
-// enable to change settings for the 93-LED disc
-// #define DISC93
-
-// enable to change settings for a single 50-LED strand
-// #define STRAND1
-
-// enable to change settings for two 50-LED strands
-#define STRAND2
-
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3
 #define AUTO_BRIGHTNESS_MAX 33
 
 #define NUM_DISPLAYS 3                // how many physical LED strips there are (all expected to have the same # of LEDs)
 
-#define DISPLAY_PIN1 12
-#define DISPLAY_PIN2 11
-#define DISPLAY_PIN3 10
+#define DISPLAY_PIN1 5
+#define DISPLAY_PIN2 6
+#define DISPLAY_PIN3 7
 
 #define RANDOM_SEED_PIN A1            // floating pin for seeding the RNG
 #define LIGHT_SENSOR_PIN A0           // photocell pin for auto-brightness setting

@@ -14,9 +14,9 @@
 #include <effects_processor.h>
 #include <buffer.h>
 #include <render.h>
-#include "config.h"
 #include "command_defs.h"
 #include "commands.h"
+#include "config.h"
 
 class Dependencies
 {
@@ -119,14 +119,22 @@ Commands Dependencies::commands;
 
 void Dependencies::begin(){
 
+  // 461
+  
   // open internal serial connection to MT7688 for receiving commands
   Serial1.begin(BAUD_RATE); 
+
+  // 635
 
   // start up auto-brightness hardware driver
   auto_brightness.begin(AUTO_BRIGHTNESS_MIN, AUTO_BRIGHTNESS_MAX);
 
+  // 639
+
   // start up command processor, listening on the serial port and looking for the passed commands
   command_processor.begin(&Serial1, command_strings, NUM_COMMANDS);
+
+  // 641
 
   // start up the color math class
   // false = don't swap red & green
@@ -139,32 +147,50 @@ void Dependencies::begin(){
   // establish the default brightness for color scaling
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
 
+  // 690
+
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
   buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, colors, render, effects); //, existence);
+
+  // 1307
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
   commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, colors, render, effects, &this->auto_brightness);
 
+  // 1329
+
   // set up the blink effects counter and states
   blink_effects.begin();
+
+  // 1343
 
   // set up the breathe effect counter and state
   breathe_effects.begin();
 
+  // 1349
+
   // start up the effects processor, passing in the blink and breathe effects instances
   effects_processor.begin(effects, &this->blink_effects, &this->breathe_effects);
 
+  // 1349
+
   // start up the renderer, passing in the blink and breathe effects instances, and brightness values needed for rendering
   renderer.begin(&this->blink_effects, &this->breathe_effects, config.default_brightness_percent, config.minimum_brightness_percent);
-
   // set a higher-quality random seed by reading values from an unconnected analog input
   randomizer.randomize();
+
+  // 1349
 
   // generate the cubic each in/ease out animation
   PowerEase::generate_power_ease();
 
+  // 1445
+  
   // generate the cubic ease in/elastic out animation 
   ElasticEase::generate_elastic_ease();
+
+  // 1573
+
 }
 #endif
 

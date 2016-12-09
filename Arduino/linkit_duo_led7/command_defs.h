@@ -2,10 +2,10 @@
 #define COMMANDS_DEF_H
 
 // enable for full command set
-// #define FULL_COMMAND_SET
+#define FULL_COMMAND_SET
 
 // enable for minimal friendly command set
-#define MINIMAL_COMMAND_SET
+// #define MINIMAL_COMMAND_SET
 
 #if defined(FULL_COMMAND_SET)
 #define NUM_COMMANDS 58
