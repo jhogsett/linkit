@@ -35,6 +35,7 @@ class Buffer
   void set_window(byte width);
   void fade(float rate);
   void fade_fast();
+  void cross_fade(int step, int times);
   int get_window();
   void set_display(byte display);
 
@@ -106,28 +107,36 @@ void Buffer::erase(bool display = false){
   }
 }
 
+// to do: restrict to current zone
 void Buffer::fade(float rate = 0.0){
   rate = (rate == 0.0) ? fade_rate : rate;
-  byte *p;
-  p = (byte *)buffer;
-  // to do: restrict to current zone
+  byte *p = (byte *)buffer;
   for(int i = 0; i < visible_led_count * 3; i++){
     *(p + i) *= rate;
   }
 }
 
+// to do: restrict to current zone
 void Buffer::fade_fast(){
   byte *p;
   p = (byte *)buffer;
-  // to do: restrict to current zone
   for(byte i = 0; i < visible_led_count * 3; i++){
     *(p + i) = *(p + i) >> 1;
   }
 }
 
-void Buffer::shift_buffer(rgb_color * buffer, byte max){
+// to do: restrict to current zone
+void Buffer::cross_fade(int step, int times){
+  for(int i = 0; i < visible_led_count; i++){
+    rgb_color *pb = buffer + i;
+    rgb_color *pr = render + i;
+    rgb_color rendered_color = renderer->render(*pb, effects[i]);
+    *pr = ColorMath::crossfade_colors(step, times, *pr, rendered_color);
+   }
+}
 
-  // to do: set minimum position based on current zone
+// to do: set minimum position based on current zone
+void Buffer::shift_buffer(rgb_color * buffer, byte max){
   for(byte i = max - 1; i >= 1; i--){
     buffer[i] = buffer[i-1];
     effects[i] = effects[i-1];

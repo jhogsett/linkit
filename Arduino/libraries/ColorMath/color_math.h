@@ -19,11 +19,14 @@ class ColorMath
   static rgb_color hsl_to_rgb(int hue, int sat, int val);
   static rgb_color add_color(rgb_color color1, rgb_color color2);
   static rgb_color subtract_color(rgb_color color1, rgb_color color2);
-  static rgb_color blend_colors(rgb_color color1, rgb_color color2);
+  static rgb_color blend_colors(rgb_color color1, rgb_color color2, float strength);
+  static rgb_color crossfade_colors(int step, int times, rgb_color color1, rgb_color color2);
   static rgb_color correct_color(rgb_color color);
 
   private:
   static bool swap_r_and_g;
+  static byte blend_component(byte component1, byte component2, float strength);
+  static byte crossfade_component(int step, int times, byte component1, byte component2);
 };
 
 bool ColorMath::swap_r_and_g;
@@ -131,11 +134,33 @@ void ColorMath::begin(bool swap_r_and_g = true){
 #endif
 }
 
-rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2){
+byte ColorMath::crossfade_component(int step, int times, byte component1, byte component2){
+  float strength = 1.0 / times;
+  if(step == 0)
+    return (byte)((component2 * (1.0 - (strength * (times - step)))) + (component1 * (strength * (times - step))));
+  else
+    return (byte)((component2 * (1.0 - (strength * (times - step)))) + ((component1 - (component2 * (1.0 - (strength * ((times - step) + 1))))) * (strength * (times - step))));
+}
+
+//  color1 is the dominant color for strength (1.0 = all color1)
+rgb_color ColorMath::crossfade_colors(int step, int times, rgb_color color1, rgb_color color2){
   rgb_color result;
-  result.red = (color1.red + color2.red) / 2;
-  result.green = (color1.green + color2.green) / 2;
-  result.blue = (color1.blue + color2.blue) / 2;
+  result.red = crossfade_component(step, times, color1.red, color2.red);
+  result.green = crossfade_component(step, times, color1.green, color2.green);
+  result.blue = crossfade_component(step, times, color1.blue, color2.blue);
+  return result;
+}
+
+byte ColorMath::blend_component(byte component1, byte component2, float strength){
+  return (byte)((component1 * strength) + (component2 * (1.0 - strength)));
+}
+
+//  color1 is the dominant color for strength (1.0 = all color1)
+rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2, float strength = 0.5){
+  rgb_color result;
+  result.red = blend_component(color1.red, color2.red, strength);
+  result.green = blend_component(color1.green, color2.green, strength);
+  result.blue = blend_component(color1.blue, color2.blue, strength);
   return result;
 }
 
