@@ -195,6 +195,9 @@ void dispatch_command(int cmd){
       dependencies.commands.set_brightness_level(dependencies.command_processor.sub_args[0]); 
       reset_args = true;
       break;
+    case CMD_CFADE:      
+      dependencies.commands.do_crossfade();                                                            
+      break;
     }
 
   if(reset_args)

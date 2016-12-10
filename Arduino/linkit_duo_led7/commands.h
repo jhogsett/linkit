@@ -7,8 +7,11 @@
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
 
-#define FADE_TIMES 40
-#define FADE_DELAY 10
+//#define FADE_TIMES 40
+//#define FADE_DELAY 100
+
+#define CROSSFADE_TIMES 25
+#define CROSSFADE_DELAY 1
 
 #define LOW_POWER_TIME 50
 
@@ -23,6 +26,7 @@ class Commands
   void do_dim();
   void do_bright();
   void do_fade();
+  void do_crossfade();
   void do_wipe();
   void do_exhale_fade();
   void do_flood();
@@ -136,12 +140,25 @@ void Commands::do_bright(){
 }
 
 void Commands::do_fade(){
-  for(int i = 0; i < FADE_TIMES; i++){
-    buffer->fade();
-    buffer->display_buffer(colors);
-    delay(FADE_DELAY);
+  for(int i = 0; i < visible_led_count; i++){
+    colors[i] = black;
+    effects[i] = NO_EFFECT;
   }
-  buffer->erase();
+  do_crossfade();
+//  for(int i = 0; i < FADE_TIMES; i++){
+//    buffer->fade();
+//    buffer->display_buffer(colors);
+//    delay(FADE_DELAY);
+//  }
+//  buffer->erase();
+}
+
+void Commands::do_crossfade(){
+  for(int i = 0; i <= CROSSFADE_TIMES; i++){
+    buffer->cross_fade(i, CROSSFADE_TIMES);
+    buffer->display_buffer();
+    delay(CROSSFADE_DELAY);
+  }
 }
 
 void Commands::do_exhale_fade(){

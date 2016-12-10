@@ -15,7 +15,7 @@
 
 
 
-
+// fade in, like cross fade, but resets render buffer to black first, and goes slowly
 
 
 // wipe command should do a real rendering so it looks right
