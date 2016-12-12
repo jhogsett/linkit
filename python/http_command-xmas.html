@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Linkit LED Controller</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+</head>
+<body>
+  <div class="container-fluid">
+    <h1>Xmas Lights Linkit <small>IoT!</small></h1>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=5:level"><span class="glyphicon glyphicon-upload"></span> 5%</a></div>
+      <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?sys=./sparkle.py"><span class="glyphicon glyphicon-upload"></span> Sparkle On</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=10:level"><span class="glyphicon glyphicon-upload"></span> 10%</a></div>
+      <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?sys=killall+-9+sparkle.py"><span class="glyphicon glyphicon-upload"></span> Sparkle Off</a> </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=20:level"><span class="glyphicon glyphicon-upload"></span> 20%</a></div>
+      <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?sys=./demo3-100.py"><span class="glyphicon glyphicon-upload"></span> Demo3 On</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=50:level"><span class="glyphicon glyphicon-upload"></span> 50%</a></div>
+      <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?sys=kill+-9+demo3-100.py"><span class="glyphicon glyphicon-upload"></span> Demo3 Off</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=100:level"><span class="glyphicon glyphicon-upload"></span> 100%</a></div>
+      <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?sys=./demohsl3.py+9+5+50"><span class="glyphicon glyphicon-upload"></span> Demo3HSL On</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=0:level"><span class="glyphicon glyphicon-upload"></span> Auto</a></div>
+      <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?sys=killall+-9+demohsl3.py"><span class="glyphicon glyphicon-upload"></span> Demo3HSL Off</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=erase"><span class="glyphicon glyphicon-upload"></span> Off</a></div>
+      <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=random:flood:cfade"><span class="glyphicon glyphicon-upload"></span> Random Colors</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=white:flood"><span class="glyphicon glyphicon-upload"></span> All White</a></div>
+      <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=2:random:flood:cfade"><span class="glyphicon glyphicon-upload"></span> Random Blinking</a></div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">&nbsp;</div>
+    </div>
+    <div class="row">
+      <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?sys=red:blinka:flood"><span class="glyphicon glyphicon-upload"></span> All Red Blinking</a></div>
+      <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?sys=blue:breathe:flood"><span class="glyphicon glyphicon-upload"></span> All Blue Breathing</a></div>
+    </div>
+  </div>
+</body>
+</html>
