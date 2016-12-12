@@ -21,20 +21,20 @@ def command(cmd_text):
 def setup(): 
   global s 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command("::pause:20:level:continue")
+  command("::pause:10:level:continue")
 
 def loop():
   command("::pause") 
 
-  r = random.randrange(0, 3)
-  if r == 0:
-    command("wipe")
-  elif r == 1:
-    command("fade")
-  else:
-    pass  
-    # command("erase")
-    # time.sleep(0.5)
+#  r = random.randrange(0, 3)
+#  if r == 0:
+#    command("wipe")
+#    time.sleep(0.1)
+#  elif r == 1:
+#    command("fade")
+#  else:
+#    command("erase")
+#    time.sleep(0.3)
 
   command("random:flood:continue")
   time.sleep(20)

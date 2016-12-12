@@ -35,23 +35,13 @@ def loop():
   try:
     command("::pause") 
 
-    r = random.randrange(0, 3)
-    if r == 0:
-      command("wipe")
-      time.sleep(0.2)
-    elif r == 1:
-      command("fade")
-    else:
-      command("erase")
-      time.sleep(0.3)
-
     r = random.randrange(0, 2)
     if r == 0:
       command("1")
     else:
       command("2")
 
-    command("random:flood:continue")
+    command("random:flood:cfade:continue")
     time.sleep(play_time)
     command("::pause")        
 

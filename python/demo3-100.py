@@ -25,7 +25,7 @@ def setup():
   global s 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
-  command("::pause:reset:25:level:wipe")
+  command("::pause:reset:10:level:wipe")
 
 size_range_min = 2
 size_range_max = 13
