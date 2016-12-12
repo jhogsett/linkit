@@ -55,7 +55,7 @@ class BlinkEffects
   void reset();
   bool process();
   bool blink_on(byte effect);
-  static bool is_blink_effect(byte effect);
+  static bool is_handled_effect(byte effect);
 
   private:
   int max_blink = MAX_BLINK;
@@ -143,7 +143,7 @@ bool BlinkEffects::process(){
   return should_flush;
 }
 
-bool BlinkEffects::is_blink_effect(byte effect){
+bool BlinkEffects::is_handled_effect(byte effect){
   return effect >= BLINK_MIN && effect <= BLINK_MAX;
 }
 

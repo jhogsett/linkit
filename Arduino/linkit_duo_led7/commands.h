@@ -7,8 +7,11 @@
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
 
-#define FADE_TIMES 40
-#define FADE_DELAY 10
+//#define FADE_TIMES 40
+//#define FADE_DELAY 100
+
+#define CROSSFADE_TIMES 25
+#define CROSSFADE_DELAY 1
 
 #define LOW_POWER_TIME 50
 
@@ -23,10 +26,11 @@ class Commands
   void do_dim();
   void do_bright();
   void do_fade();
+  void do_crossfade();
   void do_wipe();
   void do_exhale_fade();
   void do_flood();
-  void do_random();
+  void do_random(byte type);
   void do_mirror();
   void do_repeat(byte times);
   void do_elastic_shift(byte count, byte max);
@@ -54,7 +58,7 @@ class Commands
   byte visible_led_count;
   bool low_power_mode = false;
   byte low_power_position = 0;
-  byte low_power_timer = 0;
+  int low_power_timer = 0;
   AutoBrightnessBase *auto_brightness;
 
   void advance_low_power_position();
@@ -136,12 +140,25 @@ void Commands::do_bright(){
 }
 
 void Commands::do_fade(){
-  for(int i = 0; i < FADE_TIMES; i++){
-    buffer->fade();
-    buffer->display_buffer(colors);
-    delay(FADE_DELAY);
+  for(int i = 0; i < visible_led_count; i++){
+    colors[i] = black;
+    effects[i] = NO_EFFECT;
   }
-  buffer->erase();
+  do_crossfade();
+//  for(int i = 0; i < FADE_TIMES; i++){
+//    buffer->fade();
+//    buffer->display_buffer(colors);
+//    delay(FADE_DELAY);
+//  }
+//  buffer->erase();
+}
+
+void Commands::do_crossfade(){
+  for(int i = 0; i <= CROSSFADE_TIMES; i++){
+    buffer->cross_fade(i, CROSSFADE_TIMES);
+    buffer->display_buffer();
+    delay(CROSSFADE_DELAY);
+  }
 }
 
 void Commands::do_exhale_fade(){
@@ -155,19 +172,30 @@ void Commands::do_exhale_fade(){
 
 void Commands::do_flood(){
   int max = min(visible_led_count, buffer->get_window());
+  rgb_color color = colors[0];
+  byte effect = effects[0];
   for(byte i = 1; i < max; i++){
-    if(effects[0] == RANDOM){
+    if(effect == RANDOM1){
       colors[i] = ColorMath::random_color();
+      effects[i] = NO_EFFECT;
+    } else if(effect == RANDOM2){
+      colors[i] = ColorMath::random_color();
+      effects[i] = EffectsProcessor::random_effect();
     } else {
-      colors[i] = colors[0];
+      colors[i] = color;
+      effects[int(i)] = effect;    
     }
-    effects[i] = effects[0];    
   }
 }
 
-void Commands::do_random(){
+void Commands::do_random(byte type){
+  type = (type < 1) ? 1 : type;
   buffer->push_color(ColorMath::random_color());
-  effects[0] = RANDOM;
+  if(type == 1){
+    effects[0] = RANDOM1;
+  } else if(type == 2){
+    effects[0] = RANDOM2;
+  }
 }
 
 void Commands::do_mirror(){
@@ -186,12 +214,16 @@ void Commands::do_repeat(byte times = 1){
   
   byte effect = effects[0];
   for(byte i = 0; i < times; i++){
-    if(effects[0] == RANDOM){
+    if(effect == RANDOM1){
       buffer->push_color(ColorMath::random_color());
+      effects[0] = NO_EFFECT;
+    } else if(effect == RANDOM2){
+      buffer->push_color(ColorMath::random_color());
+      effects[0] = EffectsProcessor::random_effect();
     } else {
       buffer->push_color(color);
+      effects[0] = effect;
     }
-    effects[0] = effect;
   }
 }
 
@@ -235,7 +267,7 @@ void Commands::do_wipe(){
 
 void Commands::advance_low_power_position(){
   if(low_power_timer++ % LOW_POWER_TIME == 0){
-    low_power_position = ++low_power_position % visible_led_count;    
+    low_power_position = ++low_power_position % visible_led_count; 
   }
 }
 

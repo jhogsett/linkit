@@ -2,13 +2,13 @@
 #define COMMANDS_DEF_H
 
 // enable for full command set
-// #define FULL_COMMAND_SET
+#define FULL_COMMAND_SET
 
 // enable for minimal friendly command set
-#define MINIMAL_COMMAND_SET
+// #define MINIMAL_COMMAND_SET
 
 #if defined(FULL_COMMAND_SET)
-#define NUM_COMMANDS 58
+#define NUM_COMMANDS 59
 
 #define CMD_NONE       0
 #define CMD_FIRST      1
@@ -70,6 +70,7 @@
 #define CMD_PINON     56
 #define CMD_PINOFF    57
 #define CMD_LEVEL     58
+#define CMD_CFADE     59
 
 char* command_strings[] = {
   "pause",
@@ -129,10 +130,16 @@ char* command_strings[] = {
   "display",
   "pinon",
   "pinoff",
-  "level"
+  "level",
+  "cfade"
 };
 #elif defined(MINIMAL_COMMAND_SET)
-#define NUM_COMMANDS 36
+
+#ifdef WEARABLE
+#define NUM_COMMANDS 39
+#else
+#define NUM_COMMANDS 37
+#endif
 
 #define CMD_NONE       0
 #define CMD_FIRST      1
@@ -168,11 +175,16 @@ char* command_strings[] = {
 #define CMD_BLINKA    29
 #define CMD_BLINKB    30
 #define CMD_BREATHE   31
-#define CMD_FLOOD     32  
-#define CMD_FADE      33
-#define CMD_WIPE      34
-#define CMD_PSHIFTO   35
-#define CMD_WINDOW    36
+#define CMD_EFFECTR   32
+#define CMD_FLOOD     33  
+#define CMD_FADE      34
+#define CMD_WIPE      35
+#define CMD_PSHIFTO   36
+#define CMD_WINDOW    37
+#ifdef WEARABLE
+#define CMD_LOPOWER   38
+#define CMD_HIPOWER   39
+#endif
 
 char* command_strings[] = {
   "reset",
@@ -206,11 +218,14 @@ char* command_strings[] = {
   "blinka",
   "blinkb",
   "breathe",
+  "effectr",
   "flood",
   "fade",
   "wipe",
   "pshifto",
-  "window"
+  "window",
+  "lopower",
+  "hipower",
 };
 #endif
 

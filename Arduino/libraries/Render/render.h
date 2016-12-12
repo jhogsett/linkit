@@ -18,6 +18,7 @@ class Render
   BreatheEffects *breathe_effects;
   float default_brightness_scale;
   float minimum_brightness_scale;
+
   rgb_color get_blink(rgb_color color, byte effect);
   rgb_color get_breathe(rgb_color color);
   rgb_color get_static();
@@ -62,8 +63,8 @@ rgb_color Render::render(rgb_color color, byte effect){
   rgb_color render_color;
 
                         if(effect ==  STATIC_ON) { render_color = get_static();             } else
-      if(blink_effects->is_blink_effect(effect)) { render_color = get_blink(color, effect); } else
-  if(breathe_effects->is_breathe_effect(effect)) { render_color = get_breathe(color);       } else
+    if(blink_effects->is_handled_effect(effect)) { render_color = get_blink(color, effect); } else
+  if(breathe_effects->is_handled_effect(effect)) { render_color = get_breathe(color);       } else
                                                  { render_color = get_default(color);       }
   return render_color;
 }

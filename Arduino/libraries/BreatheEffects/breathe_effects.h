@@ -1,7 +1,7 @@
 #ifndef BREATHE_EFFECTS_H
 #define BREATHE_EFFECTS_H
 
-#define BREATHE_ON 1
+#define BREATHE_ON 30
 
 #define BREATHE_TIME 500
 #define BREATHE_BRIGHTNESS_MAX DEFAULT_BRIGHTNESS_PERCENT
@@ -17,7 +17,7 @@ class BreatheEffects
   void begin(int breathe_time);
   void reset();
   bool process();
-  bool is_breathe_effect(byte effect);
+  bool is_handled_effect(byte effect);
   float breathe_ratio();
  
   private:
@@ -77,7 +77,7 @@ bool BreatheEffects::process(){
   return should_flush;
 }
 
-bool BreatheEffects::is_breathe_effect(byte effect){
+bool BreatheEffects::is_handled_effect(byte effect){
   return effect == BREATHE_ON;
 }
 
