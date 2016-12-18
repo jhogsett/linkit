@@ -41,7 +41,7 @@ class Handler(BaseHTTPRequestHandler):
 #      print args
 
       if 'cmd' in args:
-        command("::pause:reset")
+        command("::pause")
         for cmd in args['cmd']:
           command(cmd)           
         command("flush:continue")
