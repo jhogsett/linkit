@@ -13,6 +13,7 @@
 
 // hide / show
 
+// quit the crossfade early if things stop changing, for faster switch between similar colors
 
 
 // fade in, like cross fade, but resets render buffer to black first, and goes slowly
