@@ -35,7 +35,7 @@ def loop():
   global cmd,last_cmd
   try:
     cmd = raw_input('command: ')
-    if cmd == "!":
+    if cmd == "":
       command(last_cmd)
     else:
      command(cmd)

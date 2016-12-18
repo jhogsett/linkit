@@ -3,8 +3,10 @@
 import serial 
 import time
 import random
+import sys
 
 s = None
+play_time = 5
 
 def flush_input():
   s.read(s.inWaiting())
@@ -19,25 +21,25 @@ def command(cmd_text):
   wait_for_ack()
 
 def setup(): 
-  global s 
+  global s, play_time 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command("::pause:10:level:continue")
+  command("::pause:reseti:pause")
+
+  if len(sys.argv) > 1:
+    command(sys.argv[1])
+
+  if len(sys.argv) > 2:
+    play_time = int(sys.argv[2])
 
 def loop():
-  command("::pause") 
+  try:
+    command("1:random:flood:cfade")
+    time.sleep(play_time)
 
-#  r = random.randrange(0, 3)
-#  if r == 0:
-#    command("wipe")
-#    time.sleep(0.1)
-#  elif r == 1:
-#    command("fade")
-#  else:
-#    command("erase")
-#    time.sleep(0.3)
-
-  command("random:flood:continue")
-  time.sleep(20)
+  except KeyboardInterrupt:                                                                         
+    sys.exit("\nExiting...\n")                                                    
+  except Exception:                           
+    raise  
 
 if __name__ == '__main__': 
   setup() 

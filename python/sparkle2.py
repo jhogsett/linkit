@@ -8,6 +8,29 @@ import sys
 s = None
 play_time = 5
 
+effects = [
+  "red:green:2,0:copy:cfade",
+  "red:white:2,0:copy:cfade",
+  "green:red:2,0:copy:cfade",
+  "white:red:2,0:copy:cfade",
+  "green:white:2,0:copy:cfade",
+  "white:green:2,0:copy:cfade",
+  "red:green:white:3,0:copy:cfade",
+  "green:red:white:3,0:copy:cfade",
+  "red:white:green:3,0:copy:cfade",
+  "white:red:green:3,0:copy:cfade",
+  "green:white:red:3,0:copy:cfade",
+  "white:green:red:3,0:copy:cfade",
+  "ltblue:white:2,0:copy:cfade",
+  "white:ltblue:2,0:copy:cfade",
+  "red:1,0:copy:cfade",
+  "green:1,0:copy:cfade",
+  "white:black:2,0:copy:cfade",
+  "black:white:2,0:copy:cfade",
+  "random:flood:5,0:copy:cfade",
+  "random:flood:3,0:copy:cfade"
+]
+
 def flush_input():
   s.read(s.inWaiting())
 
@@ -33,17 +56,9 @@ def setup():
 
 def loop():
   try:
-    command("::pause") 
-
-#    r = random.randrange(0, 2)
-#    if r == 0:
-#      command("1")
-#    else:
-#      command("2")
-
-    command("2:random:flood:cfade:continue")
+    r = random.randrange(0, len(effects))
+    command(effects[r]) 
     time.sleep(play_time)
-    command("::pause")        
 
   except KeyboardInterrupt:                                                                         
     sys.exit("\nExiting...\n")                                                    
