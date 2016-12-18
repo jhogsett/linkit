@@ -10,7 +10,7 @@
 //#define FADE_TIMES 40
 //#define FADE_DELAY 100
 
-#define CROSSFADE_TIMES 25
+//#define CROSSFADE_TIMES 25
 #define CROSSFADE_DELAY 1
 
 #define LOW_POWER_TIME 50
@@ -154,8 +154,8 @@ void Commands::do_fade(){
 }
 
 void Commands::do_crossfade(){
-  for(int i = 0; i <= CROSSFADE_TIMES; i++){
-    buffer->cross_fade(i, CROSSFADE_TIMES);
+  for(int i = 0; i <= ColorMath::crossfade_steps(); i++){
+    buffer->cross_fade(i);
     buffer->display_buffer();
     delay(CROSSFADE_DELAY);
   }

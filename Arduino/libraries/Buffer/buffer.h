@@ -35,7 +35,7 @@ class Buffer
   void set_window(byte width);
   void fade(float rate);
   void fade_fast();
-  void cross_fade(int step, int times);
+  void cross_fade(int step);
   int get_window();
   void set_display(byte display);
 
@@ -126,12 +126,12 @@ void Buffer::fade_fast(){
 }
 
 // to do: restrict to current zone
-void Buffer::cross_fade(int step, int times){
+void Buffer::cross_fade(int step){
   for(int i = 0; i < visible_led_count; i++){
     rgb_color *pb = buffer + i;
     rgb_color *pr = render + i;
     rgb_color rendered_color = renderer->render(*pb, effects[i]);
-    *pr = ColorMath::crossfade_colors(step, times, *pr, rendered_color);
+    *pr = ColorMath::crossfade_colors(step, *pr, rendered_color);
    }
 }
 

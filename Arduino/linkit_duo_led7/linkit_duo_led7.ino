@@ -1,15 +1,3 @@
-// enable to change settings for the 8-LED wearable version
-// #define WEARABLE
-
-// enable to change settings for the 93-LED disc
-// #define DISC93
-
-// enable to change settings for a single 50-LED strand
-// #define STRAND1
-
-// enable to change settings for two 50-LED strands
-#define STRAND2
-
 #include "dependencies.h"
 #include "dispatch_command.h"
 

@@ -1,6 +1,18 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// enable to change settings for the 8-LED wearable version
+// #define WEARABLE
+
+// enable to change settings for the 93-LED disc
+// #define DISC93
+
+// enable to change settings for a single 50-LED strand
+// #define STRAND1
+
+// enable to change settings for two 50-LED strands
+#define STRAND2
+
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3
 #define AUTO_BRIGHTNESS_MAX 33

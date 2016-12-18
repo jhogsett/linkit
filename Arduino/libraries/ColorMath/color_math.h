@@ -8,6 +8,8 @@
 #include <PololuLedStrip.h>
 #include <colors.h>
 
+#define CROSSFADE_STEPS 20
+
 class ColorMath
 {
   public:
@@ -20,16 +22,21 @@ class ColorMath
   static rgb_color add_color(rgb_color color1, rgb_color color2);
   static rgb_color subtract_color(rgb_color color1, rgb_color color2);
   static rgb_color blend_colors(rgb_color color1, rgb_color color2, float strength);
-  static rgb_color crossfade_colors(int step, int times, rgb_color color1, rgb_color color2);
+  static rgb_color crossfade_colors(int step, rgb_color color1, rgb_color color2);
   static rgb_color correct_color(rgb_color color);
+  static int crossfade_steps();
 
   private:
   static bool swap_r_and_g;
+  static float crossfade[CROSSFADE_STEPS+1];
+
   static byte blend_component(byte component1, byte component2, float strength);
-  static byte crossfade_component(int step, int times, byte component1, byte component2);
+  static void generate_crossfade();
+  static byte crossfade_component(int step, byte component1, byte component2);
 };
 
 bool ColorMath::swap_r_and_g;
+float ColorMath::crossfade[CROSSFADE_STEPS+1];
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
   return (rgb_color){
@@ -120,7 +127,8 @@ rgb_color ColorMath::subtract_color(rgb_color color1, rgb_color color2){
 
 // some sets have red and green swapped, usually false for led strips
 void ColorMath::begin(bool swap_r_and_g = true){
-  ColorMath::swap_r_and_g = swap_r_and_g;
+  ColorMath::swap_r_and_g = true; //swap_r_and_g;
+  ColorMath::generate_crossfade();
 
 #ifdef USE_PALETTES
 //  if(swap_r_and_g == true){
@@ -134,20 +142,85 @@ void ColorMath::begin(bool swap_r_and_g = true){
 #endif
 }
 
-byte ColorMath::crossfade_component(int step, int times, byte component1, byte component2){
-  float strength = 1.0 / times;
-  if(step == 0)
-    return (byte)((component2 * (1.0 - (strength * (times - step)))) + (component1 * (strength * (times - step))));
-  else
-    return (byte)((component2 * (1.0 - (strength * (times - step)))) + ((component1 - (component2 * (1.0 - (strength * ((times - step) + 1))))) * (strength * (times - step))));
+//byte ColorMath::crossfade_component(int step, int times, byte component1, byte component2){
+//  float strength = 1.0 / times;
+//  if(step == 0)
+//    return (byte)((component2 * (1.0 - (strength * (times - step)))) + (component1 * (strength * (times - step))));
+//  else
+//    return (byte)((component2 * (1.0 - (strength * (times - step)))) + ((component1 - (component2 * (1.0 - (strength * ((times - step) + 1))))) * (strength * (times - step))));
+//}
+
+////////////////////// needs to undo previous round
+// maybe hack to save global values during crossfade
+// also pre-compute the array
+//
+//byte ColorMath::crossfade_component(int step, int times, byte component1, byte component2){
+//    float position = step / (times * 1.0);
+//    float g1 = pow( 0.5 + 0.5 * cos( M_PI * position), 0.5);
+//    float g2 = pow( 0.5 - 0.5 * cos( M_PI * position), 0.5);
+//    return (byte)int(g1 * component1 + g2 * component2);
+//}
+
+int ColorMath::crossfade_steps(){
+  return CROSSFADE_STEPS;
 }
 
-//  color1 is the dominant color for strength (1.0 = all color1)
-rgb_color ColorMath::crossfade_colors(int step, int times, rgb_color color1, rgb_color color2){
+//void ColorMath::generate_crossfade(){
+//  for(int i = 0; i <= CROSSFADE_STEPS; i++){
+//    float position = i / (CROSSFADE_STEPS * 1.0);
+//    crossfade[i] = pow((0.5 + 0.5 * cos( M_PI * position)), 0.5)
+//  }
+//}
+
+void ColorMath::generate_crossfade(){
+  for(int i = 0; i <= CROSSFADE_STEPS; i++){
+    float position = i / (CROSSFADE_STEPS * 1.0);
+    crossfade[i] = pow((0.5 - 0.5 * cos(M_PI * position)), 0.5);
+  }
+}
+
+// on subsequent steps, component1 must be set to the return value of the previous step
+// the steps must go from zero, to and including CROSSFADE_STEPS
+byte ColorMath::crossfade_component(int step, byte component1, byte component2){
+  if(step > 1){
+    int prev_step = step - 1;
+    int prevc2 = component2 * crossfade[prev_step];
+    int restored_c1 = (component1 - prevc2) / crossfade[CROSSFADE_STEPS - prev_step];
+    component1 = restored_c1;
+  }
+
+  int newc1 = component1 * crossfade[CROSSFADE_STEPS - step];
+  int newc2 = component2 * crossfade[step];
+  return newc1 + newc2;
+}
+
+
+//byte ColorMath::crossfade_component(int step, byte component1, byte component2){
+//  // on coming in, component1 has some of each color, based on previous found
+//  // need to restore component1 from the previous found
+//
+//  if(step > 0){
+//    // c1 = prev_c1 + prev_c2
+//    float prev_c2 = component2 * crossfade[CROSSFADE_STEPS - (step - 1)];
+//
+//    // remove component 2 contribution; now it equals the previous new_c1
+//    float prev_c1 = component1 - prev_c2;
+//
+//    // divide to get component1
+//    component1 = (byte)int(prev_c1 / crossfade[step - 1]);
+//  }
+//
+//  float new_c1 = component1 * crossfade[step];
+//  float new_c2 = component2 * crossfade[CROSSFADE_STEPS - step];
+//
+//}
+
+//  color1 is the dominant color for strength (0.0 = all color1)
+rgb_color ColorMath::crossfade_colors(int step, rgb_color color1, rgb_color color2){
   rgb_color result;
-  result.red = crossfade_component(step, times, color1.red, color2.red);
-  result.green = crossfade_component(step, times, color1.green, color2.green);
-  result.blue = crossfade_component(step, times, color1.blue, color2.blue);
+  result.red = crossfade_component(step, color1.red, color2.red);
+  result.green = crossfade_component(step, color1.green, color2.green);
+  result.blue = crossfade_component(step, color1.blue, color2.blue);
   return result;
 }
 
