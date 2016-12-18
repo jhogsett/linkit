@@ -32,6 +32,7 @@ class Commands
   void do_flood();
   void do_random(byte type);
   void do_mirror();
+  void do_copy(byte width, byte times);
   void do_repeat(byte times);
   void do_elastic_shift(byte count, byte max);
   void do_power_shift(byte count, byte max, bool fast_render);
@@ -202,6 +203,22 @@ void Commands::do_mirror(){
   for(byte i = 0; i < visible_led_count / 2; i++){
     colors[(visible_led_count - 1) - i] = colors[i];
     effects[(visible_led_count - 1) - i] = effects[i];
+  }
+}
+
+void Commands::do_copy(byte width, byte times){
+  if(width < 1){
+    width = 1;
+  }
+  if(times < 1){
+    times = (visible_led_count / width) - 1;
+  }
+  for(int i = 0; i < times; i++){
+    for(int j = 0; j < width; j++){
+      byte offset = ((i + 1) * width) + j;
+      colors[offset] = colors[j];
+      effects[offset] = effects[j];
+    }
   }
 }
 

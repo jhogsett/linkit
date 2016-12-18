@@ -8,7 +8,7 @@
 // #define MINIMAL_COMMAND_SET
 
 #if defined(FULL_COMMAND_SET)
-#define NUM_COMMANDS 59
+#define NUM_COMMANDS 60
 
 #define CMD_NONE       0
 #define CMD_FIRST      1
@@ -71,6 +71,7 @@
 #define CMD_PINOFF    57
 #define CMD_LEVEL     58
 #define CMD_CFADE     59
+#define CMD_COPY      60
 
 char* command_strings[] = {
   "pause",
@@ -131,7 +132,8 @@ char* command_strings[] = {
   "pinon",
   "pinoff",
   "level",
-  "cfade"
+  "cfade",
+  "copy"
 };
 #elif defined(MINIMAL_COMMAND_SET)
 

@@ -198,6 +198,10 @@ void dispatch_command(int cmd){
     case CMD_CFADE:      
       dependencies.commands.do_crossfade();                                                            
       break;
+    case CMD_COPY:   
+      dependencies.commands.do_copy(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]); 
+      reset_args = true;
+      break;
     }
 
   if(reset_args)
