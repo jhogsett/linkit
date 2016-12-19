@@ -12,12 +12,29 @@
 <body>
   <div class="container-fluid">
     <h1>Xmas Lights Linkit <small>IoT!</small></h1>
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs" id="maintabs">
       <li class="active"><a data-toggle="tab" href="#main">Main</a></li>
       <li><a data-toggle="tab" href="#apps">Apps</a></li>
       <li><a data-toggle="tab" href="#colors">Colors</a></li>
       <li><a data-toggle="tab" href="#extra">Extra</a></li>
     </ul>
+    
+    <script type="text/javascript">
+      $('#maintabs a').click(function(e) {
+        e.preventDefault();
+        $(this).tab('show');
+      });
+
+      // store the currently selected tab in the hash value
+      $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+        var id = $(e.target).attr("href").substr(1);
+        window.location.hash = id;
+      });
+      // on load of the page: switch to the currently selected tab
+      var hash = window.location.hash;
+      $('#maintabs a[href="' + hash + '"]').tab('show');
+    </script>
+    
     <div class="tab-content">
       <div id="main" class="tab-pane fade in active">
         <h3>Main</h3>
