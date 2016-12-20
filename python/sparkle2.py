@@ -11,24 +11,14 @@ play_time = 5
 effects = [
   "red:green:2,0:copy:cfade",
   "red:white:2,0:copy:cfade",
-  "green:red:2,0:copy:cfade",
-  "white:red:2,0:copy:cfade",
   "green:white:2,0:copy:cfade",
-  "white:green:2,0:copy:cfade",
   "red:green:white:3,0:copy:cfade",
-  "green:red:white:3,0:copy:cfade",
-  "red:white:green:3,0:copy:cfade",
-  "white:red:green:3,0:copy:cfade",
-  "green:white:red:3,0:copy:cfade",
-  "white:green:red:3,0:copy:cfade",
   "ltblue:white:2,0:copy:cfade",
-  "white:ltblue:2,0:copy:cfade",
-  "red:1,0:copy:cfade",
-  "green:1,0:copy:cfade",
-  "white:black:2,0:copy:cfade",
-  "black:white:2,0:copy:cfade",
+  "red:pink:2,0:copy:cfade",
+  "green:seafoam:2,0:copy:cfade",
   "random:flood:5,0:copy:cfade",
-  "random:flood:3,0:copy:cfade"
+  "random:flood:3,0:copy:cfade",
+  "random:flood:2,0:copy:cfade"
 ]
 
 def flush_input():
@@ -54,9 +44,16 @@ def setup():
   if len(sys.argv) > 2:
     play_time = int(sys.argv[2])
 
+r = 0
+last_r = 0
+
 def loop():
+  global r, last_r
+
   try:
-    r = random.randrange(0, len(effects))
+    while r == last_r: 
+      r = random.randrange(0, len(effects))
+    last_r = r
     command(effects[r]) 
     time.sleep(play_time)
 
