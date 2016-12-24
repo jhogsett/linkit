@@ -24,7 +24,6 @@ class Commands
   void do_fade();
   void do_crossfade();
   void do_wipe();
-  void do_exhale_fade();
   void do_flood();
   void do_random(byte type);
   void do_mirror();
@@ -99,10 +98,6 @@ void Commands::set_display(byte display){
   buffer->set_display(display);
 }
 
-//void Commands::set_buffer(byte nbuffer){
-//  buffer->set_buffer(nbuffer);
-//}
-
 void Commands::set_pin(byte pin, bool on){
   pinMode(pin, OUTPUT);
   digitalWrite(pin, on ? HIGH : LOW);  
@@ -121,8 +116,6 @@ void Commands::set_brightness_level(byte level){
 }
 
 void Commands::do_blend(){
-//  colors[0] = ColorMath::blend_colors(colors[0], colors[1]);
-//  colors[1] = colors[0];
   buffer->get_buffer()[0] = ColorMath::blend_colors(buffer->get_buffer()[0], buffer->get_buffer()[1]);
   buffer->get_buffer()[1] = buffer->get_buffer()[0];
 }
@@ -150,12 +143,6 @@ void Commands::do_fade(){
     buffer->get_effects_buffer()[i] = NO_EFFECT;
   }
   do_crossfade();
-//  for(int i = 0; i < FADE_TIMES; i++){
-//    buffer->fade();
-//    buffer->display_buffer(colors);
-//    delay(FADE_DELAY);
-//  }
-//  buffer->erase();
 }
 
 void Commands::do_crossfade(){
@@ -164,15 +151,6 @@ void Commands::do_crossfade(){
     buffer->display_buffer();
     delay(CROSSFADE_DELAY);
   }
-}
-
-void Commands::do_exhale_fade(){
-//  for(int i = 0; i < BREATHE_MAX_STEP; i++){
-//    exhale_fade(i);
-//    buffer->display_buffer(colors);
-//    delay(FADE_DELAY);
-//  }
-//  buffer->erase();
 }
 
 void Commands::do_flood(){
@@ -307,18 +285,17 @@ void Commands::flush(bool force_display = false){
   }
 }
 
+// todo: force a particular rendering buffer and display 
+// instead of setting and unsetting
 void Commands::flush_all(bool force_display = false){
   byte orig_display = buffer->get_current_display();
-//  byte orig_buffer = buffer->get_current_buffer();
   
   for(int i = 0; i < NUM_BUFFERS; i++){
     buffer->set_display(i);
-//    buffer->set_buffer(i);
     flush(force_display);
   }
 
   buffer->set_display(orig_display);
-//  buffer->set_buffer(orig_buffer);
 }
 
 void Commands::reset(){
@@ -327,7 +304,10 @@ void Commands::reset(){
   buffer->set_window(visible_led_count);
   buffer->set_display(0);
   effects_processor->reset_effects();
-  set_brightness_level(default_brightness);
+
+  // the brightness shouldn't be set on reset, because the device could be set
+  // to an appropriate brightness level already
+  //set_brightness_level(default_brightness);
 }
 
 void Commands::do_demo(){

@@ -91,6 +91,9 @@ class Dependencies
 
   // initialize all dependencies
   void begin();
+
+  // show a display to indicate health of the rendering routines on startup
+  void self_test();
 };
 
 // global settings
@@ -155,7 +158,6 @@ PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencie
 RandomSeed<RANDOM_SEED_PIN> Dependencies::randomizer;
 
 // auto-brightness setting hardware driver
-// (this is here for incubation, but auto-brightness is not in use)
 AutoBrightness<LIGHT_SENSOR_PIN> Dependencies::auto_brightness;
 
 // processes incoming commands
@@ -224,6 +226,14 @@ void Dependencies::begin(){
   // generate the cubic ease in/elastic out animation 
   ElasticEase::generate_elastic_ease();
 #endif
+}
+
+void Dependencies::self_test(){
+  for(int i = 0; i < NUM_BUFFERS; i++){
+    commands.set_display((NUM_BUFFERS - 1) - i);
+    commands.do_demo();
+  }
+  commands.set_display(0);
 }
 #endif
 

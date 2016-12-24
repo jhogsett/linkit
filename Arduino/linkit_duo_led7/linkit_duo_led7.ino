@@ -8,20 +8,7 @@ void setup() {
   dependencies.commands.reset();
   dependencies.buffer.erase(true);
   dependencies.commands.set_brightness_level();
-
-//#if defined(STRIP3) || defined(STRIP2)
-  for(int i = 0; i < NUM_BUFFERS; i++){
-    //dependencies.commands.set_buffer((NUM_BUFFERS - 1) - i);
-    dependencies.commands.set_display((NUM_BUFFERS - 1) - i);
-    dependencies.commands.do_demo();
-  }
-
-//#else
-//  dependencies.commands.do_demo();
-//#endif
-
-
-//  ::dispatch_command(dependencies.command_processor.lookup_command("demo"));
+  dependencies.self_test();
 
   // force a command acknowledgement to wake up any script
   // that may be halted waiting for a character to be sent
