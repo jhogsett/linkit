@@ -99,9 +99,9 @@ void Commands::set_display(byte display){
   buffer->set_display(display);
 }
 
-void Commands::set_buffer(byte nbuffer){
-  buffer->set_buffer(nbuffer);
-}
+//void Commands::set_buffer(byte nbuffer){
+//  buffer->set_buffer(nbuffer);
+//}
 
 void Commands::set_pin(byte pin, bool on){
   pinMode(pin, OUTPUT);
@@ -309,16 +309,16 @@ void Commands::flush(bool force_display = false){
 
 void Commands::flush_all(bool force_display = false){
   byte orig_display = buffer->get_current_display();
-  byte orig_buffer = buffer->get_current_buffer();
+//  byte orig_buffer = buffer->get_current_buffer();
   
   for(int i = 0; i < NUM_BUFFERS; i++){
     buffer->set_display(i);
-    buffer->set_buffer(i);
+//    buffer->set_buffer(i);
     flush(force_display);
   }
 
   buffer->set_display(orig_display);
-  buffer->set_buffer(orig_buffer);
+//  buffer->set_buffer(orig_buffer);
 }
 
 void Commands::reset(){

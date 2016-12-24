@@ -17,10 +17,10 @@
 // #define MAXLEDS
 
 // enable to test 3 72-LED strips
-// #define STRIP3
+#define STRIP3
 
 // enable to test 2 72-LED strips
-#define STRIP2
+// #define STRIP2
 
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3

@@ -3,7 +3,7 @@
 
 #define USE_PROGMEM
 
-#define NUM_COMMANDS 61
+#define NUM_COMMANDS 60
 #define CMD_NONE       0
 #define CMD_FIRST      1
 #define CMD_PAUSE      1
@@ -66,7 +66,7 @@
 #define CMD_LEVEL     58
 #define CMD_CFADE     59
 #define CMD_COPY      60
-#define CMD_BUFFER    61
+//#define CMD_BUFFER    61
 
 #ifdef USE_PROGMEM
 const char cmd_1[] PROGMEM = "pause";
@@ -129,7 +129,7 @@ const char cmd_57[] PROGMEM = "pinoff";
 const char cmd_58[] PROGMEM = "level";
 const char cmd_59[] PROGMEM = "cfade";
 const char cmd_60[] PROGMEM = "copy";
-const char cmd_61[] PROGMEM = "buffer";
+//const char cmd_61[] PROGMEM = "buffer";
 
 const char* const command_strings[] PROGMEM = {
    cmd_1,  cmd_2,  cmd_3,  cmd_4,  cmd_5,  cmd_6,  cmd_7,  cmd_8,  cmd_9, cmd_10,
@@ -137,8 +137,8 @@ const char* const command_strings[] PROGMEM = {
   cmd_21, cmd_22, cmd_23, cmd_24, cmd_25, cmd_26, cmd_27, cmd_28, cmd_29, cmd_30,
   cmd_31, cmd_32, cmd_33, cmd_34, cmd_35, cmd_36, cmd_37, cmd_38, cmd_39, cmd_40,
   cmd_41, cmd_42, cmd_43, cmd_44, cmd_45, cmd_46, cmd_47, cmd_48, cmd_49, cmd_50,
-  cmd_51, cmd_52, cmd_53, cmd_54, cmd_55, cmd_56, cmd_57, cmd_58, cmd_59, cmd_60,
-  cmd_61
+  cmd_51, cmd_52, cmd_53, cmd_54, cmd_55, cmd_56, cmd_57, cmd_58, cmd_59, cmd_60
+//  ,cmd_61
 };
 #else
 char* command_strings[] = {

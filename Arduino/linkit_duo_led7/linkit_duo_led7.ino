@@ -11,7 +11,7 @@ void setup() {
 
 //#if defined(STRIP3) || defined(STRIP2)
   for(int i = 0; i < NUM_BUFFERS; i++){
-    dependencies.commands.set_buffer((NUM_BUFFERS - 1) - i);
+    //dependencies.commands.set_buffer((NUM_BUFFERS - 1) - i);
     dependencies.commands.set_display((NUM_BUFFERS - 1) - i);
     dependencies.commands.do_demo();
   }

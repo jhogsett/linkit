@@ -201,10 +201,10 @@ void dispatch_command(int cmd){
       dependencies.commands.do_copy(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]); 
       reset_args = true;
       break;
-    case CMD_BUFFER:
-      dependencies.commands.set_buffer(dependencies.command_processor.sub_args[0]);
-      reset_args = true;
-      break;
+//    case CMD_BUFFER:
+//      dependencies.commands.set_buffer(dependencies.command_processor.sub_args[0]);
+//      reset_args = true;
+//      break;
     }
 
   if(reset_args)
