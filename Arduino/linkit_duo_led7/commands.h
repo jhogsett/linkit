@@ -35,6 +35,7 @@ class Commands
   void do_power_shift_object(byte width, byte shift, bool fast_render);
   void do_demo();
   void flush(bool force_display);
+  void flush_all(bool force_display);
   void reset();
   void low_power();
   void high_power();
@@ -297,15 +298,27 @@ void Commands::advance_low_power_position(){
 void Commands::flush(bool force_display = false){
   if(force_display || !paused){
     if(low_power_mode){
-//      renderer->render_buffer_low_power(render, buffer->get_buffer(), visible_led_count, effects, low_power_position);
       renderer->render_buffer_low_power(render, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer(), low_power_position);
       advance_low_power_position();
     } else {
-//      renderer->render_buffer(render, buffer->get_buffer(), visible_led_count, effects);
       renderer->render_buffer(render, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
     }
     buffer->display_buffer();
   }
+}
+
+void Commands::flush_all(bool force_display = false){
+  byte orig_display = buffer->get_current_display();
+  byte orig_buffer = buffer->get_current_buffer();
+  
+  for(int i = 0; i < NUM_BUFFERS; i++){
+    buffer->set_display(i);
+    buffer->set_buffer(i);
+    flush(force_display);
+  }
+
+  buffer->set_display(orig_display);
+  buffer->set_buffer(orig_buffer);
 }
 
 void Commands::reset(){

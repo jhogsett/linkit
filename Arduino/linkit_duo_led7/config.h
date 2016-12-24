@@ -16,11 +16,26 @@
 // enable to test limits of memory usage
 // #define MAXLEDS
 
+// enable to test 3 72-LED strips
+// #define STRIP3
+
+// enable to test 2 72-LED strips
+#define STRIP2
+
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3
 #define AUTO_BRIGHTNESS_MAX 33
 
+#if defined(STRIP3)
 #define NUM_DISPLAYS 3                // how many physical LED strips there are (all expected to have the same # of LEDs)
+#define NUM_BUFFERS 3                 // how many memory buffers (recommended one per physical display)
+#elif defined(STRIP2)
+#define NUM_DISPLAYS 2                // how many physical LED strips there are (all expected to have the same # of LEDs)
+#define NUM_BUFFERS 2                 // how many memory buffers (recommended one per physical display)
+#else
+#define NUM_DISPLAYS 1                // how many physical LED strips there are (all expected to have the same # of LEDs)
+#define NUM_BUFFERS 1                 // how many memory buffers (recommended one per physical display)
+#endif
 
 #define DISPLAY_PIN1 12
 #define DISPLAY_PIN2 11
@@ -90,7 +105,14 @@ class Config
 {
   public:
   static const byte num_displays = NUM_DISPLAYS;
+  static const byte num_buffers = NUM_BUFFERS;
+#if defined(STRIP3)
   static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2, DISPLAY_PIN3};  
+#elif defined(STRIP2)
+  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2};  
+#else  
+  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1};  
+#endif
   static const byte random_seed_pin = RANDOM_SEED_PIN;
   static const byte light_sensor_pin = LIGHT_SENSOR_PIN;
   static const byte default_brightness_percent = DEFAULT_BRIGHTNESS_PERCENT;
