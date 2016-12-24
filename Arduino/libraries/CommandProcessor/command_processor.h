@@ -159,7 +159,7 @@ int CommandProcessor::lookup_command(char * str){
 #endif
 
 int CommandProcessor::get_command(){
-  lookup_command(this->str);
+  return lookup_command(this->str);
 }
 
 #endif

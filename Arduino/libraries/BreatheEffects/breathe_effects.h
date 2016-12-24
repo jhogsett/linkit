@@ -32,36 +32,36 @@ class BreatheEffects
   char breathe_direction = 1;                    // 1
 };
 
-// ruby: (0..90).step(5).each { |i| puts (Math.cos(i * Math::PI / 180)).round(4) }
+// ruby: (0..90).step(5).each { |i| puts (Math.cos(i * Math::PI / 180)).round(15) }
 #ifdef USE_PROGMEM
 const float PROGMEM BreatheEffects::breathe_steps[]
 #else
 float BreatheEffects::breathe_steps[]
 #endif
 = {        // 88
-  1.0,
-  0.9962,
-  0.9848,
-  0.9659,
-  0.9397,
-  0.9063,
-  0.866,
-  0.8192,
-  0.766,
-  0.7071,
-  0.6428,
-  0.5736,
-  0.5,
-  0.4226,
-  0.342,
-  0.2588,
-  0.1736,
-  0.0872,
-  0.0,
-  0.0,  // a few extra make it feel more natural
-  0.0,
-  0,0
-};
+    1.0,
+    0.996194698091746,
+    0.984807753012208,
+    0.965925826289068,
+    0.939692620785908,
+    0.90630778703665,
+    0.866025403784439,
+    0.819152044288992,
+    0.766044443118978,
+    0.707106781186548,
+    0.642787609686539,
+    0.573576436351046,
+    0.5,
+    0.422618261740699,
+    0.342020143325669,
+    0.258819045102521,
+    0.17364817766693,
+    0.087155742747658,
+    0.0,
+    0.0,  // a few extra make it feel more natural
+    0.0,
+    0,0
+  };
 
 void BreatheEffects::begin(int breathe_time = BREATHE_TIME){
   this->breathe_time = breathe_time;
