@@ -15,13 +15,15 @@
 // add current zone
 // add point to zones array
 
+//  buffer takes a pointer to render buffer and a single display buffer
+
 class Buffer
 {
   public:
 #ifdef EXISTENCE_ENABLED
-  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, byte *effects, byte *existence);
+  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte *effects, byte *existence);
 #else
-  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, byte *effects);
+  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte *effects);
 #endif
 
   void display_buffer(rgb_color * pbuffer);
@@ -38,18 +40,24 @@ class Buffer
   void cross_fade(int step);
   int get_window();
   void set_display(byte display);
+  void set_buffer(byte buffer);
+  rgb_color * get_buffer();
 
+  // todo: is there an alternative to storing all these pointers?
   private:
-  PololuLedStripBase **ledStrips;
-  byte current_strip;
-  rgb_color *buffer;
-  static rgb_color *render;
-  byte *effects;
-  float default_brightness_scale;
-  Render *renderer;
-  byte safety_led_count;
-  byte visible_led_count;
-  float fade_rate;
+  PololuLedStripBase **ledStrips;             // 4
+
+  byte current_strip;                         // 1
+  byte current_buffer;
+
+  rgb_color **buffers;                          // 4
+  static rgb_color *render;                   // 4
+  byte *effects;                              // 4
+  float default_brightness_scale;             // 4
+  Render *renderer;                           // 4
+  byte safety_led_count;                      // 1
+  byte visible_led_count;                     // 1
+  float fade_rate;                            // 4
 
 #ifdef EXISTENCE_ENABLED
   byte *existence;
@@ -62,14 +70,17 @@ class Buffer
 rgb_color *Buffer::render;
 
 #ifdef EXISTENCE_ENABLED
-void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, byte *effects, byte *existence){
+void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte *effects, byte *existence){
 #else
-void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color *buffer, rgb_color *render, byte *effects){
+void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte *effects){
 #endif
 
   this->ledStrips = ledStrips;
+
   this->current_strip = 0;
-  this->buffer = buffer;
+  this->current_buffer = 0;
+
+  this->buffers = buffers;
   this->render = render;
   this->default_brightness_scale = default_brightness / 100.0;
   this->effects = effects;
@@ -86,15 +97,18 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
   this->window = this->visible_led_count;
 }
 
+// always write from the render buffer to a pin,
+// the render buffer having been rendered from a specific display buffer already
 void Buffer::display_buffer(rgb_color * pbuffer = render){
   ledStrips[current_strip]->write(pbuffer, visible_led_count);
 }
   
-void Buffer::erase(bool display = false){
-
+void Buffer::erase(bool display = false)
+{
+  // to do: operate on a specific display buffer
   // to do: restrict to current zone
   for(byte i = 0; i < visible_led_count; i++){
-    buffer[i] = black;
+    buffers[current_buffer][i] = black;
     effects[i] = NO_EFFECT;
 
 #ifdef EXISTENCE_ENABLED
@@ -103,38 +117,42 @@ void Buffer::erase(bool display = false){
   }
 
   if(display){
-    display_buffer(buffer);
+    display_buffer(buffers[current_buffer]);
   }
 }
 
+// to do: operate on a specific display buffer
 // to do: restrict to current zone
 void Buffer::fade(float rate = 0.0){
   rate = (rate == 0.0) ? fade_rate : rate;
-  byte *p = (byte *)buffer;
+  byte *p = (byte *)buffers[current_buffer];
   for(int i = 0; i < visible_led_count * 3; i++){
     *(p + i) *= rate;
   }
 }
 
+// to do: operate on a specific display buffer
 // to do: restrict to current zone
 void Buffer::fade_fast(){
   byte *p;
-  p = (byte *)buffer;
+  p = (byte *)buffers[current_buffer];
   for(byte i = 0; i < visible_led_count * 3; i++){
     *(p + i) = *(p + i) >> 1;
   }
 }
 
+// to do: operate on a specific display buffer
 // to do: restrict to current zone
 void Buffer::cross_fade(int step){
   for(int i = 0; i < visible_led_count; i++){
-    rgb_color *pb = buffer + i;
+    rgb_color *pb = buffers[current_buffer] + i;
     rgb_color *pr = render + i;
     rgb_color rendered_color = renderer->render(*pb, effects[i]);
     *pr = ColorMath::crossfade_colors(step, *pr, rendered_color);
    }
 }
 
+// to do: operate on a specific display buffer
 // to do: set minimum position based on current zone
 void Buffer::shift_buffer(rgb_color * buffer, byte max){
   for(byte i = max - 1; i >= 1; i--){
@@ -149,18 +167,19 @@ void Buffer::shift_buffer(rgb_color * buffer, byte max){
 }
   
 #ifdef EXISTENCE_ENABLED
-void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte id = NO_ID){
+void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte id = NO_ID)
 #else
-void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0){
+void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0)
 #endif
-
+{
   // to do: set default window by current zone
   max = (max == 0) ? window : max;
 
-  shift_buffer(buffer, max);
+  // to do: operate on a specific display buffer
+  shift_buffer(buffers[current_buffer], max);
 
   // to do: offset by zone
-  buffer[0] = ColorMath::correct_color(color);
+  buffers[current_buffer][0] = ColorMath::correct_color(color);
   effects[0] = effect;
 
 #ifdef EXISTENCE_ENABLED
@@ -168,7 +187,7 @@ void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_
 #endif
 
   if(display){
-    display_buffer(buffer);
+    display_buffer(buffers[current_buffer]);
   }
 }
   
@@ -184,11 +203,12 @@ void Buffer::push_hsl_color(int hue, int sat, int lit){
 }
   
 #ifdef EXISTENCE_ENABLED
-void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT, byte id = NO_ID){
+void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT, byte id = NO_ID)
 #else
-void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT){
+void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT)
 #endif
-  buffer[pos] = ColorMath::correct_color(color);
+{
+  buffers[current_buffer][pos] = ColorMath::correct_color(color);
   
   if(effect != LEAVE_EFFECT){
     effects[pos] = effect;
@@ -201,7 +221,7 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
 #endif
 
   if(display){
-    display_buffer(buffer);
+    display_buffer(buffers[current_buffer]);
   }
 }
   
@@ -217,7 +237,16 @@ void Buffer::set_display(byte display){
   current_strip = display;
 }
 
-    // to do: restrict to current zone
+void Buffer::set_buffer(byte buffer){
+  current_buffer = buffer;
+}
+
+rgb_color * Buffer::get_buffer(){
+  return buffers[current_buffer];
+}
+
+// to do: operate on a specific display buffer
+// to do: restrict to current zone
 // animate by shifting frame (future: shift in from back buffer)
 void Buffer::shift(byte count, byte maxx, bool fast_render = true){
   maxx = min(maxx, safety_led_count);
@@ -226,9 +255,9 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
   }
   for(byte i = count; i < maxx; i++){
     if(fast_render)
-      render[i] = renderer->fast_render(buffer[i - count], effects[i - count]);
+      render[i] = renderer->fast_render(buffers[current_buffer][i - count], effects[i - count]);
     else
-      render[i] = renderer->render(buffer[i - count], effects[i - count]);
+      render[i] = renderer->render(buffers[current_buffer][i - count], effects[i - count]);
   }
 
   display_buffer();
