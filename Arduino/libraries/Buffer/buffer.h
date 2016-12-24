@@ -43,13 +43,15 @@ class Buffer
   void set_buffer(byte buffer);
   rgb_color * get_buffer();
   byte * get_effects_buffer();
+  byte get_current_display();
+//  byte get_current_buffer();
 
   // todo: is there an alternative to storing all these pointers?
   private:
   PololuLedStripBase **ledStrips;             // 4
 
-  byte current_strip;                         // 1
-  byte current_buffer;
+  byte current_display;                         // 1
+//  byte current_buffer;
 
   rgb_color **buffers;                          // 4
   static rgb_color *render;                   // 4
@@ -78,8 +80,8 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
 
   this->ledStrips = ledStrips;
 
-  this->current_strip = 0;
-  this->current_buffer = 0;
+  this->current_display = 0;
+//  this->current_buffer = 0;
 
   this->buffers = buffers;
   this->render = render;
@@ -101,7 +103,7 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
 // always write from the render buffer to a pin,
 // the render buffer having been rendered from a specific display buffer already
 void Buffer::display_buffer(rgb_color * pbuffer = render){
-  ledStrips[current_strip]->write(pbuffer, visible_led_count);
+  ledStrips[current_display]->write(pbuffer, visible_led_count);
 }
   
 void Buffer::erase(bool display = false)
@@ -109,8 +111,8 @@ void Buffer::erase(bool display = false)
   // to do: operate on a specific display buffer
   // to do: restrict to current zone
   for(byte i = 0; i < visible_led_count; i++){
-    buffers[current_buffer][i] = black;
-    effects_buffers[current_buffer][i] = NO_EFFECT;
+    buffers[current_display][i] = black;
+    effects_buffers[current_display][i] = NO_EFFECT;
 
 #ifdef EXISTENCE_ENABLED
     existence[i] = NO_ID;
@@ -118,7 +120,7 @@ void Buffer::erase(bool display = false)
   }
 
   if(display){
-    display_buffer(buffers[current_buffer]);
+    display_buffer(buffers[current_display]);
   }
 }
 
@@ -126,7 +128,7 @@ void Buffer::erase(bool display = false)
 // to do: restrict to current zone
 void Buffer::fade(float rate = 0.0){
   rate = (rate == 0.0) ? fade_rate : rate;
-  byte *p = (byte *)buffers[current_buffer];
+  byte *p = (byte *)buffers[current_display];
   for(int i = 0; i < visible_led_count * 3; i++){
     *(p + i) *= rate;
   }
@@ -136,7 +138,7 @@ void Buffer::fade(float rate = 0.0){
 // to do: restrict to current zone
 void Buffer::fade_fast(){
   byte *p;
-  p = (byte *)buffers[current_buffer];
+  p = (byte *)buffers[current_display];
   for(byte i = 0; i < visible_led_count * 3; i++){
     *(p + i) = *(p + i) >> 1;
   }
@@ -146,9 +148,9 @@ void Buffer::fade_fast(){
 // to do: restrict to current zone
 void Buffer::cross_fade(int step){
   for(int i = 0; i < visible_led_count; i++){
-    rgb_color *pb = buffers[current_buffer] + i;
+    rgb_color *pb = buffers[current_display] + i;
     rgb_color *pr = render + i;
-    rgb_color rendered_color = renderer->render(*pb, effects_buffers[current_buffer][i]);
+    rgb_color rendered_color = renderer->render(*pb, effects_buffers[current_display][i]);
     *pr = ColorMath::crossfade_colors(step, *pr, rendered_color);
    }
 }
@@ -177,18 +179,18 @@ void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_
   max = (max == 0) ? window : max;
 
   // to do: operate on a specific display buffer
-  shift_buffer(buffers[current_buffer], effects_buffers[current_buffer], max);
+  shift_buffer(buffers[current_display], effects_buffers[current_display], max);
 
   // to do: offset by zone
-  buffers[current_buffer][0] = ColorMath::correct_color(color);
-  effects_buffers[current_buffer][0] = effect;
+  buffers[current_display][0] = ColorMath::correct_color(color);
+  effects_buffers[current_display][0] = effect;
 
 #ifdef EXISTENCE_ENABLED
   existence[0] = id;
 #endif
 
   if(display){
-    display_buffer(buffers[current_buffer]);
+    display_buffer(buffers[current_display]);
   }
 }
   
@@ -209,10 +211,10 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
 void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT)
 #endif
 {
-  buffers[current_buffer][pos] = ColorMath::correct_color(color);
+  buffers[current_display][pos] = ColorMath::correct_color(color);
   
   if(effect != LEAVE_EFFECT){
-    effects_buffers[current_buffer][pos] = effect;
+    effects_buffers[current_display][pos] = effect;
   }
 
 #ifdef EXISTENCE_ENABLED
@@ -222,7 +224,7 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
 #endif
 
   if(display){
-    display_buffer(buffers[current_buffer]);
+    display_buffer(buffers[current_display]);
   }
 }
   
@@ -235,19 +237,27 @@ int Buffer::get_window(){
 }
 
 void Buffer::set_display(byte display){
-  current_strip = display;
+  current_display = display;
 }
 
-void Buffer::set_buffer(byte buffer){
-  current_buffer = buffer;
+//void Buffer::set_buffer(byte buffer){
+//  current_buffer = buffer;
+//}
+
+byte Buffer::get_current_display(){
+  return current_display;
 }
+
+//byte Buffer::get_current_buffer(){
+//  return current_buffer;
+//}
 
 rgb_color * Buffer::get_buffer(){
-  return buffers[current_buffer];
+  return buffers[current_display];
 }
 
 byte * Buffer::get_effects_buffer(){
-  return effects_buffers[current_buffer];
+  return effects_buffers[current_display];
 }
 
 // to do: operate on a specific display buffer
@@ -260,9 +270,9 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
   }
   for(byte i = count; i < maxx; i++){
     if(fast_render)
-      render[i] = renderer->fast_render(buffers[current_buffer][i - count], effects_buffers[current_buffer][i - count]);
+      render[i] = renderer->fast_render(buffers[current_display][i - count], effects_buffers[current_display][i - count]);
     else
-      render[i] = renderer->render(buffers[current_buffer][i - count], effects_buffers[current_buffer][i - count]);
+      render[i] = renderer->render(buffers[current_display][i - count], effects_buffers[current_display][i - count]);
   }
 
   display_buffer();
