@@ -21,7 +21,13 @@ void setup() {
   //dependencies.commands.do_demo();
 
   ::dispatch_command(dependencies.command_processor.lookup_command("demo"));
-
+  ::dispatch_command(dependencies.command_processor.lookup_command("red"));
+  ::dispatch_command(dependencies.command_processor.lookup_command("flood"));
+  ::dispatch_command(dependencies.command_processor.lookup_command("cfade"));
+  ::dispatch_command(dependencies.command_processor.lookup_command("blue"));
+  ::dispatch_command(dependencies.command_processor.lookup_command("flood"));
+  ::dispatch_command(dependencies.command_processor.lookup_command("cfade"));
+  
   // force a command acknowledgement to wake up any script
   // that may be halted waiting for a character to be sent
   // due to a new Arduino sketch being uploaded
