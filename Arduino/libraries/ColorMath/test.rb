@@ -59,46 +59,25 @@ print "\x1b[2J\x1b[1;1H"
 # crossfade[i] = pow((0.5 - 0.5 * cos(M_PI * position)), 0.5);
 # }
 
-max_step = 20
-steps = (0..max_step)
-steps.each do |step|
-  position = step / (max_step * 1.0)
-  puts ((0.5 - 0.5 * Math.cos(Math::PI * position)) ** 0.5).round(15)
+# max_step = 20
+# steps = (0..max_step)
+# steps.each do |step|
+#   position = step / (max_step * 1.0)
+#   puts ((0.5 - 0.5 * Math.cos(Math::PI * position)) ** 0.5).round(15)
+# end
+#
+
+@power=3
+maxsteps=24
+midpoint = maxsteps / 2
+ease = []
+def ease_in(percent) percent ** @power; end
+def ease_out(percent) 1 - ((1 - percent) ** @power); end
+(0..midpoint).each do |i|
+  percent = i / (midpoint * 1.0)
+  ease[i] = (0.5 * ease_in(percent)).round(15)
+  ease[i + midpoint] = ((0.5 * (ease_out(percent))) + 0.5).round(15)
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ease.each do |e|
+  puts e
+end
