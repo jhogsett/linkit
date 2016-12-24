@@ -264,7 +264,7 @@ void Commands::do_power_shift(byte count, byte max = 0, bool fast_render = true)
   count = count == 0 ? 1 : count;
   if(count >= 1){
     for(byte i = 0; i < PowerEase::ease_count(); i++){
-      byte pos = PowerEase::ease[i] * count;
+      byte pos = PowerEase::get_ease(i) * count;
       delay(PowerEase::ease_delay());
       buffer->shift(pos+1, max, fast_render);
     }

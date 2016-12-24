@@ -14,7 +14,7 @@
 // #define STRAND2
 
 // enable to test limits of memory usage
-#define MAXLEDS
+// #define MAXLEDS
 
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3
@@ -55,7 +55,7 @@
 #elif defined(STRAND2)
 #define ANIM_LED_COUNT 100
 #elif defined(MAXLEDS)
-#define ANIM_LED_COUNT 230
+#define ANIM_LED_COUNT 245
 #else
 #define ANIM_LED_COUNT 72
 #endif

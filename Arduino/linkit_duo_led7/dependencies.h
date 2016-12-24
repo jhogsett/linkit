@@ -182,11 +182,6 @@ void Dependencies::begin(){
   // set a higher-quality random seed by reading values from an unconnected analog input
   randomizer.randomize();
 
-  // 1349
-
-  // generate the cubic each in/ease out animation
-  PowerEase::generate_power_ease();
-
   // 1445
 
 #ifdef USE_ELASTIC_EASE
