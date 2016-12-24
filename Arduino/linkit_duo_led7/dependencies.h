@@ -30,6 +30,7 @@ class Dependencies
   // input display buffer
   static rgb_color colors[config.led_count];
   static rgb_color colors2[config.led_count];
+  static rgb_color colors3[config.led_count];
 
   static rgb_color *color_buffers[];
 
@@ -38,6 +39,10 @@ class Dependencies
 
   // effect styling per LED position
   static byte effects[config.led_count];
+  static byte effects2[config.led_count];
+  static byte effects3[config.led_count];
+
+  static byte *effects_buffers[];
 
   // pin-specific LED hardware drivers
   static PololuLedStrip<config.display_pins[0]> ledStrip1;
@@ -82,14 +87,19 @@ Config Dependencies::config;
 // input display buffer
 rgb_color Dependencies::colors[config.led_count];
 rgb_color Dependencies::colors2[config.led_count];
+rgb_color Dependencies::colors3[config.led_count];
 
-rgb_color *Dependencies::color_buffers[] = { colors, colors2 };
+rgb_color *Dependencies::color_buffers[] = { colors, colors2, colors3 };
 
 // rendered output buffer
 rgb_color Dependencies::render[config.led_count];
 
 // effect styling per LED position
 byte Dependencies::effects[config.led_count];
+byte Dependencies::effects2[config.led_count];
+byte Dependencies::effects3[config.led_count];
+
+byte *Dependencies::effects_buffers[] = { effects, effects2, effects3 };
 
 // pin-specific LED hardware drivers
 PololuLedStrip<DISPLAY_PIN1> Dependencies::ledStrip1;
@@ -148,10 +158,10 @@ void Dependencies::begin(){
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
 
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
-  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects); //, existence);
+  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
-  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, color_buffers, render, effects, &this->auto_brightness);
+  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, color_buffers, render, effects_buffers, &this->auto_brightness);
 
   // set up the blink effects counter and states
   blink_effects.begin();
@@ -160,7 +170,7 @@ void Dependencies::begin(){
   breathe_effects.begin();
 
   // start up the effects processor, passing in the blink and breathe effects instances
-  effects_processor.begin(effects, &this->blink_effects, &this->breathe_effects);
+  effects_processor.begin(&this->buffer, &this->blink_effects, &this->breathe_effects);
 
   // start up the renderer, passing in the blink and breathe effects instances, and brightness values needed for rendering
   renderer.begin(&this->blink_effects, &this->breathe_effects, config.default_brightness_percent, config.minimum_brightness_percent);

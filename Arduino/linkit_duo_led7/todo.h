@@ -1,3 +1,5 @@
+// demo should operate on current buffer
+
 // need one render buffer the size of a single display, and one display buffer for each display to hold patterns
 // configure a device fixed with rendering all devices
 // currently 1:display will cause the render buffer to go to pin #1

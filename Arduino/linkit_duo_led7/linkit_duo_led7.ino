@@ -20,14 +20,12 @@ void setup() {
 void loop(){ 
   if(dependencies.command_processor.received_command())
   {
-    // resync the effects to a blank state to minimize visual artifacts of pausing and restarting
     // dependencies.effects_processor.reset_effects();
     ::dispatch_command(dependencies.command_processor.get_command());
     dependencies.command_processor.acknowledge_command();
 
-    // will this work here?
+    // resync the effects to a blank state to minimize visual artifacts of pausing and restarting
     dependencies.effects_processor.reset_effects();
-    
   }
   else 
   {
