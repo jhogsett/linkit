@@ -29,6 +29,9 @@ class Dependencies
 
   // input display buffer
   static rgb_color colors[config.led_count];
+  static rgb_color colors2[config.led_count];
+
+  static rgb_color *color_buffers[];
 
   // rendered output buffer
   static rgb_color render[config.led_count];
@@ -78,6 +81,9 @@ Config Dependencies::config;
 
 // input display buffer
 rgb_color Dependencies::colors[config.led_count];
+rgb_color Dependencies::colors2[config.led_count];
+
+rgb_color *Dependencies::color_buffers[] = { colors, colors2 };
 
 // rendered output buffer
 rgb_color Dependencies::render[config.led_count];
@@ -121,22 +127,14 @@ Commands Dependencies::commands;
 
 void Dependencies::begin(){
 
-  // 461
-  
   // open internal serial connection to MT7688 for receiving commands
   Serial1.begin(BAUD_RATE); 
-
-  // 635
 
   // start up auto-brightness hardware driver
   auto_brightness.begin(AUTO_BRIGHTNESS_MIN, AUTO_BRIGHTNESS_MAX);
 
-  // 639
-
   // start up command processor, listening on the serial port and looking for the passed commands
   command_processor.begin(&Serial1, command_strings, NUM_COMMANDS);
-
-  // 641
 
   // start up the color math class
   // false = don't swap red & green
@@ -149,48 +147,31 @@ void Dependencies::begin(){
   // establish the default brightness for color scaling
   ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
 
-  // 690
-
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
-  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, colors, render, effects); //, existence);
-  // = 617, leds = 3 * 110 = 330, effects = 110 == 440, where are the other 177 bytes in buffer.h?
-
-  // 1307
+  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
-  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, colors, render, effects, &this->auto_brightness);
-
-  // 1329
+  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, color_buffers, render, effects, &this->auto_brightness);
 
   // set up the blink effects counter and states
   blink_effects.begin();
 
-  // 1343
-
   // set up the breathe effect counter and state
   breathe_effects.begin();
-
-  // 1349
 
   // start up the effects processor, passing in the blink and breathe effects instances
   effects_processor.begin(effects, &this->blink_effects, &this->breathe_effects);
 
-  // 1349
-
   // start up the renderer, passing in the blink and breathe effects instances, and brightness values needed for rendering
   renderer.begin(&this->blink_effects, &this->breathe_effects, config.default_brightness_percent, config.minimum_brightness_percent);
+
   // set a higher-quality random seed by reading values from an unconnected analog input
   randomizer.randomize();
-
-  // 1445
 
 #ifdef USE_ELASTIC_EASE
   // generate the cubic ease in/elastic out animation 
   ElasticEase::generate_elastic_ease();
 #endif
-
-  // 1573
-
 }
 #endif
 

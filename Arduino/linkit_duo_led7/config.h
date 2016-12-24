@@ -55,7 +55,7 @@
 #elif defined(STRAND2)
 #define ANIM_LED_COUNT 100
 #elif defined(MAXLEDS)
-#define ANIM_LED_COUNT 245
+#define ANIM_LED_COUNT 250
 #else
 #define ANIM_LED_COUNT 72
 #endif
@@ -82,7 +82,7 @@
 #define DEMO_DELAY 0
 #endif
 
-#define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
+#define EASE_ANIM_MARGIN 4           // safety margin for visual effects that go past the end of the LEDs
 
 #define BAUD_RATE 115200              // speed for communicating with the MT7688
 

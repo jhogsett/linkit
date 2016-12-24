@@ -1,17 +1,9 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-// enable for full command set
-#define FULL_COMMAND_SET
-
-// enable for minimal friendly command set
-// #define MINIMAL_COMMAND_SET
-
 #define USE_PROGMEM
 
-#if defined(FULL_COMMAND_SET)
-#define NUM_COMMANDS 60
-
+#define NUM_COMMANDS 61
 #define CMD_NONE       0
 #define CMD_FIRST      1
 #define CMD_PAUSE      1
@@ -74,6 +66,7 @@
 #define CMD_LEVEL     58
 #define CMD_CFADE     59
 #define CMD_COPY      60
+#define CMD_BUFFER    61
 
 #ifdef USE_PROGMEM
 const char cmd_1[] PROGMEM = "pause";
@@ -136,14 +129,16 @@ const char cmd_57[] PROGMEM = "pinoff";
 const char cmd_58[] PROGMEM = "level";
 const char cmd_59[] PROGMEM = "cfade";
 const char cmd_60[] PROGMEM = "copy";
+const char cmd_61[] PROGMEM = "buffer";
 
 const char* const command_strings[] PROGMEM = {
-  cmd_1, cmd_2, cmd_3, cmd_4, cmd_5, cmd_6, cmd_7, cmd_8, cmd_9, cmd_10,
+   cmd_1,  cmd_2,  cmd_3,  cmd_4,  cmd_5,  cmd_6,  cmd_7,  cmd_8,  cmd_9, cmd_10,
   cmd_11, cmd_12, cmd_13, cmd_14, cmd_15, cmd_16, cmd_17, cmd_18, cmd_19, cmd_20,
   cmd_21, cmd_22, cmd_23, cmd_24, cmd_25, cmd_26, cmd_27, cmd_28, cmd_29, cmd_30,
   cmd_31, cmd_32, cmd_33, cmd_34, cmd_35, cmd_36, cmd_37, cmd_38, cmd_39, cmd_40,
   cmd_41, cmd_42, cmd_43, cmd_44, cmd_45, cmd_46, cmd_47, cmd_48, cmd_49, cmd_50,
-  cmd_51, cmd_52, cmd_53, cmd_54, cmd_55, cmd_56, cmd_57, cmd_58, cmd_59, cmd_60
+  cmd_51, cmd_52, cmd_53, cmd_54, cmd_55, cmd_56, cmd_57, cmd_58, cmd_59, cmd_60,
+  cmd_61
 };
 #else
 char* command_strings[] = {
@@ -207,101 +202,6 @@ char* command_strings[] = {
   "level",
   "cfade",
   "copy"
-};
-#endif
-#elif defined(MINIMAL_COMMAND_SET)
-
-#ifdef WEARABLE
-#define NUM_COMMANDS 39
-#else
-#define NUM_COMMANDS 37
-#endif
-
-#define CMD_NONE       0
-#define CMD_FIRST      1
-
-#define CMD_RESET      1
-#define CMD_DISPLAY    2
-#define CMD_ERASE      3
-#define CMD_LEVEL      4
-#define CMD_FLUSH      5
-#define CMD_PAUSE      6
-#define CMD_CONTINUE   7
-#define CMD_REPEAT     8
-#define CMD_DEMO       9
-#define CMD_BLACK     10
-#define CMD_RED       11
-#define CMD_GREEN     12
-#define CMD_BLUE      13
-#define CMD_YELLOW    14
-#define CMD_ORANGE    15
-#define CMD_PURPLE    16
-#define CMD_WHITE     17
-#define CMD_RANDOM    18
-#define CMD_RGBCOLOR  19
-#define CMD_HSLCOLOR  20
-#define CMD_BLINK     21
-#define CMD_BLINK1    22
-#define CMD_BLINK2    23
-#define CMD_BLINK3    24
-#define CMD_BLINK4    25
-#define CMD_BLINK5    26
-#define CMD_BLINK6    27
-#define CMD_BLINKR    28
-#define CMD_BLINKA    29
-#define CMD_BLINKB    30
-#define CMD_BREATHE   31
-#define CMD_EFFECTR   32
-#define CMD_FLOOD     33  
-#define CMD_FADE      34
-#define CMD_WIPE      35
-#define CMD_PSHIFTO   36
-#define CMD_WINDOW    37
-#ifdef WEARABLE
-#define CMD_LOPOWER   38
-#define CMD_HIPOWER   39
-#endif
-
-char* command_strings[] = {
-  "reset",
-  "display",
-  "erase",
-  "level",
-  "flush",
-  "pause",
-  "continue",
-  "repeat",
-  "demo",
-  "black",
-  "red",
-  "green",
-  "blue",
-  "yellow",
-  "orange",  
-  "purple",
-  "white",
-  "random",
-  "rgbcolor",
-  "hslcolor",
-  "blink",
-  "blink1",
-  "blink2",
-  "blink3",
-  "blink4",
-  "blink5",
-  "blink6",
-  "blinkr",
-  "blinka",
-  "blinkb",
-  "breathe",
-  "effectr",
-  "flood",
-  "fade",
-  "wipe",
-  "pshifto",
-  "window",
-  "lopower",
-  "hipower",
 };
 #endif
 

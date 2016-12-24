@@ -7,10 +7,6 @@
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
 
-//#define FADE_TIMES 40
-//#define FADE_DELAY 100
-
-//#define CROSSFADE_TIMES 25
 #define CROSSFADE_DELAY 1
 
 #define LOW_POWER_TIME 50
@@ -18,7 +14,7 @@
 class Commands
 {
   public:
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, rgb_color *colors, rgb_color *render, byte *effects, AutoBrightnessBase *auto_brightness);
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, rgb_color **color_buffers, rgb_color *render, byte *effects, AutoBrightnessBase *auto_brightness);
   void pause();
   void resume();
   void do_blend();
@@ -43,6 +39,7 @@ class Commands
   void low_power();
   void high_power();
   void set_display(byte display);
+  void set_buffer(byte nbuffer);
   void set_pin(byte pin, bool on);
   void set_brightness_level(byte level = 0);
 
@@ -51,7 +48,7 @@ class Commands
   Render *renderer;  
   EffectsProcessor *effects_processor;
 
-  rgb_color *colors;
+  rgb_color **color_buffers;
   rgb_color *render;
   byte *effects;
   bool paused = false;
@@ -65,11 +62,11 @@ class Commands
   void advance_low_power_position();
 };
 
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, rgb_color *colors, rgb_color *render, byte *effects, AutoBrightnessBase *auto_brightness){
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, rgb_color **color_buffers, rgb_color *render, byte *effects, AutoBrightnessBase *auto_brightness){
   this->buffer = buffer;
   this->renderer = renderer;
   this->effects_processor = effects_processor;
-  this->colors = colors;
+  this->color_buffers = color_buffers;
   this->render = render;
   this->effects = effects;
   this->default_brightness = default_brightness;
@@ -101,6 +98,10 @@ void Commands::set_display(byte display){
   buffer->set_display(display);
 }
 
+void Commands::set_buffer(byte nbuffer){
+  buffer->set_buffer(nbuffer);
+}
+
 void Commands::set_pin(byte pin, bool on){
   pinMode(pin, OUTPUT);
   digitalWrite(pin, on ? HIGH : LOW);  
@@ -119,30 +120,32 @@ void Commands::set_brightness_level(byte level){
 }
 
 void Commands::do_blend(){
-  colors[0] = ColorMath::blend_colors(colors[0], colors[1]);
-  colors[1] = colors[0];
+//  colors[0] = ColorMath::blend_colors(colors[0], colors[1]);
+//  colors[1] = colors[0];
+  buffer->get_buffer()[0] = ColorMath::blend_colors(buffer->get_buffer()[0], buffer->get_buffer()[1]);
+  buffer->get_buffer()[1] = buffer->get_buffer()[0];
 }
 
 // only works properly when used immediately after placing a standard color
 void Commands::do_max(){
-  colors[0] = ColorMath::scale_color(colors[0], MAX_BRIGHTNESS_PERCENT / 100.0);
+  buffer->get_buffer()[0] = ColorMath::scale_color(buffer->get_buffer()[0], MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
 void Commands::do_dim(){
-  colors[0].red = colors[0].red >> 1;
-  colors[0].green = colors[0].green >> 1;
-  colors[0].blue = colors[0].blue >> 1;
+  buffer->get_buffer()[0].red = buffer->get_buffer()[0].red >> 1;
+  buffer->get_buffer()[0].green = buffer->get_buffer()[0].green >> 1;
+  buffer->get_buffer()[0].blue = buffer->get_buffer()[0].blue >> 1;
 }
 
 void Commands::do_bright(){
-  colors[0].red = colors[0].red << 1;
-  colors[0].green = colors[0].green << 1;
-  colors[0].blue = colors[0].blue << 1;
+  buffer->get_buffer()[0].red = buffer->get_buffer()[0].red << 1;
+  buffer->get_buffer()[0].green = buffer->get_buffer()[0].green << 1;
+  buffer->get_buffer()[0].blue = buffer->get_buffer()[0].blue << 1;
 }
 
 void Commands::do_fade(){
   for(int i = 0; i < visible_led_count; i++){
-    colors[i] = black;
+    buffer->get_buffer()[i] = black;
     effects[i] = NO_EFFECT;
   }
   do_crossfade();
@@ -173,17 +176,17 @@ void Commands::do_exhale_fade(){
 
 void Commands::do_flood(){
   int max = min(visible_led_count, buffer->get_window());
-  rgb_color color = colors[0];
+  rgb_color color = buffer->get_buffer()[0];
   byte effect = effects[0];
   for(byte i = 1; i < max; i++){
     if(effect == RANDOM1){
-      colors[i] = ColorMath::random_color();
+      buffer->get_buffer()[i] = ColorMath::random_color();
       effects[i] = NO_EFFECT;
     } else if(effect == RANDOM2){
-      colors[i] = ColorMath::random_color();
+      buffer->get_buffer()[i] = ColorMath::random_color();
       effects[i] = EffectsProcessor::random_effect();
     } else {
-      colors[i] = color;
+      buffer->get_buffer()[i] = color;
       effects[int(i)] = effect;    
     }
   }
@@ -199,9 +202,10 @@ void Commands::do_random(byte type){
   }
 }
 
+// to do: operate on a specific colors buffer
 void Commands::do_mirror(){
   for(byte i = 0; i < visible_led_count / 2; i++){
-    colors[(visible_led_count - 1) - i] = colors[i];
+    buffer->get_buffer()[(visible_led_count - 1) - i] = buffer->get_buffer()[i];
     effects[(visible_led_count - 1) - i] = effects[i];
   }
 }
@@ -216,7 +220,7 @@ void Commands::do_copy(byte width, byte times){
   for(int i = 0; i < times; i++){
     for(int j = 0; j < width; j++){
       byte offset = ((i + 1) * width) + j;
-      colors[offset] = colors[j];
+      buffer->get_buffer()[offset] = buffer->get_buffer()[j];
       effects[offset] = effects[j];
     }
   }
@@ -227,7 +231,7 @@ void Commands::do_repeat(byte times = 1){
 
   // the stored color has been red/green corrected, so
   // to repeat it, first uncorrect it by swapping
-  rgb_color color = ColorMath::correct_color(colors[0]);
+  rgb_color color = ColorMath::correct_color(buffer->get_buffer()[0]);
   
   byte effect = effects[0];
   for(byte i = 0; i < times; i++){
@@ -293,10 +297,12 @@ void Commands::advance_low_power_position(){
 void Commands::flush(bool force_display = false){
   if(force_display || !paused){
     if(low_power_mode){
-      renderer->render_buffer_low_power(render, colors, visible_led_count, effects, low_power_position);
+//      renderer->render_buffer_low_power(render, buffer->get_buffer(), visible_led_count, effects, low_power_position);
+      renderer->render_buffer_low_power(render, buffer->get_buffer(), visible_led_count, effects, low_power_position);
       advance_low_power_position();
     } else {
-      renderer->render_buffer(render, colors, visible_led_count, effects);
+//      renderer->render_buffer(render, buffer->get_buffer(), visible_led_count, effects);
+      renderer->render_buffer(render, buffer->get_buffer(), visible_led_count, effects);
     }
     buffer->display_buffer();
   }

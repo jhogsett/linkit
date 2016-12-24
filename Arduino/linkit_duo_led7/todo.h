@@ -1,3 +1,12 @@
+// need one render buffer the size of a single display, and one display buffer for each display to hold patterns
+// configure a device fixed with rendering all devices
+// currently 1:display will cause the render buffer to go to pin #1
+// when writing new data, need to have a target buffer, could 'display' be used?
+// in the background, when not paused, it will be iterating between each display buffer & led pin, rendering from a specific buffer and displaying on a specific pin
+// when not paused and adding colors, will need to direct the colors to a specific in-memory buffer
+
+// move mechanical buffer operations like mirror to Buffer class
+
 // move command for placement, like:
 //    red:57:move
 
