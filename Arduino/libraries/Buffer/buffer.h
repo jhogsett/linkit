@@ -44,15 +44,11 @@ class Buffer
   rgb_color * get_buffer();
   byte * get_effects_buffer();
   byte get_current_display();
-//  byte get_current_buffer();
 
   // todo: is there an alternative to storing all these pointers?
   private:
   PololuLedStripBase **ledStrips;             // 4
-
   byte current_display;                         // 1
-//  byte current_buffer;
-
   rgb_color **buffers;                          // 4
   static rgb_color *render;                   // 4
   byte **effects_buffers;                              // 4
@@ -79,25 +75,19 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
 #endif
 
   this->ledStrips = ledStrips;
-
   this->current_display = 0;
-//  this->current_buffer = 0;
-
   this->buffers = buffers;
   this->render = render;
   this->default_brightness_scale = default_brightness / 100.0;
   this->effects_buffers = effects_buffers;
-
-#ifdef EXISTENCE_ENABLED
-  this->existence = existence;
-#endif
-
   this->renderer = renderer;
   this->safety_led_count = safety_led_count;
   this->visible_led_count = visible_led_count;
   this->fade_rate = fade_rate;
-
   this->window = this->visible_led_count;
+#ifdef EXISTENCE_ENABLED
+  this->existence = existence;
+#endif
 }
 
 // always write from the render buffer to a pin,
@@ -108,7 +98,6 @@ void Buffer::display_buffer(rgb_color * pbuffer = render){
   
 void Buffer::erase(bool display = false)
 {
-  // to do: operate on a specific display buffer
   // to do: restrict to current zone
   for(byte i = 0; i < visible_led_count; i++){
     buffers[current_display][i] = black;
@@ -124,7 +113,6 @@ void Buffer::erase(bool display = false)
   }
 }
 
-// to do: operate on a specific display buffer
 // to do: restrict to current zone
 void Buffer::fade(float rate = 0.0){
   rate = (rate == 0.0) ? fade_rate : rate;
@@ -134,7 +122,6 @@ void Buffer::fade(float rate = 0.0){
   }
 }
 
-// to do: operate on a specific display buffer
 // to do: restrict to current zone
 void Buffer::fade_fast(){
   byte *p;
@@ -144,7 +131,6 @@ void Buffer::fade_fast(){
   }
 }
 
-// to do: operate on a specific display buffer
 // to do: restrict to current zone
 void Buffer::cross_fade(int step){
   for(int i = 0; i < visible_led_count; i++){
@@ -155,7 +141,6 @@ void Buffer::cross_fade(int step){
    }
 }
 
-// to do: operate on a specific display buffer
 // to do: set minimum position based on current zone
 void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max){
   for(byte i = max - 1; i >= 1; i--){
@@ -178,7 +163,6 @@ void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_
   // to do: set default window by current zone
   max = (max == 0) ? window : max;
 
-  // to do: operate on a specific display buffer
   shift_buffer(buffers[current_display], effects_buffers[current_display], max);
 
   // to do: offset by zone
@@ -240,17 +224,9 @@ void Buffer::set_display(byte display){
   current_display = display;
 }
 
-//void Buffer::set_buffer(byte buffer){
-//  current_buffer = buffer;
-//}
-
 byte Buffer::get_current_display(){
   return current_display;
 }
-
-//byte Buffer::get_current_buffer(){
-//  return current_buffer;
-//}
 
 rgb_color * Buffer::get_buffer(){
   return buffers[current_display];
