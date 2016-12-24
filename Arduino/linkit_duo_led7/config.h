@@ -11,7 +11,7 @@
 // #define STRAND1
 
 // enable to change settings for two 50-LED strands
-#define STRAND2
+// #define STRAND2
 
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3

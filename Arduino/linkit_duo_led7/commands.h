@@ -245,6 +245,7 @@ void Commands::do_repeat(byte times = 1){
 }
 
 void Commands::do_elastic_shift(byte count, byte max = 0){
+#ifdef USE_ELASTIC_EASE  
   max = (max == 0) ? visible_led_count : max;
   count = count == 0 ? 1 : count;
   if(count >= 1){
@@ -255,6 +256,7 @@ void Commands::do_elastic_shift(byte count, byte max = 0){
     }
     buffer->finalize_shift(count, max);
   }
+#endif
 }
 
 void Commands::do_power_shift(byte count, byte max = 0, bool fast_render = true){

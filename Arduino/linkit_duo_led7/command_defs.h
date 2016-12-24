@@ -7,6 +7,8 @@
 // enable for minimal friendly command set
 // #define MINIMAL_COMMAND_SET
 
+#define USE_PROGMEM
+
 #if defined(FULL_COMMAND_SET)
 #define NUM_COMMANDS 60
 
@@ -73,6 +75,77 @@
 #define CMD_CFADE     59
 #define CMD_COPY      60
 
+#ifdef USE_PROGMEM
+const char cmd_1[] PROGMEM = "pause";
+const char cmd_2[] PROGMEM = "continue";
+const char cmd_3[] PROGMEM = "erase";
+const char cmd_4[] PROGMEM = "blink";
+const char cmd_5[] PROGMEM = "blink1";
+const char cmd_6[] PROGMEM = "blink2";
+const char cmd_7[] PROGMEM = "blink3";
+const char cmd_8[] PROGMEM = "blink4";
+const char cmd_9[] PROGMEM = "blink5";
+const char cmd_10[] PROGMEM = "blink6";
+const char cmd_11[] PROGMEM = "blinkr";
+const char cmd_12[] PROGMEM = "blinka";
+const char cmd_13[] PROGMEM = "blinkb";
+const char cmd_14[] PROGMEM = "breathe";
+const char cmd_15[] PROGMEM = "effectr";
+const char cmd_16[] PROGMEM = "flush";
+const char cmd_17[] PROGMEM = "blend";
+const char cmd_18[] PROGMEM = "max";
+const char cmd_19[] PROGMEM = "dim";
+const char cmd_20[] PROGMEM = "bright";
+const char cmd_21[] PROGMEM = "fade";
+const char cmd_22[] PROGMEM = "wipe";
+const char cmd_23[] PROGMEM = "flood";
+const char cmd_24[] PROGMEM = "random";
+const char cmd_25[] PROGMEM = "mirror";
+const char cmd_26[] PROGMEM = "eshift";
+const char cmd_27[] PROGMEM = "pshift";
+const char cmd_28[] PROGMEM = "pshifto";
+const char cmd_29[] PROGMEM = "window";
+const char cmd_30[] PROGMEM = "reset";
+const char cmd_31[] PROGMEM = "demo";
+const char cmd_32[] PROGMEM = "static";
+const char cmd_33[] PROGMEM = "rgbcolor";
+const char cmd_34[] PROGMEM = "hslcolor";
+const char cmd_35[] PROGMEM = "red";
+const char cmd_36[] PROGMEM = "green";
+const char cmd_37[] PROGMEM = "blue";
+const char cmd_38[] PROGMEM = "black";
+const char cmd_39[] PROGMEM = "yellow";
+const char cmd_40[] PROGMEM = "orange";
+const char cmd_41[] PROGMEM = "purple";
+const char cmd_42[] PROGMEM = "cyan";
+const char cmd_43[] PROGMEM = "magenta";
+const char cmd_44[] PROGMEM = "pink";
+const char cmd_45[] PROGMEM = "white";
+const char cmd_46[] PROGMEM = "gray";
+const char cmd_47[] PROGMEM = "ltgreen";
+const char cmd_48[] PROGMEM = "seafoam";
+const char cmd_49[] PROGMEM = "ltblue";
+const char cmd_50[] PROGMEM = "dkgray";
+const char cmd_51[] PROGMEM = "repeat";
+const char cmd_52[] PROGMEM = "blinkp";
+const char cmd_53[] PROGMEM = "lopower";
+const char cmd_54[] PROGMEM = "hipower";
+const char cmd_55[] PROGMEM = "display";
+const char cmd_56[] PROGMEM = "pinon";
+const char cmd_57[] PROGMEM = "pinoff";
+const char cmd_58[] PROGMEM = "level";
+const char cmd_59[] PROGMEM = "cfade";
+const char cmd_60[] PROGMEM = "copy";
+
+const char* const command_strings[] PROGMEM = {
+  cmd_1, cmd_2, cmd_3, cmd_4, cmd_5, cmd_6, cmd_7, cmd_8, cmd_9, cmd_10,
+  cmd_11, cmd_12, cmd_13, cmd_14, cmd_15, cmd_16, cmd_17, cmd_18, cmd_19, cmd_20,
+  cmd_21, cmd_22, cmd_23, cmd_24, cmd_25, cmd_26, cmd_27, cmd_28, cmd_29, cmd_30,
+  cmd_31, cmd_32, cmd_33, cmd_34, cmd_35, cmd_36, cmd_37, cmd_38, cmd_39, cmd_40,
+  cmd_41, cmd_42, cmd_43, cmd_44, cmd_45, cmd_46, cmd_47, cmd_48, cmd_49, cmd_50,
+  cmd_51, cmd_52, cmd_53, cmd_54, cmd_55, cmd_56, cmd_57, cmd_58, cmd_59, cmd_60
+};
+#else
 char* command_strings[] = {
   "pause",
   "continue",
@@ -135,6 +208,7 @@ char* command_strings[] = {
   "cfade",
   "copy"
 };
+#endif
 #elif defined(MINIMAL_COMMAND_SET)
 
 #ifdef WEARABLE

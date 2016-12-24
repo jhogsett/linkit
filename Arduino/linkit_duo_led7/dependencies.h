@@ -8,15 +8,17 @@
 #include <colors.h>
 #include <command_processor.h>
 #include <power_ease.h>
+#ifdef USE_ELASTIC_EASE
 #include <elastic_ease.h>
+#endif
 #include <blink_effects.h>
 #include <breathe_effects.h>
 #include <effects_processor.h>
 #include <buffer.h>
 #include <render.h>
+#include "config.h"
 #include "command_defs.h"
 #include "commands.h"
-#include "config.h"
 
 class Dependencies
 {
@@ -151,6 +153,7 @@ void Dependencies::begin(){
 
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
   buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, colors, render, effects); //, existence);
+  // = 617, leds = 3 * 110 = 330, effects = 110 == 440, where are the other 177 bytes in buffer.h?
 
   // 1307
 
@@ -185,9 +188,11 @@ void Dependencies::begin(){
   PowerEase::generate_power_ease();
 
   // 1445
-  
+
+#ifdef USE_ELASTIC_EASE
   // generate the cubic ease in/elastic out animation 
   ElasticEase::generate_elastic_ease();
+#endif
 
   // 1573
 
