@@ -1,18 +1,24 @@
-// demo should operate on current buffer
+// todo: fix auto brightness
 
-// need one render buffer the size of a single display, and one display buffer for each display to hold patterns
-// configure a device fixed with rendering all devices
-// currently 1:display will cause the render buffer to go to pin #1
-// when writing new data, need to have a target buffer, could 'display' be used?
-// in the background, when not paused, it will be iterating between each display buffer & led pin, rendering from a specific buffer and displaying on a specific pin
-// when not paused and adding colors, will need to direct the colors to a specific in-memory buffer
+// clean up
+/////////////////////
 
 // move mechanical buffer operations like mirror to Buffer class
 
-// move command for placement, like:
-//    red:57:move
+// wipe command should do a real rendering so it looks right
 
-// swap command like move (or instead of)
+// animation routines may be inefficient
+
+// shorten commands
+
+// see if auto brigtness needs to use that ram for its buffer
+
+// store blink states as bits not bools
+
+
+
+// new architecture
+///////////////////////// 
 
 // zones
 // - set up as a config option
@@ -22,61 +28,69 @@
 //    1:zone:red:2:zone:blue
 // zone 0, the default is always the entire window
 
-// hide / show
-
-// quit the crossfade early if things stop changing, for faster switch between similar colors
-
-
-// fade in, like cross fade, but resets render buffer to black first, and goes slowly
-
-
-// wipe command should do a real rendering so it looks right
-// -- it does now, but when the command comes in it resets the blinking effects, 
-//    so you don't seem them during the wipe
-
 // seems like it should be simple to change the orientation
 
-// zones
+// more complex blinking with arbitrary timing
 
-// animation routines may be inefficient
+// may need to speed up effects with three 72-led strips
+
+// store standard colors in program memory
+
+
+// new commands
+////////////////////
+
+// hide / show
+
+// move command for placement, like:
+//    red:57:move
+
+// swap command like move (or instead of)
+
+// shutter / slide in / slide out / random change / etc. transitions
 
 // would be nice for force it to hi power
 
-// cleanup
-// look for ints that can be chars: byte is the type to use
+// detect non-battery power and stay in hi power
 
 // demo mode - keeps going until non-demo command.
 
-// hide/show (goes all black or back to rendering)
-
-// would be nice to set strip orientation remotely
-
 // synchronize effects each time the low power led positions changes
-
-// Python: also show the high power mode if any of the statuses change
-
-// detect when external power is applied
-
 // after pause, allow breathing and blinking to come to a halt first
+
 // restrict flood, etc. to window
+
 // reverse, inverse mirror
-// copy -- everything up to black is copied on top of black
 // strobe / flash
 
+// hi-going instead of low-going blinks (like twinkling stars)
+
+// random flashes more like a mechanical blinking light
+
 // rainbow colors incremental, or continuously changing
+
 // rotation
-// transitions
-// demo - do random stuff
+
 // full frame animation in/out using back buffer
-// efade is broken
-// be able to reverse shift/animation direction
+
 // fast blink, breathe
+
 // static, flame
+
 // stop sign timing and opposite timing
+
 // invert hue, swing hue, back and forth between two arbitrary colors, rgb cube
+
 // shooting up
 
 // transition: all leds get sucked into one LED position
+
+
+
+
+
+
+
 
 
 // python:
@@ -90,6 +104,7 @@
 
 // should time out after a while if the ACK is not received and just assume it, could be the Arduino side was reset 
 
+// quit the crossfade early if things stop changing, for faster switch between similar colors
 
 /*
 
@@ -111,6 +126,8 @@ lowpower command means:
 
  flush can call the alternate low-power rendering 
 
+// Python: also show the high power mode if any of the statuses change
 
  
+
 */

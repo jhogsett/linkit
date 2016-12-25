@@ -198,14 +198,14 @@ void Dependencies::begin(){
   ColorMath::begin(false);
 #endif
 
-  // establish the default brightness for color scaling
-  ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
+//  // establish the default brightness for color scaling
+//  ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
 
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
   buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
-  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, color_buffers, render, effects_buffers, &this->auto_brightness);
+  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness);
 
   // set up the blink effects counter and states
   blink_effects.begin();

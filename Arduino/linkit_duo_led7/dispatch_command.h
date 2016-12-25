@@ -118,52 +118,52 @@ void dispatch_command(int cmd){
       reset_args = true;
       break;
     case CMD_RED:       
-      dependencies.buffer.push_color(red);                                                      
+      dependencies.buffer.push_color(RED);                                                      
       break;
     case CMD_GREEN:     
-      dependencies.buffer.push_color(green);                                                    
+      dependencies.buffer.push_color(GREEN);                                                    
       break;
     case CMD_BLUE:      
-      dependencies.buffer.push_color(blue);                                                     
+      dependencies.buffer.push_color(BLUE);                                                     
       break;
     case CMD_BLACK:     
-      dependencies.buffer.push_color(black);                                                    
+      dependencies.buffer.push_color(BLACK);                                                    
       break;
     case CMD_YELLOW:    
-      dependencies.buffer.push_color(yellow);                                                   
+      dependencies.buffer.push_color(YELLOW);                                                   
       break;
     case CMD_ORANGE:    
-      dependencies.buffer.push_color(orange);                                                   
+      dependencies.buffer.push_color(ORANGE);                                                   
       break;
     case CMD_PURPLE:    
-      dependencies.buffer.push_color(purple);                                                   
+      dependencies.buffer.push_color(PURPLE);                                                   
       break;
     case CMD_CYAN:      
-      dependencies.buffer.push_color(cyan);                                                     
+      dependencies.buffer.push_color(CYAN);                                                     
       break;
     case CMD_MAGENTA:   
-      dependencies.buffer.push_color(magenta);                                                  
+      dependencies.buffer.push_color(MAGENTA);                                                  
       break; 
     case CMD_PINK:      
-      dependencies.buffer.push_color(pink);                                                     
+      dependencies.buffer.push_color(PINK);                                                     
       break; 
     case CMD_WHITE:     
-      dependencies.buffer.push_color(white);                                                    
+      dependencies.buffer.push_color(WHITE);                                                    
       break; 
     case CMD_GRAY:      
-      dependencies.buffer.push_color(gray);                                                     
+      dependencies.buffer.push_color(GRAY);                                                     
       break;
     case CMD_LTGREEN:   
-      dependencies.buffer.push_color(ltgreen);                                                  
+      dependencies.buffer.push_color(LTGREEN);                                                  
       break;
     case CMD_SEAFOAM:   
-      dependencies.buffer.push_color(seafoam);                                                  
+      dependencies.buffer.push_color(SEAFOAM);                                                  
       break;
     case CMD_LTBLUE:    
-      dependencies.buffer.push_color(ltblue);                                                   
+      dependencies.buffer.push_color(LTBLUE);                                                   
       break;
     case CMD_DKGRAY:    
-      dependencies.buffer.push_color(dkgray);                                                   
+      dependencies.buffer.push_color(DKGRAY);                                                   
       break;
     case CMD_REPEAT:    
       dependencies.commands.do_repeat(dependencies.command_processor.sub_args[0]); 

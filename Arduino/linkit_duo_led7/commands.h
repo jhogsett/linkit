@@ -14,7 +14,7 @@
 class Commands
 {
   public:
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, rgb_color **color_buffers, rgb_color *render, byte **effect_buffers, AutoBrightnessBase *auto_brightness);
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness);
   void pause();
   void resume();
   void do_blend();
@@ -47,10 +47,6 @@ class Commands
   Buffer *buffer;
   Render *renderer;  
   EffectsProcessor *effects_processor;
-
-  rgb_color **color_buffers;
-  rgb_color *render;
-  byte **effects_buffers;
   bool paused = false;
   byte default_brightness;
   byte visible_led_count;
@@ -62,13 +58,10 @@ class Commands
   void advance_low_power_position();
 };
 
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, rgb_color **color_buffers, rgb_color *render, byte **effects_buffers, AutoBrightnessBase *auto_brightness){
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness){
   this->buffer = buffer;
   this->renderer = renderer;
   this->effects_processor = effects_processor;
-  this->color_buffers = color_buffers;
-  this->render = render;
-  this->effects_buffers = effects_buffers;
   this->default_brightness = default_brightness;
   this->visible_led_count = visible_led_count;
   this->auto_brightness = auto_brightness;
@@ -105,13 +98,13 @@ void Commands::set_pin(byte pin, bool on){
 
 void Commands::set_brightness_level(byte level){
   if(level == 0){
-#if defined(WEARABLE) || defined(DISC93) || defined(STRAND1) || defined(STRAND2)
+//#if defined(WEARABLE) || defined(DISC93) || defined(STRAND1) || defined(STRAND2)
     level = default_brightness;
-#else
-    level = auto_brightness->get_auto_brightness_level();
-#endif
+//#else
+//    level = auto_brightness->get_auto_brightness_level();
+//#endif
   }
-  ColorMath::set_brightness(level);    
+//  ColorMath::set_brightness(level);    
   renderer->set_default_brightness(level);
 }
 
@@ -139,7 +132,7 @@ void Commands::do_bright(){
 
 void Commands::do_fade(){
   for(int i = 0; i < visible_led_count; i++){
-    buffer->get_buffer()[i] = black;
+    buffer->get_buffer()[i] = Buffer::black;
     buffer->get_effects_buffer()[i] = NO_EFFECT;
   }
   do_crossfade();
@@ -148,7 +141,7 @@ void Commands::do_fade(){
 void Commands::do_crossfade(){
   for(int i = 0; i <= ColorMath::crossfade_steps(); i++){
     buffer->cross_fade(i);
-    buffer->display_buffer();
+    buffer->display_buffer(buffer->get_render_buffer());
     delay(CROSSFADE_DELAY);
   }
 }
@@ -276,12 +269,12 @@ void Commands::advance_low_power_position(){
 void Commands::flush(bool force_display = false){
   if(force_display || !paused){
     if(low_power_mode){
-      renderer->render_buffer_low_power(render, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer(), low_power_position);
+      renderer->render_buffer_low_power(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer(), low_power_position);
       advance_low_power_position();
     } else {
-      renderer->render_buffer(render, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
+      renderer->render_buffer(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
     }
-    buffer->display_buffer();
+    buffer->display_buffer(buffer->get_render_buffer());
   }
 }
 
