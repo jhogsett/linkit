@@ -44,6 +44,8 @@ class Buffer
   rgb_color * get_buffer();
   byte * get_effects_buffer();
   byte get_current_display();
+  rgb_color * get_render_buffer();
+  static const rgb_color black;
 
   // todo: is there an alternative to storing all these pointers?
   private:
@@ -65,6 +67,8 @@ class Buffer
   byte window = 0;
   void shift_buffer(rgb_color * buffer, byte * effects, byte max);
 };
+
+const rgb_color Buffer::black = {0,0,0};
 
 rgb_color *Buffer::render;
 
@@ -92,7 +96,7 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
 
 // always write from the render buffer to a pin,
 // the render buffer having been rendered from a specific display buffer already
-void Buffer::display_buffer(rgb_color * pbuffer = render){
+void Buffer::display_buffer(rgb_color * pbuffer){
   ledStrips[current_display]->write(pbuffer, visible_led_count);
 }
   
@@ -141,6 +145,7 @@ void Buffer::cross_fade(int step){
    }
 }
 
+// to do: set up for insertion from either end
 // to do: set minimum position based on current zone
 void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max){
   for(byte i = max - 1; i >= 1; i--){
@@ -153,7 +158,8 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max){
 
   }
 }
-  
+
+// todo: set up for either orientation
 #ifdef EXISTENCE_ENABLED
 void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte id = NO_ID)
 #else
@@ -217,26 +223,30 @@ void Buffer::set_window(byte window){
 }
 
 int Buffer::get_window(){
-  return window;
+  return this->window;
 }
 
 void Buffer::set_display(byte display){
-  current_display = display;
+  this->current_display = display;
 }
 
 byte Buffer::get_current_display(){
-  return current_display;
+  return this->current_display;
 }
 
 rgb_color * Buffer::get_buffer(){
-  return buffers[current_display];
+  return this->buffers[current_display];
 }
 
 byte * Buffer::get_effects_buffer(){
-  return effects_buffers[current_display];
+  return this->effects_buffers[current_display];
 }
 
-// to do: operate on a specific display buffer
+rgb_color * Buffer::get_render_buffer(){
+  return this->render;
+}
+
+// to do: support either orientation
 // to do: restrict to current zone
 // animate by shifting frame (future: shift in from back buffer)
 void Buffer::shift(byte count, byte maxx, bool fast_render = true){
@@ -251,7 +261,7 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
       render[i] = renderer->render(buffers[current_display][i - count], effects_buffers[current_display][i - count]);
   }
 
-  display_buffer();
+  display_buffer(this->render);
 }
 
 void Buffer::finalize_shift(byte count, byte max){

@@ -1,6 +1,8 @@
 #ifndef BLINK_EFFECTS_H
 #define BLINK_EFFECTS_H
 
+// to do: investigate storing states as bit patterns
+
 // main blink
 #define BLINK_ON 10
 
@@ -41,14 +43,14 @@ class BlinkEffects
 {
   public:
   bool blink_state = true;
-  bool blink_state_1 = true; 
-  bool blink_state_2 = true; 
-  bool blink_state_3 = true; 
-  bool blink_state_4 = true; 
-  bool blink_state_5 = true; 
-  bool blink_state_6 = true; 
-  bool blink_state_a = true; 
-  bool blink_state_b = true; 
+  bool blink_state_1 = true;
+  bool blink_state_2 = true;
+  bool blink_state_3 = true;
+  bool blink_state_4 = true;
+  bool blink_state_5 = true;
+  bool blink_state_6 = true;
+  bool blink_state_a = true;
+  bool blink_state_b = true;
   bool blink_state_p = true;
 
   void begin(int max_blink);

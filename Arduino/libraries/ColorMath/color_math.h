@@ -3,11 +3,9 @@
 
 #define USE_PROGMEM
 
-// 85
-
 // enable to support palettes
 // to do: disable palettes
-#define USE_PALETTES
+//#define USE_PALETTES
 
 #include <PololuLedStrip.h>
 #include <colors.h>
@@ -19,7 +17,7 @@ class ColorMath
 {
   public:
   static void begin(bool swap_r_and_g);
-  static void set_brightness(byte brightness_percent);
+//  static void set_brightness(byte brightness_percent);
   static rgb_color random_color();
   static rgb_color scale_color(rgb_color color, float scale);
   static rgb_color unscale_color(rgb_color color, float scale);
@@ -34,16 +32,11 @@ class ColorMath
   private:
   static bool swap_r_and_g;
 
-
-
-
   #ifdef USE_PROGMEM
-    static const float PROGMEM crossfade[]; //CROSSFADE_STEPS + 1];
+    static const float PROGMEM crossfade[];
   #else
-    static float crossfade[]; //CROSSFADE_STEPS + 1];
+    static float crossfade[];
   #endif
-
-
 
   static byte blend_component(byte component1, byte component2, float strength);
   static byte crossfade_component(int step, byte component1, byte component2);
@@ -149,14 +142,14 @@ rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {
   return (rgb_color){r, g, b};
 }
 
-#ifdef USE_PALETTES
-void ColorMath::set_brightness(byte brightness_percent){
-  float percent = brightness_percent / 100.0;
-  for(byte i = 0; i < NPALETTE; i++){
-    adjusted_palette[i] = scale_color(palette[i], percent);
-  }
-}
-#endif
+//#ifdef USE_PALETTES
+//void ColorMath::set_brightness(byte brightness_percent){
+//  float percent = brightness_percent / 100.0;
+//  for(byte i = 0; i < NPALETTE; i++){
+//    adjusted_palette[i] = scale_color(palette[i], percent);
+//  }
+//}
+//#endif
 
 rgb_color ColorMath::add_color(rgb_color color1, rgb_color color2){
   rgb_color new_color;
@@ -250,12 +243,13 @@ rgb_color ColorMath::correct_color(rgb_color color){
     return color;
 }
 
-#ifdef USE_PALETTES
+//#ifdef USE_PALETTES
 // needed in renderer
 rgb_color ColorMath::random_color(){
-  return palette[random(NPRETTY_COLORS)];
+  return *Colors::get_color((Colors::color)random(NPRETTY_COLORS));
+//  return palette[random(NPRETTY_COLORS)];
 }
 
-#endif
+//#endif
 
 #endif
