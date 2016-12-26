@@ -1,6 +1,10 @@
 #ifndef AUTO_BRIGHTNESS_H
 #define AUTO_BRIGHTNESS_H
 
+// todo: fix how it set the brightness amount
+
+// todo: see if the static ligth sample array is needed or can be on the stack
+
 // Attach a 10k resistor between aref & <PIN>, and a photoresistor between <PIN> & GND
 
 #include <Arduino.h>
@@ -83,6 +87,6 @@ template<byte pin> byte AutoBrightness<pin>::get_auto_brightness_level(){
 }
 
 template<byte pin> void AutoBrightness<pin>::auto_adjust_brightness(){
-  ColorMath::set_brightness(get_auto_brightness_level());
+  //ColorMath::set_brightness(get_auto_brightness_level());
 }
 #endif

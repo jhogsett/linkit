@@ -11,13 +11,31 @@
 // #define STRAND1
 
 // enable to change settings for two 50-LED strands
-#define STRAND2
+// #define STRAND2
+
+// enable to test limits of memory usage
+// #define MAXLEDS
+
+// enable to test 3 72-LED strips
+#define STRIP3
+
+// enable to test 2 72-LED strips
+// #define STRIP2
 
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3
 #define AUTO_BRIGHTNESS_MAX 33
 
+#if defined(STRIP3)
 #define NUM_DISPLAYS 3                // how many physical LED strips there are (all expected to have the same # of LEDs)
+#define NUM_BUFFERS 3                 // how many memory buffers (recommended one per physical display)
+#elif defined(STRIP2)
+#define NUM_DISPLAYS 2                // how many physical LED strips there are (all expected to have the same # of LEDs)
+#define NUM_BUFFERS 2                 // how many memory buffers (recommended one per physical display)
+#else
+#define NUM_DISPLAYS 1                // how many physical LED strips there are (all expected to have the same # of LEDs)
+#define NUM_BUFFERS 1                 // how many memory buffers (recommended one per physical display)
+#endif
 
 #define DISPLAY_PIN1 12
 #define DISPLAY_PIN2 11
@@ -51,6 +69,8 @@
 #define ANIM_LED_COUNT 50
 #elif defined(STRAND2)
 #define ANIM_LED_COUNT 100
+#elif defined(MAXLEDS)
+#define ANIM_LED_COUNT 250
 #else
 #define ANIM_LED_COUNT 72
 #endif
@@ -77,7 +97,7 @@
 #define DEMO_DELAY 0
 #endif
 
-#define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
+#define EASE_ANIM_MARGIN 4           // safety margin for visual effects that go past the end of the LEDs
 
 #define BAUD_RATE 115200              // speed for communicating with the MT7688
 
@@ -85,7 +105,14 @@ class Config
 {
   public:
   static const byte num_displays = NUM_DISPLAYS;
+  static const byte num_buffers = NUM_BUFFERS;
+#if defined(STRIP3)
   static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2, DISPLAY_PIN3};  
+#elif defined(STRIP2)
+  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2};  
+#else  
+  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1};  
+#endif
   static const byte random_seed_pin = RANDOM_SEED_PIN;
   static const byte light_sensor_pin = LIGHT_SENSOR_PIN;
   static const byte default_brightness_percent = DEFAULT_BRIGHTNESS_PERCENT;
