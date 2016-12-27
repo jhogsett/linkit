@@ -65,6 +65,7 @@ class Handler(BaseHTTPRequestHandler):
     print 
 
   def serve_page(self, page):
+    global last_run
     filename, file_ext = os.path.splitext(page)
 
     self.send_response(200)
@@ -79,8 +80,13 @@ class Handler(BaseHTTPRequestHandler):
     self.send_header("Content-type", content_type)
     self.end_headers()  
 
+    if last_run != '':
+      banner = '<div class="well well-sm"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> ' + last_run + '</div>'
+    else:
+      banner = ''
+
     f = open(page, 'r')                       
-    self.wfile.write(f.read())                   
+    self.wfile.write(f.read().replace('<!-- banner -->', banner))                   
     f.close  
     self.wfile.close() 
 
