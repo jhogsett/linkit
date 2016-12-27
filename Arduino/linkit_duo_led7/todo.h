@@ -1,7 +1,16 @@
-// todo: fix auto brightness
+// problems with offset and window
+// pshifto - starts at [0]
+// crossfade - leaves only pixels inside the zone
+
+// need to be able to set window to do object animation
+
+// need a better way to store zones
+
 
 // clean up
 /////////////////////
+
+// fix auto brightness
 
 // move mechanical buffer operations like mirror to Buffer class
 
@@ -76,8 +85,6 @@
 // fast blink, breathe
 
 // static, flame
-
-// stop sign timing and opposite timing
 
 // invert hue, swing hue, back and forth between two arbitrary colors, rgb cube
 

@@ -19,6 +19,7 @@
 #include "config.h"
 #include "command_defs.h"
 #include "commands.h"
+#include "zones.h"
 
 class Dependencies
 {
@@ -29,7 +30,7 @@ class Dependencies
 
   // input display buffer
   static rgb_color colors[config.led_count];
-#if defined(STRIP2) || defined(STRIP3)  
+#if defined(STRIP2) || defined(STRIP3) || defined(DISC93)  
   static rgb_color colors2[config.led_count];
 #endif
 #if defined(STRIP3)  
@@ -43,7 +44,7 @@ class Dependencies
 
   // effect styling per LED position
   static byte effects[config.led_count];
-#if defined(STRIP2) || defined(STRIP3)  
+#if defined(STRIP2) || defined(STRIP3) || defined(DISC93) 
   static byte effects2[config.led_count];
 #endif
 #if defined(STRIP3)  
@@ -54,7 +55,7 @@ class Dependencies
 
   // pin-specific LED hardware drivers
   static PololuLedStrip<config.display_pins[0]> ledStrip1;
-#if defined(STRIP2) || defined(STRIP3)  
+#if defined(STRIP2) || defined(STRIP3) || defined(DISC93)  
   static PololuLedStrip<config.display_pins[1]> ledStrip2;
 #endif
 #if defined(STRIP3)  
@@ -101,7 +102,7 @@ Config Dependencies::config;
 
 // input display buffer
 rgb_color Dependencies::colors[config.led_count];
-#if defined(STRIP2) || defined(STRIP3)  
+#if defined(STRIP2) || defined(STRIP3) || defined(DISC93)  
 rgb_color Dependencies::colors2[config.led_count];
 #endif
 #if defined(STRIP3)  
@@ -110,7 +111,7 @@ rgb_color Dependencies::colors3[config.led_count];
 
 #if defined(STRIP3)
 rgb_color *Dependencies::color_buffers[] = { colors, colors2, colors3 };
-#elif defined(STRIP2)
+#elif defined(STRIP2) || defined(DISC93)
 rgb_color *Dependencies::color_buffers[] = { colors, colors2 };
 #else
 rgb_color *Dependencies::color_buffers[] = { colors };
@@ -121,7 +122,7 @@ rgb_color Dependencies::render[config.led_count];
 
 // effect styling per LED position
 byte Dependencies::effects[config.led_count];
-#if defined(STRIP2) || defined(STRIP3)  
+#if defined(STRIP2) || defined(STRIP3) || defined(DISC93) 
 byte Dependencies::effects2[config.led_count];
 #endif
 #if defined(STRIP3)  
@@ -130,7 +131,7 @@ byte Dependencies::effects3[config.led_count];
 
 #if defined(STRIP3)
 byte *Dependencies::effects_buffers[] = { effects, effects2, effects3 };
-#elif defined(STRIP2)
+#elif defined(STRIP2) || defined(DISC93)
 byte *Dependencies::effects_buffers[] = { effects, effects2 };
 #else
 byte *Dependencies::effects_buffers[] = { effects };
@@ -138,7 +139,7 @@ byte *Dependencies::effects_buffers[] = { effects };
 
 // pin-specific LED hardware drivers
 PololuLedStrip<DISPLAY_PIN1> Dependencies::ledStrip1;
-#if defined(STRIP2) || defined(STRIP3)  
+#if defined(STRIP2) || defined(STRIP3) || defined(DISC93) 
 PololuLedStrip<DISPLAY_PIN2> Dependencies::ledStrip2;
 #endif
 #if defined(STRIP3)  
@@ -148,7 +149,7 @@ PololuLedStrip<DISPLAY_PIN3> Dependencies::ledStrip3;
 // array of drivers for selecting among multiple displays
 #if defined(STRIP3)
 PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2, &Dependencies::ledStrip3};
-#elif defined(STRIP2)
+#elif defined(STRIP2) || defined(DISC93)
 PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2};
 #else
 PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1};
@@ -202,7 +203,7 @@ void Dependencies::begin(){
 //  ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
 
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
-  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers); //, existence);
+  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, NUM_ZONES, zone_offsets, zone_windows); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
   commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness);

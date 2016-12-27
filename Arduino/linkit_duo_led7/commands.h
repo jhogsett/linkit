@@ -27,7 +27,7 @@ class Commands
   void do_flood();
   void do_random(byte type);
   void do_mirror();
-  void do_copy(byte width, byte times);
+  void do_copy(byte size, byte times);
   void do_repeat(byte times);
   void do_elastic_shift(byte count, byte max);
   void do_power_shift(byte count, byte max, bool fast_render);
@@ -42,7 +42,8 @@ class Commands
   void set_buffer(byte nbuffer);
   void set_pin(byte pin, bool on);
   void set_brightness_level(byte level = 0);
-
+  void clear();
+  
   private:
   Buffer *buffer;
   Render *renderer;  
@@ -109,29 +110,33 @@ void Commands::set_brightness_level(byte level){
 }
 
 void Commands::do_blend(){
-  buffer->get_buffer()[0] = ColorMath::blend_colors(buffer->get_buffer()[0], buffer->get_buffer()[1]);
-  buffer->get_buffer()[1] = buffer->get_buffer()[0];
+  byte offset = buffer->get_offset();
+  buffer->get_buffer()[offset] = ColorMath::blend_colors(buffer->get_buffer()[offset], buffer->get_buffer()[offset + 1]);
+  buffer->get_buffer()[offset + 1] = buffer->get_buffer()[offset];
 }
 
 // only works properly when used immediately after placing a standard color
 void Commands::do_max(){
-  buffer->get_buffer()[0] = ColorMath::scale_color(buffer->get_buffer()[0], MAX_BRIGHTNESS_PERCENT / 100.0);
+  byte offset = buffer->get_offset();
+  buffer->get_buffer()[offset] = ColorMath::scale_color(buffer->get_buffer()[offset], MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
 void Commands::do_dim(){
-  buffer->get_buffer()[0].red = buffer->get_buffer()[0].red >> 1;
-  buffer->get_buffer()[0].green = buffer->get_buffer()[0].green >> 1;
-  buffer->get_buffer()[0].blue = buffer->get_buffer()[0].blue >> 1;
+  byte offset = buffer->get_offset();
+  buffer->get_buffer()[offset].red = buffer->get_buffer()[offset].red >> 1;
+  buffer->get_buffer()[offset].green = buffer->get_buffer()[offset].green >> 1;
+  buffer->get_buffer()[offset].blue = buffer->get_buffer()[offset].blue >> 1;
 }
 
 void Commands::do_bright(){
-  buffer->get_buffer()[0].red = buffer->get_buffer()[0].red << 1;
-  buffer->get_buffer()[0].green = buffer->get_buffer()[0].green << 1;
-  buffer->get_buffer()[0].blue = buffer->get_buffer()[0].blue << 1;
+  byte offset = buffer->get_offset();
+  buffer->get_buffer()[offset].red = buffer->get_buffer()[offset].red << 1;
+  buffer->get_buffer()[offset].green = buffer->get_buffer()[offset].green << 1;
+  buffer->get_buffer()[offset].blue = buffer->get_buffer()[offset].blue << 1;
 }
 
 void Commands::do_fade(){
-  for(int i = 0; i < visible_led_count; i++){
+  for(int i = buffer->get_offset(); i < buffer->get_window(); i++){
     buffer->get_buffer()[i] = Buffer::black;
     buffer->get_effects_buffer()[i] = NO_EFFECT;
   }
@@ -147,10 +152,10 @@ void Commands::do_crossfade(){
 }
 
 void Commands::do_flood(){
-  int max = min(visible_led_count, buffer->get_window());
-  rgb_color color = buffer->get_buffer()[0];
-  byte effect = buffer->get_effects_buffer()[0];
-  for(byte i = 1; i < max; i++){
+  int offset = buffer->get_offset();
+  rgb_color color = buffer->get_buffer()[offset];
+  byte effect = buffer->get_effects_buffer()[offset];
+  for(byte i = (offset + 1); i < buffer->get_window(); i++){
     if(effect == RANDOM1){
       buffer->get_buffer()[i] = ColorMath::random_color();
       buffer->get_effects_buffer()[i] = NO_EFFECT;
@@ -168,32 +173,38 @@ void Commands::do_random(byte type){
   type = (type < 1) ? 1 : type;
   buffer->push_color(ColorMath::random_color());
   if(type == 1){
-    buffer->get_effects_buffer()[0] = RANDOM1;
+    buffer->get_effects_buffer()[buffer->get_offset()] = RANDOM1;
   } else if(type == 2){
-    buffer->get_effects_buffer()[0] = RANDOM2;
+    buffer->get_effects_buffer()[buffer->get_offset()] = RANDOM2;
   }
 }
 
 // to do: operate on a specific colors buffer
 void Commands::do_mirror(){
-  for(byte i = 0; i < visible_led_count / 2; i++){
-    buffer->get_buffer()[(visible_led_count - 1) - i] = buffer->get_buffer()[i];
-    buffer->get_effects_buffer()[(visible_led_count - 1) - i] = buffer->get_effects_buffer()[i];
+  byte front = buffer->get_offset();
+  byte back = buffer->get_window() - 1;
+  byte width = buffer->get_width() / 2;
+
+  for(byte i = 0; i < width; i++){
+    buffer->get_buffer()[back - i] = buffer->get_buffer()[front + i];
+    buffer->get_effects_buffer()[back - i] = buffer->get_effects_buffer()[front + i];
   }
 }
 
-void Commands::do_copy(byte width, byte times){
-  if(width < 1){
-    width = 1;
-  }
+void Commands::do_copy(byte size, byte times){
+  size = max(1, size);
+
   if(times < 1){
-    times = (visible_led_count / width) - 1;
+    // repeat and fill
+    times = (buffer->get_width() / size) - 1;
   }
+
   for(int i = 0; i < times; i++){
-    for(int j = 0; j < width; j++){
-      byte offset = ((i + 1) * width) + j;
-      buffer->get_buffer()[offset] = buffer->get_buffer()[j];
-      buffer->get_effects_buffer()[offset] = buffer->get_effects_buffer()[j];
+    for(int j = 0; j < size; j++){
+      byte orig = j + buffer->get_offset();
+      byte copy = orig + ((i + 1) * size);
+      buffer->get_buffer()[copy] = buffer->get_buffer()[orig];
+      buffer->get_effects_buffer()[copy] = buffer->get_effects_buffer()[orig];
     }
   }
 }
@@ -201,21 +212,23 @@ void Commands::do_copy(byte width, byte times){
 void Commands::do_repeat(byte times = 1){
   times = (times < 1) ? 1 : times;
 
+  byte offset = buffer->get_offset();
+  byte effect = buffer->get_effects_buffer()[offset];
+
   // the stored color has been red/green corrected, so
   // to repeat it, first uncorrect it by swapping
-  rgb_color color = ColorMath::correct_color(buffer->get_buffer()[0]);
-  
-  byte effect = buffer->get_effects_buffer()[0];
+  rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
+ 
   for(byte i = 0; i < times; i++){
     if(effect == RANDOM1){
       buffer->push_color(ColorMath::random_color());
-      buffer->get_effects_buffer()[0] = NO_EFFECT;
+      buffer->get_effects_buffer()[offset] = NO_EFFECT;
     } else if(effect == RANDOM2){
       buffer->push_color(ColorMath::random_color());
-      buffer->get_effects_buffer()[0] = EffectsProcessor::random_effect();
+      buffer->get_effects_buffer()[offset] = EffectsProcessor::random_effect();
     } else {
       buffer->push_color(color);
-      buffer->get_effects_buffer()[0] = effect;
+      buffer->get_effects_buffer()[offset] = effect;
     }
   }
 }
@@ -294,13 +307,26 @@ void Commands::flush_all(bool force_display = false){
 void Commands::reset(){
   paused = false;
   low_power_mode = false;
-  buffer->set_window(visible_led_count);
+  //buffer->set_window(visible_led_count);
+  //buffer->set_offset(0);
+  buffer->set_zone(0);
   buffer->set_display(0);
   effects_processor->reset_effects();
 
   // the brightness shouldn't be set on reset, because the device could be set
   // to an appropriate brightness level already
   //set_brightness_level(default_brightness);
+}
+
+void Commands::clear(){
+  byte orig_display = buffer->get_current_display();
+
+  for(int i = 0; i < NUM_BUFFERS; i++){
+    buffer->set_display(i);
+    buffer->erase(true);                                                          
+  }
+
+  buffer->set_display(orig_display);
 }
 
 void Commands::do_demo(){
