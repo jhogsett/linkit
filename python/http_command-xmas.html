@@ -30,9 +30,16 @@
         var id = $(e.target).attr("href").substr(1);
         window.location.hash = id;
       });
-      // on load of the page: switch to the currently selected tab
-      // var hash = window.location.hash;
-      // $('#maintabs a[href="' + hash + '"]').tab('show');
+      
+      $(document).ready(function(){
+        activaTab('aaa');
+
+        //on load of the page: switch to the currently selected tab
+        var hash = window.location.hash;
+        $('#maintabs a[href="' + hash + '"]').tab('show');
+        
+        alert(hash);
+      });
     </script>
     
     <div class="tab-content">
