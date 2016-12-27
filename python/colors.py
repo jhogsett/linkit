@@ -23,7 +23,7 @@ def command(cmd_text):
 def setup(): 
   global s, play_time 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command("::pause:reseti:pause")
+  command("::pause:reset:pause")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
