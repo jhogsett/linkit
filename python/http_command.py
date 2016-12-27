@@ -34,6 +34,31 @@ def command(cmd_text):
   wait_for_ack()   
 
 class Handler(BaseHTTPRequestHandler):
+  global last_run
+
+  def run_app(self, app):
+    global last_run    
+    if app != 'stop':                      
+      run = base_path + app + ' &'         
+      self.log('running: ' + run)               
+      call(run, shell=True)  
+      last_run = app
+    else:
+      last_run = ''
+  
+  def kill_last_app(self):
+    global last_run                       
+    if last_run != '':                          
+      self.log('killing: ' + last_run)          
+      call('killall ' + last_run, shell=True) 
+      last_run = ''
+
+  def log(self, message):
+    print
+    print '#' * 80
+    print '## ' + message 
+    print '#' * 80
+    print 
 
   def serve_page(self, page):
     filename, file_ext = os.path.splitext(page)
@@ -45,7 +70,7 @@ class Handler(BaseHTTPRequestHandler):
       content_type = "text/css"                     
     elif file_ext == '.js':
       content_type = "application/javascript"
-    else
+    else:
       content_type = "text/plain"                     
     self.send_header("Content-type", content_type)
     self.end_headers()  
@@ -57,13 +82,8 @@ class Handler(BaseHTTPRequestHandler):
 
   def do_GET(self):
     req = urlparse.urlparse(self.path)
-
+ 
     if req.path == '/command':
-
-#      self.send_response(200)
-#      self.send_header("Content-type", "text/html")
-#      self.end_headers()
-
       args = urlparse.parse_qs(req.query)            
 
       if 'cmd' in args:
@@ -73,33 +93,20 @@ class Handler(BaseHTTPRequestHandler):
         command("flush:continue")
 
       if 'run' in args:
-        if last_run != '':
-          print 'killing: ' + last_run
-          call('killall ' + last_run, shell=True)
-        last_run = args['run'][0] 
-        if last_run != '':
-          run = base_path + last_run + '&'
-          print 'running: ' + run
-          call(run, shell=True)
+        self.kill_last_app() 
+        self.run_app(args['run'][0])
 
       if 'sys' in args:
         for sys in args['sys']:
-          print 'shell command: ' + sys
+          self.log('shell command: ' + sys)
           call(sys, shell=True)
 
+      # serve main page
       self.serve_page(webpage)
 
-#      f = open(webpage, 'r')                    
-#      self.wfile.write(f.read())  
-#      f.close                     
-#      self.wfile.close()
-
     elif os.path.isfile(base_path + req.path):
-#      self.send_response(200)              
-#      self.send_header("Content-type", "text/css")
-#      self.end_headers()                           
       page = base_path + req.path 
-      print 'serving page: ' + page
+      #self.log('serving page: ' + page)
       self.serve_page(page)
     else:
       self.send_response(404)
@@ -117,10 +124,18 @@ while(True):
     print "Error: " + str(e) + " - retrying"
     time.sleep(5)
     continue
-  break; 
+  break 
 
 print "Listening..."
-httpd.serve_forever()
+
+try:
+  httpd.serve_forever()
+except KeyboardInterrupt:                                               
+  sys.exit("\nExiting...\n") 
+finally:
+  if last_run != '':                         
+    self.log('killing: ' + last_run)            
+    call('killall ' + last_run, shell=True)     
 
 #if __name__ == '__main__': 
 #  setup() 
