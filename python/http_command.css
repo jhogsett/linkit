@@ -1,3 +1,7 @@
+.well {
+  background-color: rgb(255, 153, 153);
+}
+
 .btn-red {
   background-color: #F00;
   border-color: #F00;
