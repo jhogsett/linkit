@@ -15,7 +15,11 @@ global webpage, base_path, last_run
 
 last_run = ''
 
-base_path = os.getcwd() + '/'
+if len(sys.argv) > 2:
+  base_path = sys.argv[2] + '/'
+else:
+  base_path = os.getcwd() + '/'
+
 if len(sys.argv) > 1:
   webpage = sys.argv[1]
 else:
