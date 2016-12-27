@@ -36,6 +36,20 @@ def command(cmd_text):
 class Handler(BaseHTTPRequestHandler):
 
   def serve_page(self, page):
+    filename, file_ext = os.path.splitext(page)
+
+    self.send_response(200)
+    if file_ext == '.html':
+      content_type = "text/html"                     
+    elif file_ext == '.css':
+      content_type = "text/css"                     
+    elif file_ext == '.js':
+      content_type = "application/javascript"
+    else
+      content_type = "text/plain"                     
+    self.send_header("Content-type", content_type)
+    self.end_headers()  
+
     f = open(page, 'r')                       
     self.wfile.write(f.read())                   
     f.close  
@@ -45,13 +59,15 @@ class Handler(BaseHTTPRequestHandler):
     req = urlparse.urlparse(self.path)
 
     if req.path == '/command':
-      self.send_response(200)
-      self.send_header("Content-type", "text/html")
-      self.end_headers()
+
+#      self.send_response(200)
+#      self.send_header("Content-type", "text/html")
+#      self.end_headers()
+
       args = urlparse.parse_qs(req.query)            
 
       if 'cmd' in args:
-        command("::pause")
+        command(":::pause")
         for cmd in args['cmd']:
           command(cmd)           
         command("flush:continue")
@@ -61,9 +77,10 @@ class Handler(BaseHTTPRequestHandler):
           print 'killing: ' + last_run
           call('killall ' + last_run, shell=True)
         last_run = args['run'][0] 
-        run = base_path + last_run
-        print 'running: ' + run
-        call(run, shell=True)
+        if last_run != '':
+          run = base_path + last_run + '&'
+          print 'running: ' + run
+          call(run, shell=True)
 
       if 'sys' in args:
         for sys in args['sys']:
@@ -78,10 +95,9 @@ class Handler(BaseHTTPRequestHandler):
 #      self.wfile.close()
 
     elif os.path.isfile(base_path + req.path):
-      self.send_response(200)              
-      self.send_header("Content-type", "text/css")
-      self.end_headers()                           
-
+#      self.send_response(200)              
+#      self.send_header("Content-type", "text/css")
+#      self.end_headers()                           
       page = base_path + req.path 
       print 'serving page: ' + page
       self.serve_page(page)
@@ -89,7 +105,7 @@ class Handler(BaseHTTPRequestHandler):
       self.send_response(404)
       self.send_header("Content-type", "text/html")               
       self.end_headers()                             
-      self.wfile.write("<html><body><h1>Not Found</h1></body></html>")
+      self.wfile.write("<html><body><h1>404 Not Found</h1></body></html>")
       self.wfile.close()                             
 
 s = serial.Serial("/dev/ttyS0", 115200)
