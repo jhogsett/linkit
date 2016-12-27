@@ -16,6 +16,7 @@ print "logging to " + log_path
 logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 logging.info("Circleci5.py started")
 
+global job_limit
 job_limit = 18
 max_job = job_limit - 1
 max_leds = job_limit * 4
@@ -25,6 +26,7 @@ try:
 except Exception:
   sys.exit("\nNo API key supplied!\n")
 
+global url
 url = 'https://circleci.com/api/v1.1/recent-builds?circle-token=' + token + '&limit=' + str(job_limit) + '&offset=0'
 request_frequency = 15
 
@@ -91,13 +93,19 @@ def fix_missing(value):
 build_keys = None 
 
 def setup():
-  global s
-  global build_keys
+  global s, build_keys, job_limit, url
   s = serial.Serial("/dev/ttyS0", 115200)
   build_keys = {}
   time.sleep(0.1)
   flush_input()
-  command("::reset")
+  command(":::reset")
+
+  if len(sys.argv) > 2:
+    command(sys.argv[2])
+
+  if len(sys.argv) > 3:
+    job_limit = int(sys.argv[3]) / 4    
+    url = 'https://circleci.com/api/v1.1/recent-builds?circle-token=' + token + '&limit=' + str(job_limit) + '&offset=0'
 
 oldest_first = True
 
