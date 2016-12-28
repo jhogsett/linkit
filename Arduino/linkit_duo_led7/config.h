@@ -17,10 +17,10 @@
 // #define MAXLEDS
 
 // enable to test 3 72-LED strips
-#define STRIP3
+// #define STRIP3
 
 // enable to test 2 72-LED strips
-// #define STRIP2
+#define STRIP2
 
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3
@@ -32,14 +32,23 @@
 #elif defined(STRIP2)
 #define NUM_DISPLAYS 2                // how many physical LED strips there are (all expected to have the same # of LEDs)
 #define NUM_BUFFERS 2                 // how many memory buffers (recommended one per physical display)
+#elif defined(DISC93)
+#define NUM_DISPLAYS 2                // how many physical LED strips there are (all expected to have the same # of LEDs)
+#define NUM_BUFFERS 2                 // how many memory buffers (recommended one per physical display)
 #else
 #define NUM_DISPLAYS 1                // how many physical LED strips there are (all expected to have the same # of LEDs)
 #define NUM_BUFFERS 1                 // how many memory buffers (recommended one per physical display)
 #endif
 
+#ifdef DISC93
+#define DISPLAY_PIN1 11
+#define DISPLAY_PIN2 12
+#define DISPLAY_PIN3 10
+#else
 #define DISPLAY_PIN1 12
 #define DISPLAY_PIN2 11
 #define DISPLAY_PIN3 10
+#endif
 
 #define RANDOM_SEED_PIN A1            // floating pin for seeding the RNG
 #define LIGHT_SENSOR_PIN A0           // photocell pin for auto-brightness setting
@@ -49,10 +58,10 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 10
 #elif defined(DISK93)
 #define DEFAULT_BRIGHTNESS_PERCENT 20
-#elif defined(STRAND1)
+#elif defined(STRAND1) || defined(STRAND2)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
-#elif defined(STRAND2)
-#define DEFAULT_BRIGHTNESS_PERCENT 25
+#elif defined(STRIP2) || defined(STRIP3)
+#define DEFAULT_BRIGHTNESS_PERCENT 13
 #else
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #endif
@@ -97,7 +106,7 @@
 #define DEMO_DELAY 0
 #endif
 
-#define EASE_ANIM_MARGIN 4           // safety margin for visual effects that go past the end of the LEDs
+#define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
 
 #define BAUD_RATE 115200              // speed for communicating with the MT7688
 
@@ -108,7 +117,7 @@ class Config
   static const byte num_buffers = NUM_BUFFERS;
 #if defined(STRIP3)
   static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2, DISPLAY_PIN3};  
-#elif defined(STRIP2)
+#elif defined(STRIP2) || defined(DISC93)
   static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2};  
 #else  
   static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1};  

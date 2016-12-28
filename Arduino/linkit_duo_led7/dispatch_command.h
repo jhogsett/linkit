@@ -97,7 +97,7 @@ void dispatch_command(int cmd){
       reset_args = true;
       break;
     case CMD_WINDOW:    
-      dependencies.buffer.set_window(dependencies.command_processor.sub_args[0]); 
+      dependencies.buffer.set_window_override(dependencies.command_processor.sub_args[0]); 
       reset_args = true;
       break;
     case CMD_RESET:     
@@ -201,10 +201,17 @@ void dispatch_command(int cmd){
       dependencies.commands.do_copy(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]); 
       reset_args = true;
       break;
-//    case CMD_BUFFER:
-//      dependencies.commands.set_buffer(dependencies.command_processor.sub_args[0]);
-//      reset_args = true;
-//      break;
+    case CMD_OFFSET:
+      dependencies.buffer.set_offset_override(dependencies.command_processor.sub_args[0]); 
+      reset_args = true;
+      break;
+    case CMD_CLEAR:      
+      dependencies.commands.clear();                                                            
+      break;
+    case CMD_ZONE:
+      dependencies.buffer.set_zone(dependencies.command_processor.sub_args[0]); 
+      reset_args = true;
+      break;
     }
 
   if(reset_args)

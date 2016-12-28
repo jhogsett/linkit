@@ -1,9 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define USE_PROGMEM
-
-#define NUM_COMMANDS 60
+#define NUM_COMMANDS 63
 #define CMD_NONE       0
 #define CMD_FIRST      1
 #define CMD_PAUSE      1
@@ -66,9 +64,10 @@
 #define CMD_LEVEL     58
 #define CMD_CFADE     59
 #define CMD_COPY      60
-//#define CMD_BUFFER    61
+#define CMD_OFFSET    61
+#define CMD_CLEAR     62
+#define CMD_ZONE      63
 
-#ifdef USE_PROGMEM
 const char cmd_1[] PROGMEM = "pause";
 const char cmd_2[] PROGMEM = "continue";
 const char cmd_3[] PROGMEM = "erase";
@@ -129,7 +128,9 @@ const char cmd_57[] PROGMEM = "pinoff";
 const char cmd_58[] PROGMEM = "level";
 const char cmd_59[] PROGMEM = "cfade";
 const char cmd_60[] PROGMEM = "copy";
-//const char cmd_61[] PROGMEM = "buffer";
+const char cmd_61[] PROGMEM = "offset";
+const char cmd_62[] PROGMEM = "clear";
+const char cmd_63[] PROGMEM = "zone";
 
 const char* const command_strings[] PROGMEM = {
    cmd_1,  cmd_2,  cmd_3,  cmd_4,  cmd_5,  cmd_6,  cmd_7,  cmd_8,  cmd_9, cmd_10,
@@ -137,73 +138,9 @@ const char* const command_strings[] PROGMEM = {
   cmd_21, cmd_22, cmd_23, cmd_24, cmd_25, cmd_26, cmd_27, cmd_28, cmd_29, cmd_30,
   cmd_31, cmd_32, cmd_33, cmd_34, cmd_35, cmd_36, cmd_37, cmd_38, cmd_39, cmd_40,
   cmd_41, cmd_42, cmd_43, cmd_44, cmd_45, cmd_46, cmd_47, cmd_48, cmd_49, cmd_50,
-  cmd_51, cmd_52, cmd_53, cmd_54, cmd_55, cmd_56, cmd_57, cmd_58, cmd_59, cmd_60
-//  ,cmd_61
+  cmd_51, cmd_52, cmd_53, cmd_54, cmd_55, cmd_56, cmd_57, cmd_58, cmd_59, cmd_60,
+  cmd_61, cmd_62, cmd_63
 };
-#else
-char* command_strings[] = {
-  "pause",
-  "continue",
-  "erase",
-  "blink",
-  "blink1",
-  "blink2",
-  "blink3",
-  "blink4",
-  "blink5",
-  "blink6",
-  "blinkr",
-  "blinka",
-  "blinkb",
-  "breathe",
-  "effectr",
-  "flush",
-  "blend",
-  "max",
-  "dim",
-  "bright",
-  "fade",
-  "wipe",
-  "flood",
-  "random",
-  "mirror",
-  "eshift",
-  "pshift",
-  "pshifto",
-  "window",
-  "reset",
-  "demo",
-  "static",
-  "rgbcolor",
-  "hslcolor",
-  "red",
-  "green",
-  "blue",
-  "black",
-  "yellow",
-  "orange",  
-  "purple",
-  "cyan",
-  "magenta",
-  "pink",
-  "white",
-  "gray",
-  "ltgreen",
-  "seafoam",
-  "ltblue",
-  "dkgray",
-  "repeat",
-  "blinkp",
-  "lopower",
-  "hipower",
-  "display",
-  "pinon",
-  "pinoff",
-  "level",
-  "cfade",
-  "copy"
-};
-#endif
 
 #endif
 
