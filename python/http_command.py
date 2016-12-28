@@ -75,6 +75,8 @@ class Handler(BaseHTTPRequestHandler):
       content_type = "text/css"                     
     elif file_ext == '.js':
       content_type = "application/javascript"
+    elif file_ext == '.ico':
+      content_type = "image/x-icon"
     else:
       content_type = "text/plain"                     
     self.send_header("Content-type", content_type)
@@ -116,7 +118,6 @@ class Handler(BaseHTTPRequestHandler):
 
     elif os.path.isfile(base_path + req.path):
       page = base_path + req.path 
-      #self.log('serving page: ' + page)
       self.serve_page(page)
     else:
       self.send_response(404)
