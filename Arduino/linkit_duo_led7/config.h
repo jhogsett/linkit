@@ -11,7 +11,7 @@
 // #define STRAND1
 
 // enable to change settings for two 50-LED strands
-// #define STRAND2
+#define STRAND2
 
 // enable to test limits of memory usage
 // #define MAXLEDS
@@ -20,24 +20,31 @@
 // #define STRIP3
 
 // enable to test 2 72-LED strips
-#define STRIP2
+// #define STRIP2
 
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3
 #define AUTO_BRIGHTNESS_MAX 33
 
-#if defined(STRIP3)
-#define NUM_DISPLAYS 3                // how many physical LED strips there are (all expected to have the same # of LEDs)
-#define NUM_BUFFERS 3                 // how many memory buffers (recommended one per physical display)
-#elif defined(STRIP2)
-#define NUM_DISPLAYS 2                // how many physical LED strips there are (all expected to have the same # of LEDs)
-#define NUM_BUFFERS 2                 // how many memory buffers (recommended one per physical display)
-#elif defined(DISC93)
-#define NUM_DISPLAYS 2                // how many physical LED strips there are (all expected to have the same # of LEDs)
-#define NUM_BUFFERS 2                 // how many memory buffers (recommended one per physical display)
+#if defined(WEARABLE) || defined(STRAND1) || defined(STRAND2)
+#define USE_1_DISPLAYS
+#elif  defined(STRIP2) || defined(DISC93)
+#define USE_2_DISPLAYS
+#elif defined(STRIP3) || defined(MAXLEDS)
+#define USE_3_DISPLAYS
 #else
-#define NUM_DISPLAYS 1                // how many physical LED strips there are (all expected to have the same # of LEDs)
-#define NUM_BUFFERS 1                 // how many memory buffers (recommended one per physical display)
+#define USE_1_DISPLAYS
+#endif
+
+#if defined(USE_3_DISPLAYS)
+#define NUM_DISPLAYS 3           
+#define NUM_BUFFERS 3            
+#elif defined(USE_2_DISPLAYS)
+#define NUM_DISPLAYS 2           
+#define NUM_BUFFERS 2            
+#else
+#define NUM_DISPLAYS 1           
+#define NUM_BUFFERS 1            
 #endif
 
 #ifdef DISC93
@@ -57,7 +64,7 @@
 #if defined(WEARABLE)
 #define DEFAULT_BRIGHTNESS_PERCENT 10
 #elif defined(DISK93)
-#define DEFAULT_BRIGHTNESS_PERCENT 20
+#define DEFAULT_BRIGHTNESS_PERCENT 25
 #elif defined(STRAND1) || defined(STRAND2)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #elif defined(STRIP2) || defined(STRIP3)
@@ -115,9 +122,9 @@ class Config
   public:
   static const byte num_displays = NUM_DISPLAYS;
   static const byte num_buffers = NUM_BUFFERS;
-#if defined(STRIP3)
+#if defined(USE_3_DISPLAYS)
   static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2, DISPLAY_PIN3};  
-#elif defined(STRIP2) || defined(DISC93)
+#elif defined(USE_2_DISPLAYS)
   static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2};  
 #else  
   static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1};  

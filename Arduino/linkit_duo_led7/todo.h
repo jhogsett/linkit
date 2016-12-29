@@ -1,11 +1,8 @@
 // problems with offset and window
 // pshifto - starts at [0]
-// crossfade - leaves only pixels inside the zone
+// crossfade - leaves only pixels inside the zone (??? in further testing it seemed to work just fine)
 
-// need to be able to set window to do object animation
-
-// need a better way to store zones
-
+// command to rotate within a zone
 
 // clean up
 /////////////////////
@@ -24,18 +21,11 @@
 
 // store blink states as bits not bools
 
+// move zones to a class
 
 
 // new architecture
 ///////////////////////// 
-
-// zones
-// - set up as a config option
-// - specifies [0] + offset for insertion
-// - and window for restriction
-// like:
-//    1:zone:red:2:zone:blue
-// zone 0, the default is always the entire window
 
 // seems like it should be simple to change the orientation
 
@@ -48,6 +38,8 @@
 
 // new commands
 ////////////////////
+
+// hi-going instead of low-going blinks (like twinkling stars)
 
 // hide / show
 
@@ -67,12 +59,8 @@
 // synchronize effects each time the low power led positions changes
 // after pause, allow breathing and blinking to come to a halt first
 
-// restrict flood, etc. to window
-
 // reverse, inverse mirror
 // strobe / flash
-
-// hi-going instead of low-going blinks (like twinkling stars)
 
 // random flashes more like a mechanical blinking light
 

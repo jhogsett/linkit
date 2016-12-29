@@ -30,10 +30,10 @@ class Dependencies
 
   // input display buffer
   static rgb_color colors[config.led_count];
-#if defined(STRIP2) || defined(STRIP3) || defined(DISC93)  
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)  
   static rgb_color colors2[config.led_count];
 #endif
-#if defined(STRIP3)  
+#if defined(USE_3_DISPLAYS)  
   static rgb_color colors3[config.led_count];
 #endif
 
@@ -44,10 +44,10 @@ class Dependencies
 
   // effect styling per LED position
   static byte effects[config.led_count];
-#if defined(STRIP2) || defined(STRIP3) || defined(DISC93) 
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS) 
   static byte effects2[config.led_count];
 #endif
-#if defined(STRIP3)  
+#if defined(USE_3_DISPLAYS)  
   static byte effects3[config.led_count];
 #endif
 
@@ -55,10 +55,10 @@ class Dependencies
 
   // pin-specific LED hardware drivers
   static PololuLedStrip<config.display_pins[0]> ledStrip1;
-#if defined(STRIP2) || defined(STRIP3) || defined(DISC93)  
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)  
   static PololuLedStrip<config.display_pins[1]> ledStrip2;
 #endif
-#if defined(STRIP3)  
+#if defined(USE_3_DISPLAYS)  
   static PololuLedStrip<config.display_pins[2]> ledStrip3;
 #endif
 
@@ -102,16 +102,16 @@ Config Dependencies::config;
 
 // input display buffer
 rgb_color Dependencies::colors[config.led_count];
-#if defined(STRIP2) || defined(STRIP3) || defined(DISC93)  
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)  
 rgb_color Dependencies::colors2[config.led_count];
 #endif
-#if defined(STRIP3)  
+#if defined(USE_3_DISPLAYS)  
 rgb_color Dependencies::colors3[config.led_count];
 #endif
 
-#if defined(STRIP3)
+#if defined(USE_3_DISPLAYS)
 rgb_color *Dependencies::color_buffers[] = { colors, colors2, colors3 };
-#elif defined(STRIP2) || defined(DISC93)
+#elif defined(USE_3_DISPLAYS)
 rgb_color *Dependencies::color_buffers[] = { colors, colors2 };
 #else
 rgb_color *Dependencies::color_buffers[] = { colors };
@@ -122,16 +122,16 @@ rgb_color Dependencies::render[config.led_count];
 
 // effect styling per LED position
 byte Dependencies::effects[config.led_count];
-#if defined(STRIP2) || defined(STRIP3) || defined(DISC93) 
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS) 
 byte Dependencies::effects2[config.led_count];
 #endif
-#if defined(STRIP3)  
+#if defined(USE_3_DISPLAYS)  
 byte Dependencies::effects3[config.led_count];
 #endif
 
-#if defined(STRIP3)
+#if defined(USE_3_DISPLAYS)
 byte *Dependencies::effects_buffers[] = { effects, effects2, effects3 };
-#elif defined(STRIP2) || defined(DISC93)
+#elif defined(USE_2_DISPLAYS)
 byte *Dependencies::effects_buffers[] = { effects, effects2 };
 #else
 byte *Dependencies::effects_buffers[] = { effects };
@@ -139,17 +139,17 @@ byte *Dependencies::effects_buffers[] = { effects };
 
 // pin-specific LED hardware drivers
 PololuLedStrip<DISPLAY_PIN1> Dependencies::ledStrip1;
-#if defined(STRIP2) || defined(STRIP3) || defined(DISC93) 
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS) 
 PololuLedStrip<DISPLAY_PIN2> Dependencies::ledStrip2;
 #endif
-#if defined(STRIP3)  
+#if defined(USE_3_DISPLAYS)  
 PololuLedStrip<DISPLAY_PIN3> Dependencies::ledStrip3;
 #endif
 
 // array of drivers for selecting among multiple displays
-#if defined(STRIP3)
+#if defined(USE_3_DISPLAYS)
 PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2, &Dependencies::ledStrip3};
-#elif defined(STRIP2) || defined(DISC93)
+#elif defined(USE_2_DISPLAYS)
 PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2};
 #else
 PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1};
