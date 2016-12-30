@@ -54,7 +54,7 @@ class Handler(BaseHTTPRequestHandler):
     global last_run                       
     if last_run != '':                          
       self.log('killing: ' + last_run)          
-      call('killall ' + last_run, shell=True) 
+      call('killall -9 ' + last_run, shell=True) 
       last_run = ''
 
   def log(self, message):

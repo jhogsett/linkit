@@ -309,8 +309,9 @@ void Commands::reset(){
   low_power_mode = false;
   //buffer->set_window(visible_led_count);
   //buffer->set_offset(0);
-  buffer->set_zone(0);
-  buffer->set_display(0);
+  //buffer->set_zone(0);
+  //buffer->set_display(0);
+  buffer->reset();
   effects_processor->reset_effects();
 
   // the brightness shouldn't be set on reset, because the device could be set

@@ -64,10 +64,10 @@ rgb_color Render::get_default(rgb_color color){
 rgb_color Render::render(rgb_color color, byte effect){
   rgb_color render_color;
 
-                        if(effect ==  STATIC_ON) { render_color = get_static();             } else
-    if(blink_effects->is_handled_effect(effect)) { render_color = get_blink(color, effect); } else
-  if(breathe_effects->is_handled_effect(effect)) { render_color = get_breathe(color);       } else
-                                                 { render_color = get_default(color);       }
+                        if(effect ==  STATIC_ON) { render_color = get_default(get_static()); } else
+    if(blink_effects->is_handled_effect(effect)) { render_color = get_blink(color, effect);  } else
+  if(breathe_effects->is_handled_effect(effect)) { render_color = get_breathe(color);        } else
+                                                 { render_color = get_default(color);        }
   return render_color;
 }
 
