@@ -5,13 +5,13 @@
 // #define WEARABLE
 
 // enable to change settings for the 93-LED disc
-// #define DISC93
+#define DISC93
 
 // enable to change settings for a single 50-LED strand
 // #define STRAND1
 
 // enable to change settings for two 50-LED strands
-#define STRAND2
+// #define STRAND2
 
 // enable to test limits of memory usage
 // #define MAXLEDS
@@ -26,7 +26,7 @@
 #define AUTO_BRIGHTNESS_MIN 3
 #define AUTO_BRIGHTNESS_MAX 33
 
-#if defined(WEARABLE) || defined(STRAND1) || defined(STRAND2)
+#if defined(WEARABLE) || defined(STRAND1) || defined(STRAND2) //|| defined(DISC93)
 #define USE_1_DISPLAYS
 #elif  defined(STRIP2) || defined(DISC93)
 #define USE_2_DISPLAYS
@@ -63,12 +63,12 @@
 // standard brightness
 #if defined(WEARABLE)
 #define DEFAULT_BRIGHTNESS_PERCENT 10
-#elif defined(DISK93)
-#define DEFAULT_BRIGHTNESS_PERCENT 25
+#elif defined(DISC93)
+#define DEFAULT_BRIGHTNESS_PERCENT 15
 #elif defined(STRAND1) || defined(STRAND2)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #elif defined(STRIP2) || defined(STRIP3)
-#define DEFAULT_BRIGHTNESS_PERCENT 13
+#define DEFAULT_BRIGHTNESS_PERCENT 15
 #else
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #endif
@@ -122,13 +122,27 @@ class Config
   public:
   static const byte num_displays = NUM_DISPLAYS;
   static const byte num_buffers = NUM_BUFFERS;
-#if defined(USE_3_DISPLAYS)
-  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2, DISPLAY_PIN3};  
-#elif defined(USE_2_DISPLAYS)
-  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2};  
-#else  
-  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1};  
+
+  static constexpr byte display_pins[NUM_DISPLAYS] = 
+  {
+    DISPLAY_PIN1
+#if defined(USE_2_DISPLAYS)
+    , DISPLAY_PIN2
 #endif
+#if defined(USE_3_DISPLAYS)
+    , DISPLAY_PIN3
+#endif
+  };  
+
+  
+//#if defined(USE_3_DISPLAYS)
+//  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2, DISPLAY_PIN3};  
+//#elif defined(USE_2_DISPLAYS)
+//  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2};  
+//#else  
+//  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1};  
+//#endif
+
   static const byte random_seed_pin = RANDOM_SEED_PIN;
   static const byte light_sensor_pin = LIGHT_SENSOR_PIN;
   static const byte default_brightness_percent = DEFAULT_BRIGHTNESS_PERCENT;

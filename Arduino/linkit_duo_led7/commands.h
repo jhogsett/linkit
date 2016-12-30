@@ -179,7 +179,7 @@ void Commands::do_random(byte type){
   }
 }
 
-// to do: operate on a specific colors buffer
+// to do: fix re: reverse
 void Commands::do_mirror(){
   byte front = buffer->get_offset();
   byte back = buffer->get_window() - 1;
@@ -191,6 +191,7 @@ void Commands::do_mirror(){
   }
 }
 
+// to do: handle reverse direction
 void Commands::do_copy(byte size, byte times){
   size = max(1, size);
 
@@ -209,6 +210,7 @@ void Commands::do_copy(byte size, byte times){
   }
 }
 
+// to do fix re: reverse
 void Commands::do_repeat(byte times = 1){
   times = (times < 1) ? 1 : times;
 
