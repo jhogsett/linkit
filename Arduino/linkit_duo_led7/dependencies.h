@@ -109,13 +109,23 @@ rgb_color Dependencies::colors2[config.led_count];
 rgb_color Dependencies::colors3[config.led_count];
 #endif
 
+rgb_color *Dependencies::color_buffers[] = 
+{ colors
+#if defined(USE_2_DISPLAYS)
+  , colors2
+#endif  
 #if defined(USE_3_DISPLAYS)
-rgb_color *Dependencies::color_buffers[] = { colors, colors2, colors3 };
-#elif defined(USE_3_DISPLAYS)
-rgb_color *Dependencies::color_buffers[] = { colors, colors2 };
-#else
-rgb_color *Dependencies::color_buffers[] = { colors };
+  , colors3 
 #endif
+};
+
+//#if defined(USE_3_DISPLAYS)
+//rgb_color *Dependencies::color_buffers[] = { colors, colors2, colors3 };
+//#elif defined(USE_3_DISPLAYS)
+//rgb_color *Dependencies::color_buffers[] = { colors, colors2 };
+//#else
+//rgb_color *Dependencies::color_buffers[] = { colors };
+//#endif
 
 // rendered output buffer
 rgb_color Dependencies::render[config.led_count];
@@ -129,13 +139,24 @@ byte Dependencies::effects2[config.led_count];
 byte Dependencies::effects3[config.led_count];
 #endif
 
+byte *Dependencies::effects_buffers[] = 
+{ 
+  effects 
+#if defined(USE_2_DISPLAYS)
+  , effects2 
+#endif  
 #if defined(USE_3_DISPLAYS)
-byte *Dependencies::effects_buffers[] = { effects, effects2, effects3 };
-#elif defined(USE_2_DISPLAYS)
-byte *Dependencies::effects_buffers[] = { effects, effects2 };
-#else
-byte *Dependencies::effects_buffers[] = { effects };
-#endif
+  , effects3 
+#endif  
+};
+
+//#if defined(USE_3_DISPLAYS)
+//byte *Dependencies::effects_buffers[] = { effects, effects2, effects3 };
+//#elif defined(USE_2_DISPLAYS)
+//byte *Dependencies::effects_buffers[] = { effects, effects2 };
+//#else
+//byte *Dependencies::effects_buffers[] = { effects };
+//#endif
 
 // pin-specific LED hardware drivers
 PololuLedStrip<DISPLAY_PIN1> Dependencies::ledStrip1;
@@ -147,13 +168,25 @@ PololuLedStrip<DISPLAY_PIN3> Dependencies::ledStrip3;
 #endif
 
 // array of drivers for selecting among multiple displays
+PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = 
+{
+  &Dependencies::ledStrip1
+#if defined(USE_2_DISPLAYS)
+  , &Dependencies::ledStrip2
+#endif  
 #if defined(USE_3_DISPLAYS)
-PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2, &Dependencies::ledStrip3};
-#elif defined(USE_2_DISPLAYS)
-PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2};
-#else
-PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1};
-#endif
+  , &Dependencies::ledStrip3
+#endif  
+};
+
+
+//#if defined(USE_3_DISPLAYS)
+//PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2, &Dependencies::ledStrip3};
+//#elif defined(USE_2_DISPLAYS)
+//PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2};
+//#else
+//PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1};
+//#endif
 
 // for generating higher-quality random number seeds
 RandomSeed<RANDOM_SEED_PIN> Dependencies::randomizer;
@@ -234,7 +267,7 @@ void Dependencies::self_test(){
     commands.set_display((NUM_BUFFERS - 1) - i);
     commands.do_demo();
   }
-  commands.set_display(0);
+  commands.reset();
 }
 #endif
 

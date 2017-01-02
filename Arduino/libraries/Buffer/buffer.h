@@ -49,6 +49,8 @@ class Buffer
   byte get_offset();
   byte get_width();
   void set_zone(byte zone);
+  void reset();
+  void set_reverse(bool reverse);
 
   static const rgb_color black;
 
@@ -76,8 +78,9 @@ class Buffer
   byte *zone_offsets;
   byte *zone_windows;
   byte current_zone = 0;
+  bool reverse = false;
 
-  void shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start);
+  void shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse);
 };
 
 const rgb_color Buffer::black = {0,0,0};
@@ -109,6 +112,14 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
   this->num_zones = num_zones;
   this->zone_offsets = zone_offsets;
   this->zone_windows = zone_windows;
+  this->reverse = false;
+}
+
+void Buffer::reset(){
+  this->current_zone = 0;
+  this->current_display = 0;
+  this->window_override = 0;
+  this->offset_override = 0;
 }
 
 // always write from the render buffer to a pin,
@@ -119,7 +130,6 @@ void Buffer::display_buffer(rgb_color * pbuffer){
   
 void Buffer::erase(bool display = false)
 {
-  // to do: restrict to current zone
   for(byte i = get_offset(); i < get_window(); i++){
     buffers[current_display][i] = black;
     effects_buffers[current_display][i] = NO_EFFECT;
@@ -134,7 +144,6 @@ void Buffer::erase(bool display = false)
   }
 }
 
-// to do: restrict to current zone
 void Buffer::fade(float rate = 0.0){
   rate = (rate == 0.0) ? fade_rate : rate;
   byte *p = (byte *)buffers[current_display];
@@ -143,7 +152,6 @@ void Buffer::fade(float rate = 0.0){
   }
 }
 
-// to do: restrict to current zoneoffset
 void Buffer::fade_fast(){
   byte *p;
   p = (byte *)buffers[current_display];
@@ -152,7 +160,6 @@ void Buffer::fade_fast(){
   }
 }
 
-// to do: restrict to current zone
 void Buffer::cross_fade(int step){
   for(int i = get_offset(); i < get_window(); i++){
     rgb_color *pb = buffers[current_display] + i;
@@ -163,16 +170,25 @@ void Buffer::cross_fade(int step){
 }
 
 // to do: set up for insertion from either end
-// to do: set minimum position based on current zone
-void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start){
-  for(byte i = max - 1; i >= (start + 1); i--){
-    buffer[i] = buffer[i-1];
-    effects[i] = effects[i-1];
+void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse = false){
+  if(reverse){
+    for(byte i = start; i < (max - 1); i++){
+      buffer[i] = buffer[i+1];
+      effects[i] = effects[i+1];
 
 #ifdef EXISTENCE_ENABLED
-    existence[i] = existence[i-1];
+      existence[i] = existence[i+1];
 #endif
+    }
+  } else {
+    for(byte i = max - 1; i >= (start + 1); i--){
+      buffer[i] = buffer[i-1];
+      effects[i] = effects[i-1];
 
+#ifdef EXISTENCE_ENABLED
+      existence[i] = existence[i-1];
+#endif
+    }
   }
 }
 
@@ -183,19 +199,24 @@ void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_
 void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
 #endif
 {
-  // to do: set default window by current zone
   max = (max == 0) ? get_window() : max;
   start = (start == 0) ? get_offset() : start;
 
-  shift_buffer(buffers[current_display], effects_buffers[current_display], max, start);
+  shift_buffer(buffers[current_display], effects_buffers[current_display], max, start, this->reverse);
 
-  // to do: offset by zone
-  buffers[current_display][start] = ColorMath::correct_color(color);
-  effects_buffers[current_display][start] = effect;
-
+  if(this->reverse){
+    buffers[current_display][max-1] = ColorMath::correct_color(color);
+    effects_buffers[current_display][max-1] = effect;
 #ifdef EXISTENCE_ENABLED
-  existence[start] = id;
+    existence[max-1] = id;
 #endif
+  } else {
+    buffers[current_display][start] = ColorMath::correct_color(color);
+    effects_buffers[current_display][start] = effect;
+#ifdef EXISTENCE_ENABLED
+    existence[start] = id;
+#endif
+  }
 
   if(display){
     display_buffer(buffers[current_display]);
@@ -250,14 +271,6 @@ int Buffer::get_window(){
 
 void Buffer::set_offset_override(byte offset){
   this->offset_override = max(0, min(this->get_window() - 1, offset));
-//
-//  if(offset < 1){
-//    this->offset = 0;
-//  } else if(offset >= get_window()){
-//    this->offset = get_window() - 1;
-//  } else {
-//    this->offset = offset;
-//  }
 }
 
 byte Buffer::get_offset(){
@@ -274,6 +287,8 @@ byte Buffer::get_width(){
 
 void Buffer::set_zone(byte zone){
   this->current_zone = max(0, min(this->num_zones - 1, zone));
+  this->window_override = 0;
+  this->offset_override = 0;
 }
 
 void Buffer::set_display(byte display){
@@ -296,17 +311,24 @@ rgb_color * Buffer::get_render_buffer(){
   return this->render;
 }
 
+void Buffer::set_reverse(bool reverse = true){
+  this->reverse = reverse;
+}
+
 // to do: support either orientation
 // to do: restrict to current zone
-// animate by shifting frame (future: shift in from back buffer)
+// animate by shifting frame (rendering frame
+// buffer in different render buffer positions)
 void Buffer::shift(byte count, byte maxx, bool fast_render = true){
 
   // to do: restrict to visible led count?
   maxx = min(maxx, safety_led_count);
 
+  // to do: start off offset
   for(byte i = 0; i < count; i++){
     render[i] = black;
   }
+  // to do: add offset
   for(byte i = count; i < maxx; i++){
     if(fast_render)
       render[i] = renderer->fast_render(buffers[current_display][i - count], effects_buffers[current_display][i - count]);
