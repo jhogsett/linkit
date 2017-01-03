@@ -51,6 +51,7 @@ class Buffer
   void set_zone(byte zone);
   void reset();
   void set_reverse(bool reverse);
+  void rotate();
 
   static const rgb_color black;
 
@@ -120,6 +121,7 @@ void Buffer::reset(){
   this->current_display = 0;
   this->window_override = 0;
   this->offset_override = 0;
+  this->reverse = false;
 }
 
 // always write from the render buffer to a pin,
@@ -169,7 +171,6 @@ void Buffer::cross_fade(int step){
    }
 }
 
-// to do: set up for insertion from either end
 void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse = false){
   if(reverse){
     for(byte i = start; i < (max - 1); i++){
@@ -192,7 +193,33 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
   }
 }
 
-// todo: set up for either orientation
+void Buffer::rotate(){
+  rgb_color * buffer = buffers[current_display];
+  byte * effects = effects_buffers[current_display];
+  byte max = get_window();
+  byte start = get_offset();
+
+  rgb_color carry_color;
+  byte carry_effect;
+  if(reverse){
+    carry_color = buffer[start];
+    carry_effect = effects[start];
+  } else {
+    carry_color = buffer[max - 1];
+    carry_effect = effects[max - 1];
+  }
+
+  shift_buffer(buffer, effects, max, start, this->reverse);
+
+  if(reverse){
+    buffer[max - 1] = carry_color;
+    effects[max - 1] = carry_effect;
+  } else {
+    buffer[start] = carry_color;
+    effects[start] = carry_effect;
+  }
+}
+
 #ifdef EXISTENCE_ENABLED
 void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte id = NO_ID, byte start = 0)
 #else
