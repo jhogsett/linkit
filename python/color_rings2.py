@@ -90,17 +90,26 @@ def do_zone(zone, count):
   for i in range(0, count):                                                                                                                        
     command("rotate:flush")  
 
+times = 1
 def loop():
-  for i in range(0, 5):
+  global times
+
+  for i in range(0, times):
     do_zone(2, 8)
-  for i in range(0, 5):                                                                                                                        
-    do_zone(3, 12)                                                                                                                              
-  for i in range(0, 5):                                                                                                                        
-    do_zone(4, 16)                                                                                                                              
-  for i in range(0, 5):                                                                                                                        
-    do_zone(5, 24)                                                                                                                              
-  for i in range(0, 5):                                                                                                                        
-    do_zone(6, 32)                                                                                                                              
+  for i in range(0, times):                                                                                                                        
+    do_zone(3, 8)                                                                                                                              
+  for i in range(0, times):                                                                                                                        
+    do_zone(4, 8)                                                                                                                              
+  for i in range(0, times):                                                                                                                        
+    do_zone(5, 8)                                                                                                                              
+  for i in range(0, times):                                                                                                                        
+    do_zone(6, 8)                                                                                                                              
+#  for i in range(0, times):                                      
+#    do_zone(5, 8)      
+#  for i in range(0, times):                                                                                                                    
+#    do_zone(4, 8)                                                       
+#  for i in range(0, times):                                                                                                                    
+#    do_zone(3, 8)                                                           
 
 if __name__ == '__main__': 
   setup() 
