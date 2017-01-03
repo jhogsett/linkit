@@ -36,7 +36,7 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:8:copy")
+  command("6:zone:red:1:repeat:8:copy")
   command("5:zone:orange:bright")                                                                                                                        
   command("4:zone:green:bright")                                                                                                                        
   command("3:zone:blue:bright")                                                                                                                        
@@ -90,8 +90,8 @@ idx = -1
 def rotate_zone(zone):
   command(str(zone) + ":zone:rotate:flush")                                                                                                                            
 
-def insert_zone(zone, color):
-  command(str(zone) + ":zone:" + color + ":flush")
+def insert_zone(zone, color, copy):
+  command(str(zone) + ":zone:" + color + ":" + str(copy) + ":copy:flush")
 
 def erase_zone(zone, color):
   command(str(zone) + ":zone:erase:" + color + ":bright:flush")
@@ -104,7 +104,7 @@ gear5 = 0
 gear6 = 0
 
 def loop():
-  global gear1, gear2, gear3, gear4, gear5
+  global gear1, gear2, gear3, gear4, gear5, gear6
 
   time.sleep(play_time)
 
@@ -113,24 +113,25 @@ def loop():
 
   if gear1 % 8 == 0:
     gear2 += 1
-    insert_zone(5, 'orange')
+    insert_zone(5, 'orange', 6)
 
-    if gear2 % 24 == 0:
-      erase_zone(5, 'orange')
+    if gear2 % 6 == 0:
+      insert_zone(4, 'green', 4)                                            
       gear3 += 1
-      insert_zone(4, 'green')
+      erase_zone(5, 'orange')
 
-      if gear3 % 16 == 0:
+      if gear3 % 4 == 0:
+        insert_zone(3, 'blue', 3)                                                                                                                 
+        gear4 +=1
         erase_zone(4, 'green')
-        gear4 += 1
-        insert_zone(3, 'blue')
 
-        if gear4 % 12 == 0:
-          erase_zone(3, 'blue')
+        if gear4 % 3 == 0:
+          insert_zone(2, 'purple', 2)                                       
           gear5 += 1
-          insert_zone(2, 'purple')
+          erase_zone(3, 'blue')
 
-          if gear5 % 8 == 0:
+          if gear5 % 2 == 0:
+            gear6 += 1
             erase_zone(2, 'purple')
 
 if __name__ == '__main__': 

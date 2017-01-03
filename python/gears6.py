@@ -36,7 +36,7 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:8:copy")
+  command("6:zone:red:1:repeat:8:copy")
   command("5:zone:orange:bright")                                                                                                                        
   command("4:zone:green:bright")                                                                                                                        
   command("3:zone:blue:bright")                                                                                                                        
@@ -104,7 +104,7 @@ gear5 = 0
 gear6 = 0
 
 def loop():
-  global gear1, gear2, gear3, gear4, gear5
+  global gear1, gear2, gear3, gear4, gear5, gear6
 
   time.sleep(play_time)
 
@@ -115,20 +115,29 @@ def loop():
     gear2 += 1
     insert_zone(5, 'orange')
 
+    if gear2 % 6 == 0:
+      insert_zone(4, 'green')                                            
+      gear3 += 1
+
     if gear2 % 24 == 0:
       erase_zone(5, 'orange')
-      gear3 += 1
-      insert_zone(4, 'green')
+
+      if gear3 % 4 == 0:
+        insert_zone(3, 'blue')                                                                                                                 
+        gear4 +=1
 
       if gear3 % 16 == 0:
         erase_zone(4, 'green')
-        gear4 += 1
-        insert_zone(3, 'blue')
+
+        if gear4 % 3 == 0:
+          insert_zone(2, 'purple')                                       
+          gear5 += 1
 
         if gear4 % 12 == 0:
           erase_zone(3, 'blue')
-          gear5 += 1
-          insert_zone(2, 'purple')
+
+          if gear5 % 2 == 0:
+            gear6 += 1
 
           if gear5 % 8 == 0:
             erase_zone(2, 'purple')
