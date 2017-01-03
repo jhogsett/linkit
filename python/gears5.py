@@ -36,12 +36,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:black:15:repeat:red:bright")
+  command("6:zone:red:black:7:repeat:red:black:7:repeat:red:black:7:repeat:red:bright")
   command("5:zone:orange:bright")                                                                                                                        
   command("4:zone:green:bright")                                                                                                                        
   command("3:zone:blue:bright")                                                                                                                        
   command("2:zone:purple:bright")                                                                                                                        
-  command("1:zone:purple")                                                                                                                        
+  command("1:zone:dkgray")                                                                                                                        
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -111,7 +111,7 @@ def loop():
   gear1 += 1
   rotate_zone(6)
 
-  if gear1 % 32 == 0:
+  if gear1 % 8 == 0:
     gear2 += 1
     insert_zone(5, 'orange')
 
