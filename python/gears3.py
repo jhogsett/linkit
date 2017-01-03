@@ -8,7 +8,7 @@ import sys
 s = None
 
 num_leds = 93
-play_time = 0.1
+play_time = 0
 
 def flush_input():                        
   s.flushInput()
@@ -26,8 +26,8 @@ def setup():
   global s, ticks, play_time 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
-  choose_colors()
-  command(":::pause:reset:erase")
+  #choose_colors()
+  command(":::pause:pause:reset:erase")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -35,11 +35,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:7:repeat:white:7:repeat:red:7:repeat:white:7:repeat")
-  command("5:zone:red:5:repeat:white:5:repeat:red:5:repeat:white:5:repeat")                                                                                                                 
-  command("4:zone:red:3:repeat:white:3:repeat:red:3:repeat:white:3:repeat")                                                                                                                 
-  command("3:zone:red:2:repeat:white:2:repeat:red:2:repeat:white:2:repeat")                                                                                                                 
-  command("2:zone:red:1:repeat:white:1:repeat:red:1:repeat:white:1:repeat")                                                                                                                 
+  command("6:zone:red:16:repeat")
+  command("5:zone:yellow:12:repeat")                                                                                                                        
+  command("4:zone:green:8:repeat")                                                                                                                        
+  command("3:zone:blue:6:repeat")                                                                                                                        
+  command("2:zone:purple:4:repeat")                                                                                                                        
+  command("1:zone:purple")                                                                                                                        
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -86,29 +87,37 @@ global idx
 idx = -1
 
 def do_zone(zone):
-  command(str(zone) + ":zone:rotate")                                                                                                                            
+  command(str(zone) + ":zone:rotate:flush")                                                                                                                            
 
-def do_zones():
-  for i in range(2, 7):                                                  
-    do_zone(i)                                                           
-  command("flush") 
+gear1 = 0
+gear2 = 0
+gear3 = 0
+gear4 = 0
+gear5 = 0
 
 def loop():
-  command("0:reverse")
-  for i in range(0, 8):
-    do_zones()
+  global gear1, gear2, gear3, gear4, gear5
 
   time.sleep(play_time)
 
-  command("1:reverse:")  
-  for i in range(0, 16):                                                                                                                        
-    do_zones() 
+  gear1 += 1
+  do_zone(6)
 
-  time.sleep(play_time)
+  if gear1 % 32 == 0:
+    gear2 += 1
+    do_zone(5)
 
-  command("0:reverse")                                                                                                                         
-  for i in range(0, 8):                                                                                                                        
-    do_zones() 
+    if gear2 % 24 == 0:
+      gear3 += 1
+      do_zone(4)
+
+      if gear3 % 16 == 0:
+        gear4 += 1
+        do_zone(3)
+
+        if gear4 % 12 == 0:
+          gear5 += 1
+          do_zone(2)
 
 if __name__ == '__main__': 
   setup() 

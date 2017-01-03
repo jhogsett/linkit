@@ -8,7 +8,7 @@ import sys
 s = None
 
 num_leds = 93
-play_time = 0.1
+play_time = 0
 
 def flush_input():                        
   s.flushInput()
@@ -35,11 +35,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:7:repeat:white:7:repeat:red:7:repeat:white:7:repeat")
-  command("5:zone:red:5:repeat:white:5:repeat:red:5:repeat:white:5:repeat")                                                                                                                 
-  command("4:zone:red:3:repeat:white:3:repeat:red:3:repeat:white:3:repeat")                                                                                                                 
-  command("3:zone:red:2:repeat:white:2:repeat:red:2:repeat:white:2:repeat")                                                                                                                 
-  command("2:zone:red:1:repeat:white:1:repeat:red:1:repeat:white:1:repeat")                                                                                                                 
+  command("6:zone:red:7:repeat:yellow:7:repeat:purple:7:repeat:blue:7:repeat")
+  command("5:zone:pink:5:repeat:orange:5:repeat:cyan:5:repeat:magenta:5:repeat")                                                                                                                 
+  command("4:zone:ltblue:3:repeat:red:3:repeat:yellow:3:repeat:green:3:repeat")                                                                                                                 
+  command("3:zone:seafoam:2:repeat:red:2:repeat:ltgreen:2:repeat:cyan:2:repeat")                                                                                                                 
+  command("2:zone:yellow:1:repeat:red:1:repeat:purple:1:repeat:green:1:repeat")                                                                                                                 
+  command("1:zone:random:static")
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -85,30 +86,18 @@ def display():
 global idx
 idx = -1
 
-def do_zone(zone):
-  command(str(zone) + ":zone:rotate")                                                                                                                            
-
-def do_zones():
-  for i in range(2, 7):                                                  
-    do_zone(i)                                                           
-  command("flush") 
+def do_zone(zone, reverse):
+  command(str(reverse) + ":reverse:" + str(zone) + ":zone:rotate")                                                                                                                            
 
 def loop():
-  command("0:reverse")
-  for i in range(0, 8):
-    do_zones()
-
-  time.sleep(play_time)
-
-  command("1:reverse:")  
-  for i in range(0, 16):                                                                                                                        
-    do_zones() 
-
-  time.sleep(play_time)
-
-  command("0:reverse")                                                                                                                         
-  for i in range(0, 8):                                                                                                                        
-    do_zones() 
+  do_zone(2, 0)
+  do_zone(3, 1)
+  do_zone(4, 0)
+  do_zone(5, 1)
+  do_zone(6, 0)
+  #do_zone(9, 1)
+  #do_zone(0, 0)
+  command("flush")
 
 if __name__ == '__main__': 
   setup() 
