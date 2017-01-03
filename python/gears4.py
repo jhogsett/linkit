@@ -27,7 +27,8 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   #choose_colors()
-  command(":::pause:reset:erase")
+  command(":::pause")
+  command("reset:clear")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
