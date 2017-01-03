@@ -216,6 +216,10 @@ void dispatch_command(int cmd){
       dependencies.buffer.set_reverse(dependencies.command_processor.sub_args[0] == 1 ? true : false); 
       reset_args = true;
       break;
+    case CMD_ROTATE:
+      dependencies.commands.do_rotate(dependencies.command_processor.sub_args[0]); 
+      reset_args = true;
+      break;
     }
 
   if(reset_args)

@@ -43,6 +43,7 @@ class Commands
   void set_pin(byte pin, bool on);
   void set_brightness_level(byte level = 0);
   void clear();
+  void do_rotate(byte times);
   
   private:
   Buffer *buffer;
@@ -212,8 +213,7 @@ void Commands::do_copy(byte size, byte times){
 
 // to do fix re: reverse
 void Commands::do_repeat(byte times = 1){
-  times = (times < 1) ? 1 : times;
-
+  times = max(1, times);
   byte offset = buffer->get_offset();
   byte effect = buffer->get_effects_buffer()[offset];
 
@@ -224,7 +224,9 @@ void Commands::do_repeat(byte times = 1){
   for(byte i = 0; i < times; i++){
     if(effect == RANDOM1){
       buffer->push_color(ColorMath::random_color());
-      buffer->get_effects_buffer()[offset] = NO_EFFECT;
+      // try: maybe this should copy the effect in place
+      // buffer->get_effects_buffer()[offset] = NO_EFFECT;
+      buffer->get_effects_buffer()[offset] = effect;
     } else if(effect == RANDOM2){
       buffer->push_color(ColorMath::random_color());
       buffer->get_effects_buffer()[offset] = EffectsProcessor::random_effect();
@@ -273,6 +275,13 @@ void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = 
 
 void Commands::do_wipe(){
   do_power_shift_object(0, visible_led_count, false);
+}
+
+void Commands::do_rotate(byte times = 1){
+  times = max(1, times);
+  for(int i = 0; i < times; i++){
+    buffer->rotate(); 
+  }
 }
 
 void Commands::advance_low_power_position(){

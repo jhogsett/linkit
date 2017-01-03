@@ -4,10 +4,10 @@
 // todo: turn into a dependency class
 
 #if defined(DISC93)
-#define NUM_ZONES 9
-// all, 6 rings starting in center, first three rings, last three rings
-byte zone_offsets[NUM_ZONES] = { 0,  0, 1,  9, 21, 37, 61,  0, 21};
-byte zone_windows[NUM_ZONES] = { 93, 1, 9, 21, 37, 61, 93, 21, 93};
+#define NUM_ZONES 10
+// all, 6 rings starting in center, first three rings, last three rings, rings 2-5
+byte zone_offsets[NUM_ZONES] = { 0,  0, 1,  9, 21, 37, 61,  0, 21,  1};
+byte zone_windows[NUM_ZONES] = { 93, 1, 9, 21, 37, 61, 93, 21, 93, 61};
 #elif defined(STRAND2)
 #define NUM_ZONES 8
 // all, two halves, center half, four quarters
