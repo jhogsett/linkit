@@ -27,7 +27,7 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   #choose_colors()
-  command(":::pause:pause:reset:erase")
+  command(":::pause:reset:erase")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -108,10 +108,11 @@ def loop():
   time.sleep(play_time)
 
   gear1 += 1
-  rotate_zone(2)
+#  insert_zone(2, 'red')
   rotate_zone(2)
 
   if gear1 % 8 == 0:
+#    erase_zone(2, 'red')
     gear2 += 1
     insert_zone(3, 'orange')
 
@@ -130,7 +131,7 @@ def loop():
           gear5 += 1
           insert_zone(6, 'red')
 
-          if gear5 % 1 == 0:
+          if gear5 % 2 == 0:
             erase_zone(6, 'red')
 
 if __name__ == '__main__': 
