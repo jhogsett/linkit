@@ -129,10 +129,10 @@ def loop():
         if gear4 % 24 == 0:
           erase_zone(5, 'blue')
           gear5 += 1
-          insert_zone(6, 'red')
+          insert_zone(6, 'purple')
 
-          if gear5 % 2 == 0:
-            erase_zone(6, 'red')
+          if gear5 % 32 == 0:
+            erase_zone(6, 'purple')
 
 if __name__ == '__main__': 
   setup() 
