@@ -94,7 +94,9 @@ def insert_zone(zone, color, copy):
   command(str(zone) + ":zone:" + color + ":" + str(copy) + ":copy")
 
 def erase_zone(zone, color, copy):
-  command(str(zone) + ":zone:erase:" + color + ":bright:" + str(copy) + ":copy")
+#  command(str(zone) + ":zone:erase:" + color + ":bright:" + str(copy) + ":copy")
+  command(str(zone) + ":zone:erase:")        
+
 
 gear1 = 0
 gear2 = 0
@@ -108,6 +110,7 @@ def loop():
 
   time.sleep(play_time)
   command("flush")
+  #command("9:zone:rotate:flush")
 
   gear1 += 1
   rotate_zone(6)
@@ -129,7 +132,7 @@ def loop():
         if gear4 % 3 == 0:
           insert_zone(2, 'purple', 2)                                       
           gear5 += 1
-          erase_zone(3, 'blue', 2)
+          erase_zone(3, 'blue', 3)
 
           if gear5 % 2 == 0:
             gear6 += 1

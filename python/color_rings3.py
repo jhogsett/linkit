@@ -23,7 +23,7 @@ def command(cmd_text):
   wait_for_ack()
  
 def setup(): 
-  global s, ticks, play_time 
+  global s, ticks, times_each 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
@@ -33,13 +33,13 @@ def setup():
     command(sys.argv[1])
 
   if len(sys.argv) > 2:                                                                                                                        
-    play_time = float(sys.argv[2]) 
+    times_each = float(sys.argv[2]) 
 
-  command("6:zone:black:7:repeat:green:7:repeat:black:7:repeat:blue:7:repeat")
-  command("5:zone:black:5:repeat:green:5:repeat:black:5:repeat:blue:5:repeat")                                                                                                                 
-  command("4:zone:black:3:repeat:green:3:repeat:black:3:repeat:blue:3:repeat")                                                                                                                 
-  command("3:zone:black:2:repeat:green:2:repeat:black:2:repeat:blue:2:repeat")                                                                                                                 
-  command("2:zone:black:1:repeat:green:1:repeat:black:1:repeat:blue:1:repeat")                                                                                                                 
+  command("6:zone:black:7:repeat:blue:7:repeat:black:7:repeat:seafoam:7:repeat")
+  command("5:zone:black:5:repeat:blue:5:repeat:black:5:repeat:seafoam:5:repeat")                                                                                                                 
+  command("4:zone:black:3:repeat:blue:3:repeat:black:3:repeat:seafoam:3:repeat")                                                                                                                 
+  command("3:zone:black:2:repeat:blue:2:repeat:black:2:repeat:seafoam:2:repeat")                                                                                                                 
+  command("2:zone:black:1:repeat:blue:1:repeat:black:1:repeat:seafoam:1:repeat")                                                                                                                 
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -87,11 +87,12 @@ idx = -1
 
 def do_zone(zone, count):
   command(str(zone) + ":zone")                                                                                                                            
-  for i in range(0, count):                                                                                                                        
-    command("rotate:flush")  
+  for i in range(0, int(count)):                                                                                                                        
+    command("rotate")  
+#  command("flush")
 
 times = 1
-times_each = 4
+times_each = 1
 def loop():
   global times
 
@@ -111,6 +112,8 @@ def loop():
 #    do_zone(4, times_each)                                                       
 #  for i in range(0, times):                                                                                                                    
 #    do_zone(3, times_each)                                                           
+
+  command("flush")
 
 if __name__ == '__main__': 
   setup() 

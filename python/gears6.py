@@ -88,13 +88,13 @@ global idx
 idx = -1
 
 def rotate_zone(zone):
-  command(str(zone) + ":zone:rotate:flush")                                                                                                                            
+  command(str(zone) + ":zone:rotate")                                                                                                                            
 
 def insert_zone(zone, color):
-  command(str(zone) + ":zone:" + color + ":flush")
+  command(str(zone) + ":zone:" + color)
 
 def erase_zone(zone, color):
-  command(str(zone) + ":zone:erase:" + color + ":bright:flush")
+  command(str(zone) + ":zone:erase:" + color + ":bright")
 
 gear1 = 0
 gear2 = 0
@@ -106,7 +106,8 @@ gear6 = 0
 def loop():
   global gear1, gear2, gear3, gear4, gear5, gear6
 
-  time.sleep(play_time)
+  command("flush")
+#  time.sleep(play_time)
 
   gear1 += 1
   rotate_zone(6)

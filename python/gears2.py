@@ -88,7 +88,7 @@ global idx
 idx = -1
 
 def do_zone(zone):
-  command(str(zone) + ":zone:rotate:flush")                                                                                                                            
+  command(str(zone) + ":zone:rotate")                                                                                                                            
 
 gear1 = 0
 gear2 = 0
@@ -99,6 +99,7 @@ gear5 = 0
 def loop():
   global gear1, gear2, gear3, gear4, gear5
 
+  command("flush")
   time.sleep(play_time)
 
   gear1 += 1
