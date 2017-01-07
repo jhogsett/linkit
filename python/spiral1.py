@@ -31,7 +31,7 @@ def setup():
   flush_input()
   choose_colors()
   command(":::pau")
-  command("rst:clr")
+  command("rst:pau:clr")
 #  command("1:rev")
 
   if len(sys.argv) > 1:

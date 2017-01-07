@@ -8,7 +8,7 @@ import sys
 s = None
 
 num_leds = 93
-play_time = 0
+play_time = 0.0
 
 def flush_input():                        
   s.flushInput()
@@ -19,6 +19,7 @@ def wait_for_ack():
   s.read(s.inWaiting())                   
 
 def command(cmd_text):
+#  print cmd_text
   s.write((cmd_text + ':').encode())   
   wait_for_ack()
  
@@ -28,7 +29,7 @@ def setup():
   flush_input()
   choose_colors()
   command(":::pau")
-  command("rst:clr")
+  command("rst:clr:pau")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -41,7 +42,7 @@ def setup():
   command("4:zon:red:3:rep:grn:3:rep:org:3:rep:blu:3:rep")
   command("3:zon:red:2:rep:grn:2:rep:org:2:rep:blu:2:rep")
   command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")
-  command("1:zon:gry")
+  command("1:zon:gry:bli")
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -99,29 +100,26 @@ def loop():
   global idx                                                                                                                                   
   do_flush = False
   idx = idx + 1                                                          
-  if (idx % 15 == 0):                                                                                                                          
+  if (idx % 3 == 0):                                                                                                                          
     command("6:zon:rot") 
     do_flush = True                                                                                                    
-  if (idx % 20 == 0):                                                                                                                          
+  if (idx % 4 == 0):                                                                                                                          
     command("5:zon:rot")                                  
     do_flush = True                                                          
-  if (idx % 30 == 0):                                                                                                                          
+  if (idx % 6 == 0):                                                                                                                          
     command("4:zon:rot")  
     do_flush = True                                                          
-  if (idx % 40 == 0):                                                                                                                          
+  if (idx % 8 == 0):                                                                                                                          
     command("3:zon:rot")                                                                                                        
     do_flush = True                                                          
-  if (idx % 60 == 0):                                                    
+  if (idx % 12 == 0):                                                    
     command("2:zon:rot")                                                                                                        
-    do_flush = True                                                          
-  if (idx % 8 == 0):                                                                                                                           
-    command("1:zon:rot")                                       
     do_flush = True                                                          
 
   if do_flush == True:
     command("flu")
 
-#  time.sleep(play_time)
+  time.sleep(play_time)
 
 if __name__ == '__main__': 
   setup() 

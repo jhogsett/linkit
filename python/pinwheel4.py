@@ -29,7 +29,7 @@ def setup():
   flush_input()
   choose_colors()
   command(":::pau")
-  command("rst:clr")
+  command("rst:pau:clr")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -103,7 +103,7 @@ def linear_rotate():
   for i in range(2, 7):                                                                                                                        
     do_zone(i)                                                                                                                              
   command("flu")
-  time.sleep(0.03)
+#  time.sleep(0.03)
 
 def angular_rotate():
   global idx                                                                                                                                   
