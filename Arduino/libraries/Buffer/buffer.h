@@ -117,11 +117,9 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
 }
 
 void Buffer::reset(){
-  this->current_zone = 0;
-  this->current_display = 0;
-  this->window_override = 0;
-  this->offset_override = 0;
-  this->reverse = false;
+  this->set_zone(0);
+  this->set_display(0);
+  this->set_reverse(false);
 }
 
 // always write from the render buffer to a pin,
@@ -296,6 +294,7 @@ int Buffer::get_window(){
   }
 }
 
+// to do: consider using -1 to indicate "auto" offset
 void Buffer::set_offset_override(byte offset){
   this->offset_override = max(0, min(this->get_window() - 1, offset));
 }

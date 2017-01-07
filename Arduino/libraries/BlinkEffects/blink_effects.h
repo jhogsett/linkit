@@ -24,25 +24,13 @@
 #define BLINK_MIN BLINK_ON 
 #define BLINK_MAX BLINK_ON_P
 
-#define MAX_BLINK 6000
-#define BLINK_0 0
-#define BLINK_1 999
-#define BLINK_2 1999
-#define BLINK_3 2999
-#define BLINK_4 3999
-#define BLINK_5 4999
-#define BLINK_6 5999
-#define BLINK_A BLINK_1
-#define BLINK_B BLINK_4
-
+#define DEFAULT_BLINK_TIME 6000
 #define BLINK_PULSE_TIME 200
-#define BLINK_P_1 BLINK_1
-#define BLINK_P_0 (BLINK_1 + BLINK_PULSE_TIME)
 
 class BlinkEffects
 {
   public:
-  bool blink_state = true;
+  bool blink_state = true;   // to do: some may be redundant, only need 1-6 and p
   bool blink_state_1 = true;
   bool blink_state_2 = true;
   bool blink_state_3 = true;
@@ -58,15 +46,34 @@ class BlinkEffects
   bool process();
   bool blink_on(byte effect);
   static bool is_handled_effect(byte effect);
+  void set_blink_period(int period);
 
   private:
-  int max_blink = MAX_BLINK;
+  int max_blink = DEFAULT_BLINK_TIME;
   int blink_counter = 0;
+
+  int blink1_time; // i, a, p on
+  int blink2_time;
+  int blink3_time;
+  int blink4_time; // b
+  int blink5_time;
+  int blink6_time;
+  int blinkp_time; // p off
 };
 
-void BlinkEffects::begin(int max_blink = MAX_BLINK){
+void BlinkEffects::begin(int max_blink = DEFAULT_BLINK_TIME){
   this->max_blink = max_blink;
-  // to do: spread out the blink state change points per the max_blink
+  int interval = this->max_blink / 6;
+
+  blink1_time = 0 * interval;     // i, a, p on
+  blink2_time = 1 * interval;
+  blink3_time = 2 * interval;
+  blink4_time = 3 * interval;     // b
+  blink5_time = 4 * interval;
+  blink6_time = 5 * interval;
+  blinkp_time = BLINK_PULSE_TIME; // p off
+
+  reset();
 }
 
 void BlinkEffects::reset(){
@@ -87,7 +94,9 @@ bool BlinkEffects::process(){
   bool should_flush = false;
   
   blink_counter = (blink_counter + 1) % max_blink;
-  if(blink_counter == BLINK_1){
+
+  if(blink_counter == blink1_time)
+  {
     if(blink_state){
       blink_state = false;
     } else {
@@ -96,47 +105,57 @@ bool BlinkEffects::process(){
     should_flush = true;
   }
 
-  if(blink_counter == BLINK_1){
+  if(blink_counter == blink1_time)
+  {
     blink_state_1 = true;
-    blink_state_a = true;
-    blink_state_p = true;
     blink_state_6 = false;
+
+    blink_state_a = true;
     blink_state_b = false;
+
+    blink_state_p = true;
     should_flush = true;
   }
 
-  if(blink_counter == BLINK_P_0){
+  if(blink_counter == blinkp_time)
+  {
     blink_state_p = false;
     should_flush = true;
   }
 
-  if(blink_counter == BLINK_2){
+  if(blink_counter == blink2_time)
+  {
     blink_state_2 = true;
     blink_state_1 = false;
     should_flush = true;
   }
 
-  if(blink_counter == BLINK_3){
+  if(blink_counter == blink3_time)
+  {
     blink_state_3 = true;
     blink_state_2 = false;
     should_flush = true;
   }
 
-  if(blink_counter == BLINK_4){
+  if(blink_counter == blink4_time)
+  {
     blink_state_4 = true;
-    blink_state_b = true;
     blink_state_3 = false;
+
+    blink_state_b = true;
     blink_state_a = false;
     should_flush = true;
   }
 
-  if(blink_counter == BLINK_5){
+  if(blink_counter == blink5_time)
+  {
     blink_state_5 = true;
     blink_state_4 = false;
     should_flush = true;
   }
 
-  if(blink_counter == BLINK_6){
+  if(blink_counter == blink6_time)
+  {
     blink_state_6 = true;
     blink_state_5 = false;
     should_flush = true;

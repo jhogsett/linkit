@@ -1,8 +1,6 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-#define USE_PROGMEM
-
 // eanble to support palettes
 // to do: disable palettes
 #define USE_PALETTES
@@ -31,54 +29,27 @@
 
 #include <PololuLedStrip.h>
 
-#ifdef PROGMEM
-// todo: do I need []?
-const rgb_color color_0[] PROGMEM = {20,  0,  0};
-const rgb_color color_1[] PROGMEM = {20, 10,  0};
-const rgb_color color_2[] PROGMEM = {20, 20,  0};
-const rgb_color color_3[] PROGMEM = { 0, 20,  0};
-const rgb_color color_4[] PROGMEM = { 0,  0, 20};
-const rgb_color color_5[] PROGMEM = {10,  0, 20};
-const rgb_color color_6[] PROGMEM = { 0, 20, 20};
-const rgb_color color_7[] PROGMEM = {20,  0, 20};
-const rgb_color color_8[] PROGMEM = { 0, 10, 20};
-const rgb_color color_9[] PROGMEM = {10, 20,  0};
-const rgb_color color_10[] PROGMEM = { 0, 20, 10};
-const rgb_color color_11[] PROGMEM = {20,  0, 10};
-const rgb_color color_12[] PROGMEM = { 0,  0,  0};
-const rgb_color color_13[] PROGMEM = { 5,  5,  5};
-const rgb_color color_14[] PROGMEM = {10, 10, 10};
-const rgb_color color_15[] PROGMEM = {20, 20, 20};
+const rgb_color color_0 PROGMEM = {20,  0,  0}; // red
+const rgb_color color_1 PROGMEM = {20, 10,  0}; // orange
+const rgb_color color_2 PROGMEM = {20, 20,  0}; // yellow
+const rgb_color color_3 PROGMEM = { 0, 20,  0}; // green
+const rgb_color color_4 PROGMEM = { 0,  0, 20}; // blue
+const rgb_color color_5 PROGMEM = {10,  0, 20}; // purple
+const rgb_color color_6 PROGMEM = { 0, 20, 20}; // cyan
+const rgb_color color_7 PROGMEM = {20,  0, 20}; // magenta
+const rgb_color color_8 PROGMEM = { 0, 10, 20}; // ltblue
+const rgb_color color_9 PROGMEM = {10, 20,  0}; // ltgreen
+const rgb_color color_10 PROGMEM = { 0, 20, 10}; // seafoam
+const rgb_color color_11 PROGMEM = {20,  0, 10}; // pink
+const rgb_color color_12 PROGMEM = { 0,  0,  0}; // black
+const rgb_color color_13 PROGMEM = { 5,  5,  5}; // dkgray
+const rgb_color color_14 PROGMEM = {10, 10, 10}; // gray
+const rgb_color color_15 PROGMEM = {20, 20, 20}; // white
 
 const rgb_color* const color_array[] PROGMEM = {
-  color_0, color_1,  color_2,  color_3,  color_4,  color_5,  color_6,  color_7,
-  color_8, color_9, color_10, color_11, color_12, color_13, color_14, color_15
+  &color_0, &color_1,  &color_2,  &color_3,  &color_4,  &color_5,  &color_6,  &color_7,
+  &color_8, &color_9, &color_10, &color_11, &color_12, &color_13, &color_14, &color_15
 };
-
-#else
-
-const rgb_color red = {20, 0, 0};
-const rgb_color orange = {20, 10, 0};
-const rgb_color yellow = {20, 20, 0};
-const rgb_color green = {0, 20, 0};
-const rgb_color blue = {0, 0, 20};
-const rgb_color purple = {10, 0, 20};
-const rgb_color cyan = {0, 20, 20};
-const rgb_color magenta = {20, 0, 20};
-const rgb_color ltblue = {0, 10, 20};
-const rgb_color ltgreen = {10, 20, 0};
-const rgb_color seafoam = {0, 20, 10};
-const rgb_color pink = {20, 0, 10};
-const rgb_color black = {0, 0, 0};
-const rgb_color dkgray = {5, 5, 5};
-const rgb_color gray = {10, 10, 10};
-const rgb_color white = {20, 20, 20};
-
-const rgb_color* color_array[] = {
-  &black,   &red,    &orange,  &yellow,  &green, &blue,   &purple, &cyan,
-  &magenta, &ltblue, &ltgreen, &seafoam, &pink,  &dkgray, &gray,   &white
-};
-#endif
 
 class Colors
 {
@@ -105,12 +76,10 @@ class Colors
   static const rgb_color * const get_color(color c);
 
   private:
-#ifdef PROGMEM
+  // this is pointed-to as the return value for get_color()
   static rgb_color static_color;
-#endif
 };
 
-#ifdef PROGMEM
 rgb_color Colors::static_color = {0,0,0};
 
 const rgb_color * const Colors::get_color(color c){
@@ -120,11 +89,24 @@ const rgb_color * const Colors::get_color(color c){
   static_color.blue =  pgm_read_byte(p + 2);
   return &static_color;
 }
-#else
-const rgb_color * const Colors::get_color(color c){
-  return color_array[c];
-}
-#endif
+
+// unused color combinations
+// darked versions could be dimmed
+//  const rgb_color color_5 PROGMEM = {10, 0, 0}; // dkred
+//  const rgb_color color_5 PROGMEM = {10, 10, 0}; // dkyellow
+//  const rgb_color color_5 PROGMEM = {0, 10, 0}; // dkgreen
+//  const rgb_color color_4 PROGMEM = { 0, 0, 10}; // dkblue
+//  const rgb_color color_4 PROGMEM = { 0, 10, 10}; // dycyan
+//  const rgb_color color_5 PROGMEM = {10,  0, 10}; // dkmagenta
+//
+// pale colors don't look great
+//  const rgb_color color_1 PROGMEM = {20, 10, 10}; // pale red
+//  const rgb_color color_2 PROGMEM = {20, 20, 10}; // pale yellow
+//  const rgb_color color_9 PROGMEM = {10, 20, 10}; // pale green
+//  const rgb_color color_1 PROGMEM = {20, 10, 20}; // pale magenta
+//  const rgb_color color_9 PROGMEM = {10, 20, 20}; // pale cyan
+//  const rgb_color color_5 PROGMEM = {10, 10, 20}; // pale blue
+
 
 //#ifdef USE_PALETTES
 //#define NPALETTE 16

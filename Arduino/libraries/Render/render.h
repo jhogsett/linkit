@@ -44,7 +44,11 @@ rgb_color Render::get_blink(rgb_color color, byte effect){
   }
   else
   {
-    render_color = ColorMath::scale_color(color, minimum_brightness_scale);
+    if(effect == BLINK_ON_P){
+      render_color = black;
+    } else {
+      render_color = ColorMath::scale_color(color, minimum_brightness_scale);
+    }
   }
   return render_color;
 }
