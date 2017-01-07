@@ -17,7 +17,7 @@ class Commands
   void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness);
   void pause();
   void resume();
-  void do_blend();
+  void do_blend(byte strength);
   void do_max();
   void do_dim();
   void do_bright();
@@ -34,7 +34,7 @@ class Commands
   void do_power_shift_object(byte width, byte shift, bool fast_render);
   void do_demo();
   void flush(bool force_display);
-  void flush_all(bool force_display);
+  void flush_all(bool force_display = true);
   void reset();
   void low_power();
   void high_power();
@@ -100,7 +100,7 @@ void Commands::set_pin(byte pin, bool on){
 
 void Commands::set_brightness_level(byte level){
   if(level == 0){
-//#if defined(WEARABLE) || defined(DISC93) || defined(STRAND1) || defined(STRAND2)
+//#if defined(WEARABLE) || defined(DISC93) || defined(STRAND1) || defined(STRAND2) || defined(DISC93_AND_STRIP)
     level = default_brightness;
 //#else
 //    level = auto_brightness->get_auto_brightness_level();
@@ -108,11 +108,17 @@ void Commands::set_brightness_level(byte level){
   }
 //  ColorMath::set_brightness(level);    
   renderer->set_default_brightness(level);
+  flush_all();
 }
 
-void Commands::do_blend(){
+// strength 1-100, 100 = all color @ offset
+// 0 == 50
+void Commands::do_blend(byte strength){
+  if(strength < 1){
+    strength = 50;
+  }
   byte offset = buffer->get_offset();
-  buffer->get_buffer()[offset] = ColorMath::blend_colors(buffer->get_buffer()[offset], buffer->get_buffer()[offset + 1]);
+  buffer->get_buffer()[offset] = ColorMath::blend_colors(buffer->get_buffer()[offset], buffer->get_buffer()[offset + 1], strength / 100.0);
   buffer->get_buffer()[offset + 1] = buffer->get_buffer()[offset];
 }
 
@@ -197,16 +203,17 @@ void Commands::do_copy(byte size, byte times){
   size = max(1, size);
 
   if(times < 1){
-    // repeat and fill
-    times = (buffer->get_width() / size) - 1;
+    times = (buffer->get_width() / size) - 0; // repeat and fill
   }
 
   for(int i = 0; i < times; i++){
     for(int j = 0; j < size; j++){
       byte orig = j + buffer->get_offset();
       byte copy = orig + ((i + 1) * size);
-      buffer->get_buffer()[copy] = buffer->get_buffer()[orig];
-      buffer->get_effects_buffer()[copy] = buffer->get_effects_buffer()[orig];
+      if(copy < buffer->get_window()){ // prevent buffer overrun
+        buffer->get_buffer()[copy] = buffer->get_buffer()[orig];
+        buffer->get_effects_buffer()[copy] = buffer->get_effects_buffer()[orig];
+      }
     }
   }
 }
@@ -304,7 +311,7 @@ void Commands::flush(bool force_display = false){
 
 // todo: force a particular rendering buffer and display 
 // instead of setting and unsetting
-void Commands::flush_all(bool force_display = false){
+void Commands::flush_all(bool force_display){
   byte orig_display = buffer->get_current_display();
   
   for(int i = 0; i < NUM_BUFFERS; i++){
@@ -316,12 +323,18 @@ void Commands::flush_all(bool force_display = false){
 }
 
 void Commands::reset(){
-  paused = false;
+
+  // pausing on reset causes a problem for programs starting up,
+  // that have to pause again afterwards; moved to clear
+  //paused = false;
+  
   low_power_mode = false;
+  
   //buffer->set_window(visible_led_count);
   //buffer->set_offset(0);
   //buffer->set_zone(0);
   //buffer->set_display(0);
+  
   buffer->reset();
   effects_processor->reset_effects();
 
@@ -330,9 +343,12 @@ void Commands::reset(){
   //set_brightness_level(default_brightness);
 }
 
+// full reset and clear
 void Commands::clear(){
-  byte orig_display = buffer->get_current_display();
+  reset();
+  paused = false;
 
+  byte orig_display = buffer->get_current_display();
   for(int i = 0; i < NUM_BUFFERS; i++){
     buffer->set_display(i);
     buffer->erase(true);                                                          
@@ -352,6 +368,7 @@ void Commands::do_demo(){
     byte effect = EffectsProcessor::random_effect();
     for(byte j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
       buffer->set_color(j, color, false, effect);
+      // buffer->push_color(color, false, effect);
     }
     delay(DEMO_DELAY);
   }

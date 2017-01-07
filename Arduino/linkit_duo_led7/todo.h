@@ -1,45 +1,38 @@
+// maybe pulse should be zero brightness in off state
+
+// need to be able to set offset override to zero
+
 // problems with offset and window
 // pshifto - starts at [0]
 // crossfade - leaves only pixels inside the zone (??? in further testing it seemed to work just fine)
 
-// command to rotate within a zone
-
 // clean up
 /////////////////////
-
-// fix auto brightness
-
-// move mechanical buffer operations like mirror to Buffer class
-
-// wipe command should do a real rendering so it looks right
-
-// animation routines may be inefficient
-
-// shorten commands
-
-// see if auto brigtness needs to use that ram for its buffer
 
 // store blink states as bits not bools
 
 // move zones to a class
 
+// fix auto brightness
 
-// new architecture
-///////////////////////// 
+// move mechanical buffer operations like mirror to Buffer class
 
-// seems like it should be simple to change the orientation
+// animation routines may be inefficient
 
-// more complex blinking with arbitrary timing
+// see if auto brigtness needs to use that ram for its buffer
 
-// may need to speed up effects with three 72-led strips
 
-// store standard colors in program memory
+// new effects
+////////////////////
 
+// strobe, like blink but goes from normal to high instead of from low to normal to do the blinking
+
+// flash -- flashes bright white 1 or 3 times
+
+// lightning 
 
 // new commands
 ////////////////////
-
-// hi-going instead of low-going blinks (like twinkling stars)
 
 // hide / show
 
@@ -66,13 +59,9 @@
 
 // rainbow colors incremental, or continuously changing
 
-// rotation
-
 // full frame animation in/out using back buffer
 
-// fast blink, breathe
-
-// static, flame
+// b&w static, flame
 
 // invert hue, swing hue, back and forth between two arbitrary colors, rgb cube
 
