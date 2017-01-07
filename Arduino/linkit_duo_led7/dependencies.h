@@ -242,10 +242,10 @@ void Dependencies::begin(){
   commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness);
 
   // set up the blink effects counter and states
-  blink_effects.begin();
+  blink_effects.begin(config.blink_period);
 
   // set up the breathe effect counter and state
-  breathe_effects.begin();
+  breathe_effects.begin(config.breathe_period);
 
   // start up the effects processor, passing in the blink and breathe effects instances
   effects_processor.begin(&this->buffer, &this->blink_effects, &this->breathe_effects);

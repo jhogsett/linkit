@@ -5,7 +5,10 @@
 // #define WEARABLE
 
 // enable to change settings for the 93-LED disc
-#define DISC93
+// #define DISC93
+
+// enable to change settings for the 93-LED disc plus a strip
+#define DISC93_AND_STRIP
 
 // enable to change settings for a single 50-LED strand
 // #define STRAND1
@@ -26,9 +29,9 @@
 #define AUTO_BRIGHTNESS_MIN 3
 #define AUTO_BRIGHTNESS_MAX 33
 
-#if defined(WEARABLE) || defined(STRAND1) || defined(STRAND2) //|| defined(DISC93)
+#if defined(WEARABLE) || defined(STRAND1) || defined(STRAND2) || defined(DISC93)
 #define USE_1_DISPLAYS
-#elif  defined(STRIP2) || defined(DISC93)
+#elif  defined(STRIP2) || defined(DISC93_AND_STRIP)
 #define USE_2_DISPLAYS
 #elif defined(STRIP3) || defined(MAXLEDS)
 #define USE_3_DISPLAYS
@@ -47,7 +50,7 @@
 #define NUM_BUFFERS 1            
 #endif
 
-#ifdef DISC93
+#if defined(DISC93) || defined(DISC93_AND_STRIP)
 #define DISPLAY_PIN1 11
 #define DISPLAY_PIN2 12
 #define DISPLAY_PIN3 10
@@ -63,7 +66,7 @@
 // standard brightness
 #if defined(WEARABLE)
 #define DEFAULT_BRIGHTNESS_PERCENT 10
-#elif defined(DISC93)
+#elif defined(DISC93) || defined(DISC93_AND_STRIP)
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #elif defined(STRAND1) || defined(STRAND2)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
@@ -79,7 +82,7 @@
 // visible led count
 #if defined(WEARABLE)
 #define ANIM_LED_COUNT  8             
-#elif defined(DISC93)
+#elif defined(DISC93) || defined(DISC93_AND_STRIP)
 #define ANIM_LED_COUNT 93
 #elif defined(STRAND1)
 #define ANIM_LED_COUNT 50
@@ -101,6 +104,11 @@
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 35
+#elif defined(DISC93_AND_STRIP)
+#define DEMO_OBJECT_SIZE 7
+#define DEMO_GAP_SIZE 0
+#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+#define DEMO_DELAY 20
 #elif defined(STRAND2)
 #define DEMO_OBJECT_SIZE 10
 #define DEMO_GAP_SIZE 0
@@ -116,6 +124,17 @@
 #define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
 
 #define BAUD_RATE 115200              // speed for communicating with the MT7688
+
+#if defined(USE_1_DISPLAYS)
+#define BLINK_PERIOD 6000
+#define BREATHE_PERIOD 400
+#elif defined(USE_2_DISPLAYS)
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 200
+#elif defined(USE_3_DISPLAYS)
+#define BLINK_PERIOD 2000
+#define BREATHE_PERIOD 133
+#endif
 
 class Config
 {
@@ -151,6 +170,8 @@ class Config
   static const byte visible_led_count = ANIM_LED_COUNT;
   static const byte ease_anim_margin = EASE_ANIM_MARGIN;
   static const byte led_count = visible_led_count + ease_anim_margin;
+  static const int blink_period = BLINK_PERIOD;
+  static const int breathe_period = BREATHE_PERIOD;
 };
 
 #endif

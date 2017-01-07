@@ -1,8 +1,6 @@
 #ifndef BREATHE_EFFECTS_H
 #define BREATHE_EFFECTS_H
 
-#define USE_PROGMEM
-
 #define BREATHE_ON 30
 
 #define BREATHE_TIME 500
@@ -14,11 +12,7 @@ class BreatheEffects
 {
   public:
   byte breathe_step = 0;
-#ifdef USE_PROGMEM
   static const float PROGMEM breathe_steps[];
-#else
-  static float breathe_steps[];
-#endif
 
   void begin(int breathe_time);
   void reset();
@@ -27,18 +21,14 @@ class BreatheEffects
   float breathe_ratio();
  
   private:
-  int breathe_time = BREATHE_TIME;               // 2
-  int breathe_counter = 0;                       // 2
-  char breathe_direction = 1;                    // 1
+  int breathe_time = BREATHE_TIME;
+  int breathe_counter = 0;
+  char breathe_direction = 1;
 };
 
 // ruby: (0..90).step(5).each { |i| puts (Math.cos(i * Math::PI / 180)).round(15) }
-#ifdef USE_PROGMEM
 const float PROGMEM BreatheEffects::breathe_steps[]
-#else
-float BreatheEffects::breathe_steps[]
-#endif
-= {        // 88
+= {
     1.0,
     0.996194698091746,
     0.984807753012208,
@@ -65,6 +55,7 @@ float BreatheEffects::breathe_steps[]
 
 void BreatheEffects::begin(int breathe_time = BREATHE_TIME){
   this->breathe_time = breathe_time;
+  reset();
 }
 
 void BreatheEffects::reset(){
@@ -93,12 +84,7 @@ bool BreatheEffects::is_handled_effect(byte effect){
 }
 
 float BreatheEffects::breathe_ratio(){
-#ifdef USE_PROGMEM
   return pgm_read_float(&breathe_steps[BREATHE_MAX_STEP - breathe_step]);
-#else
-  return breathe_steps[BREATHE_MAX_STEP - breathe_step];
-#endif
 }
 
 #endif
-
