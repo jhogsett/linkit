@@ -37,12 +37,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     times = int(sys.argv[2]) 
 
-  command("6:zon:red:red:blk:blk:yel:yel:blk:blk:grn:grn:blk:blk:cyn:cyn:blk:blk:org:org:blk:blk:pnk:pnk:blk:blk:blu:blu:blk:blk:pur:pur:blk:blk")
-  command("5:zon:red:red:blk:yel:yel:blk:grn:grn:blk:cyn:cyn:blk:org:org:blk:pnk:pnk:blk:blu:blu:blk:pur:pur:blk")
-  command("4:zon:red:blk:yel:blk:grn:blk:cyn:blk:org:blk:pnk:blk:blu:blk:pur:blk")
-  command("3:zon:blk:red:yel:blk:grn:cyn:blk:org:pnk:blk:blu:pur:blk")
-  command("2:zon:red:yel:grn:cyn:org:pnk:blu:pur")
-  command("1:zon:0,0,63:hsl")
+  command("6:zon:red:red:blk:blk:yel:yel:blk:blk:grn:grn:blk:blk:sea:sea:blk:blk:cyn:cyn:blk:blk:blu:blu:blk:blk:pur:pur:blk:blk:pnk:pnk:blk:blk")
+  command("5:zon:red:red:blk:yel:yel:blk:grn:grn:blk:sea:sea:blk:cyn:cyn:blk:blu:blu:blk:pur:pur:blk:pnk:pnk:blk")
+  command("4:zon:red:blk:yel:blk:grn:blk:sea:blk:cyn:blk:blu:blk:pur:blk:pnk:blk")
+  command("3:zon:blk:red:yel:blk:grn:sea:blk:cyn:blu:blk:pur:pnk:blk")
+  command("2:zon:red:yel:grn:sea:cyn:blu:pur:pnk")
+  command("1:zon:wht")
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -103,7 +103,7 @@ def linear_rotate():
   for i in range(2, 7):                                                                                                                        
     do_zone(i)                                                                                                                              
   command("flu")
-  time.sleep(0.01)
+  time.sleep(0.03)
 
 def angular_rotate():
   global idx                                                                                                                                   
@@ -129,7 +129,7 @@ def angular_rotate():
     command("flu")                                                     
                                                                                                                                                
 def loop():                              
-  for i in range(0,3):
+  for i in range(0,2):
     linear_rotate()
 
   while True:
@@ -137,14 +137,14 @@ def loop():
       angular_rotate()
 
     command("1:rev")
-    for i in range(0,6):                                                   
+    for i in range(0,4):                                                   
       linear_rotate()                                                      
 
     for i in range(0,96 * times):            
       angular_rotate()  
 
     command("0:rev")                                                       
-    for i in range(0,6):                                                                                                                         
+    for i in range(0,4):                                                                                                                         
       linear_rotate()                                                                                                                            
 
 
