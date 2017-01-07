@@ -27,8 +27,8 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   #choose_colors()
-  command(":::pause")
-  command("reset:clear")
+  command(":::pau")
+  command("rst:clr")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -36,12 +36,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:1:repeat:8:copy")
-  command("5:zone:orange:bright")                                                                                                                        
-  command("4:zone:green:bright")                                                                                                                        
-  command("3:zone:blue:bright")                                                                                                                        
-  command("2:zone:purple:bright")                                                                                                                        
-  command("1:zone:dkgray")                                                                                                                        
+  command("6:zon:red:1:rep:8:cpy")
+  command("5:zon:org:brt")                                                                                                                        
+  command("4:zon:grn:brt")                                                                                                                        
+  command("3:zon:blu:brt")                                                                                                                        
+  command("2:zon:pur:brt")                                                                                                                        
+  command("1:zon:dgr")                                                                                                                        
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -70,7 +70,7 @@ def clear_colors():
     chosen_colors[j] = "black"
 
 def place_color(zone, color):
-  command(str(zone) + ":zone:" + color + ":blink" + str(zone) + ":flood")
+  command(str(zone) + ":zon:" + color + ":blink" + str(zone) + ":flood")
 
 def place_colors():
   place_color(6, chosen_colors[0])
@@ -88,13 +88,13 @@ global idx
 idx = -1
 
 def rotate_zone(zone):
-  command(str(zone) + ":zone:rotate")                                                                                                                            
+  command(str(zone) + ":zon:rot")                                                                                                                            
 
 def insert_zone(zone, color, copy):
-  command(str(zone) + ":zone:" + color + ":" + str(copy) + ":copy")
+  command(str(zone) + ":zon:" + color + ":" + str(copy) + ":cpy")
 
 def erase_zone(zone, color):
-  command(str(zone) + ":zone:erase:" + color + ":bright")
+  command(str(zone) + ":zon:era:" + color + ":brt")
 
 gear1 = 0
 gear2 = 0
@@ -114,26 +114,26 @@ def loop():
 
   if gear1 % 8 == 0:
     gear2 += 1
-    insert_zone(5, 'orange', 6)
+    insert_zone(5, 'org', 6)
 
     if gear2 % 6 == 0:
-      insert_zone(4, 'green', 4)                                            
+      insert_zone(4, 'grn', 4)                                            
       gear3 += 1
-      erase_zone(5, 'orange')
+      erase_zone(5, 'org')
 
       if gear3 % 4 == 0:
-        insert_zone(3, 'blue', 3)                                                                                                                 
+        insert_zone(3, 'blu', 3)                                                                                                                 
         gear4 +=1
-        erase_zone(4, 'green')
+        erase_zone(4, 'grn')
 
         if gear4 % 3 == 0:
-          insert_zone(2, 'purple', 2)                                       
+          insert_zone(2, 'pur', 2)                                       
           gear5 += 1
-          erase_zone(3, 'blue')
+          erase_zone(3, 'blu')
 
           if gear5 % 2 == 0:
             gear6 += 1
-            erase_zone(2, 'purple')
+            erase_zone(2, 'pur')
 
 if __name__ == '__main__': 
   setup() 

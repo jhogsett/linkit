@@ -35,12 +35,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:7:repeat:yellow:7:repeat:purple:7:repeat:blue:7:repeat")
-  command("5:zone:pink:5:repeat:orange:5:repeat:cyan:5:repeat:magenta:5:repeat")                                                                                                                 
-  command("4:zone:ltblue:3:repeat:red:3:repeat:yellow:3:repeat:green:3:repeat")                                                                                                                 
-  command("3:zone:seafoam:2:repeat:red:2:repeat:ltgreen:2:repeat:cyan:2:repeat")                                                                                                                 
-  command("2:zone:yellow:1:repeat:red:1:repeat:purple:1:repeat:green:1:repeat")                                                                                                                 
-  command("1:zone:random:static")
+  command("6:zon:red:7:rep:yel:7:rep:pur:7:rep:blu:7:rep")
+  command("5:zon:pnk:5:rep:org:5:rep:cyn:5:rep:mag:5:rep")                                                                                                                 
+  command("4:zon:lbl:3:rep:red:3:rep:yel:3:rep:grn:3:rep")                                                                                                                 
+  command("3:zon:sea:2:rep:red:2:rep:lgr:2:rep:cyn:2:rep")                                                                                                                 
+  command("2:zon:yel:1:rep:red:1:rep:pur:1:rep:grn:1:rep")                                                                                                                 
+  command("1:zon:rnd:sta")
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -87,7 +87,7 @@ global idx
 idx = -1
 
 def do_zone(zone, reverse):
-  command(str(reverse) + ":reverse:" + str(zone) + ":zone:rotate")                                                                                                                            
+  command(str(reverse) + ":rev:" + str(zone) + ":zon:rot")                                                                                                                            
 
 def loop():
   do_zone(2, 0)
@@ -97,7 +97,7 @@ def loop():
   do_zone(6, 0)
   #do_zone(9, 1)
   #do_zone(0, 0)
-  command("flush")
+  command("flu")
 
 if __name__ == '__main__': 
   setup() 

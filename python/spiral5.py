@@ -3,6 +3,7 @@
 import serial 
 import time
 import random
+import sys
 
 s = None
 
@@ -20,14 +21,29 @@ def wait_for_ack():
 def command(cmd_text):
   s.write((cmd_text + ':').encode())   
   wait_for_ack()
+
+step = 1                                         
+brt = 50                                 
  
 def setup(): 
-  global s 
+  global s, step, brt 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
   command(":::pau")
   command("rst:clr")
+  command("6:zon:gry:blk:ble:blk:ble:blk:ble:4:cpy")
+  command("10:zon")
+  command("1:rev")
+
+  if len(sys.argv) > 1:
+    command(sys.argv[1])
+
+  if len(sys.argv) > 2:
+    step = int(sys.argv[2])
+
+  if len(sys.argv) > 3:                                                                                      
+    brt = int(sys.argv[3])    
 
 num_colors = 12
 colors = [ "red", "org", "yel", "lgr", "grn", "sea", "cyn", "lbl", "blu", "pur", "mag", "pnk", "blk", "rnd" ]
@@ -51,10 +67,6 @@ def shift_colors():
   for i in xrange(5, 0, -1):
     chosen_colors[i] = chosen_colors[i-1]
 
-def clear_colors():
-  for j in range(0,6):        
-    chosen_colors[j] = "blk"
-
 def place_color(window, color):          
   command(str(window) + ":win:" + color + ":flo")
                                                       
@@ -66,24 +78,24 @@ def place_colors():
   place_color(9, chosen_colors[4])                    
   place_color(1, chosen_colors[5])     
 
-def display():
-  place_colors()
-  command("flu")
+hue = 0
 
 def loop():
-  color = random_color()
-
-  for i in range(0, 6):
-    clear_colors()                        
-    chosen_colors[5-i] = color 
-    display()
-
-  for i in range(1, 5):                     
-    clear_colors()                        
-    chosen_colors[i] = color  
-    display()
+  global hue
+  color1 = str(hue) + ",255," + str(brt) + ":hsl"
+  color2 = str((hue + 120) % 360) + ",255," + str(brt) + ":hsl"
+  color3 = str((hue + 240) % 360) + ",255," + str(brt) + ":hsl"                                              
+  hue = (hue + step) % 360
+  command("10:zon:1:rev" + color1 + ":" + color2 + ":" + color3 + ":flu")
+  command("6:zon:0:rev:rot")
 
 if __name__ == '__main__': 
   setup() 
   while True: 
-    loop()
+    try:
+      loop()
+    except KeyboardInterrupt:                                                                         
+      sys.exit("\nExiting...\n")                   
+    except Exception:                                                                                 
+      raise 
+

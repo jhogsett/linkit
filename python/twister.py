@@ -27,7 +27,7 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command(":::pause:reset:erase")
+  command(":::pau:rst:era")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -35,11 +35,11 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:7:repeat:green:7:repeat:orange:7:repeat:blue:7:repeat")
-  command("5:zone:red:5:repeat:green:5:repeat:orange:5:repeat:blue:5:repeat")
-  command("4:zone:red:3:repeat:green:3:repeat:orange:3:repeat:blue:3:repeat")
-  command("3:zone:red:2:repeat:green:2:repeat:orange:2:repeat:blue:2:repeat")
-  command("2:zone:red:1:repeat:green:1:repeat:orange:1:repeat:blue:1:repeat")
+  command("6:zon:red:7:rep:grn:7:rep:org:7:rep:blu:7:rep")
+  command("5:zon:red:5:rep:grn:5:rep:org:5:rep:blu:5:rep")
+  command("4:zon:red:3:rep:grn:3:rep:org:3:rep:blu:3:rep")
+  command("3:zon:red:2:rep:grn:2:rep:org:2:rep:blu:2:rep")
+  command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -86,23 +86,22 @@ global idx
 idx = -1
 
 def do_zone(zone):
-  command(str(zone) + ":zone:rotate")                                                                                                                            
+  command(str(zone) + ":zon:rot")                                                                                                                            
 
 def do_zones():
   for i in range(2, 7):                                                  
     do_zone(i)                                                           
-  command("flush") 
+  command("flu") 
 
 def loop():
-  command("0:reverse")
   for i in range(0, 8):
     do_zones()
 
-  command("1:reverse:")  
+  command("1:rev")  
   for i in range(0, 16):                                                                                                                        
     do_zones() 
 
-  command("0:reverse")                                                                                                                         
+  command("0:rev")                                                                                                                         
   for i in range(0, 8):                                                                                                                        
     do_zones() 
 

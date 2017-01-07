@@ -36,12 +36,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:8:copy")
-  command("5:zone:orange:bright")                                                                                                                        
-  command("4:zone:green:bright")                                                                                                                        
-  command("3:zone:blue:bright")                                                                                                                        
-  command("2:zone:purple:bright")                                                                                                                        
-  command("1:zone:dkgray")                                                                                                                        
+  command("6:zon:red:8:cpy")
+  command("5:zon:org:brt")                                                                                                                        
+  command("4:zon:grn:brt")                                                                                                                        
+  command("3:zon:blu:brt")                                                                                                                        
+  command("2:zon:pur:brt")                                                                                                                        
+  command("1:zon:dgr")                                                                                                                        
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -88,13 +88,13 @@ global idx
 idx = -1
 
 def rotate_zone(zone):
-  command(str(zone) + ":zone:rotate")                                                                                                                            
+  command(str(zone) + ":zon:rot")                                                                                                                            
 
 def insert_zone(zone, color):
-  command(str(zone) + ":zone:" + color)
+  command(str(zone) + ":zon:" + color)
 
 def erase_zone(zone, color):
-  command(str(zone) + ":zone:erase:" + color + ":bright")
+  command(str(zone) + ":zon:era:" + color + ":brt")
 
 gear1 = 0
 gear2 = 0
@@ -106,7 +106,7 @@ gear6 = 0
 def loop():
   global gear1, gear2, gear3, gear4, gear5
 
-  command("flush")
+  command("flu")
   #time.sleep(play_time)
 
   gear1 += 1
@@ -114,25 +114,25 @@ def loop():
 
   if gear1 % 8 == 0:
     gear2 += 1
-    insert_zone(5, 'orange')
+    insert_zone(5, 'org')
 
     if gear2 % 24 == 0:
-      erase_zone(5, 'orange')
+      erase_zone(5, 'org')
       gear3 += 1
-      insert_zone(4, 'green')
+      insert_zone(4, 'grn')
 
       if gear3 % 16 == 0:
-        erase_zone(4, 'green')
+        erase_zone(4, 'grn')
         gear4 += 1
-        insert_zone(3, 'blue')
+        insert_zone(3, 'blu')
 
         if gear4 % 12 == 0:
-          erase_zone(3, 'blue')
+          erase_zone(3, 'blu')
           gear5 += 1
-          insert_zone(2, 'purple')
+          insert_zone(2, 'pur')
 
           if gear5 % 8 == 0:
-            erase_zone(2, 'purple')
+            erase_zone(2, 'pur')
 
 if __name__ == '__main__': 
   setup() 

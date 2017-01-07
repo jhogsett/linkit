@@ -23,23 +23,24 @@ def command(cmd_text):
   wait_for_ack()
  
 def setup(): 
-  global s, ticks, times_each 
+  global s, ticks, play_time 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command(":::pau:rst:era")
+  command(":::pau")
+  command("rst:era")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
 
   if len(sys.argv) > 2:                                                                                                                        
-    times_each = float(sys.argv[2]) 
+    play_time = float(sys.argv[2]) 
 
-  command("6:zon:blk:7:rep:blu:7:rep:blk:7:rep:sea:7:rep")
-  command("5:zon:blk:5:rep:blu:5:rep:blk:5:rep:sea:5:rep")                                                                                                                 
-  command("4:zon:blk:3:rep:blu:3:rep:blk:3:rep:sea:3:rep")                                                                                                                 
-  command("3:zon:blk:2:rep:blu:2:rep:blk:2:rep:sea:2:rep")                                                                                                                 
-  command("2:zon:blk:1:rep:blu:1:rep:blk:1:rep:sea:1:rep")                                                                                                                 
+  command("6:zon:red:7:rep:grn:7:rep:org:7:rep:blu:7:rep")
+  command("5:zon:red:5:rep:grn:5:rep:org:5:rep:blu:5:rep")                                                                                                                 
+  command("4:zon:red:3:rep:grn:3:rep:org:3:rep:blu:3:rep")                                                                                                                 
+  command("3:zon:red:2:rep:grn:2:rep:org:2:rep:blu:2:rep")                                                                                                                 
+  command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")                                                                                                                 
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -86,34 +87,31 @@ global idx
 idx = -1
 
 def do_zone(zone, count):
-  command(str(zone) + ":zon")                                                                                                                            
-  for i in range(0, int(count)):                                                                                                                        
-    command("rot")  
-#  command("flu")
+  command(str(zone) + ":zone")                                                                                                                            
+  for i in range(0, count):                                                                                                                        
+    command("rot:flu")
+ #   command("flu")  
 
 times = 1
-times_each = 1
 def loop():
   global times
 
   for i in range(0, times):
-    do_zone(2, times_each)
+    do_zone(2, 8)
   for i in range(0, times):                                                                                                                        
-    do_zone(3, times_each)                                                                                                                              
+    do_zone(3, 8)                                                                                                                              
   for i in range(0, times):                                                                                                                        
-    do_zone(4, times_each)                                                                                                                              
+    do_zone(4, 8)                                                                                                                              
   for i in range(0, times):                                                                                                                        
-    do_zone(5, times_each)                                                                                                                              
+    do_zone(5, 8)                                                                                                                              
   for i in range(0, times):                                                                                                                        
-    do_zone(6, times_each)                                                                                                                              
+    do_zone(6, 8)                                                                                                                              
 #  for i in range(0, times):                                      
-#    do_zone(5, times_each)      
+#    do_zone(5, 8)      
 #  for i in range(0, times):                                                                                                                    
-#    do_zone(4, times_each)                                                       
+#    do_zone(4, 8)                                                       
 #  for i in range(0, times):                                                                                                                    
-#    do_zone(3, times_each)                                                           
-
-  command("flu")
+#    do_zone(3, 8)                                                           
 
 if __name__ == '__main__': 
   setup() 

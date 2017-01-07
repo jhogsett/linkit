@@ -27,7 +27,7 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command(":::pause:reset:erase")
+  command(":::pau:rst:era")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -35,11 +35,11 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:black:7:repeat:green:7:repeat:black:7:repeat:blue:7:repeat")
-  command("5:zone:black:5:repeat:green:5:repeat:black:5:repeat:blue:5:repeat")                                                                                                                 
-  command("4:zone:black:3:repeat:green:3:repeat:black:3:repeat:blue:3:repeat")                                                                                                                 
-  command("3:zone:black:2:repeat:green:2:repeat:black:2:repeat:blue:2:repeat")                                                                                                                 
-  command("2:zone:black:1:repeat:green:1:repeat:black:1:repeat:blue:1:repeat")                                                                                                                 
+  command("6:zon:blk:7:rep:grn:7:rep:blk:7:rep:blu:7:rep")
+  command("5:zon:blk:5:rep:grn:5:rep:blk:5:rep:blu:5:rep")                                                                                                                 
+  command("4:zon:blk:3:rep:grn:3:rep:blk:3:rep:blu:3:rep")                                                                                                                 
+  command("3:zon:blk:2:rep:grn:2:rep:blk:2:rep:blu:2:rep")                                                                                                                 
+  command("2:zon:blk:1:rep:grn:1:rep:blk:1:rep:blu:1:rep")                                                                                                                 
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -86,9 +86,9 @@ global idx
 idx = -1
 
 def do_zone(zone, count):
-  command(str(zone) + ":zone")                                                                                                                            
+  command(str(zone) + ":zon")                                                                                                                            
   for i in range(0, count):                                                                                                                        
-    command("rotate")  
+    command("rot")  
 
 times = 1
 times_each = 2

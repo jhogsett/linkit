@@ -26,12 +26,13 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command("::pause:reset:erase:4:level")
+  command(":::pau")
+  command("rst:clr")
 
 num_colors = 12
-colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
+colors = [ "red", "org", "yel", "lgr", "grn", "sea", "cyn", "lbl", "blu", "pur", "mag", "pnk", "blk", "rnd" ]
 
-effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
+effects = ['bl1','bl2','bl3','bl4','bl5','bl6']
 effect_index = 0
 
 chosen_colors = [0,1,2,3,4,5]
@@ -51,7 +52,7 @@ def shift_colors():
     chosen_colors[i] = chosen_colors[i-1]
 
 def place_color(window, color):          
-  command(str(window) + ":window:" + color + ":flood")
+  command(str(window) + ":win:" + color + ":flo")
                                                       
 def place_colors():                                   
   place_color(93, chosen_colors[0])                   
@@ -66,10 +67,10 @@ def loop():
 
   for i in range(0, 6):
     for j in range(0,6):
-      chosen_colors[j] = "black"
+      chosen_colors[j] = "blk"
     chosen_colors[5-i] = color 
     place_colors()
-    command("flush")                                       
+    command("flu")                                       
 
 if __name__ == '__main__': 
   setup() 

@@ -28,7 +28,7 @@ def setup():
   flush_input()
   choose_colors()
   command(":::pau")
-  command("rst:era")
+  command("rst:clr")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -36,11 +36,11 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zon:red:7:rep:grn:7:rep:org:7:rep:blu:7:rep")
-  command("5:zon:red:5:rep:grn:5:rep:org:5:rep:blu:5:rep")
-  command("4:zon:red:3:rep:grn:3:rep:org:3:rep:blu:3:rep")
-  command("3:zon:red:2:rep:grn:2:rep:org:2:rep:blu:2:rep")
-  command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")
+  command("6:zon:red:red:blk:blk:sea:sea:blk:blk:grn:grn:blk:blk:cyn:cyn:blk:blk:org:org:blk:blk:pnk:pnk:blk:blk:blu:blu:blk:blk:pur:pur:blk:blk")
+  command("5:zon:red:red:blk:sea:sea:blk:grn:grn:blk:cyn:cyn:blk:org:org:blk:pnk:pnk:blk:blu:blu:blk:pur:pur:blk")
+  command("4:zon:red:blk:sea:blk:grn:blk:cyn:blk:org:blk:pnk:blk:blu:blk:pur:blk")
+  command("3:zon:blk:red:sea:blk:grn:cyn:blk:org:pnk:blk:blu:pur:blk")
+  command("2:zon:red:sea:grn:cyn:org:pnk:blu:pur")
   command("1:zon:gry")
 
 num_colors = 12

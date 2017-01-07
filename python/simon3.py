@@ -37,9 +37,9 @@ def setup():
     play_time = float(sys.argv[2]) 
 
   command("6:zon:red:7:rep:grn:7:rep:org:7:rep:blu:7:rep")
-  command("5:zon:red:5:rep:grn:5:rep:org:5:rep:blu:5:rep")
-  command("4:zon:red:3:rep:grn:3:rep:org:3:rep:blu:3:rep")
-  command("3:zon:red:2:rep:grn:2:rep:org:2:rep:blu:2:rep")
+  command("5:zon:red:dgr:3:rep:red:grn:dgr:3:rep:grn:org:dgr:3:rep:org::blu:dgr:3:rep:blu")
+  command("4:zon:red:dgr:dgr:red:grn:dgr:dgr:grn:org:dgr:dgr:org:blu:dgr:dgr:blu")
+  command("3:zon:red:dgr:red:grn:dgr:grn:org:dgr:org:blu:dgr:blu")
   command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")
   command("1:zon:gry")
 

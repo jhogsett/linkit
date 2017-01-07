@@ -9,6 +9,7 @@ s = None
 
 num_leds = 93
 play_time = 0
+times = 3
 
 def flush_input():                        
   s.flushInput()
@@ -23,25 +24,25 @@ def command(cmd_text):
   wait_for_ack()
  
 def setup(): 
-  global s, ticks, play_time 
+  global s, ticks, times 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
   command(":::pau")
-  command("rst:era")
+  command("rst:clr")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
 
   if len(sys.argv) > 2:                                                                                                                        
-    play_time = float(sys.argv[2]) 
+    times = int(sys.argv[2]) 
 
-  command("6:zon:red:7:rep:grn:7:rep:org:7:rep:blu:7:rep")
-  command("5:zon:red:5:rep:grn:5:rep:org:5:rep:blu:5:rep")
-  command("4:zon:red:3:rep:grn:3:rep:org:3:rep:blu:3:rep")
-  command("3:zon:red:2:rep:grn:2:rep:org:2:rep:blu:2:rep")
-  command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")
-  command("1:zon:gry")
+  command("6:zon:red:red:blk:blk:yel:yel:blk:blk:grn:grn:blk:blk:cyn:cyn:blk:blk:org:org:blk:blk:pnk:pnk:blk:blk:blu:blu:blk:blk:pur:pur:blk:blk")
+  command("5:zon:red:red:blk:yel:yel:blk:grn:grn:blk:cyn:cyn:blk:org:org:blk:pnk:pnk:blk:blu:blu:blk:pur:pur:blk")
+  command("4:zon:red:blk:yel:blk:grn:blk:cyn:blk:org:blk:pnk:blk:blu:blk:pur:blk")
+  command("3:zon:blk:red:yel:blk:grn:cyn:blk:org:pnk:blk:blu:pur:blk")
+  command("2:zon:red:yel:grn:cyn:org:pnk:blu:pur")
+  command("1:zon:0,0,63:hsl")
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -102,24 +103,25 @@ def linear_rotate():
   for i in range(2, 7):                                                                                                                        
     do_zone(i)                                                                                                                              
   command("flu")
+  time.sleep(0.01)
 
 def angular_rotate():
   global idx                                                                                                                                   
   do_flush = False                                                                                                                             
   idx = idx + 1                                                                                                                                
-  if (idx % 15 == 0):                                                                                                                          
+  if (idx % 3 == 0):                                                                                                                          
     command("6:zon:rot")                                                                                                                   
     do_flush = True                                                          
-  if (idx % 20 == 0):                                                                                                                          
+  if (idx % 4 == 0):                                                                                                                          
     command("5:zon:rot")                                                 
     do_flush = True                                                                                                                            
-  if (idx % 30 == 0):                                                        
+  if (idx % 6 == 0):                                                        
     command("4:zon:rot")                                                                                                                   
     do_flush = True                                                          
-  if (idx % 40 == 0):                                                                                                                          
+  if (idx % 8 == 0):                                                                                                                          
     command("3:zon:rot")                                                 
     do_flush = True                                                                                                                            
-  if (idx % 60 == 0):                                                                                                                          
+  if (idx % 12 == 0):                                                                                                                          
     command("2:zon:rot")                                                                                                                   
     do_flush = True                                                                                                                            
                                          
@@ -127,10 +129,24 @@ def angular_rotate():
     command("flu")                                                     
                                                                                                                                                
 def loop():                              
-  for i in range(0,4):
+  for i in range(0,3):
     linear_rotate()
+
   while True:
-    angular_rotate()
+    for i in range(0,96 * times):
+      angular_rotate()
+
+    command("1:rev")
+    for i in range(0,6):                                                   
+      linear_rotate()                                                      
+
+    for i in range(0,96 * times):            
+      angular_rotate()  
+
+    command("0:rev")                                                       
+    for i in range(0,6):                                                                                                                         
+      linear_rotate()                                                                                                                            
+
 
 if __name__ == '__main__': 
   setup() 

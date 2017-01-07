@@ -27,7 +27,7 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command(":::pause:reset:erase")
+  command(":::pau:rst:era")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -35,11 +35,11 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:black:red:repeat:3,0:copy")
-  command("5:zone:black:orange:repeat:3,0:copy")                                                                                                                 
-  command("4:zone:black:green:repeat:3,0:copy")                                                                                                                 
-  command("3:zone:black:blue:repeat:3,0:copy")                                                                                                                 
-  command("2:zone:black:purple:repeat:3,0:copy")                                                                                                                 
+  command("6:zon:blk:red:rep:3,0:cpy")
+  command("5:zon:blk:org:rep:3,0:cpy")                                                                                                                 
+  command("4:zon:blk:grn:rep:3,0:cpy")                                                                                                                 
+  command("3:zon:blk:blu:rep:3,0:cpy")                                                                                                                 
+  command("2:zon:blk:pur:rep:3,0:cpy")                                                                                                                 
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -68,7 +68,7 @@ def clear_colors():
     chosen_colors[j] = "black"
 
 def place_color(zone, color):
-  command(str(zone) + ":zone:" + color + ":blink" + str(zone) + ":flood")
+  command(str(zone) + ":zon:" + color + ":flood")
 
 def place_colors():
   place_color(6, chosen_colors[0])
@@ -86,12 +86,12 @@ global idx
 idx = -1
 
 def loop():
-  command("6:zone:rotate")
-  command("5:zone:rotate")                                                                                                                     
-  command("4:zone:rotate")                                                                                                                     
-  command("3:zone:rotate")                                                                                                                     
-  command("2:zone:rotate")                                                                                                                     
-  command("flush")
+  command("6:zon:rot")
+  command("5:zon:rot")                                                                                                                     
+  command("4:zon:rot")                                                                                                                     
+  command("3:zon:rot")                                                                                                                     
+  command("2:zon:rot")                                                                                                                     
+  command("flu")
 
   time.sleep(play_time)
 

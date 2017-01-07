@@ -27,7 +27,8 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command(":::pause:reset:erase")
+  command(":::pau")
+  command("rst:era")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -35,11 +36,11 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:7:repeat:black:7:repeat:cyan:7:repeat:black:7:repeat")
-  command("5:zone:magenta:5:repeat:black:5:repeat:blue:5:repeat:black:5:repeat")
-  command("4:zone:red:3:repeat:black:3:repeat:cyan:3:repeat:black:3:repeat")
-  command("3:zone:magenta:2:repeat:black:2:repeat:blue:2:repeat:black:2:repeat")
-  command("2:zone:red:1:repeat:black:1:repeat:cyan:1:repeat:black:1:repeat")
+  command("6:zon:red:7:rep:blk:7:rep:cyn:7:rep:blk:7:rep")
+  command("5:zon:mag:5:rep:blk:5:rep:blu:5:rep:blk:5:rep")
+  command("4:zon:red:3:rep:blk:3:rep:cyn:3:rep:blk:3:rep")
+  command("3:zon:mag:2:rep:blk:2:rep:blu:2:rep:blk:2:rep")
+  command("2:zon:red:1:rep:blk:1:rep:cyn:1:rep:blk:1:rep")
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -68,7 +69,7 @@ def clear_colors():
     chosen_colors[j] = "black"
 
 def place_color(zone, color):
-  command(str(zone) + ":zone:" + color + ":blink" + str(zone) + ":flood")
+  command(str(zone) + ":zon:" + color + ":flo")
 
 def place_colors():
   place_color(6, chosen_colors[0])
@@ -86,23 +87,22 @@ global idx
 idx = -1
 
 def do_zone(zone):
-  command(str(zone) + ":zone:rotate:rotate")                                                                                                                            
+  command(str(zone) + ":zon:rot:rot")                                                                                                                            
 
 def do_zones():
   for i in range(2, 7):                                                  
     do_zone(i)                                                           
-  command("flush") 
+  command("flu") 
 
 def loop():
-  command("0:reverse")
   for i in range(0, 12):
     do_zones()
 
-  command("1:reverse:")  
+  command("1:rev")  
   for i in range(0, 24):                                                                                                                        
     do_zones() 
 
-  command("0:reverse")                                                                                                                         
+  command("0:rev")                                                                                                                         
   for i in range(0, 12):
     do_zones() 
 

@@ -27,7 +27,8 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   #choose_colors()
-  command(":::pause:pause:reset:erase")
+  command(":::pau")
+  command("rst:era")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -87,7 +88,7 @@ global idx
 idx = -1
 
 def do_zone(zone):
-  command(str(zone) + ":zone:rotate")                                                                                                                            
+  command(str(zone) + ":zon:rot")                                                                                                                            
 
 gear1 = 0
 gear2 = 0
@@ -98,7 +99,7 @@ gear5 = 0
 def loop():
   global gear1, gear2, gear3, gear4, gear5
 
-  command("flush")
+  command("flu")
   time.sleep(play_time)
 
   gear1 += 1
