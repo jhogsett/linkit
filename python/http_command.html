@@ -19,6 +19,7 @@
       <li><a data-toggle="tab" href="#apps"><i class="fa fa-th-large"></i> Apps</a></li>
       <li><a data-toggle="tab" href="#colors"><i class="fa fa-paint-brush"></i> Colors</a></li>
       <li><a data-toggle="tab" href="#extra"><i class="fa fa-cog"></i> Extra</a></li>
+      <li><a data-toggle="tab" href="#disc"><i class="fa fa-circle-o"></i> Disc</a></li>
     </ul>
     
     <script type="text/javascript">
@@ -41,11 +42,12 @@
     </script>
     
     <div class="tab-content">
+
       <div id="main" class="tab-pane fade in active">
         <h3>Main</h3>
         <div class="row">                                                                                                                                                                                       
           <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=2:level"><span class="glyphicon glyphicon-upload"></span> 2%</a></div>                             
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=demo"><span class="glyphicon glyphicon-upload"></span> Demo</a></div>                             
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=demo"><span class="glyphicon glyphicon-upload"></span> Demo</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row">                                                                                                                                                                                       
           <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
@@ -97,6 +99,7 @@
           <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=lopower"><span class="glyphicon glyphicon-upload"></span> Screensave</a></div>                               
         </div>                                                                                                                                                                                                  
       </div>
+
       <div id="apps" class="tab-pane fade">
         <h3>Apps</h3>
         <div class="row">                                                                                                                                                                                       
@@ -117,10 +120,11 @@
           <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?run=stop#apps"><span class="glyphicon glyphicon-upload"></span> Stop App</a></div>    
         </div>                                                                                                                                                                                                  
       </div>
-      <div id="colors" class="tab-pane fade">                                                                                                                                                          
+
+      <div id="colors" class="tab-pane fade">
         <h3>Colors</h3>                                                                                                                                                                                          
         <div class="row">    
-          <div class="col-xs-6"><a class="btn btn-white btn-lg btn-block" role="button" href="/command?cmd=white:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> White</a></div>            
+          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=white:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> White</a></div>
           <div class="col-xs-6"><a class="btn btn-gray btn-lg btn-block" role="button" href="/command?cmd=gray:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Gray</a></div>            
         </div>                                                                                                                                                                                              
         <div class="row">                                                                                                                                                                                  
@@ -166,53 +170,122 @@
           <div class="col-xs-6"><a class="btn btn-seafoam btn-lg btn-block" role="button" href="/command?cmd=seafoam:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Sea Foam</a></div>     
         </div>                                                                                                                                                                                              
       </div>
-      <div id="extra" class="tab-pane fade">                                                                                                                                                          
-        <h3>Extra</h3>       
-        <div class="row">                                                                                                                                                                                  
+
+      <div id="extra" class="tab-pane fade">
+        <h3>Extra</h3>
+        <div class="row">
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=red:orange:yellow:green:blue:purple:6,0:copy:cfade#extra"><span class="glyphicon glyphicon-upload"></span> Rainbow 1</a></div>
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=black:repeat&cmd=red:15:repeat&cmd=orange:15:repeat&cmd=yellow:15:repeat&cmd=green:15:repeat&cmd=blue:15:repeat&cmd=purple:15:repeat:cfade#extra"><span class="glyphicon glyphicon-upload"></span> Rainbow 2</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=random:flood#extra"><span class="glyphicon glyphicon-upload"></span> Random Colors</a></div>                
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=2:random:flood#extra"><span class="glyphicon glyphicon-upload"></span> Random Blinking</a></div>            
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                  
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=random:flood#extra"><span class="glyphicon glyphicon-upload"></span> Random Colors</a></div>
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=2:random:flood#extra"><span class="glyphicon glyphicon-upload"></span> Random Blinking</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=random:static:flood#extra"><span class="glyphicon glyphicon-upload"></span> Static</a></div>
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=random:flood:2,0:copy:cfade#extra"><span class="glyphicon glyphicon-upload"></span> Random 2</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                  
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=random:flood:3,0:copy:cfade#extra"><span class="glyphicon glyphicon-upload"></span> Random 3</a></div>
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=random:flood:5,0:copy:cfade#extra"><span class="glyphicon glyphicon-upload"></span> Random 5</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                  
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=0:display#extra"><span class="glyphicon glyphicon-upload"></span> Display 0</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                  
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=0:zone#extra"><span class="glyphicon glyphicon-upload"></span> Zone 0</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=1:display#extra"><span class="glyphicon glyphicon-upload"></span> Display 1</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                  
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=1:zone#extra"><span class="glyphicon glyphicon-upload"></span> Zone 1</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=2:display#extra"><span class="glyphicon glyphicon-upload"></span> Display 2</a></div>
-        </div>                                                                                                                                                                                                  
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=2:zone#extra"><span class="glyphicon glyphicon-upload"></span> Zone 2</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=0:reverse#extra"><span class="glyphicon glyphicon-upload"></span> Forward</a></div>
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=3:zone#extra"><span class="glyphicon glyphicon-upload"></span> Zone 3</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=1:reverse#extra"><span class="glyphicon glyphicon-upload"></span> Reverse</a></div>
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=4:zone#extra"><span class="glyphicon glyphicon-upload"></span> Zone 4</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=rotate#extra"><span class="glyphicon glyphicon-upload"></span> Rotate</a></div>
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=5:zone#extra"><span class="glyphicon glyphicon-upload"></span> Zone 5</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=mirror#extra"><span class="glyphicon glyphicon-upload"></span> Mirror</a></div>
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=6:zone#extra"><span class="glyphicon glyphicon-upload"></span> Zone 6</a></div>
+        </div>
       </div>
-    </div>                                                                                                                                                                                              
+
+      <div id="disc" class="tab-pane fade">
+        <h3>Disc</h3>
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=breathing_colors.py#disc"><span class="glyphicon glyphicon-upload"></span> breathing_colors.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=color_counter.py#disc"><span class="glyphicon glyphicon-upload"></span> color_counter.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=color_counter2.py#disc"><span class="glyphicon glyphicon-upload"></span> color_counter2.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=color_counter4.py#disc"><span class="glyphicon glyphicon-upload"></span> color_counter4.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=color_counter5.py#disc"><span class="glyphicon glyphicon-upload"></span> color_counter5.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=crazy_rings.py#disc"><span class="glyphicon glyphicon-upload"></span> crazy_rings.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=cyclone.py#disc"><span class="glyphicon glyphicon-upload"></span> cyclone.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=dancing_waves.py#disc"><span class="glyphicon glyphicon-upload"></span> dancing_waves.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=eminating_color.py#disc"><span class="glyphicon glyphicon-upload"></span> eminating_color.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=gaydar.py#disc"><span class="glyphicon glyphicon-upload"></span> gaydar.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=gaydar2.py#disc"><span class="glyphicon glyphicon-upload"></span> gaydar2.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=kaleido.py#disc"><span class="glyphicon glyphicon-upload"></span> kaleido.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=oracle.py#disc"><span class="glyphicon glyphicon-upload"></span> oracle.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=pinwheel.py#disc"><span class="glyphicon glyphicon-upload"></span> pinwheel.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=pinwheel4.py#disc"><span class="glyphicon glyphicon-upload"></span> pinwheel4.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=psychedelic.py#disc"><span class="glyphicon glyphicon-upload"></span> psychedelic.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=radiating_hsl.py#disc"><span class="glyphicon glyphicon-upload"></span> radiating_hsl.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=rainbow_bubble.py#disc"><span class="glyphicon glyphicon-upload"></span> rainbow_bubble.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=rainbow_clock.py#disc"><span class="glyphicon glyphicon-upload"></span> rainbow_clock.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=rotation_speed_test.py#disc"><span class="glyphicon glyphicon-upload"></span> rotation_speed_test.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=rotation_test.py#disc"><span class="glyphicon glyphicon-upload"></span> rotation_test.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=simon.py#disc"><span class="glyphicon glyphicon-upload"></span> simon.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=spiral1.py#disc"><span class="glyphicon glyphicon-upload"></span> spiral1.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=turning_rings.py#disc"><span class="glyphicon glyphicon-upload"></span> turning_rings.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=twister.py#disc"><span class="glyphicon glyphicon-upload"></span> twister.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=whirlpool.py#disc"><span class="glyphicon glyphicon-upload"></span> whirlpool.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=windmill.py#disc"><span class="glyphicon glyphicon-upload"></span> windmill.py</a></div>
+          <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=wow_colors.py#disc"><span class="glyphicon glyphicon-upload"></span> wow_colors.py</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 </html>
