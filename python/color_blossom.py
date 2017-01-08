@@ -3,6 +3,7 @@
 import serial 
 import time
 import random
+import sys
 
 s = None
 
@@ -20,18 +21,30 @@ def wait_for_ack():
 def command(cmd_text):
   s.write((cmd_text + ':').encode())   
   wait_for_ack()
+
+step = 2                                         
+brt = 50                                 
  
 def setup(): 
-  global s 
+  global s, step, brt 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
   command(":::pau:clr")
 
+  if len(sys.argv) > 1:
+    command(sys.argv[1])
+
+  if len(sys.argv) > 2:
+    step = int(sys.argv[2])
+
+  if len(sys.argv) > 3:                                                                                      
+    brt = int(sys.argv[3])    
+
 num_colors = 12
 colors = [ "red", "org", "yel", "lgr", "grn", "sea", "cyn", "lbl", "blu", "pur", "mag", "pnk", "blk", "rnd" ]
 
-effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
+effects = ['bl1','bl2','bl3','bl4','bl5','bl6']
 effect_index = 0
 
 chosen_colors = [0,1,2,3,4,5]
@@ -50,12 +63,8 @@ def shift_colors():
   for i in xrange(5, 0, -1):
     chosen_colors[i] = chosen_colors[i-1]
 
-def clear_colors():
-  for j in range(0,6):        
-    chosen_colors[j] = "black"
-
 def place_color(window, color):          
-  command(str(window) + ":window:" + color + ":flood")
+  command(str(window) + ":win:" + color + ":flo")
                                                       
 def place_colors():                                   
   place_color(93, chosen_colors[0])                   
@@ -63,28 +72,24 @@ def place_colors():
   place_color(37, chosen_colors[2])                   
   place_color(21, chosen_colors[3])                   
   place_color(9, chosen_colors[4])                    
-  place_color(1, chosen_colors[5])   
-  
-def display():
-  place_colors()
-  command("flush")
+  place_color(1, chosen_colors[5])     
+
+hue = 0
 
 def loop():
-  color = random_color()
-
-  for i in range(0, 6):
-    clear_colors()                        
-    for j in range(0, i+1):
-      chosen_colors[5-j] = color 
-    display()
-
-  for i in range(1, 5):                     
-    clear_colors()                        
-    for j in range(i, 6):               
-      chosen_colors[j] = color  
-    display()
+  global hue
+  color = str(hue) + ",255," + str(brt) + ":hsl"
+  hue = (hue + step) % 360
+  command(color)
+  command("flu")                                       
 
 if __name__ == '__main__': 
   setup() 
   while True: 
-    loop()
+    try:
+      loop()
+    except KeyboardInterrupt:                                                                         
+      sys.exit("\nExiting...\n")                   
+    except Exception:                                                                                 
+      raise 
+

@@ -8,7 +8,7 @@ import sys
 s = None
 
 num_leds = 93
-ticks = 210
+ticks = 96
 
 def flush_input():                        
   s.flushInput()
@@ -27,7 +27,7 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command(":::pause:reset:erase")
+  command(":::pau:clr:1:zon:pur")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -36,7 +36,7 @@ def setup():
     ticks = int(sys.argv[2]) 
 
 num_colors = 12
-colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
+colors = [ "red", "org", "yel", "lgr", "grn", "sea", "cyn", "lbl", "blu", "pur", "mag", "pnk", "blk", "rnd" ]
 
 effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
 effect_index = 0
@@ -81,37 +81,32 @@ idx = -1
 
 def loop():
   global idx
-#  time.sleep((60.0 / 480.0) * 0.1)
   idx = idx + 1
-  if (idx % 15 == 0):
-    command("6:zone:black:blend:flush")
-  if (idx % 20 == 0):
-    command("5:zone:black:blend:flush")
-  if (idx % 30 == 0):
-    command("4:zone:black:blend:flush")
-  if (idx % 40 == 0):
-    command("3:zone:black:blend:flush")
-  if (idx % 60 == 0):
-    command("2:zone:black:blend:flush")
+  do_flush = False
+  if (idx % 3 == 0):
+    command("6:zon:blk:20:ble")
+    do_flush = True
+  if (idx % 4 == 0):
+    command("5:zon:blk:27:ble")
+    do_flush = True                                              
+  if (idx % 6 == 0):
+    command("4:zon:blk:40:ble")
+    do_flush = True                                              
   if (idx % 8 == 0):
-    command("1:zone:random:flush") 
+    command("3:zon:blk:50:ble")
+    do_flush = True                                              
+  if (idx % 12 == 0):
+    command("2:zon:blk:55:ble")
   if (idx % ticks == 0):                                                                                                                         
-#    idx = 0                                                      
-    command("6:zone:red")                                                                                                                
-    command("5:zone:orange")                                 
-    command("4:zone:green")                  
-    command("3:zone:blue")                  
-    command("2:zone:purple")                
-    command("flush")                
+    command("6:zon:red")                                                                                                                
+    command("5:zon:org")                                 
+    command("4:zon:yel")                  
+    command("3:zon:grn")                  
+    command("2:zon:blu")                
+    do_flush = True                                              
 
-#  chosen_colors[0] = "red:blink5"
-#  chosen_colors[1] = "orange:blink4"     
-#  chosen_colors[2] = "green:blink3"     
-#  chosen_colors[3] = "blue:blink2"     
-#  chosen_colors[4] = "purple:blink1"     
-#  chosen_colors[5] = "purple:blink1"     
-#  display()
-#  exit()  
+  if do_flush == True:
+    command("flu")                
 
 if __name__ == '__main__': 
   setup() 

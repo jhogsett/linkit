@@ -27,7 +27,7 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command(":::pause:reset:erase")
+  command(":::pau:clr")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -35,12 +35,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:red:6:repeat:black:green:6:repeat:black:orange:6:repeat:black:blue:6:repeat:black")
-  command("5:zone:red:4:repeat:black:green:4:repeat:black:orange:4:repeat:black:blue:4:repeat:black")
-  command("4:zone:red:2:repeat:black:green:2:repeat:black:orange:2:repeat:black:blue:2:repeat:black")
-  command("3:zone:red:1:repeat:black:green:1:repeat:black:orange:1:repeat:black:blue:1:repeat:black")
-  command("2:zone:red:black:green:black:orange:black:blue:black")
-  command("1:zone:purple")
+  command("6:zon:red:6:rep:blk:grn:6:rep:blk:org:6:rep:blk:blu:6:rep:blk")
+  command("5:zon:red:4:rep:blk:grn:4:rep:blk:org:4:rep:blk:blu:4:rep:blk")
+  command("4:zon:red:2:rep:blk:grn:2:rep:blk:org:2:rep:blk:blu:2:rep:blk")
+  command("3:zon:red:1:rep:blk:grn:1:rep:blk:org:1:rep:blk:blu:1:rep:blk")
+  command("2:zon:red:blk:grn:blk:org:blk:blu:blk")
+  command("1:zon:pur")
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -84,7 +84,7 @@ def display():
   command("flush")
 
 def do_zone(zone):
-  command(str(zone) + ":zone:rotate")                                                                                                                            
+  command(str(zone) + ":zon:rot")                                                                                                                            
 
 def do_zones():
   for i in range(2, 7):                                                  
@@ -99,26 +99,26 @@ def loop():
   do_flush = False
   idx = idx + 1                                                          
   if (idx % 15 == 0):                                                                                                                          
-    command("6:zone:rotate") 
+    command("6:zon:rot") 
     do_flush = True                                                                                                    
   if (idx % 20 == 0):                                                                                                                          
-    command("5:zone:rotate")                                  
+    command("5:zon:rot")                                  
     do_flush = True                                                          
   if (idx % 30 == 0):                                                                                                                          
-    command("4:zone:rotate")  
+    command("4:zon:rot")  
     do_flush = True                                                          
   if (idx % 40 == 0):                                                                                                                          
-    command("3:zone:rotate")                                                                                                        
+    command("3:zon:rot")                                                                                                        
     do_flush = True                                                          
   if (idx % 60 == 0):                                                    
-    command("2:zone:rotate")                                                                                                        
+    command("2:zon:rot")                                                                                                        
     do_flush = True                                                          
   if (idx % 8 == 0):                                                                                                                           
-    command("1:zone:rotate")                                       
+    command("1:zon:rot")                                       
     do_flush = True                                                          
 
   if do_flush == True:
-    command("flush")
+    command("flu")
 
   time.sleep(play_time)
 

@@ -25,10 +25,10 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command("::pause:reset:erase:4:level")
+  command("::pau:clr")
 
 num_colors = 12
-colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
+colors = [ "red", "org", "yel", "lgr", "grn", "sea", "cyn", "lbl", "blu", "pur", "mag", "pnk", "blk", "rnd" ]
 
 effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
 effect_index = 0
@@ -68,14 +68,14 @@ def display():
   place_colors()
   command("flush")
 
-color = "black"
-last_color = "black"
+color = "blk"
+last_color = "blk"
 
 def loop():
   global color, last_color  
 
   for i in range(0, 6):            
-    command(last_color + ":flood")     
+    command(last_color + ":flo")     
     for j in range(0, i+1):        
       chosen_colors[5-j] = color   
     display()    

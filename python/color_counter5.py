@@ -26,7 +26,6 @@ def setup():
   global s, ticks, play_time 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
-  choose_colors()
   command(":::pau:clr")
 
   if len(sys.argv) > 1:
@@ -35,11 +34,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zon:red:7:rep:grn:7:rep:org:7:rep:blu:7:rep")
-  command("5:zon:red:5:rep:grn:5:rep:org:5:rep:blu:5:rep")                                                                                                                 
-  command("4:zon:red:3:rep:grn:3:rep:org:3:rep:blu:3:rep")                                                                                                                 
-  command("3:zon:red:2:rep:grn:2:rep:org:2:rep:blu:2:rep")                                                                                                                 
-  command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")                                                                                                                 
+  command("6:zone:red:1:repeat:8:copy")
+  command("5:zone:orange:bright:6:copy")                                                                                                                        
+  command("4:zone:green:bright:4:copy")                                                                                                                        
+  command("3:zone:blue:bright:3:copy")                                                                                                                        
+  command("2:zone:purple:bright:2:copy")                                                                                                                        
+  command("1:zone:dkgray")                                                                                                                        
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -85,15 +85,62 @@ def display():
 global idx
 idx = -1
 
-def do_zone(zone):
+def rotate_zone(zone):
   command(str(zone) + ":zon:rot")                                                                                                                            
 
+def insert_zone(zone, color, copy):
+  command(str(zone) + ":zon:" + color + ":" + str(copy) + ":cpy")
+
+def erase_zone(zone, color, copy):
+#  command(str(zone) + ":zone:erase:" + color + ":bright:" + str(copy) + ":copy")
+  command(str(zone) + ":zon:era")        
+
+gear1 = 0
+gear2 = 0
+gear3 = 0
+gear4 = 0
+gear5 = 0
+gear6 = 0
+
 def loop():
-  for i in range(2, 7):                                                                                                                        
-    do_zone(i)                                                                                                                              
+  global gear1, gear2, gear3, gear4, gear5, gear6
+
+  time.sleep(play_time)
   command("flu")
+  #command("9:zone:rotate:flush")
+
+  gear1 += 1
+  rotate_zone(6)
+
+  if gear1 % 8 == 0:
+    gear2 += 1
+    insert_zone(5, 'org', 6)
+
+    if gear2 % 6 == 0:
+      insert_zone(4, 'grn', 4)                                            
+      gear3 += 1
+      erase_zone(5, 'org', 6)
+
+      if gear3 % 4 == 0:
+        insert_zone(3, 'blu', 3)                                                                                                                 
+        gear4 +=1
+        erase_zone(4, 'grn', 4)
+
+        if gear4 % 3 == 0:
+          insert_zone(2, 'pur', 2)                                       
+          gear5 += 1
+          erase_zone(3, 'blu', 3)
+
+          if gear5 % 2 == 0:
+            gear6 += 1
+            erase_zone(2, 'pur', 2)
 
 if __name__ == '__main__': 
   setup() 
   while True: 
-    loop()
+    try:
+      loop()
+    except KeyboardInterrupt:
+      sys.exit("\nExiting...\n")
+    except Exception:
+      raise

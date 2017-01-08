@@ -26,7 +26,7 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command("::pause:reset:erase")
+  command(":::pau:clr")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -58,10 +58,10 @@ def shift_colors():
 
 def clear_colors():
   for j in range(0,6):        
-    chosen_colors[j] = "black"
+    chosen_colors[j] = "blk"
 
 def place_color(zone, color):
-  command(str(zone) + ":zone:" + color + ":flood")
+  command(str(zone) + ":zon:" + color + ":flo")
 
 def place_colors():
   place_color(6, chosen_colors[0])
@@ -73,15 +73,15 @@ def place_colors():
 
 def display():
   place_colors()
-  command("flush")
+  command("flu")
 
 def loop():
-  chosen_colors[0] = "red:blink5"
-  chosen_colors[1] = "orange:blink4"     
-  chosen_colors[2] = "green:blink3"     
-  chosen_colors[3] = "blue:blink2"     
-  chosen_colors[4] = "purple:blink1"     
-  chosen_colors[5] = "purple:blink1"     
+  chosen_colors[0] = "red:bl5"
+  chosen_colors[1] = "org:bl4"     
+  chosen_colors[2] = "grn:bl3"     
+  chosen_colors[3] = "blu:bl2"     
+  chosen_colors[4] = "pur:bl1"     
+  chosen_colors[5] = "pur:bl1"     
   display()
   exit()  
 
