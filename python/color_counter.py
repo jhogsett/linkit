@@ -26,7 +26,7 @@ def setup():
   global s, ticks, play_time 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
-  choose_colors()
+  #choose_colors()
   command(":::pau:clr")
 
   if len(sys.argv) > 1:
@@ -35,11 +35,12 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zon:red:7:rep:grn:7:rep:org:7:rep:blu:7:rep")
-  command("5:zon:red:5:rep:grn:5:rep:org:5:rep:blu:5:rep")                                                                                                                 
-  command("4:zon:red:3:rep:grn:3:rep:org:3:rep:blu:3:rep")                                                                                                                 
-  command("3:zon:red:2:rep:grn:2:rep:org:2:rep:blu:2:rep")                                                                                                                 
-  command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")                                                                                                                 
+  command("6:zon:pur")
+  command("5:zon:blu")                                                                                                                        
+  command("4:zon:grn")                                                                                                                        
+  command("3:zon:org")                                                                                                                        
+  command("2:zon:red")                                                                                                                        
+  command("1:zon:red")                                                                                                                        
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -68,7 +69,7 @@ def clear_colors():
     chosen_colors[j] = "black"
 
 def place_color(zone, color):
-  command(str(zone) + ":zone:" + color + ":blink" + str(zone) + ":flood")
+  command(str(zone) + ":zon:" + color + ":flood")
 
 def place_colors():
   place_color(6, chosen_colors[0])
@@ -85,15 +86,61 @@ def display():
 global idx
 idx = -1
 
-def do_zone(zone):
+def rotate_zone(zone):
   command(str(zone) + ":zon:rot")                                                                                                                            
 
+def insert_zone(zone, color):
+  command(str(zone) + ":zon:" + color)
+
+def erase_zone(zone, color):
+  command(str(zone) + ":zon:era:" + color)
+
+gear1 = 0
+gear2 = 0
+gear3 = 0
+gear4 = 0
+gear5 = 0
+gear6 = 0
+
 def loop():
-  for i in range(2, 7):                                                                                                                        
-    do_zone(i)                                                                                                                              
+  global gear1, gear2, gear3, gear4, gear5
+
   command("flu")
+  time.sleep(play_time)
+
+  gear1 += 1
+#  insert_zone(2, 'red')
+  rotate_zone(2)
+
+  if gear1 % 8 == 0:
+#    erase_zone(2, 'red')
+    gear2 += 1
+    insert_zone(3, 'org')
+
+    if gear2 % 12 == 0:
+      erase_zone(3, 'org')
+      gear3 += 1
+      insert_zone(4, 'grn')
+
+      if gear3 % 16 == 0:
+        erase_zone(4, 'grn')
+        gear4 += 1
+        insert_zone(5, 'blu')
+
+        if gear4 % 24 == 0:
+          erase_zone(5, 'blu')
+          gear5 += 1
+          insert_zone(6, 'pur')
+
+          if gear5 % 32 == 0:
+            erase_zone(6, 'pur')
 
 if __name__ == '__main__': 
   setup() 
   while True: 
-    loop()
+    try:
+      loop()
+    except KeyboardInterrupt:
+      sys.exit("\nExiting...\n")
+    except Exception:
+      raise

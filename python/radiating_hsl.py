@@ -22,7 +22,7 @@ def command(cmd_text):
   s.write((cmd_text + ':').encode())   
   wait_for_ack()
 
-step = 1                                         
+step = 5                                         
 brt = 50                                 
  
 def setup(): 

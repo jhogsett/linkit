@@ -8,7 +8,7 @@ import sys
 s = None
 
 num_leds = 93
-play_time = 1
+play_time = 0
 
 def flush_input():                        
   s.flushInput()
@@ -27,7 +27,7 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command(":::pause:reset:erase")
+  command(":::pau:clr")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -35,11 +35,11 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zone:black:red:2,0:copy")
-  command("5:zone:black:orange:2,0:copy")                                                                                                                 
-  command("4:zone:black:green:2,0:copy")                                                                                                                 
-  command("3:zone:black:blue:2,0:copy")                                                                                                                 
-  command("2:zone:black:purple:2,0:copy")                                                                                                                 
+  command("6:zon:blk:red:2:cpy")
+  command("5:zon:blk:org:2:cpy")                                                                                                                 
+  command("4:zon:blk:grn:2:cpy")                                                                                                                 
+  command("3:zon:blk:blu:2:cpy")                                                                                                                 
+  command("2:zon:blk:pur:2:cpy")                                                                                                                 
 
 num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "random" ]
@@ -86,12 +86,12 @@ global idx
 idx = -1
 
 def loop():
-  command("6:zone:rotate")
-  command("5:zone:rotate")                                                                                                                     
-  command("4:zone:rotate")                                                                                                                     
-  command("3:zone:rotate")                                                                                                                     
-  command("2:zone:rotate")                                                                                                                     
-  command("flush")
+  command("6:zon:rot")
+  command("5:zon:rot")                                                                                                                     
+  command("4:zon:rot")                                                                                                                     
+  command("3:zon:rot")                                                                                                                     
+  command("2:zon:rot")                                                                                                                     
+  command("flu")
 
   time.sleep(play_time)
 
