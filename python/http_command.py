@@ -46,7 +46,7 @@ class Handler(BaseHTTPRequestHandler):
       run = base_path + app + ' &'         
       self.log('running: ' + run)               
       call(run, shell=True)  
-      last_run = app
+      last_run = app.split()[0]
     else:
       last_run = ''
   
@@ -145,7 +145,7 @@ except KeyboardInterrupt:
   sys.exit("\nExiting...\n") 
 finally:
   if last_run != '':                         
-    self.log('killing: ' + last_run)            
+    print 'killing: ' + last_run            
     call('killall ' + last_run, shell=True)     
 
 #if __name__ == '__main__': 
