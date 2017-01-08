@@ -29,7 +29,8 @@ empties = num_leds - ((repeats + 1) * stops)
 def setup():
   global s, stops, repeats, empties, step, brightness
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command("::pause:reset:erase")
+  command(":::pau")
+  command("rst:era")
 
   if len(sys.argv) > 1:
     stops = int(sys.argv[1])
@@ -48,11 +49,11 @@ def angle(step, stop):
 def loop(): 
   for i in xrange(0, 360, step):
     for j in range(0, stops):
-      command(str(angle(i, j)) + "," + str(saturation) + "," + str(brightness) + ":hslcolor"); command(str(repeats) + ":repeat");
+      command(str(angle(i, j)) + "," + str(saturation) + "," + str(brightness) + ":hsl"); command(str(repeats) + ":rep");
     if empties > 0:
-      command("black:" + str(empties - 1) + ":repeat");
-    command("continue:flush")
-    command("pause")
+      command("blk:" + str(empties - 1) + ":rep");
+    command("cnt:flu")
+    command("pau")
 
 if __name__ == '__main__':
   setup()

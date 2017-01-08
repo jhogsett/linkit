@@ -9,16 +9,16 @@ s = None
 play_time = 5
 
 effects = [
-  "red:green:2,0:copy:cfade",
-  "red:white:2,0:copy:cfade",
-  "green:white:2,0:copy:cfade",
-  "red:green:white:3,0:copy:cfade",
-  "ltblue:white:2,0:copy:cfade",
-  "red:pink:2,0:copy:cfade",
-  "green:seafoam:2,0:copy:cfade",
-  "random:flood:5,0:copy:cfade",
-  "random:flood:3,0:copy:cfade",
-  "random:flood:2,0:copy:cfade"
+  "red:grn:2,0:cpy:cfa",
+  "red:wht:2,0:cpy:cfa",
+  "grn:wht:2,0:cpy:cfa",
+  "red:grn:wht:3,0:cpy:cfa",
+  "lbl:wht:2,0:cpy:cfa",
+  "red:pnk:2,0:cpy:cfa",
+  "grn:sea:2,0:cpy:cfa",
+  "rnd:flo:5,0:cpy:cfa",
+  "rnd:flo:3,0:cpy:cfa",
+  "rnd:flo:2,0:cpy:cfa"
 ]
 
 def flush_input():
@@ -36,7 +36,8 @@ def command(cmd_text):
 def setup(): 
   global s, play_time 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command("::pause:reset")
+  command(":::pau")
+  command("rst:clr")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])

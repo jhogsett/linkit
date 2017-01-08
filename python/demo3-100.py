@@ -25,15 +25,16 @@ def setup():
   global s 
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
-  command("::pause:reset:wipe")
+  command(":::pau")
+  command("rst:wip")
 
 size_range_min = 2
 size_range_max = 13
 
 num_colors = 6
-colors = [ "red", "orange", "yellow", "green", "blue", "purple" ]
+colors = [ "red", "org", "yel", "grn", "blu", "pur" ]
          
-effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
+effects = ['bli','bl2','bl3','bl4','bl5','bl6']
 effect_index = 0
 
 def loop():
@@ -55,16 +56,16 @@ def loop():
 #    else:
 #      effect_index = (effect_index + dir) % 6
     color = colors[random.randrange(0, num_colors)]              
-    command(str(osize) + "," + str(osize * (times - i))  + ":pshifto")          
+    command(str(osize) + "," + str(osize * (times - i))  + ":pso")          
     cmd = ""                                                          
-    cmd = cmd + str(osize * (times - i)) + ":window:"                              
+    cmd = cmd + str(osize * (times - i)) + ":win:"                              
     cmd = cmd + color + ":" + effect
     if(osize > 1):
-      cmd = cmd + ":" + str(osize - 1) + ":repeat"
+      cmd = cmd + ":" + str(osize - 1) + ":rep"
     command(cmd)               
-  command("0:window:continue:flush")                                       
+  command("0:win:cnt:flu")                                       
   time.sleep(play_time)                                               
-  command("::pause:wipe")  
+  command("::pau:wip")  
 
 if __name__ == '__main__': 
   setup() 
