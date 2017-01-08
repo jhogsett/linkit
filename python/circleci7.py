@@ -94,7 +94,7 @@ def fix_missing(value):
 build_keys = None 
 
 def setup():
-  global s, build_keys, visible_leds, url
+  global s, build_keys, visible_leds, url, job_size, gap_size
   s = serial.Serial("/dev/ttyS0", 115200)
   build_keys = {}
   time.sleep(0.1)
@@ -104,12 +104,14 @@ def setup():
   if len(sys.argv) > 2:
     command(sys.argv[2])
 
-#  if len(sys.argv) > 3:
-#    job_limit = int(sys.argv[3]) / 4    
-#    url = 'https://circleci.com/api/v1.1/recent-builds?circle-token=' + token + '&limit=' + str(job_limit) + '&offset=0'
-
   if len(sys.argv) > 3: 
     visible_leds = int(sys.argv[3])
+
+  if len(sys.argv) > 4:                                                                                                      
+    job_size = int(sys.argv[4])  
+
+  if len(sys.argv) > 5:                                                                                                      
+    gap_size = int(sys.argv[5])  
 
 oldest_first = True
 
