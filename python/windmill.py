@@ -35,11 +35,11 @@ def setup():
   if len(sys.argv) > 2:                                                                                                                        
     play_time = float(sys.argv[2]) 
 
-  command("6:zon:red:6:rep:blk:grn:6:rep:blk:org:6:rep:blk:blu:6:rep:blk")
-  command("5:zon:red:4:rep:blk:grn:4:rep:blk:org:4:rep:blk:blu:4:rep:blk")
-  command("4:zon:red:2:rep:blk:grn:2:rep:blk:org:2:rep:blk:blu:2:rep:blk")
-  command("3:zon:red:1:rep:blk:grn:1:rep:blk:org:1:rep:blk:blu:1:rep:blk")
-  command("2:zon:red:blk:grn:blk:org:blk:blu:blk")
+  command("6:zon:blk:red:6:rep:blk:grn:6:rep:blk:org:6:rep:blk:blu:6:rep")
+  command("5:zon:blk:red:4:rep:blk:grn:4:rep:blk:org:4:rep:blk:blu:4:rep")
+  command("4:zon:blk:red:2:rep:blk:grn:2:rep:blk:org:2:rep:blk:blu:2:rep")
+  command("3:zon:blk:red:1:rep:blk:grn:1:rep:blk:org:1:rep:blk:blu:1:rep")
+  command("2:zon:blk:red:blk:grn:blk:org:blk:blu")
   command("1:zon:pur")
 
 num_colors = 12
