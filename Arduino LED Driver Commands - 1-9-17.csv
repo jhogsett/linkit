@@ -1,0 +1,116 @@
+,,,,,,new commands,changed commands,
+,Command,Cmd,Arguments,Meaning,Usage,Example,Notes,Default
+,:,,,command terminator/separator,"All commands must end with "":"" when sent to the device. When multiple commands are combined into one string, use "":"" between each command.",,,
+,:::,,,attention,"Because the interupts could be disabled due to the LED display being updated, get device's attention by sending some empty commands",:::pause:red:blink:continue,,
+,"n,n,n",,,"Any unrecognized command is stored in a bufer, and is split on "","" into up to three integer arguments",for pre-loading arguments for commands that accept arguments,"pause:50,255,255:hslcolor:continue","each value is a short int in the range -32,767 to +32,767
+
+the default is zero for each argument",
+,,,,,,,,
+,OVERALL CONTROL,,,,,,,
+,pause,pau,,Temporarily halt updating the display,"This should be used before any significant sequence of commands. The LED display driver disables interupts when writing to the display because it needs perfect timing, and this can cause incoming chars to be lost.",pause:erase:continue,,
+,continue,cnt,,Resume updating the display,This should be used after updating the buffer to resume processing and displaying effects,,,
+,clear,clr,,Erase all displays and reset all internal states,Sets the device to a known state prior to starting a new program,pause:clear:continue,,
+,level,lev,(brightness percent),Sets the brightness percent for all displays,Set all displays to the same relative brightness level,pause:50:level:continue,"if (brightess percent) is zero, the brightness is either set to a fixed default or an auto-brightness level depending on configuration",default/auto
+,lopower,lop,,Sets the device to a configuration-specific low-power mode,Used to save power or reduce distraction,pause:lopower:continue,,off
+,hipower,hip,,Returns the device to normal mode after being set to low-power mode,Used to restore normal operation after using low-power mode,pause:hipower:continue,,on
+,display,dis,(active display),Specifies which display to write to in a multiple-display configuration,Allows having multiple simultaneous independent displays,pause:1:display:red:flood:0:display:blue:flood:continue,"if (display to write) to is less than zero, display zero is set",0
+,demo,dem,,Performs a demonstration animation,"Shows a pretty effect, similar to the one shown on start up",pause:demo:continue,,
+,DISPLAY CONTROL,,,,,,,
+,reset,rst,,Reset internal effects and visual states,Sets the brightness level to the default; zone to zero; display to zero; reverse to false; resets all live effects,pause:reset:continue,,
+,erase,era,,Clear the display,Use to set all LEDs to off,,,
+,flush,flu,,Force the LED display to be updated,"Updates the display from the internal buffer. Useful when paused, or if wanting an immediate update after continuing",pause:red:blink:flush:continue,,
+,zone,zon,(active zone),Specifies which zones within a display to write to in a multiple-zone configuration,Allows a physical display to be segmented into multiple virtual displays; especially useful for displays with varying numbers of LEDs such as the 93-LED disc,pause:1:zone:red:flood:2:zone:blue:flood:continue,"zone #0 is always the entire physical display
+
+if (zone to write to) is less than zero, zone zero is set",0
+,offset,off,(starting position),Specifies the starting LED position for operations,"Used to restrict operations to start at a particular LED position
+",pause:5:offset:red:flood:continue,"the zone command is a shortcut for setting offset and window
+
+if (starting position) is less than zero, zero is set",0
+,window,win,(maximum position),Specifies the upper limit of LED operations,Used to preserve set colors further down the strip,pause:7:window:red:flood:continue,"the maximum position set is one positiion past the maximum operational position
+
+if (maximum position) is less than one, one is set",physical LED count
+,reverse,rev,(direction),Specifies forward or reverse version for LED operations,"Used to perform LED operations in either duration
+
+""0"" = ""forward"", ""1"" = ""reverse""",pause:1:reverse:red:blue:green:continue,"if (direction) is ""1"", the direction is reversed
+
+any other value of (direction) means forward",zero (forward direction)
+,,,,,,,,
+,BUFFER OPERATIONS,,,,,,,
+,repeat,rep,(times to repeat),Duplicates the color and effects for LED #0 the number of times passed in the arguments,"Copies LED #0 to later LEDs, with the number of copies specified by the passed argument",pause:red:4:repeat:continue,"if (times to repeat) is less than one, it repeats one time",once
+,copy,cpy,"(num to copy) , (times to copy) ",Duplicates a pattern of colors and effects,,pause:red:blue:white:3:copy,"if (times to copy) is zero, it fills to the end of the visible LEDs","num to copy: 1
+times to copy: 0 (fill)"
+,flood,flo,,Fill with a color and effect,Set all LEDs to the same color and effect as the LED at the current starting position,pause:green:blink1:floood:continue,,
+,mirror,mir,,Duplicates the color and effects of the first half of the LEDs to the second half,"Creates a mirror effect, duplicating the first half of the pixels to the other half in reverse order",pause:red:mirror:continue,,
+,rotate,rot,(positions to rotate),Rotates the LEDs within the current zone,Used to rotate the colors and effects for LEDs within the currently set zone,pause:6:zone:rotate:continue,"the (rotation count) feature is inefficient when the value is > 1 (it needs to shift more than one position at a time, and there needs to be another animated rotation effect)",once
+,blend,ble,(blend percentage),"Combines and sets both pixels to the LED at the starting position, and the one at the next position, to a value combined according to the (blend percentage)","This can be used to blend two colors to make any arbitrary color, or for fading effects",pause:red:green:33:blend:continue (makes orange),"(blend percentage) favors the color at the starting postion (100 = all starting position LED color)
+
+if (blend percentage) is zero, the value 50 is set",50%
+,,,,,,,,
+,TRANSITIONS,,,,,,,
+,fade,fad,,Erase the LED strip by fading out the current display,Provide a nice erasure effect over about 1s,pause:red:flood:fade:continue,,
+,wipe,wip,,Erase the LED strip by wiping away all colors toward the far end,Animates all LED values toward the far end (LED #n-1) with an ease in/ease out effect to wipe the display,pause:blue:flood:wipe:continue,,
+,cfade,cfa,,Render the display with a smooth crossfade dissolve,Allows a nice transition between displays,pause:blue:flood:flush:red:flood:cfade:continue,"be sure to pause first before using the crossfade transition!
+
+for a smooth transition, the R, G or B values should not exceed the byte value ""179"" and the brightness level should not exceed 70%. If exceeded, the byte values will roll over and cause highly visible flashing.
+
+when the brightness percentage is low, such as 5%, the crossfade may not be smooth due to floating value truncation",
+,,,,,,,,
+,STANDARD COLORS,,,,,,,
+,red,red,,Set LED at starting position to red,Shifts all the LEDs down by one and sets the starting LED to RED,pause:red:continue,,
+,green,grn,,""" green","""","""",,
+,blue,blu,,""" blue","""","""",,
+,black,blk,,""" black","""","""",,
+,yellow,yel,,""" yellow","""","""",,
+,orange,org,,""" orange","""","""",,
+,purple,pur,,""" purple","""","""",,
+,cyan,cyn,,""" cyan","""","""",,
+,magenta,mag,,""" magenta","""","""",,
+,pink,pnk,,""" pink","""","""",,
+,white,wht,,""" white","""","""",,
+,gray,gry,,""" gray","""","""",,
+,ltgreen,lgr,,""" light green","""","""",,
+,seafoam,sea,,""" sea foam green","""","""",,
+,ltblue,lbl,,""" light blue","""","""",,
+,dkgray,dgr,,""" dark gray","""","""",,
+,,,,,,,,
+,ADVANCED COLORS,,,,,,,
+,rgbcolor,rgb,"(red, green, blue)","Insert the RED, GREEN and BLUE 0-255 values passed as arguments as an RGB color at the starting position shift the existing colors down by one pixel",Shifts all the LEDs in the current zone down by one and sets the LED at the starting postiion to an approximation of the colors specified by the RGB components.*,"pause:80,40,0:rgbcolor:continue","* The RGB value set is assumed to be the ""rendered at current brightness level"" color and brightness. The color is stored in the display buffer after adjusting for brightness, allowing its brightness to be set like any other color.
+
+the values set are modulo 256",black
+,hslcolor,hsl,"(hue, saturation, lightness)","Insert the HUE (0-359), SATURATION (0-255) and LIGHTNESS (0-255) values passed as arguments as an HSL color at the LED starting position and shift the existing colors down by one pixel",Shifts all the LEDs down in the current zone by one and sets the topmost LED to an approximation of the color specified by the HSL components.*,"pause:50,255,127:hslcolor:continue","* see above
+
+at this time, the values are not validated and must be in the range 0-359 (hue), 0-255 (saturation and lightness)
+
+The hue value can be visualized as the angle 0-359 of a circle, with the values for the primary colors red, green and blue appearing as the points of an equilateral triangle at angles 0º (red) 120º (green) 240º (blue)",black
+,,,,,,,,
+,SETTING DISPLAY EFFECTS,,,,,,,
+,blink,bli,,set LED at starting position to slow blink,"Applies the style ""blink"" to the topmost LED. This is a slow blink that does not have a converse blink",pause:red:blink:continue,,
+,blink1,bl1,,"set LED at starting position to 6-part chase blink, part 1","Applies the style ""blink1"" to the topmost LED. This is a fast blink that's part of a sequence of 6 timed blinks that can be used for chase effects",pause:red:blink1:orange:blink2:yellow:blink3:green:blink4:blue:blink5:purple:blink6:continue,,
+,blink2,bl2,,"set LED at starting position to 6-part chase blink, part 2","Applies the ""blink2"" style",,,
+,blink3,bl3,,"set LED at starting position to 6-part chase blink, part 3","Applies the ""blink3"" style",,,
+,blink4,bl4,,"set LED at starting position to 6-part chase blink, part 4","Applies the ""blink4"" style",,,
+,blink5,bl5,,"set LED at starting position to 6-part chase blink, part 5","Applies the ""blink5"" style",,,
+,blink6,bl6,,"set LED at starting position to 6-part chase blink, part 6","Applies the ""blink6"" style",,,
+,blinkr,blr,,set LED at starting position to random blink,Applies one of the available 9 blink styles to the topmost LED,,,
+,blinka,bla,,"set LED at starting position to a 2-part fast blink, part 1","Applies the style ""blinka"" to the topmost LED. This is a fast blink that has a companion ""blinkb"". The two blinks alternate.",pause:red:blinka:blue:blinkb:continue,,
+,blinkb,blb,,"set LED at starting position to a 2-part fast blink, part 2","Applies the style ""blinkb""",,,
+,breathe,bre,,Set LED at starting position to a breathing effect,"Applies the style ""breathe"" to the topmost LED. This is a slow inhale/exhale effect.",pause:white:breathe:continue,,
+,effectr,efr,,set LED at starting position to a random effect,Applies a random effect to the topmost LED. This includes all blink effects and the breathe effect.,pause:red:effectr:continue,,
+,,,,,,,,
+,max,max,,Set LED at the starting position to the maximum high brightness,Can be used to set a color to a maximum brightness value. Only works properly when used on an immediately placed color.,pause:red:max:continue,The value stored in the display buffer is adjusted so it can be displayed at varying brightness levels,
+,dim,dim,,Halve brightness of LED at starting position,Can be used to set a color to half of it's current brightness.,pause:blue:dim:continue,a MSB-to-LSB bit shift is used to do a quick divide-by-2 and the fractional amount is truncated,
+,bright,brt,,Double brightness of LED at starting position,Can be used to set a color to double it's current brightness.,pause:purple:bright:continue,a LSB-to-MSB bit shift is used to do a quick multiplication by 2,
+,random,rnd,(random type),Set the LED at the starting position to a random color / random color and effect,"if (random type) is ""1"", a random color is set
+
+if (random type) is ""2"", a random color and effect is set
+",pause:random:continue,,random color (only) is set
+,static,sta,,Set the LED at the starting position to have a random-chosen color on every rendered frame,"Each time the buffer is rendered to the display, a color is chosen at random",pause:random:static:continue,can be used to demonstate the maximum frame rate,
+,,,,,,,,
+,ANIMATED EFFECTS,,,,,,,
+,pshifto,pso,"(pixels to shift, shift count)","Shifts a group of pixels with an attractive ""massy"" animation","can be used to indicate when a new set of pixels will be displays
+
+(pixels to shift) is the number of pixels to include in the animation, and keep after the animation is done
+
+(shift count) is the number of positions to shift
+
+important: (pixels to shift) + (shift count) must not exceed the display buffer size","pause:red:2:repeat:2,70:pshifto:continue",doesn't currently support offset/window/zone settings,

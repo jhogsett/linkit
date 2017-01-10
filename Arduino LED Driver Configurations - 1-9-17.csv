@@ -1,0 +1,15 @@
+Configuration,# Displays,LEDs / Display,Red/Green Swap?*,Default Brightness,Minimum Brightness *,Demo Obj Size,Demo Gap Size,Demo Delay,Blink Period,Breathe Period,# Zones,Zones,Zones Description
+72-LED Strip,1,72,,25%,2%,3,1,0,"6,000",400,8,"0-72, 0-36, 36-72, 18-55, 0-18, 18-36, 36-54, 54-72","all, 2 halves, middle half, 4 quarters"
+72-LED Strip (2),2,72,,15%,2%,3,1,0,"3,000",200,8,"0-72, 0-36, 36-72, 18-55, 0-18, 18-36, 36-54, 54-72","all, 2 halves, middle half, 4 quarters"
+72-LED Strip (3),3,72,,15%,2%,3,1,0,"2,000",133,8,"0-72, 0-36, 36-72, 18-55, 0-18, 18-36, 36-54, 54-72","all, 2 halves, middle half, 4 quarters"
+50-LED Strand,1,50,Y,25%,2%,3,1,0,"6,000",400,8,,
+50-LED Strand (2),2,50,Y,25%,2%,10,0,35,"3,000",200,8,"0-100, 0-50, 50-100, 25-75, 
+0-25, 25-50, 50-75, 75-100","all, 2 halves, middle half, 4 quarters"
+93-LED Disc,1,93,,15%,2%,3,0,35,"6,000",400,11,"0-93, 0-1, 1-9, 9-21, 21-37, 37-61, 
+61-93, 0-21, 21-93, 1-61, 0-61","all, inner-most ring, rings, outer-most ring, first 3 rings, second 3 rings, rings 2-5 (naturally 60 LEDs), all rings except outer-most ring"
+93-LED Disc + 72-LED Strip,2,93,,15%,2%,7,0,20,"3,000",200,11,"0-93, 0-1, 1-9, 9-21, 21-37, 37-61, 
+61-93, 0-21, 21-93, 1-61, 0-61","all, inner-most ring, rings, outer-most ring, first 3 rings, second 3 rings, rings 2-5 (naturally 60 LEDs), all rings except outer-most ring"
+8-LED Wearable,1,8,,10%,2%,1,0,125,"12,000",800,8,"0-8, 0-4, 4-8, 2-6, 0-2, 2-4, 4-6, 6-8","all, 2 halves, middle half, 4 quarters"
+Default,1,72,,25%,2%,3,1,0,"6,000",400,8,"0-72, 0-36, 36-72, 18-55, 0-18, 18-36, 36-54, 54-72","all, 2 halves, middle half, 4 quarters"
+,,,,,,,,,,,,,
+* The strand lights have a slightly different design where the red and green components are swapped,,,,,,,,,,,,,
