@@ -34,7 +34,7 @@ class Commands
   void do_power_shift_object(byte width, byte shift, bool fast_render);
   void do_demo();
   void flush(bool force_display);
-  void flush_all(bool force_display = true);
+  void flush_all(bool force_display = false);
   void reset();
   void low_power();
   void high_power();
@@ -108,7 +108,7 @@ void Commands::set_brightness_level(byte level){
   }
 //  ColorMath::set_brightness(level);    
   renderer->set_default_brightness(level);
-  flush_all();
+  flush_all(true);
 }
 
 // strength 1-100, 100 = all color @ offset
@@ -272,10 +272,9 @@ void Commands::do_power_shift(byte count, byte max = 0, bool fast_render = true)
   }
 }
 
-// width = width from the origin the shift will occur within, 
-//         including the new space shifted into
-// shift = how far to move
-// the two should add up to no more than the visible led count
+// width = number of pixels to include in shift
+// shift = number of positions to shift
+// note: the two should add up to no more than the visible led count!
 void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = true){
   do_power_shift(shift, shift + width, fast_render);
 }
@@ -368,7 +367,6 @@ void Commands::do_demo(){
     byte effect = EffectsProcessor::random_effect();
     for(byte j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
       buffer->set_color(j, color, false, effect);
-      // buffer->push_color(color, false, effect);
     }
     delay(DEMO_DELAY);
   }

@@ -1,10 +1,18 @@
+// if an app is known to be running, stop then restart it after applying level changes and others
+
+// need to close a running app before starting circleci
+
 // maybe pulse should be zero brightness in off state
 
 // need to be able to set offset override to zero
 
+// re-randoization on repeat/copy/mirror, etc.
+
 // problems with offset and window
 // pshifto - starts at [0]
 // crossfade - leaves only pixels inside the zone (??? in further testing it seemed to work just fine)
+
+// rotation using power shift
 
 // clean up
 /////////////////////
@@ -115,3 +123,14 @@ lowpower command means:
  
 
 */
+
+
+
+
+
+
+
+
+
+
+

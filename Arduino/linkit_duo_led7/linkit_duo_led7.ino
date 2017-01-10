@@ -21,7 +21,8 @@ void loop(){
     ::dispatch_command(dependencies.command_processor.get_command());
     dependencies.command_processor.acknowledge_command();
 
-    // resync the effects to a blank state to minimize visual artifacts of pausing and restarting
+    // resync the effects to a blank state to minimize visual artifacts 
+    // of pausing and restarting if there are display changes
     dependencies.effects_processor.reset_effects();
   }
   else 

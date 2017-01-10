@@ -119,14 +119,6 @@ rgb_color *Dependencies::color_buffers[] =
 #endif
 };
 
-//#if defined(USE_3_DISPLAYS)
-//rgb_color *Dependencies::color_buffers[] = { colors, colors2, colors3 };
-//#elif defined(USE_3_DISPLAYS)
-//rgb_color *Dependencies::color_buffers[] = { colors, colors2 };
-//#else
-//rgb_color *Dependencies::color_buffers[] = { colors };
-//#endif
-
 // rendered output buffer
 rgb_color Dependencies::render[config.led_count];
 
@@ -150,14 +142,6 @@ byte *Dependencies::effects_buffers[] =
 #endif  
 };
 
-//#if defined(USE_3_DISPLAYS)
-//byte *Dependencies::effects_buffers[] = { effects, effects2, effects3 };
-//#elif defined(USE_2_DISPLAYS)
-//byte *Dependencies::effects_buffers[] = { effects, effects2 };
-//#else
-//byte *Dependencies::effects_buffers[] = { effects };
-//#endif
-
 // pin-specific LED hardware drivers
 PololuLedStrip<DISPLAY_PIN1> Dependencies::ledStrip1;
 #if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS) 
@@ -178,15 +162,6 @@ PololuLedStripBase* Dependencies::ledStrips[config.num_displays] =
   , &Dependencies::ledStrip3
 #endif  
 };
-
-
-//#if defined(USE_3_DISPLAYS)
-//PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2, &Dependencies::ledStrip3};
-//#elif defined(USE_2_DISPLAYS)
-//PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1, &Dependencies::ledStrip2};
-//#else
-//PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = {&Dependencies::ledStrip1};
-//#endif
 
 // for generating higher-quality random number seeds
 RandomSeed<RANDOM_SEED_PIN> Dependencies::randomizer;
@@ -231,9 +206,6 @@ void Dependencies::begin(){
 #else  
   ColorMath::begin(false);
 #endif
-
-//  // establish the default brightness for color scaling
-//  ColorMath::set_brightness(DEFAULT_BRIGHTNESS_PERCENT);
 
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
   buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, NUM_ZONES, zone_offsets, zone_windows); //, existence);

@@ -126,8 +126,13 @@
 #define BAUD_RATE 115200              // speed for communicating with the MT7688
 
 #if defined(USE_1_DISPLAYS)
+#if defined(WEARABLE)
+#define BLINK_PERIOD 12000
+#define BREATHE_PERIOD 800
+#else
 #define BLINK_PERIOD 6000
 #define BREATHE_PERIOD 400
+#endif
 #elif defined(USE_2_DISPLAYS)
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 200
@@ -154,14 +159,6 @@ class Config
   };  
 
   
-//#if defined(USE_3_DISPLAYS)
-//  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2, DISPLAY_PIN3};  
-//#elif defined(USE_2_DISPLAYS)
-//  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1, DISPLAY_PIN2};  
-//#else  
-//  static constexpr byte display_pins[NUM_DISPLAYS] = {DISPLAY_PIN1};  
-//#endif
-
   static const byte random_seed_pin = RANDOM_SEED_PIN;
   static const byte light_sensor_pin = LIGHT_SENSOR_PIN;
   static const byte default_brightness_percent = DEFAULT_BRIGHTNESS_PERCENT;
