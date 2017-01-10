@@ -12,11 +12,6 @@
 #define NO_ID 0
 #endif
 
-// add current zone
-// add point to zones array
-
-//  buffer takes a pointer to render buffer and a single display buffer
-
 class Buffer
 {
   public:
@@ -57,16 +52,16 @@ class Buffer
 
   // todo: is there an alternative to storing all these pointers?
   private:
-  PololuLedStripBase **ledStrips;             // 4
-  byte current_display;                         // 1
-  rgb_color **buffers;                          // 4
-  static rgb_color *render;                   // 4
-  byte **effects_buffers;                              // 4
-  float default_brightness_scale;             // 4
-  Render *renderer;                           // 4
-  byte safety_led_count;                      // 1
-  byte visible_led_count;                     // 1
-  float fade_rate;                            // 4
+  PololuLedStripBase **ledStrips;
+  byte current_display;
+  rgb_color **buffers;
+  static rgb_color *render;
+  byte **effects_buffers;
+  float default_brightness_scale;
+  Render *renderer;
+  byte safety_led_count;
+  byte visible_led_count;
+  float fade_rate;
 
 #ifdef EXISTENCE_ENABLED
   byte *existence;
@@ -283,7 +278,7 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
 }
   
 void Buffer::set_window_override(byte window){
-  this->window_override = max(0, min(visible_led_count, window));
+  this->window_override = max(1, min(visible_led_count + 1, window));
 }
 
 int Buffer::get_window(){

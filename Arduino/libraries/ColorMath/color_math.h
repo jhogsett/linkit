@@ -1,7 +1,7 @@
 #ifndef COLOR_MATH_H
 #define COLOR_MATH_H
 
-#define USE_PROGMEM
+// pickup: make ColorMath the authority on brightness levels
 
 // enable to support palettes
 // to do: disable palettes
@@ -17,7 +17,7 @@ class ColorMath
 {
   public:
   static void begin(bool swap_r_and_g);
-//  static void set_brightness(byte brightness_percent);
+  static void set_brightness(byte brightness_percent);
   static rgb_color random_color();
   static rgb_color scale_color(rgb_color color, float scale);
   static rgb_color unscale_color(rgb_color color, float scale);
@@ -31,12 +31,7 @@ class ColorMath
 
   private:
   static bool swap_r_and_g;
-
-  #ifdef USE_PROGMEM
-    static const float PROGMEM crossfade[];
-  #else
-    static float crossfade[];
-  #endif
+  static const float PROGMEM crossfade[];
 
   static byte blend_component(byte component1, byte component2, float strength);
   static byte crossfade_component(int step, byte component1, byte component2);
@@ -44,18 +39,15 @@ class ColorMath
 
 bool ColorMath::swap_r_and_g;
 
-// ruby:
-//  max_step = 20
-//  steps = (0..max_step)
-//  steps.each do |step|
-//    position = step / (max_step * 1.0)
-//    puts ((0.5 - 0.5 * Math.cos(Math::PI * position)) ** 0.5).round(15)
-//  end
-#ifdef USE_PROGMEM
+/* ruby:
+  max_step = 20
+  steps = (0..max_step)
+  steps.each do |step|
+    position = step / (max_step * 1.0)
+    puts ((0.5 - 0.5 * Math.cos(Math::PI * position)) ** 0.5).round(15)
+  end
+*/
 const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
-#else
-float ColorMath::crossfade[] //CROSSFADE_STEPS + 1]
-#endif
 = {
     0.0,
     0.078459095727845,
@@ -142,14 +134,12 @@ rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {
   return (rgb_color){r, g, b};
 }
 
-//#ifdef USE_PALETTES
-//void ColorMath::set_brightness(byte brightness_percent){
+void ColorMath::set_brightness(byte brightness_percent){
 //  float percent = brightness_percent / 100.0;
 //  for(byte i = 0; i < NPALETTE; i++){
 //    adjusted_palette[i] = scale_color(palette[i], percent);
 //  }
-//}
-//#endif
+}
 
 rgb_color ColorMath::add_color(rgb_color color1, rgb_color color2){
   rgb_color new_color;
@@ -192,23 +182,13 @@ int ColorMath::crossfade_steps(){
 byte ColorMath::crossfade_component(int step, byte component1, byte component2){
   if(step > 1){
     int prev_step = step - 1;
-#ifdef USE_PROGMEM
     int prevc2 = component2 * pgm_read_float(&crossfade[prev_step]);
     int restored_c1 = (component1 - prevc2) / pgm_read_float(&crossfade[CROSSFADE_STEPS - prev_step]);
-#else
-    int prevc2 = component2 * crossfade[prev_step];
-    int restored_c1 = (component1 - prevc2) / crossfade[CROSSFADE_STEPS - prev_step];
-#endif
     component1 = restored_c1;
   }
 
-#ifdef USE_PROGMEM
   int newc1 = component1 * pgm_read_float(&crossfade[CROSSFADE_STEPS - step]);
   int newc2 = component2 * pgm_read_float(&crossfade[step]);
-#else
-  int newc1 = component1 * crossfade[CROSSFADE_STEPS - step];
-  int newc2 = component2 * crossfade[step];
-#endif
   return newc1 + newc2;
 }
 

@@ -77,21 +77,21 @@ class Colors
 
   private:
   // this is pointed-to as the return value for get_color()
-  static rgb_color static_color;
+  static rgb_color return_color;
 };
 
-rgb_color Colors::static_color = {0,0,0};
+rgb_color Colors::return_color = {0,0,0};
 
 const rgb_color * const Colors::get_color(color c){
   void *p = (void*)pgm_read_word(&(color_array[c]));
-  static_color.red =   pgm_read_byte(p + 0);
-  static_color.green = pgm_read_byte(p + 1);
-  static_color.blue =  pgm_read_byte(p + 2);
-  return &static_color;
+  return_color.red =   pgm_read_byte(p + 0);
+  return_color.green = pgm_read_byte(p + 1);
+  return_color.blue =  pgm_read_byte(p + 2);
+  return &return_color;
 }
 
 // unused color combinations
-// darked versions could be dimmed
+// darkened versions aren't needed because standard ones could be dimmed
 //  const rgb_color color_5 PROGMEM = {10, 0, 0}; // dkred
 //  const rgb_color color_5 PROGMEM = {10, 10, 0}; // dkyellow
 //  const rgb_color color_5 PROGMEM = {0, 10, 0}; // dkgreen
@@ -99,33 +99,12 @@ const rgb_color * const Colors::get_color(color c){
 //  const rgb_color color_4 PROGMEM = { 0, 10, 10}; // dycyan
 //  const rgb_color color_5 PROGMEM = {10,  0, 10}; // dkmagenta
 //
-// pale colors don't look great
+// pale colors look bad
 //  const rgb_color color_1 PROGMEM = {20, 10, 10}; // pale red
 //  const rgb_color color_2 PROGMEM = {20, 20, 10}; // pale yellow
 //  const rgb_color color_9 PROGMEM = {10, 20, 10}; // pale green
 //  const rgb_color color_1 PROGMEM = {20, 10, 20}; // pale magenta
 //  const rgb_color color_9 PROGMEM = {10, 20, 20}; // pale cyan
 //  const rgb_color color_5 PROGMEM = {10, 10, 20}; // pale blue
-
-
-//#ifdef USE_PALETTES
-//#define NPALETTE 16
-//#define NPRETTY_COLORS 12     // red group                    green group                        blue group                    white group
-//rgb_color palette[NPALETTE]; // = { red, orange, magenta, pink,   yellow, ltgreen, green, seafoam,   cyan, ltblue, blue, purple,   white, black, gray, dkgray };
-//rgb_color adjusted_palette[NPALETTE];
-
-//#define NGROUPS 3 // 4
-//#define GROUP_RED_START 0
-//#define GROUP_RED_MAX 4
-//#define GROUP_GREEN_START GROUP_RED_MAX
-//#define GROUP_GREEN_MAX 8
-//#define GROUP_BLUE_START GROUP_GREEN_MAX
-//#define GROUP_BLUE_MAX 12
-//#define GROUP_WHITE_START GROUP_BLUE_MAX
-//#define GROUP_WHITE_MAX NPALETTE
-//
-//int group_start[4] = {GROUP_RED_START,GROUP_GREEN_START,GROUP_BLUE_START,GROUP_WHITE_START};
-//int group_max[4] = {GROUP_RED_MAX,GROUP_GREEN_MAX,GROUP_BLUE_MAX,GROUP_WHITE_MAX};
-//#endif
 
 #endif

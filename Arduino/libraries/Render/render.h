@@ -105,4 +105,3 @@ void Render::set_minimum_brightness(byte brightness){
 }
 
 #endif
-
