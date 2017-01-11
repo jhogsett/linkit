@@ -42,10 +42,10 @@ def setup():
   command("4:zon:red:3:rep:grn:3:rep:org:3:rep:blu:3:rep")
   command("3:zon:red:2:rep:grn:2:rep:org:2:rep:blu:2:rep")
   command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")
-  command("1:zon:gry:bli")
+  command("1:zon:wht")
 
-num_colors = 16
-colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "white", "gray", "dkgray" ]
+num_colors = 13
+colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "white", "black", "gray", "dkgray" ]
 
 effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
 effect_index = 0
