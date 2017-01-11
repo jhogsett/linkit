@@ -44,7 +44,7 @@ def setup():
   command("2:zon:red:1:rep:grn:1:rep:org:1:rep:blu:1:rep")
   command("1:zon:gry:bli")
 
-num_colors = 16
+num_colors = 12
 colors = [ "red", "orange", "yellow", "ltgreen", "green", "seafoam", "cyan", "ltblue", "blue", "purple", "magenta", "pink", "black", "white", "gray", "dkgray" ]
 
 effects = ['blink1','blink2','blink3','blink4','blink5','blink6']
@@ -93,14 +93,15 @@ def do_zones():
     do_zone(i)                                                           
   command("flush") 
 
-global idx, color, rotation_count                                                                                                                                     
+global idx, color, rotation_count, change_count                                                                                                                                   
 idx = -1         
 color = 'pink'                                                        
 rotation_count = 0                 
 past_colors = ['', '', '', '', '', '', 'red', 'green', 'orange', 'blue']
-                                                                                                                              
+change_count = 0                 
+                                                                                                             
 def loop():                              
-  global idx, rotation_count, color                                                                                                                                  
+  global idx, rotation_count, color, change_count                                                                                                                                  
   do_flush = False
   idx = idx + 1                                                          
   if (idx % 3 == 0):                                                                                                                          
@@ -124,11 +125,15 @@ def loop():
 
   rotation_count += 1     
   if(rotation_count == 24):            
-    color = random_color()                                             
-    while(color in past_colors):
-      color = random_color()
-    past_colors.pop(0)
-    past_colors.append(color)
+    change_count = (change_count + 1) % 2
+    if(change_count == 0):
+      color = "black"
+    else:
+      color = random_color()                                             
+      while(color in past_colors):
+        color = random_color()
+      past_colors.pop(0)
+      past_colors.append(color)
     rotation_count = 0  
 
   time.sleep(play_time)
