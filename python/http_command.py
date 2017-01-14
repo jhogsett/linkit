@@ -84,13 +84,9 @@ class Handler(BaseHTTPRequestHandler):
 
     if last_run != '':
       banner = """
-<div class="row">
-  <div class="col-xs-10">
-    <div class="well well-sm"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> %(last_run)s </div>
-  </div>
-  <div class="col-xs-2">
-    <a class="btn btn-primary btn-lg btn-block" role="button" href="/command?run=stop"><span class="glyphicon glyphicon-remove-sign"></span></a>
-  </div>
+<div class="well well-sm clearfix">
+  <div class="col-xs-9"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> %(last_run)s</div>
+  <div class="col-xs-3"><a class="btn btn-link btn-xs pull-right" role="button" href="/command?run=stop"><span class="glyphicon glyphicon-remove-sign"></span></a></div>
 </div>
       """ % globals()
     else:
@@ -101,7 +97,7 @@ class Handler(BaseHTTPRequestHandler):
     f.close  
     self.wfile.close() 
 
-  def handle_commands(commands):
+  def handle_commands(self, commands):
     command(":::pause")
     for cmd in commands:
       command(cmd)
@@ -119,17 +115,15 @@ class Handler(BaseHTTPRequestHandler):
         if last_run != '':
           to_run = last_run
           self.kill_last_app();
-          handle_commands(args['cmd'])
+          self.handle_commands(args['cmd'])
           self.run_app(to_run)
-        else
-          handle_commands(args['cmd'])
+        else:
+          self.handle_commands(args['cmd'])
 
         # command(":::pause")
         # for cmd in args['cmd']:
         #   command(cmd)
         # command("flush:continue")
-
-      handle_commands(args['cmd'])
 
       if 'run' in args:
         self.kill_last_app() 
