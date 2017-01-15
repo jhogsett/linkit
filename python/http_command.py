@@ -84,9 +84,19 @@ class Handler(BaseHTTPRequestHandler):
 
     if last_run != '':
       banner = """
+<<<<<<< Updated upstream
 <div class="well well-sm clearfix">
   <div class="col-xs-9"><i class="fa fa-circle-o-notch fa-spin fa-fw"></i> %(last_run)s</div>
   <div class="col-xs-3"><a class="btn btn-link btn-xs pull-right" role="button" href="/command?run=stop"><span class="glyphicon glyphicon-remove-sign"></span></a></div>
+=======
+<div class="well well-sm">
+  <div class="pull-left">
+    <i class="fa fa-circle-o-notch fa-spin fa-fw"></i> %(last_run)s
+  </div>
+  <div class="pull-right">
+    <a class="btn btn-link btn-sm" role="button" href="/command?run=stop"><span class="glyphicon glyphicon-remove-sign"></span></a>
+  </div>
+>>>>>>> Stashed changes
 </div>
       """ % globals()
     else:
