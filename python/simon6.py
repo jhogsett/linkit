@@ -27,7 +27,7 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
   flush_input()
   choose_colors()
-  command(":::pau:clr")
+  command(":::pau:clr:pau")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
