@@ -123,7 +123,11 @@
 
 #define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
 
+#ifdef NON_WORKING_INVALID
+#define BAUD_RATE 230400              // did not work in testing
+#else
 #define BAUD_RATE 115200              // speed for communicating with the MT7688
+#endif
 
 #if defined(USE_1_DISPLAYS)
 #if defined(WEARABLE)

@@ -91,6 +91,9 @@ void Commands::high_power(){
 
 void Commands::set_display(byte display){
   buffer->set_display(display);
+
+  // reset to the default zone on a display change
+  buffer->set_zone(0);
 }
 
 void Commands::set_pin(byte pin, bool on){
@@ -321,18 +324,11 @@ void Commands::flush_all(bool force_display){
   buffer->set_display(orig_display);
 }
 
+// reset internal states and un-pause
 void Commands::reset(){
-
-  // pausing on reset causes a problem for programs starting up,
-  // that have to pause again afterwards; moved to clear
-  //paused = false;
+  paused = false;
   
   low_power_mode = false;
-  
-  //buffer->set_window(visible_led_count);
-  //buffer->set_offset(0);
-  //buffer->set_zone(0);
-  //buffer->set_display(0);
   
   buffer->reset();
   effects_processor->reset_effects();
@@ -342,9 +338,12 @@ void Commands::reset(){
   //set_brightness_level(default_brightness);
 }
 
-// full reset and clear
+// full reset and clear of displays with no un-pause
 void Commands::clear(){
   reset();
+  
+  // pausing on clear causes a problem for programs starting up,
+  // that have to pause again afterwards; moved to reset
   paused = false;
 
   byte orig_display = buffer->get_current_display();

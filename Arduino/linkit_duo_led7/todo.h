@@ -2,24 +2,28 @@
 
 // need to close a running app before starting circleci
 
-// maybe pulse should be zero brightness in off state
+// need to be able to set offset override to zero (case: a zone is selected and want to override with the value zero)
 
-// need to be able to set offset override to zero
+// re-randomization on repeat/copy/mirror, etc.
 
-// re-randoization on repeat/copy/mirror, etc.
+// send a different acknowledgement code when first started up, so the script can detect and refresh (for instance, an uppercase K)
+
+// command to set an analog output to a particular value
 
 // problems with offset and window
 // pshifto - starts at [0]
 // crossfade - leaves only pixels inside the zone (??? in further testing it seemed to work just fine)
 
-// rotation using power shift
+// rotation using power shift timing
+
+// add color groups
 
 // clean up
 /////////////////////
 
 // store blink states as bits not bools
 
-// move zones to a class
+// move zones to a class (especially for self explanatory comments)
 
 // fix auto brightness
 
