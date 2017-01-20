@@ -13,9 +13,8 @@ effects = [
   "rnd:flo:4,0:cpy:cfa",
   "rnd:flo:3,0:cpy:cfa",
   "rnd:flo:2,0:cpy:cfa",
-  "red:org:grn:blu:pur:5,0:cpy:cfa",
-  "rnd:blk:80:ble:blk:80:ble:blk:80:ble:4,0:cpy:cfa",
-  "blk:flo:cfa:wht:flo:cfa:rnd:flo:cfa"
+  "rnd:flo",
+  "red:org:grn:blu:pur:5,0:cpy:cfa"
 ]
 
 def flush_input():
