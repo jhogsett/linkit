@@ -1,6 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// 93-LED Disc Projector
+// #define PROJECTOR
+
+// 100-LED Xmas Lights
+#define XMAS_LIGHTS
+
 // enable to change settings for the 8-LED wearable version
 // #define WEARABLE
 
@@ -8,7 +14,7 @@
 // #define DISC93
 
 // enable to change settings for the 93-LED disc plus a strip
-#define DISC93_AND_STRIP
+// #define DISC93_AND_STRIP
 
 // enable to change settings for a single 50-LED strand
 // #define STRAND1
@@ -25,13 +31,21 @@
 // enable to test 2 72-LED strips
 // #define STRIP2
 
+#ifdef PROJECTOR
+#define DISC93
+#endif
+
+#ifdef XMAS_LIGHTS
+#define STRAND2
+#endif
+
 // should have the auto-brightness range here
 #define AUTO_BRIGHTNESS_MIN 3
 #define AUTO_BRIGHTNESS_MAX 33
 
-#if defined(WEARABLE) || defined(STRAND1) || defined(STRAND2) || defined(DISC93)
+#if defined(STRAND1) || defined(STRAND2) || defined(DISC93) // || defined(WEARABLE)
 #define USE_1_DISPLAYS
-#elif  defined(STRIP2) || defined(DISC93_AND_STRIP)
+#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) 
 #define USE_2_DISPLAYS
 #elif defined(STRIP3) || defined(MAXLEDS)
 #define USE_3_DISPLAYS
@@ -76,7 +90,7 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #endif
 
-#define MINIMUM_BRIGHTNESS_PERCENT 2  // brightness scale for blinking leds in the off state
+#define MINIMUM_BRIGHTNESS_PERCENT 1  // brightness scale for blinking leds in the off state
 #define FADE_RATE 0.9999
 
 // visible led count
@@ -129,14 +143,12 @@
 #define BAUD_RATE 115200              // speed for communicating with the MT7688
 #endif
 
-#if defined(USE_1_DISPLAYS)
 #if defined(WEARABLE)
 #define BLINK_PERIOD 12000
 #define BREATHE_PERIOD 800
-#else
+#elif defined(USE_1_DISPLAYS)
 #define BLINK_PERIOD 6000
 #define BREATHE_PERIOD 400
-#endif
 #elif defined(USE_2_DISPLAYS)
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 200

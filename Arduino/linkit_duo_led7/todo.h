@@ -1,6 +1,3 @@
-// if an app is known to be running, stop then restart it after applying level changes and others
-
-// need to close a running app before starting circleci
 
 // need to be able to set offset override to zero (case: a zone is selected and want to override with the value zero)
 
@@ -8,7 +5,6 @@
 
 // send a different acknowledgement code when first started up, so the script can detect and refresh (for instance, an uppercase K)
 
-// command to set an analog output to a particular value
 
 // problems with offset and window
 // pshifto - starts at [0]
@@ -16,7 +12,6 @@
 
 // rotation using power shift timing
 
-// add color groups
 
 // clean up
 /////////////////////
@@ -34,6 +29,8 @@
 // see if auto brigtness needs to use that ram for its buffer
 
 
+
+
 // new effects
 ////////////////////
 
@@ -42,6 +39,11 @@
 // flash -- flashes bright white 1 or 3 times
 
 // lightning 
+
+// add color groups
+
+
+
 
 // new commands
 ////////////////////
@@ -82,6 +84,10 @@
 // transition: all leds get sucked into one LED position
 
 
+
+// new hardware features
+
+// command to set an analog output to a particular value
 
 
 
@@ -127,6 +133,8 @@ lowpower command means:
  
 
 */
+
+// need to close a running app before starting circleci
 
 
 

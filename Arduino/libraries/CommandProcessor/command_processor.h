@@ -11,7 +11,11 @@ class CommandProcessor
 {
   public:
   char str[MAX_STRING_LENGTH];
+
+#ifdef USE_ARG_BUFFER
   char arg[MAX_STRING_LENGTH];
+#endif
+
   int sub_args[NUM_SUB_ARGS];
 
   const char * const *commands;
@@ -69,7 +73,9 @@ void CommandProcessor::send_ack(){
 }
 
 void CommandProcessor::save_args(){
-  strcpy(arg, str); 
+#ifdef USE_ARG_BUFFER
+  strcpy(arg, str);
+#endif
   get_sub_args();
 }
 
@@ -89,7 +95,11 @@ bool CommandProcessor::is_command_P(char *str, const char *command){
 }
 
 void CommandProcessor::get_sub_args(){
+#ifdef USE_ARG_BUFFER
   char *token = strtok(arg, ",");
+#else
+  char *token = strtok(str, ",");
+#endif
   sub_args[0] = atoi(token);
   token = strtok(NULL, ",");
   sub_args[1] = atoi(token);
@@ -98,7 +108,9 @@ void CommandProcessor::get_sub_args(){
 }
 
 void CommandProcessor::reset_args(){
+#ifdef USE_ARG_BUFFER
   strcpy(arg, "");
+#endif
   sub_args[0] = 0;
   sub_args[1] = 0;
   sub_args[2] = 0;
