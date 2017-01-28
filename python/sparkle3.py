@@ -13,7 +13,7 @@ effects = [
   "rnd:flo:4,0:cpy:cfa",
   "rnd:flo:3,0:cpy:cfa",
   "rnd:flo:2,0:cpy:cfa",
-  "rnd:flo",
+  "rnd:flo:cfa",
   "red:org:grn:blu:pur:5,0:cpy:cfa"
 ]
 
@@ -32,8 +32,9 @@ def command(cmd_text):
 def setup(): 
   global s, play_time 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command(":::pau")
-  command("rst:clr")
+  command(":::")
+  command("pau:clr")
+  command("pau")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
