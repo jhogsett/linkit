@@ -1,7 +1,7 @@
 #ifndef AUTO_BRIGHTNESS_H
 #define AUTO_BRIGHTNESS_H
 
-// todo: fix how it set the brightness amount
+// todo: fix how it sets the brightness amount
 
 // todo: see if the static ligth sample array is needed or can be on the stack
 
@@ -12,7 +12,7 @@
 
 // Automatic brightness minimum and maximum setting
 #define DEFAULT_MIN_BRIGHTNESS 10
-#define DEFAULT_MAX_BRIGHTNESS 90
+#define DEFAULT_MAX_BRIGHTNESS 100
 #define DEFAULT_BRIGHTNESS_RANGE (DEFAULT_MAX_BRIGHTNESS - DEFAULT_MIN_BRIGHTNESS)
 
 // Automatic brightness ligth samples
@@ -86,7 +86,8 @@ template<byte pin> byte AutoBrightness<pin>::get_auto_brightness_level(){
   return min_brightness + int(brightness_range * detected_brightness);
 }
 
+// todo: move this higher up to commands, which understands how to set brightness in buffer and renderer
 template<byte pin> void AutoBrightness<pin>::auto_adjust_brightness(){
-  //ColorMath::set_brightness(get_auto_brightness_level());
+  // ColorMath::set_brightness(get_auto_brightness_level());
 }
 #endif
