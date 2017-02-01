@@ -103,13 +103,12 @@ void Commands::set_pin(byte pin, bool on){
 
 void Commands::set_brightness_level(byte level){
   if(level == 0){
-//#if defined(WEARABLE) || defined(DISC93) || defined(STRAND1) || defined(STRAND2) || defined(DISC93_AND_STRIP)
+#ifdef USE_AUTO_BRIGHTNESS
+    level = auto_brightness->get_auto_brightness_level();
+#else
     level = default_brightness;
-//#else
-//    level = auto_brightness->get_auto_brightness_level();
-//#endif
+#endif
   }
-//  ColorMath::set_brightness(level);    
   renderer->set_default_brightness(level);
   flush_all(true);
 }

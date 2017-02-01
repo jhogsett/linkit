@@ -5,7 +5,10 @@
 // #define PROJECTOR
 
 // 100-LED Xmas Lights
-#define XMAS_LIGHTS
+// #define XMAS_LIGHTS
+
+// 72-LED Apollo Lights
+// #define APOLLO_LIGHTS
 
 // enable to change settings for the 8-LED wearable version
 // #define WEARABLE
@@ -26,7 +29,7 @@
 // #define MAXLEDS
 
 // enable to test 3 72-LED strips
-// #define STRIP3
+#define STRIP3
 
 // enable to test 2 72-LED strips
 // #define STRIP2
@@ -37,6 +40,10 @@
 
 #ifdef XMAS_LIGHTS
 #define STRAND2
+#endif
+
+#ifdef APOLLO_LIGHTS
+#define USE_AUTO_BRIGHTNESS
 #endif
 
 // should have the auto-brightness range here
@@ -166,14 +173,13 @@ class Config
   static constexpr byte display_pins[NUM_DISPLAYS] = 
   {
     DISPLAY_PIN1
-#if defined(USE_2_DISPLAYS)
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)
     , DISPLAY_PIN2
 #endif
 #if defined(USE_3_DISPLAYS)
     , DISPLAY_PIN3
 #endif
   };  
-
   
   static const byte random_seed_pin = RANDOM_SEED_PIN;
   static const byte light_sensor_pin = LIGHT_SENSOR_PIN;
