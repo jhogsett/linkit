@@ -131,6 +131,8 @@
     * git config --global user.email "{YOUR EMAIL}"
     * git config --global user.name "{YOUR FULL NAME}"
   
+        Tip: use git config --list to confirm the settings
+
 1. Set up Git for pulling and pushing commits
 
     A _git pull_ is a _git fetch_ followed by a _git merge_. To do the merge, Git needs to know how. (One might think this would have been set up correctly to begin with, since Git comes pre-installed.)
