@@ -24,6 +24,9 @@ d = dict(b='hellasdf')
 template.render(d)
 u'Hello!\n\ntest\nhellasdf'
 print template.render(d)
+```
+
+```text
 Hello!
 
 test
