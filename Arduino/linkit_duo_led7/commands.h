@@ -92,7 +92,7 @@ void Commands::high_power(){
 void Commands::set_display(byte display){
   buffer->set_display(display);
 
-  // reset to the default zone on a display change
+  // reset to the default zone on a display change (? this confused me when working on glasses, maybe not needed)
   buffer->set_zone(0);
 }
 
@@ -355,18 +355,41 @@ void Commands::clear(){
 }
 
 void Commands::do_demo(){
-  int count = visible_led_count / DEMO_TOTAL_SIZE;  
-  int window = visible_led_count;
+  int count;  
+  int window;
+  int size_;
+  int gap_;
+  int delay_;
+  
+#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
+  if(buffer->get_display() == 1){
+    count = 8; 
+    window = 8;
+    size_ = 1;
+    gap_ = 0;
+    delay_ = 125;
+  } else {
+#endif
+    
+  size_ = DEMO_TOTAL_SIZE;
+  gap_ = DEMO_GAP_SIZE;
+  delay_ = DEMO_DELAY;
+  count = visible_led_count / DEMO_TOTAL_SIZE;  
+  window = visible_led_count;
+    
+#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
+  }
+#endif
   
   for(byte i = 0; i < count; i++){
     rgb_color color = ColorMath::random_color();
-    do_power_shift_object(DEMO_TOTAL_SIZE, window);
-    window -= DEMO_TOTAL_SIZE;
+    do_power_shift_object(size_, window);
+    window -= size_;
     byte effect = EffectsProcessor::random_effect();
-    for(byte j = DEMO_GAP_SIZE; j < DEMO_TOTAL_SIZE; j++){
+    for(byte j = gap_; j < size_; j++){
       buffer->set_color(j, color, false, effect);
     }
-    delay(DEMO_DELAY);
+    delay(delay_);
   }
 }
 

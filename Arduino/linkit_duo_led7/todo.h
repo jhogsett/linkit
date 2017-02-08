@@ -1,3 +1,141 @@
+// python: when re-running a command, include all the arguments
+
+/* return values: 'k' followed by additional bytes, or just return an integer value
+
+use cases:
+
+get number of leds
+get light level
+read value of a pin (analog or digital)
+read current set brightness level
+
+
+
+add reboot command
+rearrange links page
+
+
+
+also: set an analog value on a pin
+*/
+
+// show/hide by zone
+
+/* idea: a scheduler
+     specify timing (command issued this often)
+     specify a set of commands
+
+     example:
+       60000,0:sch:3:zon:rot -- for schedule zero, at each 60000 out of 6000 cycles (~ 1 second, so ~ 10 seconds) , rot zone 3
+       0,0:sch -- clear this schedule
+       
+       3000,0:sch:red:green:blue -- insert RGB 
+
+       1000,1:sch:0:rev:2:zon:rot:1:rev:3:zon:rot:0:rev:4:zon:rot:1:rev:5:zon:rot:0:rev:5:zon:rot
+
+
+1000,1:sch:
+       
+0:rev:2:zon:rot:1:rev:3:zon:rot:0:rev:4:zon:rot:1:rev:5:zon:rot:0:rev:5:zon:rot = 80 chars, allow for 100 chars, allow for 6 schedules, adjust as free memory gets low
+
+
+1000,0:sch:6:zon:rot
+1000,1:sch:5:zon:rot
+1000,2:sch:4:zon:rot
+1000,3:sch:3:zon:rot
+1000,4:sch:2:zon:rot
+1000,0:sch:1:zon:rot
+
+
+100 seems like too many; just do more tha one schedule if it goes long
+
+so have more schedules, each shorter for max flexibility and efficient ram use
+
+do them in order, on the zero mark of the timing cycle
+
+each schedule needs:
+  command buffer
+  event period, 0=disabled
+  event time counter
+
+
+10 schedules of 20 chars each including \0 == 200 bytes
+
+
+6 blink cycles in 10 seconds, blink period is 6000
+
+
+ have storage for a few schedules
+
+
+     
+*/
+
+
+
+
+// ensure sub arg 0 is an unsigned in (?)
+
+/* glasses
+
+high tech color choices (green rings with spaced out single reds looks high tech)
+Movements that appear Borg-like
+  one eye, radar/clock-ish constantly moving 
+  other eye, occasional rotation, varying direction and duration
+  sides - some back and forth, and blinking
+  occasional fast spinning or bright flashing
+figure-8
+the cops
+ggggggg
+
+*/
+
+/* car lights ideas
+
+fast flashing colors
+slow crossfading colors
+nighttime sleeping
+cron job to turn on and off in the middle of the night
+random lengths of colors
+very slow/occasional blinking / deterrent
+multiple rotating zones
+short white burst like once a minute
+kitt kar like back and forth
+  with hsl color
+  */
+
+/*
+
+  custom blink:
+
+  on period
+  off period
+
+  if the entire period is 6000 ticks
+    3000/3000 would be a slow on/off blink
+    1/1 would be the fastest possible blinking
+    1000/6000 would be a blink for 1/6 of the period
+    1000/3000 would be two blinks each for 1/6 of the period
+    100/6000 would be a short flash at the start of the period
+  
+
+ */
+
+
+
+
+
+
+// carry the color and effect that drops off the end of a buffer operation,
+//    then have a special "color" that inserts it.
+
+// if paused, bre effect renders black, causing probems transitioning between animations and breathing (blink renders ok)
+
+// for wearable, have both ways to launch circleci7
+
+// add autobrightness to circleci7
+
+// add a command line switch to turn off logging for circleci7
 
 // need to be able to set offset override to zero (case: a zone is selected and want to override with the value zero)
 
@@ -5,6 +143,7 @@
 
 // send a different acknowledgement code when first started up, so the script can detect and refresh (for instance, an uppercase K)
 
+// html: have links to other pages on same device, and other devices
 
 // problems with offset and window
 // pshifto - starts at [0]
@@ -19,8 +158,6 @@
 // store blink states as bits not bools
 
 // move zones to a class (especially for self explanatory comments)
-
-// fix auto brightness
 
 // move mechanical buffer operations like mirror to Buffer class
 

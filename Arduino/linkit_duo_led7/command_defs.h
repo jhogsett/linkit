@@ -4,7 +4,7 @@
 #define CMD_NONE       0
 #define CMD_FIRST      1
 
-#define NUM_COMMANDS  130
+#define NUM_COMMANDS  134
 #define CMD_FLUSH         1
 #define CMD_ERASE         2
 #define CMD_ROTATE        3
@@ -50,7 +50,7 @@
 #define CMD_BLINKR       43
 #define CMD_BLINKA       44
 #define CMD_BLINKB       45
-#define CMD_BLINKP       46
+#define CMD_BLINKC       46
 #define CMD_BREATHE      47
 #define CMD_EFFECTR      48
 #define CMD_STATIC       49
@@ -115,7 +115,7 @@
 #define CMD_BLINKROLD   108
 #define CMD_BLINKAOLD   109
 #define CMD_BLINKBOLD   110
-#define CMD_BLINKPOLD   111
+#define CMD_BLINKCOLD   111
 #define CMD_BREATHEOLD  112
 #define CMD_EFFECTROLD  113
 #define CMD_STATICOLD   114
@@ -135,6 +135,10 @@
 #define CMD_PINONOLD    128
 #define CMD_PINOFFOLD   129
 #define CMD_DEMOOLD     130
+#define CMD_SETBLINKC   131
+#define CMD_SETBLINKP   132
+#define CMD_SCHEDULE    133
+#define CMD_CARRY       134
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "era";
@@ -181,7 +185,7 @@ const char cmd_042[] PROGMEM = "bl6";
 const char cmd_043[] PROGMEM = "blr";
 const char cmd_044[] PROGMEM = "bla";
 const char cmd_045[] PROGMEM = "blb";
-const char cmd_046[] PROGMEM = "blp";
+const char cmd_046[] PROGMEM = "blc";
 const char cmd_047[] PROGMEM = "bre";
 const char cmd_048[] PROGMEM = "efr";
 const char cmd_049[] PROGMEM = "sta";
@@ -246,7 +250,7 @@ const char cmd_107[] PROGMEM = "blink6";
 const char cmd_108[] PROGMEM = "blinkr";
 const char cmd_109[] PROGMEM = "blinka";
 const char cmd_110[] PROGMEM = "blinkb";
-const char cmd_111[] PROGMEM = "blinkp";
+const char cmd_111[] PROGMEM = "blinkc";
 const char cmd_112[] PROGMEM = "breathe";
 const char cmd_113[] PROGMEM = "effectr";
 const char cmd_114[] PROGMEM = "static";
@@ -266,21 +270,26 @@ const char cmd_127[] PROGMEM = "hipower";
 const char cmd_128[] PROGMEM = "pinon";
 const char cmd_129[] PROGMEM = "pinoff";
 const char cmd_130[] PROGMEM = "demo";
+const char cmd_131[] PROGMEM = "sbc";
+const char cmd_132[] PROGMEM = "sbp";
+const char cmd_133[] PROGMEM = "sch";
+const char cmd_134[] PROGMEM = "car";
 
 const char* const command_strings[] PROGMEM = {
-   cmd_001,  cmd_002,  cmd_003,  cmd_004,  cmd_005,  cmd_006,  cmd_007,  cmd_008,  cmd_009, cmd_010,
-   cmd_011,  cmd_012,  cmd_013,  cmd_014,  cmd_015,  cmd_016,  cmd_017,  cmd_018,  cmd_019, cmd_020,
-   cmd_021,  cmd_022,  cmd_023,  cmd_024,  cmd_025,  cmd_026,  cmd_027,  cmd_028,  cmd_029, cmd_030,
-   cmd_031,  cmd_032,  cmd_033,  cmd_034,  cmd_035,  cmd_036,  cmd_037,  cmd_038,  cmd_039, cmd_040,
-   cmd_041,  cmd_042,  cmd_043,  cmd_044,  cmd_045,  cmd_046,  cmd_047,  cmd_048,  cmd_049, cmd_050,
-   cmd_051,  cmd_052,  cmd_053,  cmd_054,  cmd_055,  cmd_056,  cmd_057,  cmd_058,  cmd_059, cmd_060,
-   cmd_061,  cmd_062,  cmd_063,  cmd_064,  cmd_065,  cmd_066,  cmd_067,  cmd_068,  cmd_069, cmd_070,
-   cmd_071,  cmd_072,  cmd_073,  cmd_074,  cmd_075,  cmd_076,  cmd_077,  cmd_078,  cmd_079, cmd_080,
-   cmd_081,  cmd_082,  cmd_083,  cmd_084,  cmd_085,  cmd_086,  cmd_087,  cmd_088,  cmd_089, cmd_090,
-   cmd_091,  cmd_092,  cmd_093,  cmd_094,  cmd_095,  cmd_096,  cmd_097,  cmd_098,  cmd_099, cmd_100,
-   cmd_101,  cmd_102,  cmd_103,  cmd_104,  cmd_105,  cmd_106,  cmd_107,  cmd_108,  cmd_109, cmd_110,
-   cmd_111,  cmd_112,  cmd_113,  cmd_114,  cmd_115,  cmd_116,  cmd_117,  cmd_118,  cmd_119, cmd_120,
-   cmd_121,  cmd_122,  cmd_123,  cmd_124,  cmd_125,  cmd_126,  cmd_127,  cmd_128,  cmd_129, cmd_130
+   cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
+   cmd_011, cmd_012, cmd_013, cmd_014, cmd_015, cmd_016, cmd_017, cmd_018, cmd_019, cmd_020,
+   cmd_021, cmd_022, cmd_023, cmd_024, cmd_025, cmd_026, cmd_027, cmd_028, cmd_029, cmd_030,
+   cmd_031, cmd_032, cmd_033, cmd_034, cmd_035, cmd_036, cmd_037, cmd_038, cmd_039, cmd_040,
+   cmd_041, cmd_042, cmd_043, cmd_044, cmd_045, cmd_046, cmd_047, cmd_048, cmd_049, cmd_050,
+   cmd_051, cmd_052, cmd_053, cmd_054, cmd_055, cmd_056, cmd_057, cmd_058, cmd_059, cmd_060,
+   cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070,
+   cmd_071, cmd_072, cmd_073, cmd_074, cmd_075, cmd_076, cmd_077, cmd_078, cmd_079, cmd_080,
+   cmd_081, cmd_082, cmd_083, cmd_084, cmd_085, cmd_086, cmd_087, cmd_088, cmd_089, cmd_090,
+   cmd_091, cmd_092, cmd_093, cmd_094, cmd_095, cmd_096, cmd_097, cmd_098, cmd_099, cmd_100,
+   cmd_101, cmd_102, cmd_103, cmd_104, cmd_105, cmd_106, cmd_107, cmd_108, cmd_109, cmd_110,
+   cmd_111, cmd_112, cmd_113, cmd_114, cmd_115, cmd_116, cmd_117, cmd_118, cmd_119, cmd_120,
+   cmd_121, cmd_122, cmd_123, cmd_124, cmd_125, cmd_126, cmd_127, cmd_128, cmd_129, cmd_130,
+   cmd_131, cmd_132, cmd_133, cmd_134
 };
 
 #endif

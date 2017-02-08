@@ -111,7 +111,7 @@ rgb_color Dependencies::colors3[config.led_count];
 
 rgb_color *Dependencies::color_buffers[] = 
 { colors
-#if defined(USE_2_DISPLAYS)
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)
   , colors2
 #endif  
 #if defined(USE_3_DISPLAYS)
@@ -134,7 +134,7 @@ byte Dependencies::effects3[config.led_count];
 byte *Dependencies::effects_buffers[] = 
 { 
   effects 
-#if defined(USE_2_DISPLAYS)
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)
   , effects2 
 #endif  
 #if defined(USE_3_DISPLAYS)
@@ -155,7 +155,7 @@ PololuLedStrip<DISPLAY_PIN3> Dependencies::ledStrip3;
 PololuLedStripBase* Dependencies::ledStrips[config.num_displays] = 
 {
   &Dependencies::ledStrip1
-#if defined(USE_2_DISPLAYS)
+#if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)
   , &Dependencies::ledStrip2
 #endif  
 #if defined(USE_3_DISPLAYS)
@@ -235,10 +235,23 @@ void Dependencies::begin(){
 }
 
 void Dependencies::self_test(){
+
+#ifdef STATUS_MONITOR
+  // flash the red alarm light for one second
+  commands.set_pin(4, true);
+  delay(1000);
+  commands.set_pin(4, false);
+#endif
+
+#ifdef WEARABLE_AND_STRIP
+  commands.do_demo();
+#else
   for(int i = 0; i < NUM_BUFFERS; i++){
     commands.set_display((NUM_BUFFERS - 1) - i);
     commands.do_demo();
   }
+#endif
+
   commands.reset();
 }
 #endif

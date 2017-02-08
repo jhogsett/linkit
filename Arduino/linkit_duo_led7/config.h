@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// IoT Devices
+
 // 93-LED Disc Projector
 // #define PROJECTOR
 
@@ -10,8 +12,17 @@
 // 72-LED Apollo Lights
 // #define APOLLO_LIGHTS
 
+// 3-72-LED Strips Status Monitor
+// #define STATUS_MONITOR
+
 // enable to change settings for the 8-LED wearable version
 // #define WEARABLE
+
+// enable for WEARABLE + 72-LED Strip
+// #define WEARABLE_AND_STRIP
+
+// 64-LED Wearable and Glasses
+// #define WEARABLE_AND_GLASSES
 
 // enable to change settings for the 93-LED disc
 // #define DISC93
@@ -29,10 +40,13 @@
 // #define MAXLEDS
 
 // enable to test 3 72-LED strips
-#define STRIP3
+// #define STRIP3
 
 // enable to test 2 72-LED strips
 // #define STRIP2
+
+// enable 144-LED strips
+#define DUAL_STRIP
 
 #ifdef PROJECTOR
 #define DISC93
@@ -46,13 +60,21 @@
 #define USE_AUTO_BRIGHTNESS
 #endif
 
-// should have the auto-brightness range here
+#ifdef STATUS_MONITOR
+#define STRIP3
+#endif
+
+#ifdef APOLLO_LIGHTS
+#define AUTO_BRIGHTNESS_MIN 5
+#define AUTO_BRIGHTNESS_MAX 100
+#else
 #define AUTO_BRIGHTNESS_MIN 3
 #define AUTO_BRIGHTNESS_MAX 33
+#endif
 
-#if defined(STRAND1) || defined(STRAND2) || defined(DISC93) // || defined(WEARABLE)
+#if defined(STRAND1) || defined(STRAND2) || defined(DISC93) || defined(DUAL_STRIP)
 #define USE_1_DISPLAYS
-#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) 
+#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
 #define USE_2_DISPLAYS
 #elif defined(STRIP3) || defined(MAXLEDS)
 #define USE_3_DISPLAYS
@@ -71,10 +93,14 @@
 #define NUM_BUFFERS 1            
 #endif
 
-#if defined(DISC93) || defined(DISC93_AND_STRIP)
+#if defined(DISC93) || defined(DISC93_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
 #define DISPLAY_PIN1 11
 #define DISPLAY_PIN2 12
 #define DISPLAY_PIN3 10
+#elif defined(STATUS_MONITOR) || defined(STRIP3)
+#define DISPLAY_PIN1 5
+#define DISPLAY_PIN2 6
+#define DISPLAY_PIN3 7
 #else
 #define DISPLAY_PIN1 12
 #define DISPLAY_PIN2 11
@@ -85,16 +111,14 @@
 #define LIGHT_SENSOR_PIN A0           // photocell pin for auto-brightness setting
 
 // standard brightness
-#if defined(WEARABLE)
+#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) 
 #define DEFAULT_BRIGHTNESS_PERCENT 10
-#elif defined(DISC93) || defined(DISC93_AND_STRIP)
+#elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(STRIP2) || defined(STRIP3) || defined(DUAL_STRIP)
 #define DEFAULT_BRIGHTNESS_PERCENT 15
-#elif defined(STRAND1) || defined(STRAND2)
+#elif defined(STRAND1) || defined(STRAND2) || defined(APOLLO_LIGHTS)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
-#elif defined(STRIP2) || defined(STRIP3)
-#define DEFAULT_BRIGHTNESS_PERCENT 15
 #else
-#define DEFAULT_BRIGHTNESS_PERCENT 25
+#define DEFAULT_BRIGHTNESS_PERCENT 20
 #endif
 
 #define MINIMUM_BRIGHTNESS_PERCENT 1  // brightness scale for blinking leds in the off state
@@ -103,19 +127,25 @@
 // visible led count
 #if defined(WEARABLE)
 #define ANIM_LED_COUNT  8             
+#elif defined(WEARABLE_AND_STRIP)
+#define ANIM_LED_COUNT 72
+#elif defined(WEARABLE_AND_GLASSES)
+#define ANIM_LED_COUNT 64
 #elif defined(DISC93) || defined(DISC93_AND_STRIP)
 #define ANIM_LED_COUNT 93
 #elif defined(STRAND1)
 #define ANIM_LED_COUNT 50
 #elif defined(STRAND2)
 #define ANIM_LED_COUNT 100
+#elif defined(DUAL_STRIP)
+#define ANIM_LED_COUNT 144
 #elif defined(MAXLEDS)
 #define ANIM_LED_COUNT 250
 #else
 #define ANIM_LED_COUNT 72
 #endif
 
-#if defined(WEARABLE)
+#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) // || defined(WEARABLE_AND_GLASSES)
 #define DEMO_OBJECT_SIZE 1
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
@@ -135,6 +165,11 @@
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 35
+#elif defined(DUAL_STRIP)
+#define DEMO_OBJECT_SIZE 7
+#define DEMO_GAP_SIZE 1
+#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+#define DEMO_DELAY 0
 #else
 #define DEMO_OBJECT_SIZE 3
 #define DEMO_GAP_SIZE 1
@@ -142,7 +177,11 @@
 #define DEMO_DELAY 0
 #endif
 
+#ifdef DUAL_STRIP
+#define EASE_ANIM_MARGIN 20           // safety margin for visual effects that go past the end of the LEDs
+#else
 #define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
+#endif
 
 #ifdef NON_WORKING_INVALID
 #define BAUD_RATE 230400              // did not work in testing
@@ -153,6 +192,12 @@
 #if defined(WEARABLE)
 #define BLINK_PERIOD 12000
 #define BREATHE_PERIOD 800
+#elif defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
+#define BLINK_PERIOD 6000
+#define BREATHE_PERIOD 400
+#elif defined(DUAL_STRIP)
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 200
 #elif defined(USE_1_DISPLAYS)
 #define BLINK_PERIOD 6000
 #define BREATHE_PERIOD 400

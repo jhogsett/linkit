@@ -156,8 +156,8 @@ void dispatch_command(int cmd){
     case CMD_BLINKB:    
       dependencies.effects_processor.start_effect(BLINK_ON_B);                                             
       break;
-    case CMD_BLINKP:
-      dependencies.effects_processor.start_effect(BLINK_ON_P);                                               
+    case CMD_BLINKC:
+      dependencies.effects_processor.start_effect(BLINK_ON_C);                                               
       break;
     case CMD_BREATHE:   
       dependencies.effects_processor.start_effect(BREATHE_ON);                                             
@@ -369,8 +369,8 @@ void dispatch_command(int cmd){
     case CMD_BLINKBOLD:    
       dependencies.effects_processor.start_effect(BLINK_ON_B);                                             
       break;
-    case CMD_BLINKPOLD:
-      dependencies.effects_processor.start_effect(BLINK_ON_P);                                               
+    case CMD_BLINKCOLD:
+      dependencies.effects_processor.start_effect(BLINK_ON_C);                                               
       break;
     case CMD_BREATHEOLD:   
       dependencies.effects_processor.start_effect(BREATHE_ON);                                             
@@ -434,6 +434,20 @@ void dispatch_command(int cmd){
       break;
     case CMD_DEMOOLD:      
       dependencies.commands.do_demo();                                                                                                                                    
+      break;
+    case CMD_SETBLINKC:
+      dependencies.blink_effects.set_custom_blink(dependencies.command_processor.sub_args[0]);
+      reset_args = true;
+      break;
+    case CMD_SETBLINKP:
+      dependencies.blink_effects.set_blink_period(dependencies.command_processor.sub_args[0]);
+      reset_args = true;
+      break;
+    case CMD_SCHEDULE:
+      // set or clear a schedule
+      break;
+    case CMD_CARRY:
+      dependencies.buffer.push_carry_color();
       break;
   }
 
