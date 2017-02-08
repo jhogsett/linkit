@@ -13,22 +13,19 @@ Create file test.html
 
     $ python
 
-```text
- $ 
- $ from jinja2 import Environment, FileSystemLoader, select_autoescape
- > env = Environment(
- >     loader=FileSystemLoader('./'),
- >     autoescape=select_autoescape(['html', 'xml'])
- > )
- > template = env.get_template('test.html')
- > 
- > d = dict(b='hellasdf')
- > template.render(d)
+```python
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+env = Environment(
+  loader=FileSystemLoader('./'),
+  autoescape=select_autoescape(['html', 'xml'])
+)
+template = env.get_template('test.html')
+d = dict(b='hellasdf')
+template.render(d)
 u'Hello!\n\ntest\nhellasdf'
- > print template.render(d)
+print template.render(d)
 Hello!
 
 test
 hellasdf
- > 
 ```
