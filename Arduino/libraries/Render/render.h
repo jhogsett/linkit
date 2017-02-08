@@ -44,7 +44,8 @@ rgb_color Render::get_blink(rgb_color color, byte effect){
   }
   else
   {
-    if(effect == BLINK_ON_P){
+    if(effect == BLINK_ON_C){
+      // the custom blink is at 0% when off for maximum contrast
       render_color = black;
     } else {
       render_color = ColorMath::scale_color(color, minimum_brightness_scale);

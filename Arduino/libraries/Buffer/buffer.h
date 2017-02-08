@@ -26,6 +26,7 @@ class Buffer
   void push_color(rgb_color color, bool display, byte effect, byte max, byte start);
   void push_rgb_color(byte red, byte green, byte blue);
   void push_hsl_color(int hue, int sat, int lit);
+  void push_carry_color();
   void shift(byte count, byte maxx, bool fast_render);
   void finalize_shift(byte count, byte max);
   void set_color(byte pos, rgb_color color, bool display, byte effect);
@@ -47,6 +48,7 @@ class Buffer
   void reset();
   void set_reverse(bool reverse);
   void rotate();
+  byte get_display();
 
   static const rgb_color black;
 
@@ -62,6 +64,8 @@ class Buffer
   byte safety_led_count;
   byte visible_led_count;
   float fade_rate;
+  rgb_color carry_color;
+  byte carry_effect;
 
 #ifdef EXISTENCE_ENABLED
   byte *existence;
@@ -109,6 +113,12 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
   this->zone_offsets = zone_offsets;
   this->zone_windows = zone_windows;
   this->reverse = false;
+  this->carry_color = black;
+  this->carry_effect = NO_EFFECT;
+}
+
+byte Buffer::get_display(){
+  return this->current_display;
 }
 
 void Buffer::reset(){
@@ -164,28 +174,6 @@ void Buffer::cross_fade(int step){
    }
 }
 
-void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse = false){
-  if(reverse){
-    for(byte i = start; i < (max - 1); i++){
-      buffer[i] = buffer[i+1];
-      effects[i] = effects[i+1];
-
-#ifdef EXISTENCE_ENABLED
-      existence[i] = existence[i+1];
-#endif
-    }
-  } else {
-    for(byte i = max - 1; i >= (start + 1); i--){
-      buffer[i] = buffer[i-1];
-      effects[i] = effects[i-1];
-
-#ifdef EXISTENCE_ENABLED
-      existence[i] = existence[i-1];
-#endif
-    }
-  }
-}
-
 void Buffer::rotate(){
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
@@ -210,6 +198,34 @@ void Buffer::rotate(){
   } else {
     buffer[start] = carry_color;
     effects[start] = carry_effect;
+  }
+}
+
+void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse = false){
+  if(reverse){
+    carry_color = buffer[start];
+    carry_effect = effects[start];
+
+    for(byte i = start; i < (max - 1); i++){
+      buffer[i] = buffer[i+1];
+      effects[i] = effects[i+1];
+
+#ifdef EXISTENCE_ENABLED
+      existence[i] = existence[i+1];
+#endif
+    }
+  } else {
+    carry_color = buffer[max - 1];
+    carry_effect = effects[max - 1];
+
+    for(byte i = max - 1; i >= (start + 1); i--){
+      buffer[i] = buffer[i-1];
+      effects[i] = effects[i-1];
+
+#ifdef EXISTENCE_ENABLED
+      existence[i] = existence[i-1];
+#endif
+    }
   }
 }
 
@@ -253,7 +269,11 @@ void Buffer::push_hsl_color(int hue, int sat, int lit){
   rgb_color color = ColorMath::hsl_to_rgb(hue, sat, lit);
   push_rgb_color(color.red, color.green, color.blue);
 }
-  
+
+void Buffer::push_carry_color(){
+  push_color(carry_color, false, carry_effect);
+}
+
 #ifdef EXISTENCE_ENABLED
 void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT, byte id = NO_ID)
 #else

@@ -7,6 +7,17 @@
 #define CMD_NONE 0
 #define CMD_FIRST 1
 
+
+
+
+
+//// need to pass a string, it gets tokenized on delimiter char, and commands processed, for use by scheduler
+
+
+
+
+
+
 class CommandProcessor 
 {
   public:
