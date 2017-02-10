@@ -23,7 +23,9 @@ def command(cmd_text):
 def setup(): 
   global s, play_time 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command("::pause:reset:pause")
+  command(":::")
+  command("pau:pau")
+  command("clr:pau")
 
   if len(sys.argv) > 1:
     command(sys.argv[1])
@@ -33,7 +35,7 @@ def setup():
 
 def loop():
   try:
-    command("1:random:flood:cfade")
+    command("rnd:1:cpy:cfa")
     time.sleep(play_time)
 
   except KeyboardInterrupt:                                                                         

@@ -11,11 +11,11 @@ import traceback
 import sys
 
 script_path = os.getcwd()
-log_path = script_path + "/circleci.log"
-print "logging to " + log_path
+#log_path = script_path + "/circleci.log"
+#print "logging to " + log_path
 
-logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
-logging.info("Circleci7.py started")
+#logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
+#logging.info("Circleci7.py started")
 
 global visible_leds, job_size, gap_size
 visible_leds = 72
@@ -99,7 +99,9 @@ def setup():
   build_keys = {}
   time.sleep(0.1)
   flush_input()
-  command(":::clr")
+  command(":::")
+  command("pau:pau")
+  command("clr:pau")
 
   if len(sys.argv) > 2:
     command(sys.argv[2])
@@ -167,7 +169,7 @@ def loop():
       master = br == 'master'
       orders = rp == 'orders'
       orders_master = master and orders
-      logging.info("st:" + st + " lc:" + lc + " oc:" + oc + " br:" + br + " rp:" + rp + " cn:" + cn)            
+#      logging.info("st:" + st + " lc:" + lc + " oc:" + oc + " br:" + br + " rp:" + rp + " cn:" + cn)            
 
       if st == 'failed':
         if orders_master:
@@ -205,14 +207,14 @@ def loop():
     time.sleep(request_frequency)
 
   except requests.exceptions.ConnectionError:
-    logging.error("Connection error - retrying")
-    command(":::pau:blu:bli:flo:cnt")
+#    logging.error("Connection error - retrying")
+    command(":::pau:dgr:bli:flo:cnt")
     time.sleep(15)
   except KeyboardInterrupt:
     sys.exit("\nExiting...\n")
   except Exception:
-    logging.error(sys.exc_info()[0])
-    logging.error(traceback.format_tb(sys.exc_info()[2]))
+ #   logging.error(sys.exc_info()[0])
+ #   logging.error(traceback.format_tb(sys.exc_info()[2]))
     command("pau:yel:bli:flo:cnt")
     raise
 
