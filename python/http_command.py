@@ -8,12 +8,15 @@ import time
 import sys  
 from subprocess import call
 import os
+import socket
 from socket import error as socket_error
 import os.path
 
-global webpage, base_path, last_run
+global webpage, base_path, last_run, host_name, host_ip
 
 last_run = ''
+host_name = socket.getfqdn(socket.gethostname())
+host_ip = socket.gethostbyname(socket.gethostname())
 
 if len(sys.argv) > 2:
   base_path = sys.argv[2] + '/'
@@ -38,7 +41,7 @@ def command(cmd_text):
   wait_for_ack()   
 
 class Handler(BaseHTTPRequestHandler):
-  global last_run
+  global last_run, host_name, host_ip
 
   def run_app(self, app):
     global last_run    
@@ -65,7 +68,8 @@ class Handler(BaseHTTPRequestHandler):
     print 
 
   def serve_page(self, page):
-    global last_run
+    global last_run, host_name, host_ip
+
     filename, file_ext = os.path.splitext(page)
 
     self.send_response(200)
@@ -92,8 +96,15 @@ class Handler(BaseHTTPRequestHandler):
     else:
       banner = ''
 
+    footer = """
+<div class="small text-center">
+  %(host_name)s %(host_ip)s
+</div>
+    """ % globals()
+
     f = open(page, 'r')                       
-    self.wfile.write(f.read().replace('<!-- banner -->', banner))                   
+    self.wfile.write(f.read().replace('<!-- banner -->', banner).replace('<!-- footer -->', footer))
+                   
     f.close  
     self.wfile.close() 
 
