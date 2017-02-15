@@ -35,7 +35,9 @@ def setup():
 
 def loop():
   try:
-    command("rnd:1:cpy:cfa")
+    command("0:dis:flu:rnd:1:cpy:cfa")
+    time.sleep(play_time)
+    command("1:dis:flu:rnd:1:cpy:cfa")
     time.sleep(play_time)
 
   except KeyboardInterrupt:                                                                         
