@@ -4,4 +4,4 @@ cd ~/dev/linkit/python
 git pull
 rsync -ut http_command.* /root
 rsync -ut images/* /root/images/
-
+rsync -ut circleci7.py /root
