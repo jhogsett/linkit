@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd ~/dev/linkit/python
+cd /root/dev/linkit/python
 git pull
 rsync -ut http_command.* /root
 rsync -ut images/* /root/images/
