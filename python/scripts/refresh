@@ -1,5 +1,6 @@
 #!/bin/sh
 
+cd ~/dev/linkit/python
 git pull
 rsync -uvt http_command.* /root
 
