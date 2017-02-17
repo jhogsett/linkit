@@ -3,3 +3,6 @@
 opkg update
 opkg install rsync
 
+/etc/init.d/cron enable
+/etc/init.d/cron start
+
