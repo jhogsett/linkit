@@ -1,7 +1,7 @@
 #!/bin/sh
 
-cd /root/dev/linkit/python
-git pull
-rsync -ut http_command.* /root
-rsync -ut images/* /root/images/
-rsync -ut circleci7.py /root
+#cd /root/dev/linkit/python
+git -C /root/dev/linkit/python pull
+rsync -ut /root/dev/linkit/python/http_command.* /root
+rsync -ut /root/dev/linkit/python/images/* /root/images/
+rsync -ut /root/dev/linkit/python/circleci7.py /root
