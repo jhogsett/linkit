@@ -2,8 +2,8 @@
   background-color: rgb(255, 255, 185);
 }
 
-.row { 
-  margin-bottom:20%; 
+.row-margin { 
+  margin-bottom:20px; 
 }
 
 .btn-red {
