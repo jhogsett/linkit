@@ -361,7 +361,7 @@ void Commands::do_demo(){
   int gap_;
   int delay_;
   
-#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
+#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93)
   if(buffer->get_display() == 1){
     count = 8; 
     window = 8;
@@ -377,7 +377,7 @@ void Commands::do_demo(){
   count = visible_led_count / DEMO_TOTAL_SIZE;  
   window = visible_led_count;
     
-#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
+#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93)
   }
 #endif
   

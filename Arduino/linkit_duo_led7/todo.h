@@ -1,7 +1,50 @@
+// for zones, have several configurations that can be chosen in real time by device type
+
+// each device should periodically check for new versions of http_command.py and http_command.html and copy to /root any new versions
+// how often? 4 hours?
+
+// copy with pixel expansion (6-pixel rainbow, expand it to 12 pixels each for 72 pixels)
+
+/*
+ * {
+  "access-control-request-method": "*",
+  "server": "thin",
+  "content-type": "application/vnd.usertesting.lab-v1+json",
+  "access-control-allow-origin": "*",
+  "cache-control": "no-store, must-revalidate, private, max-age=0",
+  "connection": "keep-alive",
+  "content-length": "4",
+  "x-request-id": "393bf80d-718b-4ee7-8907-49babe6a1ef0"
+}
+ */
+
 // python: when re-running a command, include all the arguments
 
-/* return values: 'k' followed by additional bytes, or just return an integer value
+// stop using blinking blue
 
+// allow stop command to accept a program name so I can stop something run over ssh
+
+
+// sparkle: specify width of segments and gaps
+
+/*
+144 led demo5 and demohsl4
+
+copy to http_command-projector.html
+
+
+add glasses
+
+breathing glasses
+
+copy: third argument is the number of pixels per source pixel
+
+*/
+
+
+//apollo: patterns that look like "it's charging up"
+
+/* return values: 'k' followed by additional bytes, or just return an integer value
 use cases:
 
 get number of leds
@@ -15,11 +58,32 @@ add reboot command
 rearrange links page
 
 
+have a schedule that ges triggers upon a carry being set, could automatically wired together two zones
+-- could have other kinds of triggers
+
+-- figure out when to automatically reset blink period to default, like on clear
+
 
 also: set an analog value on a pin
 */
 
+// setting blink period to zero didn't reset to default
+
+// html needs all the commands shortened
+
 // show/hide by zone
+
+
+// handle ^d on color_command.py:
+//command: Traceback (most recent call last):
+//  File "/root/color_command.py", line 52, in <module>
+//    loop()
+//  File "/root/color_command.py", line 37, in loop
+//    cmd = raw_input('command: ')
+//EOFError
+
+
+
 
 /* idea: a scheduler
      specify timing (command issued this often)

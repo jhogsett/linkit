@@ -12,6 +12,9 @@
 // 72-LED Apollo Lights
 // #define APOLLO_LIGHTS
 
+// 90-LED Apollo Lights
+#define APOLLO_LIGHTS2
+
 // 3-72-LED Strips Status Monitor
 // #define STATUS_MONITOR
 
@@ -24,11 +27,17 @@
 // 64-LED Wearable and Glasses
 // #define WEARABLE_AND_GLASSES
 
+// 93-LED Wearable and Disc
+// #define WEARABLE_AND_DISC93
+
 // enable to change settings for the 93-LED disc
 // #define DISC93
 
 // enable to change settings for the 93-LED disc plus a strip
 // #define DISC93_AND_STRIP
+
+//enable to change setings for the 93-LED disc  plus 2 strands
+// #define DISC93_AND_STRAND2
 
 // enable to change settings for a single 50-LED strand
 // #define STRAND1
@@ -46,17 +55,18 @@
 // #define STRIP2
 
 // enable 144-LED strips
-#define DUAL_STRIP
+// #define DUAL_STRIP
 
 #ifdef PROJECTOR
-#define DISC93
+//#define DISC93
+#define DISC93_DOUBLE
 #endif
 
 #ifdef XMAS_LIGHTS
 #define STRAND2
 #endif
 
-#ifdef APOLLO_LIGHTS
+#if defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2)
 #define USE_AUTO_BRIGHTNESS
 #endif
 
@@ -64,7 +74,7 @@
 #define STRIP3
 #endif
 
-#ifdef APOLLO_LIGHTS
+#if defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2)
 #define AUTO_BRIGHTNESS_MIN 5
 #define AUTO_BRIGHTNESS_MAX 100
 #else
@@ -74,7 +84,7 @@
 
 #if defined(STRAND1) || defined(STRAND2) || defined(DISC93) || defined(DUAL_STRIP)
 #define USE_1_DISPLAYS
-#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
+#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE)
 #define USE_2_DISPLAYS
 #elif defined(STRIP3) || defined(MAXLEDS)
 #define USE_3_DISPLAYS
@@ -93,10 +103,10 @@
 #define NUM_BUFFERS 1            
 #endif
 
-#if defined(DISC93) || defined(DISC93_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
+#if defined(DISC93) || defined(DISC93_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2)
 #define DISPLAY_PIN1 11
-#define DISPLAY_PIN2 12
-#define DISPLAY_PIN3 10
+#define DISPLAY_PIN2 10
+#define DISPLAY_PIN3 12
 #elif defined(STATUS_MONITOR) || defined(STRIP3)
 #define DISPLAY_PIN1 5
 #define DISPLAY_PIN2 6
@@ -113,9 +123,9 @@
 // standard brightness
 #if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) 
 #define DEFAULT_BRIGHTNESS_PERCENT 10
-#elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(STRIP2) || defined(STRIP3) || defined(DUAL_STRIP)
+#elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(STRIP2) || defined(STRIP3) || defined(DUAL_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE)
 #define DEFAULT_BRIGHTNESS_PERCENT 15
-#elif defined(STRAND1) || defined(STRAND2) || defined(APOLLO_LIGHTS)
+#elif defined(STRAND1) || defined(STRAND2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #else
 #define DEFAULT_BRIGHTNESS_PERCENT 20
@@ -131,31 +141,34 @@
 #define ANIM_LED_COUNT 72
 #elif defined(WEARABLE_AND_GLASSES)
 #define ANIM_LED_COUNT 64
-#elif defined(DISC93) || defined(DISC93_AND_STRIP)
+#elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_DOUBLE)
 #define ANIM_LED_COUNT 93
 #elif defined(STRAND1)
 #define ANIM_LED_COUNT 50
-#elif defined(STRAND2)
+#elif defined(STRAND2) || defined(DISC93_AND_STRAND2)
 #define ANIM_LED_COUNT 100
 #elif defined(DUAL_STRIP)
 #define ANIM_LED_COUNT 144
 #elif defined(MAXLEDS)
 #define ANIM_LED_COUNT 250
+#elif defined(APOLLO_LIGHTS2)
+#define ANIM_LED_COUNT 90
 #else
 #define ANIM_LED_COUNT 72
 #endif
 
+// demo parameters
 #if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) // || defined(WEARABLE_AND_GLASSES)
 #define DEMO_OBJECT_SIZE 1
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 125
-#elif defined(DISC93)
+#elif defined(DISC93) || defined(WEARABLE_AND_DISC93) || defined(DISC93_DOUBLE)
 #define DEMO_OBJECT_SIZE 3
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 35
-#elif defined(DISC93_AND_STRIP)
+#elif defined(DISC93_AND_STRIP) || defined(DISC93_AND_STRAND2)
 #define DEMO_OBJECT_SIZE 7
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
@@ -167,6 +180,11 @@
 #define DEMO_DELAY 35
 #elif defined(DUAL_STRIP)
 #define DEMO_OBJECT_SIZE 7
+#define DEMO_GAP_SIZE 1
+#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+#define DEMO_DELAY 0
+#elif defined(APOLLO_LIGHTS2)
+#define DEMO_OBJECT_SIZE 4
 #define DEMO_GAP_SIZE 1
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 0
@@ -189,24 +207,25 @@
 #define BAUD_RATE 115200              // speed for communicating with the MT7688
 #endif
 
+// blink and breathe timing
 #if defined(WEARABLE)
 #define BLINK_PERIOD 12000
-#define BREATHE_PERIOD 800
-#elif defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
-#define BLINK_PERIOD 6000
-#define BREATHE_PERIOD 400
+#define BREATHE_PERIOD 600
+#elif defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93) || defined(APOLLO_LIGHTS2)
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
 #elif defined(DUAL_STRIP)
 #define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 200
+#define BREATHE_PERIOD 100
 #elif defined(USE_1_DISPLAYS)
 #define BLINK_PERIOD 6000
-#define BREATHE_PERIOD 400
+#define BREATHE_PERIOD 300
 #elif defined(USE_2_DISPLAYS)
 #define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 200
+#define BREATHE_PERIOD 150
 #elif defined(USE_3_DISPLAYS)
 #define BLINK_PERIOD 2000
-#define BREATHE_PERIOD 133
+#define BREATHE_PERIOD 100
 #endif
 
 class Config

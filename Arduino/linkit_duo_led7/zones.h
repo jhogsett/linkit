@@ -14,11 +14,16 @@ byte zone_windows[NUM_ZONES] = { 144, 72, 144, 108, 36, 72, 108, 144, 18, 36, 54
 // all, right strip, right circle, left circle, left strip, center circles only, right 1/2, left 1/2, right circle 1nd 1/2, right circle 2nd 1/2, left circle 1st 1/2, left circle 2nd 1/2
 byte zone_offsets[NUM_ZONES] = {  0, 0, 8,  32, 56,  8,  0, 32,  8, 20, 32, 44 };
 byte zone_windows[NUM_ZONES] = { 64, 8, 32, 56, 64, 56, 32, 64, 20, 32, 44, 56 };
-#elif defined(DISC93) || defined(DISC93_AND_STRIP)
+#elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_DOUBLE)
 #define NUM_ZONES 11
 // all, 6 rings starting in center, first three rings, last three rings, rings 2-5, rings 1-5
 byte zone_offsets[NUM_ZONES] = { 0,  0, 1,  9, 21, 37, 61,  0, 21,  1,  0};
 byte zone_windows[NUM_ZONES] = { 93, 1, 9, 21, 37, 61, 93, 21, 93, 61, 61};
+#elif defined(DISC93_AND_STRAND2)
+#define NUM_ZONES 11
+// all 100, 6 rings starting in center, first three rings, last three rings, rings 2-5, rings 1-5
+byte zone_offsets[NUM_ZONES] = { 0,  0, 1,  9, 21, 37, 61,  0, 21,  1,  0};
+byte zone_windows[NUM_ZONES] = { 100, 1, 9, 21, 37, 61, 93, 21, 93, 61, 61};
 #elif defined(STRAND1)
 #define NUM_ZONES 8
 // all, two halves, center half, four quarters
@@ -34,6 +39,11 @@ byte zone_windows[NUM_ZONES] = { 100, 50, 100, 75, 25, 50, 75, 100 };
 #define NUM_ZONES 8
 byte zone_offsets[NUM_ZONES] = { 0, 0, 4, 2, 0, 2, 4, 6 };
 byte zone_windows[NUM_ZONES] = { 8, 4, 8, 6, 2, 4, 6, 8 };
+#elif defined(APOLLO_LIGHTS2)
+// all, two halves, three thirds, 6 sixths
+#define NUM_ZONES 12
+byte zone_offsets[NUM_ZONES] = {  0,  0, 45,  0, 30, 60,  0, 15, 30, 45, 60, 75 };
+byte zone_windows[NUM_ZONES] = { 90, 45, 90, 30, 60, 90, 15, 30, 45, 60, 75, 90};
 #else
 #define NUM_ZONES 8
 // all, two halves, center half, four quarters
