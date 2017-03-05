@@ -15,6 +15,7 @@ import os.path
 global webpage, base_path, last_run, host_name, host_ip
 
 last_run = ''
+last_run_full = ''
 host_name = socket.getfqdn(socket.gethostname())
 host_ip = socket.gethostbyname(socket.gethostname())
 
@@ -41,23 +42,26 @@ def command(cmd_text):
   wait_for_ack()   
 
 class Handler(BaseHTTPRequestHandler):
-  global last_run, host_name, host_ip
+  global last_run, last_run_full, host_name, host_ip
 
   def run_app(self, app):
-    global last_run    
+    global last_run, last_run_full    
     if app != 'stop':                      
       run = base_path + app + ' &'         
       self.log('running: ' + run)               
       call(run, shell=True)  
+      last_run_full = app
       last_run = app.split()[0]
     else:
+      last_run_full = ''
       last_run = ''
   
   def kill_last_app(self):
-    global last_run                       
+    global last_run, last_run_full                       
     if last_run != '':                          
       self.log('killing: ' + last_run)          
       call('killall -9 ' + last_run, shell=True) 
+      last_run_full = ''
       last_run = ''
 
   def log(self, message):
@@ -68,7 +72,7 @@ class Handler(BaseHTTPRequestHandler):
     print 
 
   def serve_page(self, page):
-    global last_run, host_name, host_ip
+    global last_run, last_run_full, host_name, host_ip
 
     filename, file_ext = os.path.splitext(page)
 
@@ -100,6 +104,9 @@ class Handler(BaseHTTPRequestHandler):
 <div class="small text-center">
   %(host_name)s %(host_ip)s
 </div>
+<div class="small text-center">                                                                                                                                         
+  %(last_run_full)s                                                                                                                                             
+</div>                                                                                                                                                                  
     """ % globals()
 
     f = open(page, 'r')                       
@@ -124,7 +131,7 @@ class Handler(BaseHTTPRequestHandler):
 
         # if an app is running, stop it first
         if last_run != '':
-          to_run = last_run
+          to_run = last_run_full
           self.kill_last_app();
           self.handle_commands(args['cmd'])
           self.run_app(to_run)
