@@ -86,7 +86,7 @@ class Handler(BaseHTTPRequestHandler):
     elif file_ext == '.ico':
       content_type = "image/x-icon"
     else:
-      content_type = "text/plain"                     
+      content_type = "application/octet-stream"                     
     self.send_header("Content-type", content_type)
     self.end_headers()  
 
@@ -181,9 +181,3 @@ finally:
   if last_run != '':                         
     print 'killing: ' + last_run            
     call('killall ' + last_run, shell=True)     
-
-#if __name__ == '__main__': 
-#  setup() 
-#  while True: 
-#    loop()
-
