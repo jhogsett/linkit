@@ -85,6 +85,8 @@ class Handler(BaseHTTPRequestHandler):
       content_type = "application/javascript"
     elif file_ext == '.ico':
       content_type = "image/x-icon"
+    elif file_ext == '.png':
+      content_type = "image/png"
     else:
       content_type = "application/octet-stream"                     
     self.send_header("Content-type", content_type)
