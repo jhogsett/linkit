@@ -2,30 +2,17 @@
 #define COMMAND_PROCESSOR_H
 
 #define DELIMITER_CHAR ':'
+#define DELIMITER_STR ":"
 #define MAX_STRING_LENGTH 20
 #define NUM_SUB_ARGS 3
+#define CMD_NULL NULL
 #define CMD_NONE 0
 #define CMD_FIRST 1
 
-
-
-
-
-//// need to pass a string, it gets tokenized on delimiter char, and commands processed, for use by scheduler
-
-
-
-
-
-
-class CommandProcessor 
+class CommandProcessor
 {
   public:
   char str[MAX_STRING_LENGTH];
-
-#ifdef USE_ARG_BUFFER
-  char arg[MAX_STRING_LENGTH];
-#endif
 
   int sub_args[NUM_SUB_ARGS];
 
@@ -41,14 +28,18 @@ class CommandProcessor
   void acknowledge_command(bool force);
   void send_ack();
   int lookup_command(char * str);
-  int get_command();
-  void save_args();
+  int get_command(char * str);
+  void save_args(char * str);
   void reset_args();
+  int process_command(char * str);
+  int begin_get_commands(char * str);
+  int get_next_command();
+  char * get_input_buffer();
 
   private:
   bool str_equal_P(char *str1, const char *str2);
   bool is_command_P(char *str, const char *command);
-  void get_sub_args();
+  void get_sub_args(char * str);
 };
 
 void CommandProcessor::begin(HardwareSerial *serial, const char* const *commands, byte num_commands){
@@ -65,7 +56,7 @@ bool CommandProcessor::input_available(){
 bool CommandProcessor::received_command(){
   if(input_available()){
     int c = serial->readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH-1);
-    str[c] = 0;
+    this->str[c] = 0;
     return true;
   } else {
     return false;
@@ -83,11 +74,8 @@ void CommandProcessor::send_ack(){
   serial->write("k");
 }
 
-void CommandProcessor::save_args(){
-#ifdef USE_ARG_BUFFER
-  strcpy(arg, str);
-#endif
-  get_sub_args();
+void CommandProcessor::save_args(char * args = NULL){
+  get_sub_args(args);
 }
 
 // str2 is a pointer to a string in PROGMEM
@@ -105,12 +93,13 @@ bool CommandProcessor::is_command_P(char *str, const char *command){
   return str_equal_P(str, command);
 }
 
-void CommandProcessor::get_sub_args(){
-#ifdef USE_ARG_BUFFER
-  char *token = strtok(arg, ",");
-#else
-  char *token = strtok(str, ",");
-#endif
+void CommandProcessor::get_sub_args(char * args = NULL){
+  if(args == NULL){
+    args = this->str;
+  }
+
+  char *token = strtok(args, ",");
+
   sub_args[0] = atoi(token);
   token = strtok(NULL, ",");
   sub_args[1] = atoi(token);
@@ -119,14 +108,15 @@ void CommandProcessor::get_sub_args(){
 }
 
 void CommandProcessor::reset_args(){
-#ifdef USE_ARG_BUFFER
-  strcpy(arg, "");
-#endif
   sub_args[0] = 0;
   sub_args[1] = 0;
   sub_args[2] = 0;
 }
 int CommandProcessor::lookup_command(char * str){
+  if(str == NULL){
+    return CMD_NONE;
+  }
+
   for(byte i = 0; i < num_commands; i++){
     if(is_command_P(str, (char*)pgm_read_word(&(commands[i])))){
       return CMD_FIRST + i;
@@ -135,8 +125,52 @@ int CommandProcessor::lookup_command(char * str){
   return CMD_NONE;
 }
 
-int CommandProcessor::get_command(){
-  return lookup_command(this->str);
+int CommandProcessor::get_command(char * str = NULL){
+  if(str == NULL){
+    str = this->str;
+  }
+  return lookup_command(str);
 }
+
+int CommandProcessor::process_command(char * str){
+  int command = lookup_command(str);
+
+  // if CMD_NULL is returned, it means there are
+  // no more commands
+  if(command == NULL){
+    return CMD_NULL;
+  }
+
+  // if CMD_NONE is returned, the command wasn't found
+  // assume the string contains arguments to save
+  //
+  // the default save_args() should not be called by
+  // the calling code in this case
+  if(command == CMD_NONE){
+    save_args(str);
+    return CMD_NONE;
+  }
+
+  return command;
+}
+
+int CommandProcessor::begin_get_commands(char * str){
+  return process_command(strtok(str, DELIMITER_STR));
+}
+
+int CommandProcessor::get_next_command(){
+  return process_command(strtok(NULL, DELIMITER_STR));
+}
+
+char * CommandProcessor::get_input_buffer(){
+  if(input_available()){
+    int c = serial->readBytesUntil('\0', this->str, MAX_STRING_LENGTH-1);
+    this->str[c] = 0;
+    return this->str;
+  } else {
+    return NULL;
+  }
+}
+
 
 #endif
