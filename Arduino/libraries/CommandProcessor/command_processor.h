@@ -5,7 +5,7 @@
 #define DELIMITER_STR ":"
 #define MAX_STRING_LENGTH 20
 #define NUM_SUB_ARGS 3
-#define CMD_NULL NULL
+#define CMD_NULL -1
 #define CMD_NONE 0
 #define CMD_FIRST 1
 
@@ -98,12 +98,13 @@ void CommandProcessor::get_sub_args(char * args = NULL){
     args = this->str;
   }
 
-  char *token = strtok(args, ",");
+  char *saveptr;
+  char *token = strtok_r(args, ",", &saveptr);
 
   sub_args[0] = atoi(token);
-  token = strtok(NULL, ",");
+  token = strtok_r(NULL, ",", &saveptr);
   sub_args[1] = atoi(token);
-  token = strtok(NULL, ",");
+  token = strtok_r(NULL, ",", &saveptr);
   sub_args[2] = atoi(token);
 }
 
@@ -114,7 +115,7 @@ void CommandProcessor::reset_args(){
 }
 int CommandProcessor::lookup_command(char * str){
   if(str == NULL){
-    return CMD_NONE;
+    return CMD_NULL;
   }
 
   for(byte i = 0; i < num_commands; i++){
@@ -135,12 +136,6 @@ int CommandProcessor::get_command(char * str = NULL){
 int CommandProcessor::process_command(char * str){
   int command = lookup_command(str);
 
-  // if CMD_NULL is returned, it means there are
-  // no more commands
-  if(command == NULL){
-    return CMD_NULL;
-  }
-
   // if CMD_NONE is returned, the command wasn't found
   // assume the string contains arguments to save
   //
@@ -148,14 +143,14 @@ int CommandProcessor::process_command(char * str){
   // the calling code in this case
   if(command == CMD_NONE){
     save_args(str);
-    return CMD_NONE;
   }
 
   return command;
 }
 
 int CommandProcessor::begin_get_commands(char * str){
-  return process_command(strtok(str, DELIMITER_STR));
+  strcpy(this->str, str);
+  return process_command(strtok(this->str, DELIMITER_STR));
 }
 
 int CommandProcessor::get_next_command(){
@@ -174,3 +169,5 @@ char * CommandProcessor::get_input_buffer(){
 
 
 #endif
+
+ //need to prevent string getting corrupted by being tokenized
