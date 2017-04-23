@@ -13,9 +13,13 @@ extern void dispatch_command(int cmd);
 
 char macros[NUM_MACROS][MACRO_CHARS];
 
-void process_commands(char * commands){
-  int command = dependencies.command_processor.begin_get_commands(commands);
+// to have macros run macros, need the buffer being tokenized to be allocated each entrance
 
+void process_commands(char * commands){
+  char *saveptr;
+  char buffer[MACRO_CHARS];
+ 
+  int command = dependencies.command_processor.begin_get_commands(commands, &saveptr, buffer);
   if(command == CMD_NULL){
     return;
   }
@@ -24,7 +28,7 @@ void process_commands(char * commands){
     if(command != CMD_NONE){
       ::dispatch_command(command);
     }
-    command = dependencies.command_processor.get_next_command();
+    command = dependencies.command_processor.get_next_command(&saveptr);
     
   }while(command != CMD_NULL);
 }
@@ -44,9 +48,14 @@ void set_macro(int macro){
 }
 
 void run_macro(int macro, int times){
+  if(times < 1){
+    times = 1;
+  }
   char * str = ::get_macro(macro);
   if(str != NULL){
-    ::process_commands(str);
+    for(int i = 0; i < times; i++){
+      ::process_commands(str);
+    }
   }
 }
 
