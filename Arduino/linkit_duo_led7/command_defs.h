@@ -1,11 +1,11 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define CMD_NONE       NULL
+#define CMD_NULL       -1
 #define CMD_NONE       0
 #define CMD_FIRST      1
 
-#define NUM_COMMANDS  70
+#define NUM_COMMANDS  72
 #define CMD_FLUSH         1
 #define CMD_ERASE         2
 #define CMD_ROTATE        3
@@ -159,7 +159,8 @@ const char* const command_strings[] PROGMEM = {
    cmd_031, cmd_032, cmd_033, cmd_034, cmd_035, cmd_036, cmd_037, cmd_038, cmd_039, cmd_040,
    cmd_041, cmd_042, cmd_043, cmd_044, cmd_045, cmd_046, cmd_047, cmd_048, cmd_049, cmd_050,
    cmd_051, cmd_052, cmd_053, cmd_054, cmd_055, cmd_056, cmd_057, cmd_058, cmd_059, cmd_060,
-   cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070
+   cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070,
+   cmd_071, cmd_072
 };
 
 #endif

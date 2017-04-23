@@ -24,7 +24,9 @@ void process_commands(char * commands){
     if(command != CMD_NONE){
       ::dispatch_command(command);
     }
-  }while((command = dependencies.command_processor.get_next_command()) != CMD_NULL);
+    command = dependencies.command_processor.get_next_command();
+    
+  }while(command != CMD_NULL);
 }
 
 char * get_macro(int macro){
@@ -41,7 +43,7 @@ void set_macro(int macro){
   }
 }
 
-void run_macro(int macro){
+void run_macro(int macro, int times){
   char * str = ::get_macro(macro);
   if(str != NULL){
     ::process_commands(str);

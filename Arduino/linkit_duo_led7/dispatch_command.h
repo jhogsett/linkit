@@ -246,7 +246,7 @@ void dispatch_command(int cmd){
       reset_args = true;
       break;
     case CMD_RUN_MACRO:
-      ::run_macro(dependencies.command_processor.sub_args[0]);
+      ::run_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);
       reset_args = true;
       break;
   }
