@@ -5,6 +5,8 @@
 
 // copy with pixel expansion (6-pixel rainbow, expand it to 12 pixels each for 72 pixels)
 
+// "safe" colors for car
+
 /*
  * {
   "access-control-request-method": "*",

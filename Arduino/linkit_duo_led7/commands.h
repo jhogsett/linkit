@@ -382,15 +382,28 @@ void Commands::do_demo(){
 #endif
   
   for(byte i = 0; i < count; i++){
+//#ifdef APOLLO_LIGHTS2
+//    rgb_color color = WHITE;
+//#else
     rgb_color color = ColorMath::random_color();
+//#endif
     do_power_shift_object(size_, window);
     window -= size_;
+#ifdef APOLLO_LIGHTS2
+    byte effect = NO_EFFECT;
+#else
     byte effect = EffectsProcessor::random_effect();
+  #endif
     for(byte j = gap_; j < size_; j++){
       buffer->set_color(j, color, false, effect);
     }
     delay(delay_);
   }
+
+#ifdef APOLLO_LIGHTS2
+  buffer->push_color(WHITE);
+  do_flood();
+#endif
 }
 
 #endif

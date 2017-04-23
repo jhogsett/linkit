@@ -8,7 +8,9 @@ void setup() {
   dependencies.commands.reset();
   dependencies.buffer.erase(true);
   dependencies.commands.set_brightness_level();
-  dependencies.self_test();
+  
+  //dependencies.self_test();
+  ::process_commands("dem");
 
   // force a command acknowledgement to wake up any script that may be halted 
   // waiting for a character to be sent due to a new Arduino sketch being uploaded

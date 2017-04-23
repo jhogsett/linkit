@@ -1,4 +1,5 @@
 #include "dependencies.h"
+#include "macros.h"
 
 extern Dependencies dependencies;
 
@@ -222,219 +223,6 @@ void dispatch_command(int cmd){
     case CMD_DEMO:      
       dependencies.commands.do_demo();                                                                                                                                    
       break;
-    case CMD_FLUSHOLD:     
-      dependencies.commands.flush(true);                                                              
-      break;
-    case CMD_ERASEOLD:     
-      dependencies.buffer.erase(true);                                                          
-      break;
-    case CMD_ROTATEOLD:
-      dependencies.commands.do_rotate(dependencies.command_processor.sub_args[0]); 
-      reset_args = true;
-      break;
-    case CMD_REPEATOLD:    
-      dependencies.commands.do_repeat(dependencies.command_processor.sub_args[0]); 
-      reset_args = true;
-      break;
-    case CMD_COPYOLD:   
-      dependencies.commands.do_copy(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]); 
-      reset_args = true;
-      break;
-    case CMD_FLOODOLD:     
-      dependencies.commands.do_flood();                                                           
-      break;
-    case CMD_MIRROROLD:    
-      dependencies.commands.do_mirror();                                                          
-      break;
-    case CMD_DISPLAYOLD:    
-      dependencies.commands.set_display(dependencies.command_processor.sub_args[0]); 
-      reset_args = true;
-      break;
-    case CMD_ZONEOLD:
-      dependencies.buffer.set_zone(dependencies.command_processor.sub_args[0]); 
-      reset_args = true;
-      break;
-    case CMD_WINDOWOLD:    
-      dependencies.buffer.set_window_override(dependencies.command_processor.sub_args[0]); 
-      reset_args = true;
-      break;
-    case CMD_OFFSETOLD:
-      dependencies.buffer.set_offset_override(dependencies.command_processor.sub_args[0]); 
-      reset_args = true;
-      break;
-    case CMD_REVERSEOLD:
-      dependencies.buffer.set_reverse(dependencies.command_processor.sub_args[0] == 1 ? true : false); 
-      reset_args = true;
-      break;
-    case CMD_RGBCOLOROLD:  
-      dependencies.buffer.push_rgb_color(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]); 
-      reset_args = true;
-      break;
-    case CMD_HSLCOLOROLD:  
-      dependencies.buffer.push_hsl_color(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]); 
-      reset_args = true;
-      break;
-    case CMD_REDOLD:       
-      dependencies.buffer.push_color(RED);                                                      
-      break;
-    case CMD_GREENOLD:     
-      dependencies.buffer.push_color(GREEN);                                                    
-      break;
-    case CMD_BLUEOLD:      
-      dependencies.buffer.push_color(BLUE);                                                     
-      break;
-    case CMD_BLACKOLD:     
-      dependencies.buffer.push_color(BLACK);                                                    
-      break;
-    case CMD_YELLOWOLD:    
-      dependencies.buffer.push_color(YELLOW);                                                   
-      break;
-    case CMD_ORANGEOLD:    
-      dependencies.buffer.push_color(ORANGE);                                                   
-      break;
-    case CMD_PURPLEOLD:    
-      dependencies.buffer.push_color(PURPLE);                                                   
-      break;
-    case CMD_CYANOLD:      
-      dependencies.buffer.push_color(CYAN);                                                     
-      break;
-    case CMD_MAGENTAOLD:   
-      dependencies.buffer.push_color(MAGENTA);                                                  
-      break; 
-    case CMD_PINKOLD:      
-      dependencies.buffer.push_color(PINK);                                                     
-      break; 
-    case CMD_WHITEOLD:     
-      dependencies.buffer.push_color(WHITE);                                                    
-      break; 
-    case CMD_GRAYOLD:      
-      dependencies.buffer.push_color(GRAY);                                                     
-      break;
-    case CMD_LTGREENOLD:   
-      dependencies.buffer.push_color(LTGREEN);                                                  
-      break;
-    case CMD_SEAFOAMOLD:   
-      dependencies.buffer.push_color(SEAFOAM);                                                  
-      break;
-    case CMD_LTBLUEOLD:    
-      dependencies.buffer.push_color(LTBLUE);                                                   
-      break;
-    case CMD_DKGRAYOLD:    
-      dependencies.buffer.push_color(DKGRAY);                                                   
-      break;
-    case CMD_RANDOMOLD:    
-      dependencies.commands.do_random(dependencies.command_processor.sub_args[0]);                                                          
-      reset_args = true;
-      break; 
-    case CMD_BLENDOLD:     
-      dependencies.commands.do_blend(dependencies.command_processor.sub_args[0]);                                                           
-      reset_args = true;
-      break;
-    case CMD_MAXOLD:         
-      dependencies.commands.do_max();                                                             
-      break;
-    case CMD_DIMOLD:       
-      dependencies.commands.do_dim();                                                             
-      break;
-    case CMD_BRIGHTOLD:    
-      dependencies.commands.do_bright();                                                          
-      break;
-    case CMD_BLINKOLD:     
-      dependencies.effects_processor.start_effect(BLINK_ON);                                               
-      break;
-    case CMD_BLINK1OLD:    
-      dependencies.effects_processor.start_effect(BLINK_ON_1);                                             
-      break;
-    case CMD_BLINK2OLD:    
-      dependencies.effects_processor.start_effect(BLINK_ON_2);                                             
-      break;
-    case CMD_BLINK3OLD:    
-      dependencies.effects_processor.start_effect(BLINK_ON_3);                                             
-      break;
-    case CMD_BLINK4OLD:    
-      dependencies.effects_processor.start_effect(BLINK_ON_4);                                             
-      break;
-    case CMD_BLINK5OLD:    
-      dependencies.effects_processor.start_effect(BLINK_ON_5);                                            
-      break;
-    case CMD_BLINK6OLD:    
-      dependencies.effects_processor.start_effect(BLINK_ON_6);                                             
-      break;
-    case CMD_BLINKROLD:    
-      dependencies.effects_processor.start_blinking_r();                                                   
-      break;
-    case CMD_BLINKAOLD:    
-      dependencies.effects_processor.start_effect(BLINK_ON_A);                                             
-      break;
-    case CMD_BLINKBOLD:    
-      dependencies.effects_processor.start_effect(BLINK_ON_B);                                             
-      break;
-    case CMD_BLINKCOLD:
-      dependencies.effects_processor.start_effect(BLINK_ON_C);                                               
-      break;
-    case CMD_BREATHEOLD:   
-      dependencies.effects_processor.start_effect(BREATHE_ON);                                             
-      break;
-    case CMD_EFFECTROLD:   
-      dependencies.effects_processor.start_effect_r();                                                     
-      break;
-    case CMD_STATICOLD:    
-      dependencies.effects_processor.start_effect(STATIC_ON);                                                                                                                      
-      break;
-    case CMD_PAUSEOLD:     
-      dependencies.commands.pause();
-      break;
-    case CMD_CONTINUEOLD:  
-      dependencies.commands.resume();
-      break;
-    case CMD_RESETOLD:     
-      dependencies.commands.reset();                                                              
-      break;
-    case CMD_CLEAROLD:      
-      dependencies.commands.clear();                                                            
-      break;
-    case CMD_LEVELOLD:
-      dependencies.commands.set_brightness_level(dependencies.command_processor.sub_args[0]); 
-      reset_args = true;
-      break;
-    case CMD_FADEOLD:      
-      dependencies.commands.do_fade();                                                            
-      break;
-    case CMD_WIPEOLD:     
-      dependencies.commands.do_wipe();                                                     
-      break;
-    case CMD_ESHIFTOLD:    
-      dependencies.commands.do_elastic_shift(dependencies.command_processor.sub_args[0]); 
-      reset_args = true;
-      break;
-    case CMD_PSHIFTOLD:    
-      dependencies.commands.do_power_shift(dependencies.command_processor.sub_args[0]);  
-      reset_args = true;
-      break;
-    case CMD_PSHIFTOOLD:   
-      dependencies.commands.do_power_shift_object(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]); 
-      reset_args = true;
-      break;
-    case CMD_CFADEOLD:      
-      dependencies.commands.do_crossfade();                                                            
-      break;
-    case CMD_LOPOWEROLD:
-      dependencies.commands.low_power();                                               
-      break;
-    case CMD_HIPOWEROLD:
-      dependencies.commands.high_power();                                               
-      break;
-    case CMD_PINONOLD:    
-      dependencies.commands.set_pin(dependencies.command_processor.sub_args[0], true); 
-      reset_args = true;
-      break;
-    case CMD_PINOFFOLD:    
-      dependencies.commands.set_pin(dependencies.command_processor.sub_args[0], false); 
-      reset_args = true;
-      break;
-    case CMD_DEMOOLD:      
-      dependencies.commands.do_demo();                                                                                                                                    
-      break;
     case CMD_SETBLINKC:
       dependencies.blink_effects.set_custom_blink(dependencies.command_processor.sub_args[0]);
       reset_args = true;
@@ -449,9 +237,22 @@ void dispatch_command(int cmd){
     case CMD_CARRY:
       dependencies.buffer.push_carry_color();
       break;
+    case CMD_SETBREATHET:
+      dependencies.breathe_effects.set_breathe_time(dependencies.command_processor.sub_args[0]);
+      reset_args = true;
+      break;
+    case CMD_SET_MACRO:
+      ::set_macro(dependencies.command_processor.sub_args[0]);
+      reset_args = true;
+      break;
+    case CMD_RUN_MACRO:
+      ::run_macro(dependencies.command_processor.sub_args[0]);
+      reset_args = true;
+      break;
   }
 
   if(reset_args)
     dependencies.command_processor.reset_args();                                 
 }
+
 

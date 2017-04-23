@@ -1,10 +1,11 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
+#define CMD_NONE       NULL
 #define CMD_NONE       0
 #define CMD_FIRST      1
 
-#define NUM_COMMANDS  134
+#define NUM_COMMANDS  70
 #define CMD_FLUSH         1
 #define CMD_ERASE         2
 #define CMD_ROTATE        3
@@ -70,75 +71,13 @@
 #define CMD_PINON        63
 #define CMD_PINOFF       64
 #define CMD_DEMO         65
-#define CMD_FLUSHOLD     66
-#define CMD_ERASEOLD     67
-#define CMD_ROTATEOLD    68
-#define CMD_REPEATOLD    69
-#define CMD_COPYOLD      70
-#define CMD_FLOODOLD     71
-#define CMD_MIRROROLD    72
-#define CMD_DISPLAYOLD   73
-#define CMD_ZONEOLD      74
-#define CMD_WINDOWOLD    75
-#define CMD_OFFSETOLD    76
-#define CMD_REVERSEOLD   77
-#define CMD_RGBCOLOROLD  78
-#define CMD_HSLCOLOROLD  79
-#define CMD_REDOLD       80
-#define CMD_GREENOLD     81
-#define CMD_BLUEOLD      82
-#define CMD_BLACKOLD     83
-#define CMD_YELLOWOLD    84
-#define CMD_ORANGEOLD    85
-#define CMD_PURPLEOLD    86
-#define CMD_CYANOLD      87
-#define CMD_MAGENTAOLD   88
-#define CMD_PINKOLD      89
-#define CMD_WHITEOLD     90
-#define CMD_GRAYOLD      91
-#define CMD_LTGREENOLD   92
-#define CMD_SEAFOAMOLD   93
-#define CMD_LTBLUEOLD    94
-#define CMD_DKGRAYOLD    95
-#define CMD_RANDOMOLD    96
-#define CMD_BLENDOLD     97
-#define CMD_MAXOLD       98
-#define CMD_DIMOLD       99
-#define CMD_BRIGHTOLD   100
-#define CMD_BLINKOLD    101
-#define CMD_BLINK1OLD   102
-#define CMD_BLINK2OLD   103
-#define CMD_BLINK3OLD   104
-#define CMD_BLINK4OLD   105
-#define CMD_BLINK5OLD   106
-#define CMD_BLINK6OLD   107
-#define CMD_BLINKROLD   108
-#define CMD_BLINKAOLD   109
-#define CMD_BLINKBOLD   110
-#define CMD_BLINKCOLD   111
-#define CMD_BREATHEOLD  112
-#define CMD_EFFECTROLD  113
-#define CMD_STATICOLD   114
-#define CMD_PAUSEOLD    115
-#define CMD_CONTINUEOLD 116
-#define CMD_RESETOLD    117
-#define CMD_CLEAROLD    118
-#define CMD_LEVELOLD    119
-#define CMD_FADEOLD     120
-#define CMD_WIPEOLD     121
-#define CMD_ESHIFTOLD   122
-#define CMD_PSHIFTOLD   123
-#define CMD_PSHIFTOOLD  124
-#define CMD_CFADEOLD    125
-#define CMD_LOPOWEROLD  126
-#define CMD_HIPOWEROLD  127
-#define CMD_PINONOLD    128
-#define CMD_PINOFFOLD   129
-#define CMD_DEMOOLD     130
-#define CMD_SETBLINKC   131
-#define CMD_SETBLINKP   132
-#define CMD_SCHEDULE    133
-#define CMD_CARRY       134
+#define CMD_SETBLINKC    66
+#define CMD_SETBLINKP    67
+#define CMD_SCHEDULE     68
+#define CMD_CARRY        69
+#define CMD_SETBREATHET  70
+#define CMD_SET_MACRO    71
+#define CMD_RUN_MACRO    72
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "era";
@@ -205,75 +144,13 @@ const char cmd_062[] PROGMEM = "hip";
 const char cmd_063[] PROGMEM = "pon";
 const char cmd_064[] PROGMEM = "pof";
 const char cmd_065[] PROGMEM = "dem";
-const char cmd_066[] PROGMEM = "flush";
-const char cmd_067[] PROGMEM = "erase";
-const char cmd_068[] PROGMEM = "rotate";
-const char cmd_069[] PROGMEM = "repeat";
-const char cmd_070[] PROGMEM = "copy";
-const char cmd_071[] PROGMEM = "flood";
-const char cmd_072[] PROGMEM = "mirror";
-const char cmd_073[] PROGMEM = "display";
-const char cmd_074[] PROGMEM = "zone";
-const char cmd_075[] PROGMEM = "window";
-const char cmd_076[] PROGMEM = "offset";
-const char cmd_077[] PROGMEM = "reverse";
-const char cmd_078[] PROGMEM = "rgbcolor";
-const char cmd_079[] PROGMEM = "hslcolor";
-const char cmd_080[] PROGMEM = "red";
-const char cmd_081[] PROGMEM = "green";
-const char cmd_082[] PROGMEM = "blue";
-const char cmd_083[] PROGMEM = "black";
-const char cmd_084[] PROGMEM = "yellow";
-const char cmd_085[] PROGMEM = "orange";
-const char cmd_086[] PROGMEM = "purple";
-const char cmd_087[] PROGMEM = "cyan";
-const char cmd_088[] PROGMEM = "magenta";
-const char cmd_089[] PROGMEM = "pink";
-const char cmd_090[] PROGMEM = "white";
-const char cmd_091[] PROGMEM = "gray";
-const char cmd_092[] PROGMEM = "ltgreen";
-const char cmd_093[] PROGMEM = "seafoam";
-const char cmd_094[] PROGMEM = "ltblue";
-const char cmd_095[] PROGMEM = "dkgray";
-const char cmd_096[] PROGMEM = "random";
-const char cmd_097[] PROGMEM = "blend";
-const char cmd_098[] PROGMEM = "max";
-const char cmd_099[] PROGMEM = "dim";
-const char cmd_100[] PROGMEM = "bright";
-const char cmd_101[] PROGMEM = "blink";
-const char cmd_102[] PROGMEM = "blink1";
-const char cmd_103[] PROGMEM = "blink2";
-const char cmd_104[] PROGMEM = "blink3";
-const char cmd_105[] PROGMEM = "blink4";
-const char cmd_106[] PROGMEM = "blink5";
-const char cmd_107[] PROGMEM = "blink6";
-const char cmd_108[] PROGMEM = "blinkr";
-const char cmd_109[] PROGMEM = "blinka";
-const char cmd_110[] PROGMEM = "blinkb";
-const char cmd_111[] PROGMEM = "blinkc";
-const char cmd_112[] PROGMEM = "breathe";
-const char cmd_113[] PROGMEM = "effectr";
-const char cmd_114[] PROGMEM = "static";
-const char cmd_115[] PROGMEM = "pause";
-const char cmd_116[] PROGMEM = "continue";
-const char cmd_117[] PROGMEM = "reset";
-const char cmd_118[] PROGMEM = "clear";
-const char cmd_119[] PROGMEM = "level";
-const char cmd_120[] PROGMEM = "fade";
-const char cmd_121[] PROGMEM = "wipe";
-const char cmd_122[] PROGMEM = "eshift";
-const char cmd_123[] PROGMEM = "pshift";
-const char cmd_124[] PROGMEM = "pshifto";
-const char cmd_125[] PROGMEM = "cfade";
-const char cmd_126[] PROGMEM = "lopower";
-const char cmd_127[] PROGMEM = "hipower";
-const char cmd_128[] PROGMEM = "pinon";
-const char cmd_129[] PROGMEM = "pinoff";
-const char cmd_130[] PROGMEM = "demo";
-const char cmd_131[] PROGMEM = "sbc";
-const char cmd_132[] PROGMEM = "sbp";
-const char cmd_133[] PROGMEM = "sch";
-const char cmd_134[] PROGMEM = "car";
+const char cmd_066[] PROGMEM = "sbc";
+const char cmd_067[] PROGMEM = "sbp";
+const char cmd_068[] PROGMEM = "sch";
+const char cmd_069[] PROGMEM = "car";
+const char cmd_070[] PROGMEM = "sbt";
+const char cmd_071[] PROGMEM = "set";
+const char cmd_072[] PROGMEM = "run";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
@@ -282,14 +159,7 @@ const char* const command_strings[] PROGMEM = {
    cmd_031, cmd_032, cmd_033, cmd_034, cmd_035, cmd_036, cmd_037, cmd_038, cmd_039, cmd_040,
    cmd_041, cmd_042, cmd_043, cmd_044, cmd_045, cmd_046, cmd_047, cmd_048, cmd_049, cmd_050,
    cmd_051, cmd_052, cmd_053, cmd_054, cmd_055, cmd_056, cmd_057, cmd_058, cmd_059, cmd_060,
-   cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070,
-   cmd_071, cmd_072, cmd_073, cmd_074, cmd_075, cmd_076, cmd_077, cmd_078, cmd_079, cmd_080,
-   cmd_081, cmd_082, cmd_083, cmd_084, cmd_085, cmd_086, cmd_087, cmd_088, cmd_089, cmd_090,
-   cmd_091, cmd_092, cmd_093, cmd_094, cmd_095, cmd_096, cmd_097, cmd_098, cmd_099, cmd_100,
-   cmd_101, cmd_102, cmd_103, cmd_104, cmd_105, cmd_106, cmd_107, cmd_108, cmd_109, cmd_110,
-   cmd_111, cmd_112, cmd_113, cmd_114, cmd_115, cmd_116, cmd_117, cmd_118, cmd_119, cmd_120,
-   cmd_121, cmd_122, cmd_123, cmd_124, cmd_125, cmd_126, cmd_127, cmd_128, cmd_129, cmd_130,
-   cmd_131, cmd_132, cmd_133, cmd_134
+   cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070
 };
 
 #endif

@@ -191,17 +191,25 @@ Commands Dependencies::commands;
 void Dependencies::begin(){
 
   // open internal serial connection to MT7688 for receiving commands
+#ifdef REAL_ARDUINO
+  Serial.begin(BAUD_RATE); 
+#else
   Serial1.begin(BAUD_RATE); 
+#endif
 
   // start up auto-brightness hardware driver
   auto_brightness.begin(AUTO_BRIGHTNESS_MIN, AUTO_BRIGHTNESS_MAX);
 
   // start up command processor, listening on the serial port and looking for the passed commands
+#ifdef REAL_ARDUINO
+  command_processor.begin(&Serial, command_strings, NUM_COMMANDS);
+#else
   command_processor.begin(&Serial1, command_strings, NUM_COMMANDS);
+#endif
 
   // start up the color math class
   // false = don't swap red & green
-#if defined(STRAND1) || defined(STRAND2)
+#if defined(STRAND1) || defined(STRAND2) || defined(RADIUS8)
   ColorMath::begin(true);
 #else  
   ColorMath::begin(false);
