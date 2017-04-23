@@ -32,8 +32,8 @@ class CommandProcessor
   void save_args(char * str);
   void reset_args();
   int process_command(char * str);
-  int begin_get_commands(char * str);
-  int get_next_command();
+  int begin_get_commands(char * str, char **saveptr, char *);
+  int get_next_command(char **saveptr);
   char * get_input_buffer();
 
   private:
@@ -148,13 +148,15 @@ int CommandProcessor::process_command(char * str){
   return command;
 }
 
-int CommandProcessor::begin_get_commands(char * str){
-  strcpy(this->str, str);
-  return process_command(strtok(this->str, DELIMITER_STR));
+int CommandProcessor::begin_get_commands(char * str, char **saveptr, char * buffer){
+  // strcpy(this->str, str);
+  strcpy(buffer, str);
+  // return process_command(strtok_r(this->str, DELIMITER_STR, saveptr));
+  return process_command(strtok_r(buffer, DELIMITER_STR, saveptr));
 }
 
-int CommandProcessor::get_next_command(){
-  return process_command(strtok(NULL, DELIMITER_STR));
+int CommandProcessor::get_next_command(char **saveptr){
+  return process_command(strtok_r(NULL, DELIMITER_STR, saveptr));
 }
 
 char * CommandProcessor::get_input_buffer(){
