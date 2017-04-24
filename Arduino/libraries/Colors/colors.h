@@ -21,10 +21,15 @@
 #define DKGRAY  (*Colors::get_color(Colors::dkgray))
 #define GRAY    (*Colors::get_color(Colors::gray))
 #define WHITE   (*Colors::get_color(Colors::white))
+#define TUNGSTEN (*Colors::get_color(Colors::tungsten))
+
+// tungsten based on 20% brightness, 29,230,255:hsl became 133,70,12
+// when unscaled, full strength is 255,135,23, downscaled to 0..20
+// is 20,11,2
 
 // to do: consider higher divisor
 #define BRIGHTNESS_DIVISOR 20.0
-#define NUM_COLORS 16
+#define NUM_COLORS 17
 #define NPRETTY_COLORS 12
 
 #include <PololuLedStrip.h>
@@ -45,10 +50,12 @@ const rgb_color color_12 PROGMEM = { 0,  0,  0}; // black
 const rgb_color color_13 PROGMEM = { 5,  5,  5}; // dkgray
 const rgb_color color_14 PROGMEM = {10, 10, 10}; // gray
 const rgb_color color_15 PROGMEM = {20, 20, 20}; // white
+const rgb_color color_16 PROGMEM = {20, 11, 2}; // tungsten
 
 const rgb_color* const color_array[] PROGMEM = {
   &color_0, &color_1,  &color_2,  &color_3,  &color_4,  &color_5,  &color_6,  &color_7,
-  &color_8, &color_9, &color_10, &color_11, &color_12, &color_13, &color_14, &color_15
+  &color_8, &color_9, &color_10, &color_11, &color_12, &color_13, &color_14, &color_15,
+  &color_16
 };
 
 class Colors
@@ -70,7 +77,8 @@ class Colors
     black,
     dkgray,
     gray,
-    white
+    white,
+    tungsten
   };
 
   static const rgb_color * const get_color(color c);
