@@ -1,11 +1,10 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define CMD_NULL       -1
-#define CMD_NONE       0
-#define CMD_FIRST      1
-
-#define NUM_COMMANDS  72
+#define NUM_COMMANDS     73
+#define CMD_NULL         -1
+#define CMD_NONE          0
+#define CMD_FIRST         1
 #define CMD_FLUSH         1
 #define CMD_ERASE         2
 #define CMD_ROTATE        3
@@ -36,48 +35,49 @@
 #define CMD_SEAFOAM      28
 #define CMD_LTBLUE       29
 #define CMD_DKGRAY       30
-#define CMD_RANDOM       31
-#define CMD_BLEND        32
-#define CMD_MAX          33
-#define CMD_DIM          34
-#define CMD_BRIGHT       35
-#define CMD_BLINK        36
-#define CMD_BLINK1       37
-#define CMD_BLINK2       38
-#define CMD_BLINK3       39
-#define CMD_BLINK4       40
-#define CMD_BLINK5       41
-#define CMD_BLINK6       42
-#define CMD_BLINKR       43
-#define CMD_BLINKA       44
-#define CMD_BLINKB       45
-#define CMD_BLINKC       46
-#define CMD_BREATHE      47
-#define CMD_EFFECTR      48
-#define CMD_STATIC       49
-#define CMD_PAUSE        50
-#define CMD_CONTINUE     51
-#define CMD_RESET        52
-#define CMD_CLEAR        53
-#define CMD_LEVEL        54
-#define CMD_FADE         55
-#define CMD_WIPE         56
-#define CMD_ESHIFT       57
-#define CMD_PSHIFT       58
-#define CMD_PSHIFTO      59
-#define CMD_CFADE        60
-#define CMD_LOPOWER      61
-#define CMD_HIPOWER      62
-#define CMD_PINON        63
-#define CMD_PINOFF       64
-#define CMD_DEMO         65
-#define CMD_SETBLINKC    66
-#define CMD_SETBLINKP    67
-#define CMD_SCHEDULE     68
-#define CMD_CARRY        69
-#define CMD_SETBREATHET  70
-#define CMD_SET_MACRO    71
-#define CMD_RUN_MACRO    72
+#define CMD_TUNGSTEN     31
+#define CMD_RANDOM       32
+#define CMD_BLEND        33
+#define CMD_MAX          34
+#define CMD_DIM          35
+#define CMD_BRIGHT       36
+#define CMD_BLINK        37
+#define CMD_BLINK1       38
+#define CMD_BLINK2       39
+#define CMD_BLINK3       40
+#define CMD_BLINK4       41
+#define CMD_BLINK5       42
+#define CMD_BLINK6       43
+#define CMD_BLINKR       44
+#define CMD_BLINKA       45
+#define CMD_BLINKB       46
+#define CMD_BLINKC       47
+#define CMD_BREATHE      48
+#define CMD_EFFECTR      49
+#define CMD_STATIC       50
+#define CMD_PAUSE        51
+#define CMD_CONTINUE     52
+#define CMD_RESET        53
+#define CMD_CLEAR        54
+#define CMD_LEVEL        55
+#define CMD_FADE         56
+#define CMD_WIPE         57
+#define CMD_ESHIFT       58
+#define CMD_PSHIFT       59
+#define CMD_PSHIFTO      60
+#define CMD_CFADE        61
+#define CMD_LOPOWER      62
+#define CMD_HIPOWER      63
+#define CMD_PINON        64
+#define CMD_PINOFF       65
+#define CMD_DEMO         66
+#define CMD_SETBLINKC    67
+#define CMD_SETBLINKP    68
+#define CMD_SCHEDULE     69
+#define CMD_CARRY        70
+#define CMD_SETBREATHET  71
+#define CMD_SET_MACRO    72
+#define CMD_RUN_MACRO    73
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "era";
@@ -109,48 +109,49 @@ const char cmd_027[] PROGMEM = "lgr";
 const char cmd_028[] PROGMEM = "sea";
 const char cmd_029[] PROGMEM = "lbl";
 const char cmd_030[] PROGMEM = "dgr";
-const char cmd_031[] PROGMEM = "rnd";
-const char cmd_032[] PROGMEM = "ble";
-const char cmd_033[] PROGMEM = "max";
-const char cmd_034[] PROGMEM = "dim";
-const char cmd_035[] PROGMEM = "brt";
-const char cmd_036[] PROGMEM = "bli";
-const char cmd_037[] PROGMEM = "bl1";
-const char cmd_038[] PROGMEM = "bl2";
-const char cmd_039[] PROGMEM = "bl3";
-const char cmd_040[] PROGMEM = "bl4";
-const char cmd_041[] PROGMEM = "bl5";
-const char cmd_042[] PROGMEM = "bl6";
-const char cmd_043[] PROGMEM = "blr";
-const char cmd_044[] PROGMEM = "bla";
-const char cmd_045[] PROGMEM = "blb";
-const char cmd_046[] PROGMEM = "blc";
-const char cmd_047[] PROGMEM = "bre";
-const char cmd_048[] PROGMEM = "efr";
-const char cmd_049[] PROGMEM = "sta";
-const char cmd_050[] PROGMEM = "pau";
-const char cmd_051[] PROGMEM = "cnt";
-const char cmd_052[] PROGMEM = "rst";
-const char cmd_053[] PROGMEM = "clr";
-const char cmd_054[] PROGMEM = "lev";
-const char cmd_055[] PROGMEM = "fad";
-const char cmd_056[] PROGMEM = "wip";
-const char cmd_057[] PROGMEM = "esh";
-const char cmd_058[] PROGMEM = "psh";
-const char cmd_059[] PROGMEM = "pso";
-const char cmd_060[] PROGMEM = "cfa";
-const char cmd_061[] PROGMEM = "lop";
-const char cmd_062[] PROGMEM = "hip";
-const char cmd_063[] PROGMEM = "pon";
-const char cmd_064[] PROGMEM = "pof";
-const char cmd_065[] PROGMEM = "dem";
-const char cmd_066[] PROGMEM = "sbc";
-const char cmd_067[] PROGMEM = "sbp";
-const char cmd_068[] PROGMEM = "sch";
-const char cmd_069[] PROGMEM = "car";
-const char cmd_070[] PROGMEM = "sbt";
-const char cmd_071[] PROGMEM = "set";
-const char cmd_072[] PROGMEM = "run";
+const char cmd_031[] PROGMEM = "tun";
+const char cmd_032[] PROGMEM = "rnd";
+const char cmd_033[] PROGMEM = "ble";
+const char cmd_034[] PROGMEM = "max";
+const char cmd_035[] PROGMEM = "dim";
+const char cmd_036[] PROGMEM = "brt";
+const char cmd_037[] PROGMEM = "bli";
+const char cmd_038[] PROGMEM = "bl1";
+const char cmd_039[] PROGMEM = "bl2";
+const char cmd_040[] PROGMEM = "bl3";
+const char cmd_041[] PROGMEM = "bl4";
+const char cmd_042[] PROGMEM = "bl5";
+const char cmd_043[] PROGMEM = "bl6";
+const char cmd_044[] PROGMEM = "blr";
+const char cmd_045[] PROGMEM = "bla";
+const char cmd_046[] PROGMEM = "blb";
+const char cmd_047[] PROGMEM = "blc";
+const char cmd_048[] PROGMEM = "bre";
+const char cmd_049[] PROGMEM = "efr";
+const char cmd_050[] PROGMEM = "sta";
+const char cmd_051[] PROGMEM = "pau";
+const char cmd_052[] PROGMEM = "cnt";
+const char cmd_053[] PROGMEM = "rst";
+const char cmd_054[] PROGMEM = "clr";
+const char cmd_055[] PROGMEM = "lev";
+const char cmd_056[] PROGMEM = "fad";
+const char cmd_057[] PROGMEM = "wip";
+const char cmd_058[] PROGMEM = "esh";
+const char cmd_059[] PROGMEM = "psh";
+const char cmd_060[] PROGMEM = "pso";
+const char cmd_061[] PROGMEM = "cfa";
+const char cmd_062[] PROGMEM = "lop";
+const char cmd_063[] PROGMEM = "hip";
+const char cmd_064[] PROGMEM = "pon";
+const char cmd_065[] PROGMEM = "pof";
+const char cmd_066[] PROGMEM = "dem";
+const char cmd_067[] PROGMEM = "sbc";
+const char cmd_068[] PROGMEM = "sbp";
+const char cmd_069[] PROGMEM = "sch";
+const char cmd_070[] PROGMEM = "car";
+const char cmd_071[] PROGMEM = "sbt";
+const char cmd_072[] PROGMEM = "set";
+const char cmd_073[] PROGMEM = "run";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
@@ -160,7 +161,7 @@ const char* const command_strings[] PROGMEM = {
    cmd_041, cmd_042, cmd_043, cmd_044, cmd_045, cmd_046, cmd_047, cmd_048, cmd_049, cmd_050,
    cmd_051, cmd_052, cmd_053, cmd_054, cmd_055, cmd_056, cmd_057, cmd_058, cmd_059, cmd_060,
    cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070,
-   cmd_071, cmd_072
+   cmd_071, cmd_072, cmd_073
 };
 
 #endif

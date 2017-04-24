@@ -110,6 +110,9 @@ void dispatch_command(int cmd){
     case CMD_DKGRAY:    
       dependencies.buffer.push_color(DKGRAY);                                                   
       break;
+    case CMD_TUNGSTEN:    
+      dependencies.buffer.push_color(TUNGSTEN);                                                   
+      break;
     case CMD_RANDOM:    
       dependencies.commands.do_random(dependencies.command_processor.sub_args[0]);                                                          
       reset_args = true;

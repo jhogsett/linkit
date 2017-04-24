@@ -1,3 +1,9 @@
+// pos command position of next pixel placement
+
+// del command delays, perhaps logarithmically 
+
+// should be able to rerun the last set of commands with an automatic macro
+
 // for zones, have several configurations that can be chosen in real time by device type
 
 // each device should periodically check for new versions of http_command.py and http_command.html and copy to /root any new versions

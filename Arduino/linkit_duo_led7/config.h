@@ -6,10 +6,10 @@
 // IoT Devices
 
 // 200-LED Radius-8 displays
-#define RADIUS8
+// #define RADIUS8
 
 // 93-LED Disc Projector
-// #define PROJECTOR
+#define PROJECTOR
 
 // 100-LED Xmas Lights
 // #define XMAS_LIGHTS
