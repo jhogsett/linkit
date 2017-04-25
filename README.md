@@ -96,10 +96,10 @@
     
 1. Change the git ssh command to use Dropbear
     
-    * echo "#!/bin/sh" > ~/.gitssh.sh
-    * echo "dbclient -y -i ~/.ssh/id_rsa \\$\\*" >> ~/.gitssh.sh
-    * chmod +x ~/.gitssh.sh
-    * echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
+        * echo "#!/bin/sh" > ~/.gitssh.sh
+        * echo "dbclient -y -i ~/.ssh/id_rsa \\$\\*" >> ~/.gitssh.sh
+        * chmod +x ~/.gitssh.sh
+        * echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
     
     Log out and back in
     
