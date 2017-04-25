@@ -1,5 +1,7 @@
 # Linkit Smart Duo projects
 
+### [TL;DR](#quick-start)
+
 #### Out of the box set up steps
 
     This procedure assumes using a Mac to set up.
@@ -318,7 +320,7 @@
 
     _Note: The `reboot` command can be used to reboot the Openwrt OS_
 
-#### TL;DR
+#### Quick Start
 
 Set up dev link to SD card
 
