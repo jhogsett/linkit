@@ -97,43 +97,43 @@
 1. Change the git ssh command to use Dropbear
     
         * echo "#!/bin/sh" > ~/.gitssh.sh
-        * echo "dbclient -y -i ~/.ssh/id_rsa \\$\\*" >> ~/.gitssh.sh
+        * echo "dbclient -y -i ~/.ssh/id_rsa \$\*" >> ~/.gitssh.sh
         * chmod +x ~/.gitssh.sh
         * echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
     
     Log out and back in
     
-    * ^D
-    * ssh root@mylinkit.local
+        * ^D
+        * ssh root@mylinkit.local
     
     NOTE: if this doesn't work, check your copying and pasting.
     
 1. Clone a Github.com repository
 
-    * cd ~/dev
-    * git clone git@github.com:jhogsett/linkit.git
+        * cd ~/dev
+        * git clone git@github.com:jhogsett/linkit.git
     
 1. Install the Python Requests library for reaching the web
 
-    * pip install requests
+        * pip install requests
     
     See: http://docs.python-requests.org/en/master/
     
 1. Run a Python program to verify things are set up
 
-    * cd ~/dev/linkit/python
-    * python circleci7.py {YOUR CIRCLECI KEY}
+        * cd ~/dev/linkit/python
+        * python circleci7.py {YOUR CIRCLECI KEY}
     
     Tail the log file to see if it's reaching CirclCI
     
-    * tail -f ~/dev/linkit/python/circleci.log
+        * tail -f ~/dev/linkit/python/circleci.log
   
 1. Establish your Git identify
 
     Before you can commit changes, you need to let Git know who you are.
 
-    * git config --global user.email "{YOUR EMAIL}"
-    * git config --global user.name "{YOUR FULL NAME}"
+        * git config --global user.email "{YOUR EMAIL}"
+        * git config --global user.name "{YOUR FULL NAME}"
   
         Tip: use git config --list to confirm the settings
 
@@ -141,7 +141,7 @@
 
     A _git pull_ is a _git fetch_ followed by a _git merge_. To do the merge, Git needs to know how. (One might think this would have been set up correctly to begin with, since Git comes pre-installed.)
 
-    * ln -s $(which git) /usr/lib/git-core/git
+        * ln -s $(which git) /usr/lib/git-core/git
     
     See: https://community.onion.io/topic/785/git-error-merge-not-found
   
@@ -151,7 +151,7 @@
     
     This command will change it to show properly on the console:
     
-    * git config --global core.pager cat
+        * git config --global core.pager cat
 
     see: http://stackoverflow.com/questions/2183900/how-do-i-prevent-git-diff-from-using-a-pager 
     
@@ -163,15 +163,15 @@
 
     Edit your profile and add an alias to customize the _ls_ command.
 
-    * vim /etc/profile (for all users)
+        * vim /etc/profile (for all users)
     
     or
     
-    * vim /root/.profile (for root user)
+        * vim /root/.profile (for root user)
     
     Then add
     
-    * alias ls='ls -al' (or your desired customization)
+        * alias ls='ls -al' (or your desired customization)
     
     Then log out and back in.
     
@@ -183,7 +183,7 @@
 
     Get your SSH public key. On a Mac it should be /Users/USERNAME/.ssh/id_rsa.pub
     
-    * vim /etc/dropbear/authorized_keys
+        * vim /etc/dropbear/authorized_keys
     
     Add your key and save the file. Then, log out and back in, and if it worked, you won't be asked for a password.
 
@@ -191,8 +191,8 @@
 
 1. Add a CircleCI API token to the environment
 
-    * Edit the all users profile as in step #22
-    * add export KEY={THE KEY}
+        * Edit the all users profile as in step #22
+        * add export KEY={THE KEY}
 
 1. Create a service start-up script for a Python script
 
@@ -200,7 +200,7 @@
 
     _Tip: place your Python script in `/root` so it can be started up even if the SD card has not finished initializing_
 
-    * vim /etc/init.d/circleci
+        * vim /etc/init.d/circleci
     
     Example script:
     
@@ -224,12 +224,12 @@
 
     _Note: the ENV var `$KEY` cannot be used because it is only loaded when there's a login_
 
-    * chmod +x /etc/init.d/circleci
+        * chmod +x /etc/init.d/circleci
 
     Enable or disable the automatic start up with:
     
-    * /etc/init.d/circleci enable
-    * /etc/init.d/circleci disable
+        * /etc/init.d/circleci enable
+        * /etc/init.d/circleci disable
     
     When enabled, new start up and shutdown scripts can be seen in /etc/rc.d such as:
     
@@ -239,9 +239,9 @@
 
     Now you can start and stop the service by using:
     
-    * /etc/init.d/circleci start
-    * /etc/init.d/circleci stop
-    * /etc/init.d/circleci restart
+        * /etc/init.d/circleci start
+        * /etc/init.d/circleci stop
+        * /etc/init.d/circleci restart
 
     _Notes:_
     
@@ -252,43 +252,43 @@
 
     First, start up the cron daemon and have it start up automatically on restart
     
-    * /etc/init.d/cron start
-    * /etc/init.d/cron enable
+        * /etc/init.d/cron start
+        * /etc/init.d/cron enable
 
     Then edit the cron table
 
-    * crontab -e
+        * crontab -e
     
     Add
     
-    * 0 */1 * * * /etc/init.d/circleci restart
+        * 0 */1 * * * /etc/init.d/circleci restart
 
     The service will be restarted hourly at the top of the hour
 
 1. Install the Screen utility
 
-    * opkg update
-    * opkg install screen
+        * opkg update
+        * opkg install screen
 
     Starting a screen session:
     
-    * screen -S {NAME}
+        * screen -S {NAME}
 
     Disconnecting from a screen session you want to reconnect to later:
     
-    * ^A^D
+        * ^A^D
     
     Reconnecting to the session
     
-    * screen -x {NAME}
+        * screen -x {NAME}
     
     Disconnect and stop the screen session
     
-    * ^D
+        * ^D
 
 1. Getting a simple CGI script running
 
-    * vim /www/cgi-bin/test.cgi
+        * vim /www/cgi-bin/test.cgi
     
     Then add:
     
@@ -303,18 +303,18 @@
 
     Then do:
     
-    * chmod +x test.cgi
+        * chmod +x test.cgi
     
     Then go to http://mylinkit.local/cgi-bin/test.cgi and it should say “Hello World” along the date & time
 
     _Tip:_ If the name `mylinkit.local` cannot be resolved, do the following to restart the multicast DNS (mDNS) service:
     
-    * /etc/init.d/avahi-daemon
+        * /etc/init.d/avahi-daemon
 
 1. Safe Shutdown
 
-    * Openwrt doesn't have the `shutdown` command
-    * Use the `sync` command to flush data to the SD card before removing power
+        * Openwrt doesn't have the `shutdown` command
+        * Use the `sync` command to flush data to the SD card before removing power
     
     See: https://labs.mediatek.com/forums/posts/list/3605.page
 
