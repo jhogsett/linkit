@@ -318,6 +318,68 @@
 
     _Note: The `reboot` command can be used to reboot the Openwrt OS_
 
+#### TL;DR
+
+Set up dev link to SD card
+
+    * cd /Media/SD-P1
+    * mkdir dev
+    * cd ~
+    * ln -s /Media/SD-P1/dev dev
+
+Create and grab an RSA public key
+
+    * mkdir ~/.ssh
+    * dropbearkey -t rsa -f ~/.ssh/id_rsa
+    * dropbearkey -y -f ~/.ssh/id_rsa | head -n 2 | tail -1
+    
+    Copy the public key that's output and add it to your account at Github.com
+
+Add your Mac public key for no-password ssh login
+
+    * vim /etc/dropbear/authorized_keys
+    
+    Add your key and save the file
+
+Fix Git in various ways
+
+    * echo "#!/bin/sh" > ~/.gitssh.sh
+    * echo "dbclient -y -i ~/.ssh/id_rsa \\$\\*" >> ~/.gitssh.sh
+    * chmod +x ~/.gitssh.sh
+    * echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
+        
+    _NOTE: if this doesn't work, check your copying and pasting_
+    
+    * git config --global user.email "{YOUR EMAIL}"
+    * git config --global user.name "{YOUR FULL NAME}"
+    * ln -s $(which git) /usr/lib/git-core/git
+    * git config --global core.pager cat
+    
+Set up global and user profiles
+
+    * vim /etc/profile _(for all users)_
+    * alias ls='ls -al' (or your desired customization)
+    * alias cc='/root/color_command.py'
+
+    * vim /root/.profile (for root user)
+    * add export KEY={THE KEY}
+
+Prepare to sync files between the SD card and the root directory
+
+    * opkg update
+    * opkg install rsync
+
+Prepare to run Python programs that call out to the Internet
+
+    * pip install requests
+
+Get the Python code to run locally
+
+    * cd ~/dev
+    * git clone git@github.com:jhogsett/linkit.git
+    * cd python
+    * ./scripts/refresh
+
 #### TODO
 
 1. Formatting the SD card for Linux FS
