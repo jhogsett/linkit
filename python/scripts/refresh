@@ -4,3 +4,4 @@ git -C /Media/SD-P1/dev/linkit pull
 rsync -ut /Media/SD-P1/dev/linkit/python/http_command.* /root
 rsync -ut /Media/SD-P1/dev/linkit/python/images/* /root/images/
 rsync -ut /Media/SD-P1/dev/linkit/python/circleci7.py /root
+rsync -ut /Media/SD-P1/dev/linkit/python/color_command.py /root
