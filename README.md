@@ -350,7 +350,7 @@ Fix Git in various ways
     * chmod +x ~/.gitssh.sh
     * echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
         
-    _NOTE: if this doesn't work, check your copying and pasting_
+_NOTE: if this doesn't work, check your copying and pasting_
     
     * git config --global user.email "{YOUR EMAIL}"
     * git config --global user.name "{YOUR FULL NAME}"
