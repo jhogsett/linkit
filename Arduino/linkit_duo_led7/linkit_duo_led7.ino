@@ -29,6 +29,11 @@ void loop(){
   }
   else 
   {
+    // do schedule processing here for now
+    if(!dependencies.commands.is_paused()){
+      process_schedules();
+    }
+    
     // process the effects and update the display if needed
     if(dependencies.effects_processor.process_effects())
       dependencies.commands.flush_all();

@@ -1,3 +1,13 @@
+// pretty wifi output
+// logging
+// wifi mode change
+
+// update read.me with http_command, rsync, 
+
+// idea: a brightness curve applied across a zone; perhaps with a sweeping animation
+
+// change arguments to all be ints, and create one more for a total of four
+
 // pos command position of next pixel placement
 
 // del command delays, perhaps logarithmically 
@@ -13,6 +23,16 @@
 
 // "safe" colors for car
 
+// schedule triggers are necessary to make things toggle
+
+// sweeping crossfade effect
+
+// need a simple reset command for use in macros to reset zone, reversal, etc.
+
+// maybe have a special schedule that can run even if paused, would allow pausing and unpausing automatically
+
+// need a delay command to do special lighting effects with macros
+
 /*
  * {
   "access-control-request-method": "*",
@@ -26,12 +46,9 @@
 }
  */
 
-// python: when re-running a command, include all the arguments
 
-// stop using blinking blue
-
-// allow stop command to accept a program name so I can stop something run over ssh
-
+// allow stop command to accept a program name so I can stop something 
+// that had been run over ssh
 
 // sparkle: specify width of segments and gaps
 
@@ -93,55 +110,6 @@ also: set an analog value on a pin
 
 
 
-/* idea: a scheduler
-     specify timing (command issued this often)
-     specify a set of commands
-
-     example:
-       60000,0:sch:3:zon:rot -- for schedule zero, at each 60000 out of 6000 cycles (~ 1 second, so ~ 10 seconds) , rot zone 3
-       0,0:sch -- clear this schedule
-       
-       3000,0:sch:red:green:blue -- insert RGB 
-
-       1000,1:sch:0:rev:2:zon:rot:1:rev:3:zon:rot:0:rev:4:zon:rot:1:rev:5:zon:rot:0:rev:5:zon:rot
-
-
-1000,1:sch:
-       
-0:rev:2:zon:rot:1:rev:3:zon:rot:0:rev:4:zon:rot:1:rev:5:zon:rot:0:rev:5:zon:rot = 80 chars, allow for 100 chars, allow for 6 schedules, adjust as free memory gets low
-
-
-1000,0:sch:6:zon:rot
-1000,1:sch:5:zon:rot
-1000,2:sch:4:zon:rot
-1000,3:sch:3:zon:rot
-1000,4:sch:2:zon:rot
-1000,0:sch:1:zon:rot
-
-
-100 seems like too many; just do more tha one schedule if it goes long
-
-so have more schedules, each shorter for max flexibility and efficient ram use
-
-do them in order, on the zero mark of the timing cycle
-
-each schedule needs:
-  command buffer
-  event period, 0=disabled
-  event time counter
-
-
-10 schedules of 20 chars each including \0 == 200 bytes
-
-
-6 blink cycles in 10 seconds, blink period is 6000
-
-
- have storage for a few schedules
-
-
-     
-*/
 
 
 

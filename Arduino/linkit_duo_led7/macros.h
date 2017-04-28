@@ -7,9 +7,9 @@ extern Dependencies dependencies;
 
 extern void dispatch_command(int cmd);
 
-#define NUM_MACROS 5
+#define NUM_MACROS 10
 #define MAX_MACRO (NUM_MACROS - 1)
-#define MACRO_CHARS 20
+#define MACRO_CHARS 50
 
 char macros[NUM_MACROS][MACRO_CHARS];
 

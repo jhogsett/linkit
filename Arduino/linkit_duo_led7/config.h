@@ -9,7 +9,7 @@
 // #define RADIUS8
 
 // 93-LED Disc Projector
-#define PROJECTOR
+// #define PROJECTOR
 
 // 100-LED Xmas Lights
 // #define XMAS_LIGHTS
@@ -36,7 +36,7 @@
 // #define WEARABLE_AND_STRIP
 
 // 64-LED Wearable and Glasses
-// #define WEARABLE_AND_GLASSES
+#define WEARABLE_AND_GLASSES
 
 // 93-LED Wearable and Disc
 // #define WEARABLE_AND_DISC93
@@ -95,9 +95,9 @@
 
 #if defined(STRAND1) || defined(STRAND2) || defined(DISC93) || defined(DUAL_STRIP) || defined(WEARABLE2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2) || defined(RADIUS8) || defined(APOLLO_LIGHTS2_DEV)
 #define USE_1_DISPLAYS
-#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE) //  || defined(WEARABLE_AND_GLASSES) 
+#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE)  || defined(WEARABLE_AND_GLASSES) 
 #define USE_2_DISPLAYS
-#elif defined(STRIP3) || defined(MAXLEDS) || defined(WEARABLE_AND_GLASSES) 
+#elif defined(STRIP3) || defined(MAXLEDS) //|| defined(WEARABLE_AND_GLASSES) 
 #define USE_3_DISPLAYS
 #else
 #define USE_1_DISPLAYS

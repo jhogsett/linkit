@@ -1,5 +1,6 @@
 #include "dependencies.h"
 #include "macros.h"
+#include "scheduler.h"
 
 extern Dependencies dependencies;
 
@@ -235,7 +236,10 @@ void dispatch_command(int cmd){
       reset_args = true;
       break;
     case CMD_SCHEDULE:
-      // set or clear a schedule
+      // set a schedule: schedule period 0-65535, schedule number up to maximum, macro number up to maximum 
+      // clear a schedule: 0, 0, 0
+      ::set_schedule(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
+      reset_args = true;
       break;
     case CMD_CARRY:
       dependencies.buffer.push_carry_color();
@@ -252,6 +256,9 @@ void dispatch_command(int cmd){
       ::run_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);
       reset_args = true;
       break;
+    case CMD_DELAY:
+      dependencies.commands.delay(dependencies.command_processor.sub_args[0]);
+      reset_args = true;
   }
 
   if(reset_args)
