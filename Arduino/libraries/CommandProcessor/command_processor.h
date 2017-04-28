@@ -3,7 +3,7 @@
 
 #define DELIMITER_CHAR ':'
 #define DELIMITER_STR ":"
-#define MAX_STRING_LENGTH 20
+#define MAX_STRING_LENGTH 60
 #define NUM_SUB_ARGS 3
 #define CMD_NULL -1
 #define CMD_NONE 0
