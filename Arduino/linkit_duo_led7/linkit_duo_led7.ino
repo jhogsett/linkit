@@ -10,7 +10,10 @@ void setup() {
   dependencies.commands.set_brightness_level();
   
   dependencies.self_test();
-  //::process_commands("dem:clr:1:rnd:flo:cfa");
+  ::process_commands("1000:del:blk:flo:cfa:70:lev:1000:del");
+  ::process_commands("1:stm:red:flo:flu:0:stm:2:run");
+  ::process_commands("2:stm:blu:flo:flu:0:stm:1:run");
+  ::process_commands("1:run:60000,0,0:sch");
 
   // force a command acknowledgement to wake up any script that may be halted 
   // waiting for a character to be sent due to a new Arduino sketch being uploaded

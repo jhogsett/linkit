@@ -4,7 +4,8 @@
 
 extern Dependencies dependencies;
 
-void dispatch_command(int cmd){
+bool dispatch_command(int cmd, char *dispatch_data = NULL){
+  bool continue_dispatching = true;
   bool reset_args = false;
   
   switch(cmd){
@@ -259,10 +260,18 @@ void dispatch_command(int cmd){
     case CMD_DELAY:
       dependencies.commands.delay(dependencies.command_processor.sub_args[0]);
       reset_args = true;
+    case CMD_SET_MACRO_F:
+      ::set_macro_from_macro(dependencies.command_processor.sub_args[0], dispatch_data);
+      reset_args = true;
+      // signal that no more commands should be processed (rest of buffer copied to macro)
+      continue_dispatching = false;
+      break;
   }
 
   if(reset_args)
-    dependencies.command_processor.reset_args();                                 
+    dependencies.command_processor.reset_args();   
+
+  return continue_dispatching;
 }
 
 

@@ -7,7 +7,11 @@
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
 
+#if defined(MINI_DISC_19)
+#define CROSSFADE_DELAY 10
+#else
 #define CROSSFADE_DELAY 1
+#endif
 
 #define LOW_POWER_TIME 50
 

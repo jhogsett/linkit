@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS     75
+#define NUM_COMMANDS     76
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
@@ -80,6 +80,7 @@
 #define CMD_SET_MACRO    73
 #define CMD_RUN_MACRO    74
 #define CMD_DELAY        75
+#define CMD_SET_MACRO_F  76
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "era";
@@ -156,6 +157,7 @@ const char cmd_072[] PROGMEM = "sbt";
 const char cmd_073[] PROGMEM = "set";
 const char cmd_074[] PROGMEM = "run";
 const char cmd_075[] PROGMEM = "del";
+const char cmd_076[] PROGMEM = "stm";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
@@ -165,7 +167,7 @@ const char* const command_strings[] PROGMEM = {
    cmd_041, cmd_042, cmd_043, cmd_044, cmd_045, cmd_046, cmd_047, cmd_048, cmd_049, cmd_050,
    cmd_051, cmd_052, cmd_053, cmd_054, cmd_055, cmd_056, cmd_057, cmd_058, cmd_059, cmd_060,
    cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070,
-   cmd_071, cmd_072, cmd_073, cmd_074, cmd_075
+   cmd_071, cmd_072, cmd_073, cmd_074, cmd_075, cmd_076
 };
 
 #endif

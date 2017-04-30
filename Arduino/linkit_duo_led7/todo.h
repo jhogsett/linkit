@@ -31,7 +31,10 @@
 
 // maybe have a special schedule that can run even if paused, would allow pausing and unpausing automatically
 
-// need a delay command to do special lighting effects with macros
+// need to be able to pause effects processing but keep schedule processing going
+
+// might want to make the delay non-blocking
+
 
 /*
  * {
