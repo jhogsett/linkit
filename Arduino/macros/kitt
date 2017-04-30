@@ -1,0 +1,40 @@
+
+# pause
+pau:pau
+
+# initialize
+1:set:era:red
+
+# rotate 
+2:set:rot:flu
+
+# rotate 88 times
+3:set:2,88:run
+
+# rotate right
+
+# causes stack overflow
+# 4:set:1:rev:3:run:0:stm:5:run:0:run
+4:set:1:rev:3:run:0:stm:5:run
+
+# rotate elft
+
+# causes stack overflow
+# 5:set:0:rev:3:run:0:stm:4:run:0:run
+5:set:0:rev:3:run:0:stm:4:run
+
+# let macros run
+cnt
+
+# do initialize
+1:run
+
+# set up first toggle
+4:run
+
+# run once
+# 0:run
+
+# schedule it to run
+1000,0,0:sch
+
