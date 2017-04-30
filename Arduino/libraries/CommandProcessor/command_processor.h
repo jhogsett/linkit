@@ -31,9 +31,9 @@ class CommandProcessor
   int get_command(char * str);
   void save_args(char * str);
   void reset_args();
-  int process_command(char * str);
-  int begin_get_commands(char * str, char **saveptr, char *);
-  int get_next_command(char **saveptr);
+  int process_command(char * str, char **rest_of_buffer);
+  int begin_get_commands(char * str, char **saveptr, char *, char **rest_of_buffer);
+  int get_next_command(char **saveptr, char **rest_of_buffer);
   char * get_input_buffer();
 
   private:
@@ -133,7 +133,16 @@ int CommandProcessor::get_command(char * str = NULL){
   return lookup_command(str);
 }
 
-int CommandProcessor::process_command(char * str){
+int CommandProcessor::process_command(char * str, char **rest_of_buffer){
+  // make sure there's a string being processed
+  if(str[0] != '\0'){
+    // set a pointer to the rest of the buffer in case this command is setting a macro
+    *rest_of_buffer = (str + strlen(str) + 1);
+  } else {
+    // there's nothing to process; point to a terminated string
+    *rest_of_buffer = str;
+  }
+
   int command = lookup_command(str);
 
   // if CMD_NONE is returned, the command wasn't found
@@ -148,15 +157,13 @@ int CommandProcessor::process_command(char * str){
   return command;
 }
 
-int CommandProcessor::begin_get_commands(char * str, char **saveptr, char * buffer){
-  // strcpy(this->str, str);
+int CommandProcessor::begin_get_commands(char * str, char **saveptr, char * buffer, char **rest_of_buffer){
   strcpy(buffer, str);
-  // return process_command(strtok_r(this->str, DELIMITER_STR, saveptr));
-  return process_command(strtok_r(buffer, DELIMITER_STR, saveptr));
+  return process_command(strtok_r(buffer, DELIMITER_STR, saveptr), rest_of_buffer);
 }
 
-int CommandProcessor::get_next_command(char **saveptr){
-  return process_command(strtok_r(NULL, DELIMITER_STR, saveptr));
+int CommandProcessor::get_next_command(char **saveptr, char **rest_of_buffer){
+  return process_command(strtok_r(NULL, DELIMITER_STR, saveptr), rest_of_buffer);
 }
 
 char * CommandProcessor::get_input_buffer(){
