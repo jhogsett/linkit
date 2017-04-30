@@ -1,0 +1,12 @@
+# picks a random color each round
+
+-1:sch
+pau:pau
+1:set:era:rnd
+2:set:2:rot:flu
+3:set:2,44:run
+4:set:3:run:stm:5:run
+5:set:1:rev:3:run:rev:1:run:stm:4:run
+cnt
+1:run:4:run
+1000,0,0:sch
