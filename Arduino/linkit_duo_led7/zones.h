@@ -49,6 +49,11 @@ byte zone_windows[NUM_ZONES] = { 90, 45, 90, 30, 60, 90, 15, 30, 45, 60, 75, 90}
 #define NUM_ZONES 25
 byte zone_offsets[NUM_ZONES] = {   0,   0, 100,  50,  0,  50, 100, 150, 0,  8, 14, 26, 38, 52, 68,  84, 100, 116, 132, 148, 162, 174, 186, 194 };
 byte zone_windows[NUM_ZONES] = { 200, 100, 200, 150, 50, 100, 150, 200, 6, 14, 26, 38, 52, 68, 84, 100, 116, 132, 148, 162, 174, 186, 194, 200 };
+#elif defined(MINI_DISC_19)
+// all, inner ring, middle ring, outer ring, inner two rings
+#define NUM_ZONES 5
+byte zone_offsets[NUM_ZONES] = {  0, 0, 1, 7,  0 };
+byte zone_windows[NUM_ZONES] = { 19, 1, 7, 19, 7 };
 #else
 #define NUM_ZONES 8
 // all, two halves, center half, four quarters

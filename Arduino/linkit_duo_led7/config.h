@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// #define REAL_ARDUINO
+#define REAL_ARDUINO
 
 // IoT Devices
 
@@ -9,7 +9,7 @@
 // #define RADIUS8
 
 // 93-LED Disc Projector
-#define PROJECTOR
+// #define PROJECTOR
 
 // 100-LED Xmas Lights
 // #define XMAS_LIGHTS
@@ -25,6 +25,9 @@
 
 // 3-72-LED Strips Status Monitor
 // #define STATUS_MONITOR
+
+// 19-LED mini disc, quartz platform
+#define MINI_DISC_19
 
 // enable to change settings for the 8-LED wearable version
 // #define WEARABLE
@@ -95,9 +98,9 @@
 
 #if defined(STRAND1) || defined(STRAND2) || defined(DISC93) || defined(DUAL_STRIP) || defined(WEARABLE2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2) || defined(RADIUS8) || defined(APOLLO_LIGHTS2_DEV)
 #define USE_1_DISPLAYS
-#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE) //  || defined(WEARABLE_AND_GLASSES) 
+#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE)  || defined(WEARABLE_AND_GLASSES) 
 #define USE_2_DISPLAYS
-#elif defined(STRIP3) || defined(MAXLEDS) || defined(WEARABLE_AND_GLASSES) 
+#elif defined(STRIP3) || defined(MAXLEDS) //|| defined(WEARABLE_AND_GLASSES) 
 #define USE_3_DISPLAYS
 #else
 #define USE_1_DISPLAYS
@@ -142,6 +145,8 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #elif defined(STRAND1) || defined(STRAND2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
+#elif defined(MINI_DISC_19)
+#define DEFAULT_BRIGHTNESS_PERCENT 70
 #else
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #endif
@@ -170,12 +175,14 @@
 #define ANIM_LED_COUNT 90
 #elif defined(RADIUS8)
 #define ANIM_LED_COUNT 200
+#elif defined(MINI_DISC_19)
+#define ANIM_LED_COUNT 19
 #else
 #define ANIM_LED_COUNT 72
 #endif
 
 // demo parameters
-#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE2) // || defined(WEARABLE_AND_GLASSES)
+#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE2) || defined(MINI_DISC_19) // || defined(WEARABLE_AND_GLASSES)
 #define DEMO_OBJECT_SIZE 1
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)

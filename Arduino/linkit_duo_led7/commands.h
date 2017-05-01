@@ -7,7 +7,11 @@
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
 
+#if defined(MINI_DISC_19)
+#define CROSSFADE_DELAY 10
+#else
 #define CROSSFADE_DELAY 1
+#endif
 
 #define LOW_POWER_TIME 50
 
@@ -17,6 +21,7 @@ class Commands
   void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness);
   void pause();
   void resume();
+  bool is_paused();
   void do_blend(byte strength);
   void do_max();
   void do_dim();
@@ -44,6 +49,7 @@ class Commands
   void set_brightness_level(byte level = 0);
   void clear();
   void do_rotate(byte times);
+  void delay(int milliseconds);
   
   private:
   Buffer *buffer;
@@ -75,6 +81,10 @@ void Commands::pause(){
 
 void Commands::resume(){
   paused = false;
+}
+
+bool Commands::is_paused(){
+  return paused;
 }
 
 void Commands::low_power(){
@@ -323,9 +333,9 @@ void Commands::flush_all(bool force_display){
   buffer->set_display(orig_display);
 }
 
-// reset internal states and un-pause
+// reset internal states without pausing
 void Commands::reset(){
-  paused = false;
+  // paused = false;
   
   low_power_mode = false;
   
@@ -337,7 +347,7 @@ void Commands::reset(){
   //set_brightness_level(default_brightness);
 }
 
-// full reset and clear of displays with no un-pause
+// full reset and clear of displays with un-pausing
 void Commands::clear(){
   reset();
   
@@ -352,6 +362,10 @@ void Commands::clear(){
   }
 
   buffer->set_display(orig_display);
+}
+
+void Commands::delay(int milliseconds){
+  ::delay(milliseconds);
 }
 
 void Commands::do_demo(){
