@@ -10,10 +10,33 @@ void setup() {
   dependencies.commands.set_brightness_level();
   
   dependencies.self_test();
-  ::process_commands("1000:del:blk:flo:cfa:70:lev:1000:del");
-  ::process_commands("1:stm:red:flo:flu:0:stm:2:run");
-  ::process_commands("2:stm:blu:flo:flu:0:stm:1:run");
-  ::process_commands("1:run:60000,0,0:sch");
+
+#if defined(MINI_DISC_19)
+  ::process_commands("blk:flo:cfa:70:lev:1000:del");
+  ::process_commands("0:stm:3:zon:rnd:flo:cfa");
+  ::process_commands("1:stm:4:zon:rnd:flo:cfa");
+  ::process_commands("5000,0,0:sch:8000,1,1:sch");
+
+//#elif defined(APOLLO_LIGHTS2_DEV)
+//  ::process_commands("era:blu:twi:9:rep");
+//  ::process_commands("grn:twi:9:rep");
+//  ::process_commands("red:twi:9:rep");
+//  ::process_commands("wht:twi:9:rep");
+
+#elif defined(APOLLO_LIGHTS2)
+  ::process_commands("70:lev:tun:flo:cfa:100:lev");
+
+#else
+  ::process_commands("era:flu");
+  ::process_commands("0:stm:1:rnd:4:rep:5,0,5:cpy:flu");
+  ::process_commands("10000,0,0:sch");
+  ::process_commands("1:stm:0:rng:pos:sfd:rst:flu");
+  ::process_commands("20,1,1:sch");
+  ::process_commands("2:stm:0:rng:pos:wht:brt:brt:ffd:rst:flu");
+  ::process_commands("100,2,2:sch");
+
+
+#endif
 
   // force a command acknowledgement to wake up any script that may be halted 
   // waiting for a character to be sent due to a new Arduino sketch being uploaded

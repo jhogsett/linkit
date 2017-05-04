@@ -152,7 +152,6 @@
 #endif
 
 #define MINIMUM_BRIGHTNESS_PERCENT 1  // brightness scale for blinking leds in the off state
-#define FADE_RATE 0.9999
 
 // visible led count
 #if defined(WEARABLE) || defined(WEARABLE2)
@@ -258,6 +257,14 @@
 #define BREATHE_PERIOD 300
 #endif
 
+#if defined(MINI_DISC_19)
+#define FADE_RATE 0.925 
+#define FADE_PERIOD 400
+#else
+#define FADE_RATE 0.925 
+#define FADE_PERIOD 100
+#endif
+
 class Config
 {
   public:
@@ -279,12 +286,13 @@ class Config
   static const byte light_sensor_pin = LIGHT_SENSOR_PIN;
   static const byte default_brightness_percent = DEFAULT_BRIGHTNESS_PERCENT;
   static const byte minimum_brightness_percent = MINIMUM_BRIGHTNESS_PERCENT;
-  static constexpr float fade_rate = FADE_RATE;
   static const byte visible_led_count = ANIM_LED_COUNT;
   static const byte ease_anim_margin = EASE_ANIM_MARGIN;
   static const byte led_count = visible_led_count + ease_anim_margin;
   static const int blink_period = BLINK_PERIOD;
   static const int breathe_period = BREATHE_PERIOD;
+  static constexpr float fade_rate = FADE_RATE;
+  static const int fade_period = FADE_PERIOD;
 };
 
 #endif

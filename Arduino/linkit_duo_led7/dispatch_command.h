@@ -27,7 +27,7 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_COPY:   
-      dependencies.commands.do_copy(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]); 
+      dependencies.commands.do_copy(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]); 
       reset_args = true;
       break;
     case CMD_FLOOD:     
@@ -168,11 +168,23 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
     case CMD_BREATHE:   
       dependencies.effects_processor.start_effect(BREATHE_ON);                                             
       break;
-    case CMD_EFFECTR:   
-      dependencies.effects_processor.start_effect_r();                                                     
+    case CMD_SLOW_FADE:
+      dependencies.effects_processor.start_effect(SLOW_FADE);                                             
+      break;
+    case CMD_FAST_FADE:
+      dependencies.effects_processor.start_effect(FAST_FADE);                                             
+      break;
+    case CMD_TWINKLE:
+      dependencies.effects_processor.start_effect(TWINKLE_ON);                                             
+      break;
+    case CMD_RAW:
+      dependencies.effects_processor.start_effect(RAW_ON);                                             
       break;
     case CMD_STATIC:    
       dependencies.effects_processor.start_effect(STATIC_ON);                                                                                                                      
+      break;
+    case CMD_EFFECTR:   
+      dependencies.effects_processor.start_effect_r();                                                     
       break;
     case CMD_PAUSE:     
       dependencies.commands.pause();
@@ -265,6 +277,26 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       // signal that no more commands should be processed (rest of buffer copied to macro)
       continue_dispatching = false;
+      break;
+    case CMD_RANDOM_NUM:
+      {
+        int random_num = dependencies.commands.random_num(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);
+        dependencies.command_processor.reset_args();   
+        dependencies.command_processor.sub_args[0] = random_num;
+      }
+      break;
+    case CMD_POSITION:
+      {
+        // setting both to the same value ensureS a single pixel will get set without shifting
+        // use -1 as the position to disable position override
+        int position = dependencies.command_processor.sub_args[0];
+        dependencies.buffer.set_offset_override(position); 
+        dependencies.buffer.set_window_override(position); 
+
+        // after using the pos command, the offset and window are left corrupted unless reset to 0,0
+        // could do an auto reset after the next command
+      }
+      reset_args = true;
       break;
   }
 

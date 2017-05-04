@@ -5,15 +5,18 @@
 
 extern Dependencies dependencies;
 
-extern bool dispatch_command(int cmd, char *dispatch_data = NULL);
+extern bool dispatch_command(int cmd, char *dispatch_data);
 
+#if defined(RADIUS8)
+#define NUM_MACROS 4
+#else
 #define NUM_MACROS 10
+#endif
+
 #define MAX_MACRO (NUM_MACROS - 1)
 #define MACRO_CHARS 50
 
 char macros[NUM_MACROS][MACRO_CHARS];
-
-// to have macros run macros, need the buffer being tokenized to be allocated each entrance
 
 char * get_macro(int macro){
   if(macro < 0 || macro > MAX_MACRO){
@@ -60,6 +63,9 @@ void set_macro(int macro){
 }
 
 void run_macro(int macro, int times){
+  // don't pass in this macro running's arguments
+  dependencies.command_processor.reset_args();
+  
   if(times < 1){
     times = 1;
   }

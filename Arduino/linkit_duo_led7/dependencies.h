@@ -13,6 +13,7 @@
 #endif
 #include <blink_effects.h>
 #include <breathe_effects.h>
+#include <fade_effects.h>
 #include <effects_processor.h>
 #include <buffer.h>
 #include <render.h>
@@ -77,6 +78,7 @@ class Dependencies
   // live visual effects
   static BlinkEffects blink_effects;
   static BreatheEffects breathe_effects;
+  static FadeEffects fade_effects;
 
   // manages live visual effects
   static EffectsProcessor effects_processor;
@@ -175,6 +177,7 @@ CommandProcessor Dependencies::command_processor;
 // live visual effects
 BlinkEffects Dependencies::blink_effects;
 BreatheEffects Dependencies::breathe_effects;
+FadeEffects Dependencies::fade_effects;
 
 // manages live visual effects
 EffectsProcessor Dependencies::effects_processor;
@@ -227,11 +230,14 @@ void Dependencies::begin(){
   // set up the breathe effect counter and state
   breathe_effects.begin(config.breathe_period);
 
+  // set up the fade effect counter and state
+  fade_effects.begin(config.fade_rate, config.fade_period);
+
   // start up the effects processor, passing in the blink and breathe effects instances
-  effects_processor.begin(&this->buffer, &this->blink_effects, &this->breathe_effects);
+  effects_processor.begin(&this->buffer, &this->blink_effects, &this->breathe_effects, &this->fade_effects);
 
   // start up the renderer, passing in the blink and breathe effects instances, and brightness values needed for rendering
-  renderer.begin(&this->blink_effects, &this->breathe_effects, config.default_brightness_percent, config.minimum_brightness_percent);
+  renderer.begin(&this->blink_effects, &this->breathe_effects, &this->fade_effects, config.default_brightness_percent, config.minimum_brightness_percent);
 
   // set a higher-quality random seed by reading values from an unconnected analog input
   randomizer.randomize();

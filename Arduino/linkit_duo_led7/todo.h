@@ -1,14 +1,84 @@
+// need to reset args before running a macro 
+// (or maybe not assume args are zero)
+// - this might be better since it allows passing arguments into a macro
+
+// maybe a flush is implied when running a macro, or maybe it would in certain cases (even number macros auto-flush
+
+// copy with pixel expansion (6-pixel rainbow, expand it to 12 pixels each for 72 pixels)
+// copy: third argument is the number of pixels per source pixel
+
+// there could be a special delimiter that takes the first byte of the buffer as a pre-looked-up command number
+// the delimiter could mark a series of bytes to be processed that way
+// macros would be stored this way for reduced memory use
+// python programs would be able to use the delimiter when setting macros with binary values
+// -- the delimiter is problematic
+// instead accept a series of binary bytes of data followed by a special command for storing binary macros
+// -- would require holding onto the input buffer (adding this back)
+
+// could use the top 3 bits of the effects array to store the carry bits from color math overruns
+// -- could probably get the same results by preventing the numbers from exceeding 0-255
+
+// when setting raw color make sure there's no scaling of stored value
+// have an effect that renders the buffer raw without any brightness adjustment
+//   would be better if this was a flag on the effect like bit #8
+
+// have a way to add/subtract color
+
+// map twinkle ratio to breathe scale
+// maybe should be a distribution curve (so they're always twinkling a little)
+
+// problem how to keep the twinkle looking right as the brightness scales down?
+
+// triggers would be handy to check if a position is exceeded and toggle
+
+// ideas for canned macros
+// - animated rotation
+
+
+// for "rng" might be nice to have some constants like
+//   0 = # visible leds
+//  -1 = current width
+//  -2 = number of colors
+//  -3 = number of zones 
+
+// have a way of setting the second arg to a random number too
+  // need to be able to run a macro a random # of times
+
+
+// command to rerun macro 
+
+// shortcut for continuing with another macro
+
+// third arg to "rng" could be the quantization ("2" means all even values, "3" means all multiples of 3)
+
+// built-in macros
+// -- something to make it easy to toggle and swing
+
+// move simple built-in effects to their own class
+
+// color command ignore lines starting with pound
+
+// third parameter to run macro: delay between runs
+
+// could store macros pre-looked up by storing the cmd ID instead of the string
+//    would allow for longer macros
+//    have to deal with arguments somehow 
+
 // pretty wifi output
 // logging
 // wifi mode change
+
+// can delays in macros be made non-blocking?
+
+// some way to sequence numbers
+
+// super slow fade "decay"
 
 // update read.me with http_command, rsync, 
 
 // idea: a brightness curve applied across a zone; perhaps with a sweeping animation
 
 // change arguments to all be ints, and create one more for a total of four
-
-// pos command position of next pixel placement
 
 // del command delays, perhaps logarithmically 
 
@@ -19,15 +89,10 @@
 // each device should periodically check for new versions of http_command.py and http_command.html and copy to /root any new versions
 // how often? 4 hours?
 
-// copy with pixel expansion (6-pixel rainbow, expand it to 12 pixels each for 72 pixels)
 
 // "safe" colors for car
 
-// schedule triggers are necessary to make things toggle
-
 // sweeping crossfade effect
-
-// need a simple reset command for use in macros to reset zone, reversal, etc.
 
 // maybe have a special schedule that can run even if paused, would allow pausing and unpausing automatically
 
@@ -35,39 +100,10 @@
 
 // might want to make the delay non-blocking
 
-
-/*
- * {
-  "access-control-request-method": "*",
-  "server": "thin",
-  "content-type": "application/vnd.usertesting.lab-v1+json",
-  "access-control-allow-origin": "*",
-  "cache-control": "no-store, must-revalidate, private, max-age=0",
-  "connection": "keep-alive",
-  "content-length": "4",
-  "x-request-id": "393bf80d-718b-4ee7-8907-49babe6a1ef0"
-}
- */
-
-
 // allow stop command to accept a program name so I can stop something 
 // that had been run over ssh
 
 // sparkle: specify width of segments and gaps
-
-/*
-144 led demo5 and demohsl4
-
-copy to http_command-projector.html
-
-
-add glasses
-
-breathing glasses
-
-copy: third argument is the number of pixels per source pixel
-
-*/
 
 
 //apollo: patterns that look like "it's charging up"
@@ -83,10 +119,8 @@ read current set brightness level
 
 
 add reboot command
-rearrange links page
 
-
-have a schedule that ges triggers upon a carry being set, could automatically wired together two zones
+h\ave a schedule that ges triggers upon a carry being set, could automatically wired together two zones
 -- could have other kinds of triggers
 
 -- figure out when to automatically reset blink period to default, like on clear

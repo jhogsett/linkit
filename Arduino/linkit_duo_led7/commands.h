@@ -8,7 +8,7 @@
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
 
 #if defined(MINI_DISC_19)
-#define CROSSFADE_DELAY 10
+#define CROSSFADE_DELAY 50
 #else
 #define CROSSFADE_DELAY 1
 #endif
@@ -32,7 +32,7 @@ class Commands
   void do_flood();
   void do_random(byte type);
   void do_mirror();
-  void do_copy(byte size, byte times);
+  void do_copy(byte size, byte times, byte zoom);
   void do_repeat(byte times);
   void do_elastic_shift(byte count, byte max);
   void do_power_shift(byte count, byte max, bool fast_render);
@@ -50,6 +50,7 @@ class Commands
   void clear();
   void do_rotate(byte times);
   void delay(int milliseconds);
+  int random_num(int max, int min);
   
   private:
   Buffer *buffer;
@@ -188,10 +189,16 @@ void Commands::do_flood(){
   }
 }
 
+// types 
+// 0: random color with no effect
+// 1: like #0 but will flood and repeat with random colors 
+// 2: like #1 but will also set random effects
 void Commands::do_random(byte type){
-  type = (type < 1) ? 1 : type;
+  type = (type < 0) ? 0 : type;
   buffer->push_color(ColorMath::random_color());
-  if(type == 1){
+  if(type == 0){
+    buffer->get_effects_buffer()[buffer->get_offset()] = RANDOM0;
+  } else if(type == 1){
     buffer->get_effects_buffer()[buffer->get_offset()] = RANDOM1;
   } else if(type == 2){
     buffer->get_effects_buffer()[buffer->get_offset()] = RANDOM2;
@@ -211,22 +218,60 @@ void Commands::do_mirror(){
 }
 
 // to do: handle reverse direction
-void Commands::do_copy(byte size, byte times){
+void Commands::do_copy(byte size, byte times, byte zoom){
   size = max(1, size);
+  zoom = max(1, zoom);
 
+  int effective_size = size * zoom;
+  
   if(times < 1){
-    times = (buffer->get_width() / size) - 0; // repeat and fill
+    times = (buffer->get_width() / effective_size) - 0; // repeat and fill
   }
 
+  // copy the color pattern to the render buffer temporarily
+  for(int i = 0; i < size; i++){
+    byte dest = i;
+    byte source = buffer->get_offset() + i;
+    buffer->get_render_buffer()[dest] = buffer->get_buffer()[source]; 
+  }
+
+  // copy the colors
   for(int i = 0; i < times; i++){
     for(int j = 0; j < size; j++){
-      byte orig = j + buffer->get_offset();
-      byte copy = orig + ((i + 1) * size);
-      if(copy < buffer->get_window()){ // prevent buffer overrun
-        buffer->get_buffer()[copy] = buffer->get_buffer()[orig];
-        buffer->get_effects_buffer()[copy] = buffer->get_effects_buffer()[orig];
+      for(int k = 0; k < zoom; k++){
+        byte source = j;
+        byte dest = buffer->get_offset() + (i * effective_size) + (j * zoom) + k;
+  
+        if(dest < buffer->get_window()){ // prevent buffer overrun
+          buffer->get_buffer()[dest] = buffer->get_render_buffer()[source];
+        }
       }
     }
+  }
+  
+  // copy the effects pattern to the render buffer temporarily
+  for(int i = 0; i < size; i++){
+    byte source = buffer->get_offset() + i;
+    buffer->get_render_buffer()[i].red = buffer->get_effects_buffer()[source]; 
+  }
+
+  // copy the effects
+  for(int i = 0; i < times; i++){
+    for(int j = 0; j < size; j++){
+      for(int k = 0; k < zoom; k++){
+        byte source = j;
+        byte dest = buffer->get_offset() + (i * effective_size) + (j * zoom) + k;
+  
+        if(dest < buffer->get_window()){ // prevent buffer overrun
+          buffer->get_effects_buffer()[dest] = buffer->get_render_buffer()[source].red;
+        }
+      }
+    }
+  }
+
+  // erase the render buffer
+  for(int i = 0; i < visible_led_count; i++){
+    buffer->get_render_buffer()[i] = BLACK;  
   }
 }
 
@@ -241,12 +286,16 @@ void Commands::do_repeat(byte times = 1){
   rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
  
   for(byte i = 0; i < times; i++){
-    if(effect == RANDOM1){
+    if(effect == RANDOM0){
+      // repeat the same color, no effect
+      buffer->push_color(color);
+      buffer->get_effects_buffer()[offset] = NO_EFFECT;
+    } else if(effect == RANDOM1){
+      // changing random color only, no random effect
       buffer->push_color(ColorMath::random_color());
-      // try: maybe this should copy the effect in place
-      // buffer->get_effects_buffer()[offset] = NO_EFFECT;
       buffer->get_effects_buffer()[offset] = effect;
     } else if(effect == RANDOM2){
+      // changing random color and random effect
       buffer->push_color(ColorMath::random_color());
       buffer->get_effects_buffer()[offset] = EffectsProcessor::random_effect();
     } else {
@@ -368,6 +417,15 @@ void Commands::delay(int milliseconds){
   ::delay(milliseconds);
 }
 
+int Commands::random_num(int max, int min){
+  if(max < 1) {
+    // return a number between zero and number of LEDs exclusive
+    max = this->visible_led_count;
+  } 
+
+  return random(min, max);  
+}
+
 void Commands::do_demo(){
   int count;  
   int window;
@@ -415,7 +473,7 @@ void Commands::do_demo(){
   }
 
 #ifdef APOLLO_LIGHTS2
-  buffer->push_color(WHITE);
+  buffer->push_color(TUNGSTEN);
   do_flood();
 #endif
 }
