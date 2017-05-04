@@ -28,6 +28,8 @@ class ColorMath
   static rgb_color crossfade_colors(int step, rgb_color color1, rgb_color color2);
   static rgb_color correct_color(rgb_color color);
   static int crossfade_steps();
+  static rgb_color simple_scale_color(rgb_color color, float scale);
+  static rgb_color simple_unscale_color(rgb_color color, float scale);
 
   private:
   static bool swap_r_and_g;
@@ -85,6 +87,22 @@ rgb_color ColorMath::unscale_color(rgb_color color, float scale){
     ((color.red / scale) / 255) * BRIGHTNESS_DIVISOR,
     ((color.green / scale) / 255) * BRIGHTNESS_DIVISOR,
     ((color.blue / scale) / 255) * BRIGHTNESS_DIVISOR,
+  };
+}
+
+rgb_color ColorMath::simple_scale_color(rgb_color color, float scale){
+  return (rgb_color){
+    color.red * scale,
+    color.green * scale,
+    color.blue * scale
+  };
+}
+
+rgb_color ColorMath::simple_unscale_color(rgb_color color, float scale){
+  return (rgb_color){
+    color.red / scale,
+    color.green / scale,
+    color.blue / scale
   };
 }
 

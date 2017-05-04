@@ -12,6 +12,8 @@
 #define NO_ID 0
 #endif
 
+#define OVERRIDE_OFF -1
+
 class Buffer
 {
   public:
@@ -30,7 +32,6 @@ class Buffer
   void shift(byte count, byte maxx, bool fast_render);
   void finalize_shift(byte count, byte max);
   void set_color(byte pos, rgb_color color, bool display, byte effect);
-  void set_window_override(byte window);
   void fade(float rate);
   void fade_fast();
   void cross_fade(int step);
@@ -41,7 +42,8 @@ class Buffer
   byte * get_effects_buffer();
   byte get_current_display();
   rgb_color * get_render_buffer();
-  void set_offset_override(byte offset);
+  void set_offset_override(int offset);
+  void set_window_override(int window);
   byte get_offset();
   byte get_width();
   void set_zone(byte zone);
@@ -71,8 +73,8 @@ class Buffer
   byte *existence;
 #endif
 
-  byte window_override = 0;
-  byte offset_override = 0;
+  int window_override = OVERRIDE_OFF;
+  int offset_override = OVERRIDE_OFF;
 
   byte num_zones;
   byte *zone_offsets;
@@ -103,8 +105,8 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
   this->safety_led_count = safety_led_count;
   this->visible_led_count = visible_led_count;
   this->fade_rate = fade_rate;
-  this->window_override = 0;
-  this->offset_override = 0;
+  this->window_override = OVERRIDE_OFF;
+  this->offset_override = OVERRIDE_OFF;
 #ifdef EXISTENCE_ENABLED
   this->existence = existence;
 #endif
@@ -169,7 +171,7 @@ void Buffer::cross_fade(int step){
   for(int i = get_offset(); i < get_window(); i++){
     rgb_color *pb = buffers[current_display] + i;
     rgb_color *pr = render + i;
-    rgb_color rendered_color = renderer->render(*pb, effects_buffers[current_display][i]);
+    rgb_color rendered_color = renderer->render(pb, effects_buffers[current_display][i]);
     *pr = ColorMath::crossfade_colors(step, *pr, rendered_color);
    }
 }
@@ -297,25 +299,32 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
   }
 }
   
-void Buffer::set_window_override(byte window){
-  this->window_override = max(1, min(visible_led_count + 1, window));
+void Buffer::set_window_override(int window){
+  if(window < 0){
+    this->window_override = OVERRIDE_OFF;
+  } else {
+    this->window_override = max(1, min(visible_led_count + 1, window));
+  }
 }
 
 int Buffer::get_window(){
-  if(this->window_override != 0){
+  if(this->window_override != OVERRIDE_OFF){
     return this->window_override;
   } else {
     return this->zone_windows[this->current_zone];
   }
 }
 
-// to do: consider using -1 to indicate "auto" offset
-void Buffer::set_offset_override(byte offset){
-  this->offset_override = max(0, min(this->get_window() - 1, offset));
+void Buffer::set_offset_override(int offset){
+  if(offset < 0){
+    this->offset_override = OVERRIDE_OFF;
+  } else {
+    this->offset_override = max(0, min(visible_led_count, offset));
+  }
 }
 
 byte Buffer::get_offset(){
-  if(this->offset_override != 0){
+  if(this->offset_override != OVERRIDE_OFF){
     return this->offset_override;
   } else {
     return this->zone_offsets[this->current_zone];
@@ -328,8 +337,8 @@ byte Buffer::get_width(){
 
 void Buffer::set_zone(byte zone){
   this->current_zone = max(0, min(this->num_zones - 1, zone));
-  this->window_override = 0;
-  this->offset_override = 0;
+  this->window_override = OVERRIDE_OFF;
+  this->offset_override = OVERRIDE_OFF;
 }
 
 void Buffer::set_display(byte display){
@@ -374,7 +383,7 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
     if(fast_render)
       render[i] = renderer->fast_render(buffers[current_display][i - count], effects_buffers[current_display][i - count]);
     else
-      render[i] = renderer->render(buffers[current_display][i - count], effects_buffers[current_display][i - count]);
+      render[i] = renderer->render(&buffers[current_display][i - count], effects_buffers[current_display][i - count]);
   }
 
   display_buffer(this->render);

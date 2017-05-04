@@ -28,7 +28,12 @@
 // is 20,11,2
 
 // to do: consider higher divisor
+// consider: specifying colors with full RGB values as full brightness color
+
+// in pre-rendered colors, 20 = the max brightness, so at 100 brightness, it would multiply
+// 20 * (255 / 20) to get 255
 #define BRIGHTNESS_DIVISOR 20.0
+
 #define NUM_COLORS 17
 #define NPRETTY_COLORS 12
 
