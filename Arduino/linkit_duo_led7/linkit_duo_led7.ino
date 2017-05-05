@@ -26,15 +26,21 @@ void setup() {
 #elif defined(APOLLO_LIGHTS2)
   ::process_commands("70:lev:tun:flo:cfa:100:lev");
 
-#else
+#elif defined(APOLLO_LIGHTS2_DEV) 
   ::process_commands("era:flu");
-  ::process_commands("0:stm:1:rnd:4:rep:5,0,5:cpy:flu");
-  ::process_commands("10000,0,0:sch");
-  ::process_commands("1:stm:0:rng:pos:sfd:rst:flu");
-  ::process_commands("20,1,1:sch");
-  ::process_commands("2:stm:0:rng:pos:wht:brt:brt:ffd:rst:flu");
-  ::process_commands("100,2,2:sch");
+  ::process_commands("0:stm:rng:pos:rnd:rst:flu");
+  ::process_commands("100,0,0:sch");
+  ::process_commands("1:stm:rng:pos:sfd:rst:flu");
+  ::process_commands("25,1,1:sch");
+  ::process_commands("2:stm:-2,-2:rng:zon:2:rng:rev:0,5,1:rng:rot");
+  ::process_commands("250,2,2:sch");
 
+#elif defined(RADIUS8) 
+  ::process_commands("era:flu");
+  ::process_commands("0:stm:rng:pos:rnd:rst:flu");
+  ::process_commands("100,0,0:sch");
+  ::process_commands("1:stm:rng:pos:sfd:rst:flu");
+  ::process_commands("25,1,1:sch");
 
 #endif
 

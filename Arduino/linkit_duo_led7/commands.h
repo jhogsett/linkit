@@ -2,6 +2,7 @@
 #define COMMANDS_H
 
 #include "config.h"
+#include "zones.h"
 
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
@@ -48,7 +49,7 @@ class Commands
   void set_pin(byte pin, bool on);
   void set_brightness_level(byte level = 0);
   void clear();
-  void do_rotate(byte times);
+  void do_rotate(byte times, byte flush);
   void delay(int milliseconds);
   int random_num(int max, int min);
   
@@ -344,10 +345,13 @@ void Commands::do_wipe(){
   do_power_shift_object(0, visible_led_count, false);
 }
 
-void Commands::do_rotate(byte times = 1){
+void Commands::do_rotate(byte times = 1, byte flush = 0){
   times = max(1, times);
   for(int i = 0; i < times; i++){
     buffer->rotate(); 
+    if(flush == 1){
+      this->flush(true);  
+    }    
   }
 }
 
@@ -418,11 +422,20 @@ void Commands::delay(int milliseconds){
 }
 
 int Commands::random_num(int max, int min){
-  if(max < 1) {
-    // return a number between zero and number of LEDs exclusive
-    max = this->visible_led_count;
-  } 
+  // handle special cases
+  switch(max){ 
+    case -4: max = NUM_DISPLAYS; break;
+    case -3: max = NUM_MACROS; break;
+    case -2: max = buffer->get_zones(); break;
+    case -1: max = this->visible_led_count; break;
+    case  0: max = buffer->get_width(); break;
+  }
 
+  // could have special cases for minimum
+  switch(min){
+    case -2: min = FINE_ZONES; break;
+  }
+  
   return random(min, max);  
 }
 

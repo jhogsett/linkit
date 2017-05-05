@@ -19,7 +19,7 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       dependencies.buffer.erase(false);                                                          
       break;
     case CMD_ROTATE:
-      dependencies.commands.do_rotate(dependencies.command_processor.sub_args[0]); 
+      dependencies.commands.do_rotate(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]); 
       reset_args = true;
       break;
     case CMD_REPEAT:    
@@ -280,14 +280,19 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       break;
     case CMD_RANDOM_NUM:
       {
+        // arg[0] maximum random number (see Commands::random_num() for special constant values)
+        // arg[1] minimum random number (default=0)
+        // arg[2] copied into arg[1] to allow passing another argument
         int random_num = dependencies.commands.random_num(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);
-        dependencies.command_processor.reset_args();   
+        // dependencies.command_processor.reset_args();   
         dependencies.command_processor.sub_args[0] = random_num;
+        dependencies.command_processor.sub_args[1] = dependencies.command_processor.sub_args[2];
+        dependencies.command_processor.sub_args[2] = 0;
       }
       break;
     case CMD_POSITION:
       {
-        // setting both to the same value ensureS a single pixel will get set without shifting
+        // setting both to the same value ensures a single pixel will get set without shifting
         // use -1 as the position to disable position override
         int position = dependencies.command_processor.sub_args[0];
         dependencies.buffer.set_offset_override(position); 
@@ -298,6 +303,22 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       }
       reset_args = true;
       break;
+    case CMD_DIVIDE:
+      {
+        // arg[0] divisor, if zero, it's a no-op
+        // arg[1] dividend, if zero, the accumulated value is used
+        int divisor = dependencies.command_processor.sub_args[0];
+        int dividend = dependencies.command_processor.sub_args[1];
+
+        if(divisor == 0)
+          break;
+
+        if(dividend == 0){
+          dependencies.command_processor.sub_args[0] = dependencies.command_processor.accumulator / divisor;
+        } else {
+          dependencies.command_processor.sub_args[0] = dividend / divisor;  
+        }
+      }
   }
 
   if(reset_args)

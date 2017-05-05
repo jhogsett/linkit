@@ -2,16 +2,11 @@
 #define MACROS_H
 
 #include "dependencies.h"
+#include "config.h"
 
 extern Dependencies dependencies;
 
 extern bool dispatch_command(int cmd, char *dispatch_data);
-
-#if defined(RADIUS8)
-#define NUM_MACROS 4
-#else
-#define NUM_MACROS 10
-#endif
 
 #define MAX_MACRO (NUM_MACROS - 1)
 #define MACRO_CHARS 50

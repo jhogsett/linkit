@@ -1,3 +1,36 @@
+// to simplify macros
+// combine 0:rng:pos into a random position command
+
+// rng: 0 should be the current width not the # LEDs
+
+// for "rng" might be nice to have some constants like
+//   0 = current width
+//  -1 = # visible leds
+//  -2 = # zones
+//  -3 = #  
+//  -4 = 
+
+// could have a number that allows selecting the finest grain set of zones
+// or the best set of zones 
+
+// save last arg[0] to be referenced in certain commands
+// 0:rng:3:div - get a random # from the width, divide by 3
+
+// div:
+// arg[0]: divisor
+// arg[1]: dividend, default = previous arg[0]
+
+// mul:
+// arg[0]: multiplicand
+// arg[1]: multiplicand, default = previous arg[0]
+
+// add:
+// arg[0]: amount to add to previous arg[0]
+
+// sub:
+// sub[0]: amount to subtract from previous arg[0]
+
+
 // need to reset args before running a macro 
 // (or maybe not assume args are zero)
 // - this might be better since it allows passing arguments into a macro
@@ -34,12 +67,6 @@
 // ideas for canned macros
 // - animated rotation
 
-
-// for "rng" might be nice to have some constants like
-//   0 = # visible leds
-//  -1 = current width
-//  -2 = number of colors
-//  -3 = number of zones 
 
 // have a way of setting the second arg to a random number too
   // need to be able to run a macro a random # of times

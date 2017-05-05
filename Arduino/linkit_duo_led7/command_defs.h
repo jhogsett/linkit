@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS     81
+#define NUM_COMMANDS     83
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
@@ -86,6 +86,8 @@
 #define CMD_SET_MACRO_F  79
 #define CMD_RANDOM_NUM   80
 #define CMD_POSITION     81
+#define CMD_DIVIDE       82
+#define CMD_MODULO       83
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "era";
@@ -168,6 +170,7 @@ const char cmd_078[] PROGMEM = "del";
 const char cmd_079[] PROGMEM = "stm";
 const char cmd_080[] PROGMEM = "rng";
 const char cmd_081[] PROGMEM = "pos";
+const char cmd_082[] PROGMEM = "div";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
@@ -178,7 +181,7 @@ const char* const command_strings[] PROGMEM = {
    cmd_051, cmd_052, cmd_053, cmd_054, cmd_055, cmd_056, cmd_057, cmd_058, cmd_059, cmd_060,
    cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070,
    cmd_071, cmd_072, cmd_073, cmd_074, cmd_075, cmd_076, cmd_077, cmd_078, cmd_079, cmd_080,
-   cmd_081
+   cmd_081, cmd_082
 };
 
 #endif

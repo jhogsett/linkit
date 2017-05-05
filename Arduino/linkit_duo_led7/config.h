@@ -1,12 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define REAL_ARDUINO
+// #define REAL_ARDUINO
 
 // IoT Devices
 
 // 200-LED Radius-8 displays
-// #define RADIUS8
+#define RADIUS8
 
 // 93-LED Disc Projector
 // #define PROJECTOR
@@ -22,12 +22,16 @@
 
 // 90-LED Apollo Lights Dev indoors
 // #define APOLLO_LIGHTS2_DEV
+// ------> why does this use a bit more memory? the preloaded macros?
 
 // 3-72-LED Strips Status Monitor
 // #define STATUS_MONITOR
 
 // 19-LED mini disc, quartz platform
-#define MINI_DISC_19
+// #define MINI_DISC_19
+
+// the non-LED repeater, just uses all defaults
+// #define REPEATER
 
 // enable to change settings for the 8-LED wearable version
 // #define WEARABLE
@@ -98,7 +102,7 @@
 
 #if defined(STRAND1) || defined(STRAND2) || defined(DISC93) || defined(DUAL_STRIP) || defined(WEARABLE2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2) || defined(RADIUS8) || defined(APOLLO_LIGHTS2_DEV)
 #define USE_1_DISPLAYS
-#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE)  || defined(WEARABLE_AND_GLASSES) 
+#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE)  || defined(WEARABLE_AND_GLASSES)
 #define USE_2_DISPLAYS
 #elif defined(STRIP3) || defined(MAXLEDS) //|| defined(WEARABLE_AND_GLASSES) 
 #define USE_3_DISPLAYS
@@ -107,21 +111,21 @@
 #endif
 
 #if defined(USE_3_DISPLAYS)
-#define NUM_DISPLAYS 3           
-#define NUM_BUFFERS 3            
+#define NUM_DISPLAYS 3
+#define NUM_BUFFERS 3
 #elif defined(USE_2_DISPLAYS)
-#define NUM_DISPLAYS 2           
-#define NUM_BUFFERS 2            
+#define NUM_DISPLAYS 2
+#define NUM_BUFFERS 2
 #else
-#define NUM_DISPLAYS 1           
-#define NUM_BUFFERS 1            
+#define NUM_DISPLAYS 1
+#define NUM_BUFFERS 1
 #endif
 
 #if defined(DISC93) || defined(DISC93_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) // || defined(WEARABLE_AND_GLASSES) 
 #define DISPLAY_PIN1 11
 #define DISPLAY_PIN2 10
 #define DISPLAY_PIN3 12
-#elif defined(WEARABLE_AND_GLASSES) 
+#elif defined(WEARABLE_AND_GLASSES)
 #define DISPLAY_PIN1 11
 #define DISPLAY_PIN2 12
 #define DISPLAY_PIN3 10
@@ -139,7 +143,7 @@
 #define LIGHT_SENSOR_PIN A0           // photocell pin for auto-brightness setting
 
 // standard brightness
-#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) 
+#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
 #define DEFAULT_BRIGHTNESS_PERCENT 10
 #elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(STRIP2) || defined(STRIP3) || defined(DUAL_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE) || defined(APOLLO_LIGHTS2_DEV)
 #define DEFAULT_BRIGHTNESS_PERCENT 15
@@ -155,7 +159,7 @@
 
 // visible led count
 #if defined(WEARABLE) || defined(WEARABLE2)
-#define ANIM_LED_COUNT  8             
+#define ANIM_LED_COUNT  8
 #elif defined(WEARABLE_AND_STRIP)
 #define ANIM_LED_COUNT 72
 #elif defined(WEARABLE_AND_GLASSES)
@@ -197,7 +201,7 @@
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 20
 #elif defined(STRAND2) || defined(RADIUS8)
-#define DEMO_OBJECT_SIZE 20
+#define DEMO_OBJECT_SIZE 10
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 35
@@ -219,7 +223,7 @@
 #endif
 
 #if defined(DUAL_STRIP) || defined(RADIUS8)
-#define EASE_ANIM_MARGIN 20           // safety margin for visual effects that go past the end of the LEDs
+#define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
 #else
 #define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
 #endif
@@ -237,7 +241,7 @@
 #elif defined(WEARABLE)
 #define BLINK_PERIOD 12000
 #define BREATHE_PERIOD 600
-#elif defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93) || defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV) 
+#elif defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93) || defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV)
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 150
 #elif defined(DUAL_STRIP)
@@ -258,42 +262,48 @@
 #endif
 
 #if defined(MINI_DISC_19)
-#define FADE_RATE 0.925 
+#define FADE_RATE 0.925
 #define FADE_PERIOD 400
 #else
-#define FADE_RATE 0.925 
+#define FADE_RATE 0.925
 #define FADE_PERIOD 100
+#endif
+
+#if defined(RADIUS8)
+#define NUM_MACROS 2
+#else
+#define NUM_MACROS 10
 #endif
 
 class Config
 {
   public:
-  static const byte num_displays = NUM_DISPLAYS;
-  static const byte num_buffers = NUM_BUFFERS;
+    static const byte num_displays = NUM_DISPLAYS;
+    static const byte num_buffers = NUM_BUFFERS;
 
-  static constexpr byte display_pins[NUM_DISPLAYS] = 
-  {
-    DISPLAY_PIN1
+    static constexpr byte display_pins[NUM_DISPLAYS] =
+    {
+      DISPLAY_PIN1
 #if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)
-    , DISPLAY_PIN2
+      , DISPLAY_PIN2
 #endif
 #if defined(USE_3_DISPLAYS)
-    , DISPLAY_PIN3
+      , DISPLAY_PIN3
 #endif
-  };  
-  
-  static const byte random_seed_pin = RANDOM_SEED_PIN;
-  static const byte light_sensor_pin = LIGHT_SENSOR_PIN;
-  static const byte default_brightness_percent = DEFAULT_BRIGHTNESS_PERCENT;
-  static const byte minimum_brightness_percent = MINIMUM_BRIGHTNESS_PERCENT;
-  static const byte visible_led_count = ANIM_LED_COUNT;
-  static const byte ease_anim_margin = EASE_ANIM_MARGIN;
-  static const byte led_count = visible_led_count + ease_anim_margin;
-  static const int blink_period = BLINK_PERIOD;
-  static const int breathe_period = BREATHE_PERIOD;
-  static constexpr float fade_rate = FADE_RATE;
-  static const int fade_period = FADE_PERIOD;
+    };
+
+    static const byte random_seed_pin = RANDOM_SEED_PIN;
+    static const byte light_sensor_pin = LIGHT_SENSOR_PIN;
+    static const byte default_brightness_percent = DEFAULT_BRIGHTNESS_PERCENT;
+    static const byte minimum_brightness_percent = MINIMUM_BRIGHTNESS_PERCENT;
+    static const byte visible_led_count = ANIM_LED_COUNT;
+    static const byte ease_anim_margin = EASE_ANIM_MARGIN;
+    static const byte led_count = visible_led_count + ease_anim_margin;
+    static const int blink_period = BLINK_PERIOD;
+    static const int breathe_period = BREATHE_PERIOD;
+    static constexpr float fade_rate = FADE_RATE;
+    static const int fade_period = FADE_PERIOD;
 };
 
 #endif
-  
+
