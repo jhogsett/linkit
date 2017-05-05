@@ -46,6 +46,11 @@ void set_schedule(unsigned int schedule_period_, byte schedule_number, byte macr
     reset_all_schedules();  
     return;
   }
+
+  if(macro_number_ == 0){
+    // default the macro to be the same as the schedule
+    macro_number_ = schedule_number;
+  }
   
   reset_schedule(schedule_number);
 

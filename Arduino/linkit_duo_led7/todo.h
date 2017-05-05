@@ -1,17 +1,15 @@
+// randomly scheduled macro
+// 0:set:rnd:500:rng:sch (it could stop itself)
+
+// 5:set:2:rng:rev:rnd:flu:500,1,5:rng:sch:rst
+
 // to simplify macros
 // combine 0:rng:pos into a random position command
+// combine -2,-2,rnd:zon into a random fine zone command
+// combine 2:rng:rev into a random reversal command
+// a way to simplify random scheduling such as 500,1,5:rng:sch
 
-// rng: 0 should be the current width not the # LEDs
-
-// for "rng" might be nice to have some constants like
-//   0 = current width
-//  -1 = # visible leds
-//  -2 = # zones
-//  -3 = #  
-//  -4 = 
-
-// could have a number that allows selecting the finest grain set of zones
-// or the best set of zones 
+// if third arg is zero to sch, the macro # is the same as the sch number
 
 // save last arg[0] to be referenced in certain commands
 // 0:rng:3:div - get a random # from the width, divide by 3
@@ -19,6 +17,8 @@
 // div:
 // arg[0]: divisor
 // arg[1]: dividend, default = previous arg[0]
+// this isn't useful for rotation because the 1 parameter can't be passed through
+// may be better to have another rotation command that automatically includes flushing, or have an animation flag
 
 // mul:
 // arg[0]: multiplicand
@@ -29,11 +29,6 @@
 
 // sub:
 // sub[0]: amount to subtract from previous arg[0]
-
-
-// need to reset args before running a macro 
-// (or maybe not assume args are zero)
-// - this might be better since it allows passing arguments into a macro
 
 // maybe a flush is implied when running a macro, or maybe it would in certain cases (even number macros auto-flush
 
@@ -66,6 +61,11 @@
 
 // ideas for canned macros
 // - animated rotation
+
+// save a pattern and rubber-stamp it anywhere
+
+// how to have the cpy command cpy to a specific location?
+
 
 
 // have a way of setting the second arg to a random number too
@@ -376,8 +376,7 @@ lowpower command means:
 */
 
 // need to close a running app before starting circleci
-
-
+// need to stop circleci if running an app
 
 
 

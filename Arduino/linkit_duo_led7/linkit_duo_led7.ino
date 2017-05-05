@@ -28,12 +28,14 @@ void setup() {
 
 #elif defined(APOLLO_LIGHTS2_DEV) 
   ::process_commands("era:flu");
-  ::process_commands("0:stm:rng:pos:rnd:rst:flu");
+  ::process_commands("0:stm:rng:pos:rnd:twi:flu:rst");
   ::process_commands("100,0,0:sch");
-  ::process_commands("1:stm:rng:pos:sfd:rst:flu");
-  ::process_commands("25,1,1:sch");
+  ::process_commands("1:stm:rng:pos:sfd:flu:rst");
+  ::process_commands("25,1:sch");
   ::process_commands("2:stm:-2,-2:rng:zon:2:rng:rev:0,5,1:rng:rot");
-  ::process_commands("250,2,2:sch");
+  ::process_commands("250,2:sch");
+  ::process_commands("3:stm:2:rng:rev:rnd:sfd:flu:500,1,3:rng:sch:rst");
+  ::process_commands("500,3:sch");
 
 #elif defined(RADIUS8) 
   ::process_commands("era:flu");

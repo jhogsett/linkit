@@ -57,7 +57,7 @@ void set_macro(int macro){
   set_macro_from_buffer(macro, dependencies.command_processor.get_input_buffer());
 }
 
-void run_macro(int macro, int times){
+void run_macro(int macro, int times, int delay_ = 0){
   // don't pass in this macro running's arguments
   dependencies.command_processor.reset_args();
   
@@ -68,6 +68,9 @@ void run_macro(int macro, int times){
   if(str != NULL){
     for(int i = 0; i < times; i++){
       ::process_commands(str);
+      if(delay_ != 0){
+        delay(delay_);
+      }
     }
   }
 }

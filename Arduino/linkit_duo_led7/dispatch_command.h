@@ -249,8 +249,9 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_SCHEDULE:
-      // set a schedule: schedule period 0-65535, schedule number up to maximum, macro number up to maximum 
-      // clear a schedule: 0, 0, 0
+      // arg[0] schedule period 0-65534, -1 clears all schedules
+      // arg[1] schedule number, default schedule #0 
+      // arg[2] macro number, default same as schedule #
       ::set_schedule(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
       reset_args = true;
       break;
@@ -266,7 +267,10 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_RUN_MACRO:
-      ::run_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);
+      // arg[0] macro number to run, default = 0
+      // arg[1] number of times to run, default = 1
+      // arg[0] milliseconds delay between runs, default = no delay
+      ::run_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
       reset_args = true;
       break;
     case CMD_DELAY:

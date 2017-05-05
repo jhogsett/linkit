@@ -6,7 +6,7 @@
 // IoT Devices
 
 // 200-LED Radius-8 displays
-#define RADIUS8
+// #define RADIUS8
 
 // 93-LED Disc Projector
 // #define PROJECTOR
@@ -21,8 +21,7 @@
 // #define APOLLO_LIGHTS2
 
 // 90-LED Apollo Lights Dev indoors
-// #define APOLLO_LIGHTS2_DEV
-// ------> why does this use a bit more memory? the preloaded macros?
+#define APOLLO_LIGHTS2_DEV
 
 // 3-72-LED Strips Status Monitor
 // #define STATUS_MONITOR
