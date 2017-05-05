@@ -51,6 +51,7 @@ class Buffer
   void set_reverse(bool reverse);
   void rotate();
   byte get_display();
+  byte get_zones();
 
   static const rgb_color black;
 
@@ -363,6 +364,10 @@ rgb_color * Buffer::get_render_buffer(){
 
 void Buffer::set_reverse(bool reverse = true){
   this->reverse = reverse;
+}
+
+byte Buffer::get_zones(){
+  return this->num_zones;
 }
 
 // to do: support either orientation

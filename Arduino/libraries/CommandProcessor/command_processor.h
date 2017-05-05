@@ -15,6 +15,7 @@ class CommandProcessor
   char str[MAX_STRING_LENGTH];
 
   int sub_args[NUM_SUB_ARGS];
+  int accumulator = 0;
 
   const char * const *commands;
 
@@ -109,10 +110,12 @@ void CommandProcessor::get_sub_args(char * args = NULL){
 }
 
 void CommandProcessor::reset_args(){
+  accumulator = sub_args[0];
   sub_args[0] = 0;
   sub_args[1] = 0;
   sub_args[2] = 0;
 }
+
 int CommandProcessor::lookup_command(char * str){
   if(str == NULL){
     return CMD_NULL;
