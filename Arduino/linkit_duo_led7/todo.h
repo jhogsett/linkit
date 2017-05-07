@@ -1,15 +1,123 @@
+// the command processor has a 60-char buffer
+// this should be reusable for tokenizing strings
+// add functions to command processor to access that buffer, like
+// - get pointer to the buffer
+
+
+// improvement: when the input buffer has too many incoming chars
+// unget the current building command so it can be gotten next
+// or discard the current building command and the rest of the buffer
+// or ignore the entire request as potentially truncated (though it's already processed commands)
+
+
+// how to toggle macros without rewriting?
+// - could toggle by setting which macro the schedule runs
+//   
+//
+
+// would be nice to be able to repeat the same random color in different zones
+// need some way to find out what the color is when doing something later
+// could have a pal(ette) command that takes a color number, 
+//   and a (sh)u(f)fle command that mixes them up uniquely
+//   then to reuse the first two random colors
+//     shf:1:zon:0:pal:2:zon:1:pal:3:zon:0:pal:4:zon:1:pal
+
+// eeprom for macros
+// 
+// setting a macro: 
+//   three cases
+//     setting from serial
+//       copy remainder of buffer from serial to eeprom followed by zero
+//     setting from string
+//       copy remainder of string to eeprom followed by zero
+//     setting from eeprom
+//       copy from eeprom to eeprom until the value is zero followed by zero 
+// 
+// running a macro:
+//   have a special version of process_command() for eeproms
+//     need a replacement for strtok to parse the commands  
+// 
+// the eeprom can't be used for real-time rewriting for toggling because it will wear out too quickly
+// maybe have a small in-memory macro buffer just for toggling use, macro #2 and higher would operate out of the eeprom
+// have a variable number of in-memory vs eeprom macros depending on available memory and application
+
+// other inputs to rnd: choose one of any of the available colors, choose one of the b&w colors
+
+//// need a way to place a complimentary color to the last placed color
+
+// would be nice to have a way to choose two colors that look nice together instead of arbitrary colors
+
+// other canned values
+// current zone, current offset, current window, current display, current reversal
+
+// modulo could be used to toggle:
+// 2:rng:1:add:2:mod
+
+// have a way of setting the second arg to a random number too
+  // need to be able to run a macro a random # of times
+
+// rng, leaves # as arg[0]
+// rng, sets accum to old arg[0], leaves new # as arg[0]
+
+// now with arg[0] and accum, a command could combine into args,
+// args[0] -> arg[1]
+// accum -> arg[0]
+
+// 10,5:rng   accum = 0, arg[0] = n 
+// 100,1:rng  accum = arg[0], arg[0] = n
+// cmb        arg[1] = arg[0], arg[0] = accum
+
+// 10,5:rng:100,1:rng:cmb --> 5-10, 1-100
+
+// 100:cmb -> arg[1] = 100, arg[0] = whatever is in the accum, arg[1] = 100
+// or is it more natural that new argument goes to arg[0]?
+// could be: the command just sets arg[1] from the accumulator
+//
+// some calc, accum = old arg[0], arg[0] = result
+// some other calc, accum = result #1
+
+// "100" -- arg[0] automatically gets set
+// 
+
+// could have sto and rcl commands to save/restore values of arg[0]
+
 // randomly scheduled macro
 // 0:set:rnd:500:rng:sch (it could stop itself)
-
-// 5:set:2:rng:rev:rnd:flu:500,1,5:rng:sch:rst
+// 5:set:2:rng:rev:rnd:flu:500,1,5:rng:sch:rst (can't stop itself and also not macro #0)
 
 // to simplify macros
-// combine 0:rng:pos into a random position command
-// combine -2,-2,rnd:zon into a random fine zone command
+// rps combine 0:rng:pos into a random position command
+// rzn combine -2,-2,rng:zon into a random fine zone command
 // combine 2:rng:rev into a random reversal command
 // a way to simplify random scheduling such as 500,1,5:rng:sch
+// being able to specify a number of times and whether to animate for any color push
 
-// if third arg is zero to sch, the macro # is the same as the sch number
+// need to be able to clear all macros
+
+// not sure raw command works -- there's no way to get a raw value into the buffer
+
+// arg command: 5,1:rng:20,1,0:arg:rot (args that are zero get filled with accumulator)
+// 0 could interfere with defaults
+// try 5,1:rng:20,1,-1:arg:rot -- rotates 20 times with animation at random speeds
+// could do something like: 5,1:rng:20,1,x:arg:rot
+// don't like the "x" because it can't be computed from something else
+// the arg shuffling feels too tricky, want to find a more natural way
+// maybe sto and rcl?
+// need to be able to specify a random number and use it in any argument field as well as specify the other fields
+// for each random number, need to specify a min,max
+// -1 replacement with arg may be best
+
+// how to use arg to fill all three positions?
+// 10,5:rng:0:sto:100,50:rng:1:sto:1000,500:rng:2:sto:arg
+// 360:rng:st0:256:rng:st1:256:rng:st2:args:hsl
+
+// be able to save/restore macros/schedules to eeprom 
+
+
+
+// remix
+
+// flip command to reverse all bits in current zone
 
 // save last arg[0] to be referenced in certain commands
 // 0:rng:3:div - get a random # from the width, divide by 3
@@ -31,9 +139,6 @@
 // sub[0]: amount to subtract from previous arg[0]
 
 // maybe a flush is implied when running a macro, or maybe it would in certain cases (even number macros auto-flush
-
-// copy with pixel expansion (6-pixel rainbow, expand it to 12 pixels each for 72 pixels)
-// copy: third argument is the number of pixels per source pixel
 
 // there could be a special delimiter that takes the first byte of the buffer as a pre-looked-up command number
 // the delimiter could mark a series of bytes to be processed that way
@@ -59,17 +164,10 @@
 
 // triggers would be handy to check if a position is exceeded and toggle
 
-// ideas for canned macros
-// - animated rotation
-
 // save a pattern and rubber-stamp it anywhere
 
 // how to have the cpy command cpy to a specific location?
 
-
-
-// have a way of setting the second arg to a random number too
-  // need to be able to run a macro a random # of times
 
 
 // command to rerun macro 

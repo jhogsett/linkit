@@ -269,10 +269,15 @@
 #endif
 
 #if defined(RADIUS8)
-#define NUM_MACROS 2
+#define NUM_MEMORY_MACROS 2
 #else
-#define NUM_MACROS 10
+#define NUM_MEMORY_MACROS 10
 #endif
+
+#define EEPROM_STARTING_MACRO (NUM_MEMORY_MACROS)
+#define NUM_EEPROM_MACROS 20
+#define NUM_MACROS (NUM_MEMORY_MACROS + NUM_EEPROM_MACROS)
+#define NUM_MACRO_CHARS 50
 
 class Config
 {

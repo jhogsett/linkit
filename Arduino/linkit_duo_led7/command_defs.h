@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS     83
+#define NUM_COMMANDS     82
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
@@ -86,8 +86,18 @@
 #define CMD_SET_MACRO_F  79
 #define CMD_RANDOM_NUM   80
 #define CMD_POSITION     81
-#define CMD_DIVIDE       82
-#define CMD_MODULO       83
+
+// place color from palette n,m:pal n=color number, m=palette number, default = 0
+#define CMD_PALETTE      82
+
+// shuffle colors in palette n:shf n=palette number, default = 0
+#define CMD_SHUFFLE      83
+
+
+
+//#define CMD_CONCAT       82
+//#define CMD_DIVIDE       83
+//#define CMD_MODULO       84
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "era";
@@ -170,7 +180,7 @@ const char cmd_078[] PROGMEM = "del";
 const char cmd_079[] PROGMEM = "stm";
 const char cmd_080[] PROGMEM = "rng";
 const char cmd_081[] PROGMEM = "pos";
-const char cmd_082[] PROGMEM = "div";
+const char cmd_082[] PROGMEM = "cat";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,

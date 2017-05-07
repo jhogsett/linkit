@@ -19,7 +19,10 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       dependencies.buffer.erase(false);                                                          
       break;
     case CMD_ROTATE:
-      dependencies.commands.do_rotate(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]); 
+      // arg[0] # times to rotate, default = 1
+      // arg[0] 1=flush each time, 0=don't flush, default = 0
+      // arg[1] # rotation steps each time, default = 1
+      dependencies.commands.do_rotate(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]); 
       reset_args = true;
       break;
     case CMD_REPEAT:    
@@ -263,7 +266,7 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_SET_MACRO:
-      ::set_macro(dependencies.command_processor.sub_args[0]);
+      ::set_macro_from_serial(dependencies.command_processor.sub_args[0]);
       reset_args = true;
       break;
     case CMD_RUN_MACRO:
@@ -277,7 +280,11 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       dependencies.commands.delay(dependencies.command_processor.sub_args[0]);
       reset_args = true;
     case CMD_SET_MACRO_F:
-      ::set_macro_from_macro(dependencies.command_processor.sub_args[0], dispatch_data);
+      // alternate version of setting a macro that gets the remainder to copy 
+      //   from a string instead of the serial input buffer
+      // this must be used when setting a macro from within another macro,
+      //   or when using ::process_command() to set a macro  
+      ::set_macro_from_memory(dependencies.command_processor.sub_args[0], dispatch_data);
       reset_args = true;
       // signal that no more commands should be processed (rest of buffer copied to macro)
       continue_dispatching = false;
@@ -307,22 +314,25 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       }
       reset_args = true;
       break;
-    case CMD_DIVIDE:
-      {
-        // arg[0] divisor, if zero, it's a no-op
-        // arg[1] dividend, if zero, the accumulated value is used
-        int divisor = dependencies.command_processor.sub_args[0];
-        int dividend = dependencies.command_processor.sub_args[1];
-
-        if(divisor == 0)
-          break;
-
-        if(dividend == 0){
-          dependencies.command_processor.sub_args[0] = dependencies.command_processor.accumulator / divisor;
-        } else {
-          dependencies.command_processor.sub_args[0] = dividend / divisor;  
-        }
-      }
+ 
+//    case CMD_CONCAT:
+      // arg[0] 
+//    case CMD_DIVIDE:
+//      {
+//        // arg[0] divisor, if zero, it's a no-op
+//        // arg[1] dividend, if zero, the accumulated value is used
+//        int divisor = dependencies.command_processor.sub_args[0];
+//        int dividend = dependencies.command_processor.sub_args[1];
+//
+//        if(divisor == 0)
+//          break;
+//
+//        if(dividend == 0){
+//          dependencies.command_processor.sub_args[0] = dependencies.command_processor.accumulator / divisor;
+//        } else {
+//          dependencies.command_processor.sub_args[0] = dividend / divisor;  
+//        }
+//      }
   }
 
   if(reset_args)

@@ -8,34 +8,45 @@ void setup() {
   dependencies.commands.reset();
   dependencies.buffer.erase(true);
   dependencies.commands.set_brightness_level();
-  
+
+#if !defined(MINI_DISC_19)
   dependencies.self_test();
+#endif
 
 #if defined(MINI_DISC_19)
-  ::process_commands("blk:flo:cfa:70:lev:1000:del");
-  ::process_commands("0:stm:3:zon:rnd:flo:cfa");
-  ::process_commands("1:stm:4:zon:rnd:flo:cfa");
-  ::process_commands("5000,0,0:sch:8000,1,1:sch");
-
-//#elif defined(APOLLO_LIGHTS2_DEV)
-//  ::process_commands("era:blu:twi:9:rep");
-//  ::process_commands("grn:twi:9:rep");
-//  ::process_commands("red:twi:9:rep");
-//  ::process_commands("wht:twi:9:rep");
+  ::process_commands("era:flu:70:lev");
+  ::process_commands("0:stm:3:zon:rnd:brt:brt:5:rep:cfa:rst");
+  ::process_commands("1:stm:3:zon:rnd:dim:dim:5:rep:cfa:rst");
+  ::process_commands("2:stm:0:run:1:run:flu:rst");
+  ::process_commands("3:stm:3:zon:rot:rst");
+  ::process_commands("60000,2:sch");
+  ::process_commands("1000,3:sch");
+  ::process_commands("2:run");
 
 #elif defined(APOLLO_LIGHTS2)
   ::process_commands("70:lev:tun:flo:cfa:100:lev");
 
+//
+//50,0:sch
+//0,2:sch
+
 #elif defined(APOLLO_LIGHTS2_DEV) 
   ::process_commands("era:flu");
   ::process_commands("0:stm:rng:pos:rnd:twi:flu:rst");
-  ::process_commands("100,0,0:sch");
+  ::process_commands("50,0,0:sch");
   ::process_commands("1:stm:rng:pos:sfd:flu:rst");
   ::process_commands("25,1:sch");
-  ::process_commands("2:stm:-2,-2:rng:zon:2:rng:rev:0,5,1:rng:rot");
-  ::process_commands("250,2:sch");
-  ::process_commands("3:stm:2:rng:rev:rnd:sfd:flu:500,1,3:rng:sch:rst");
-  ::process_commands("500,3:sch");
+  ::process_commands("5:stm:6,8,5:run:200:del");
+  ::process_commands("5000,5:sch");
+  ::process_commands("6:stm:7:run:8:run:9:run:flu");
+  ::process_commands("7:stm:6:zon:blk:blk:7:zon:1:rev:blk:blk::rst");
+  ::process_commands("8:stm:8:zon:blk:blk:9:zon:1:rev:blk:blk:rst");
+  ::process_commands("9:stm:10:zon:blk:blk:11:zon:1:rev:blk:blk:rst");
+
+//  ::process_commands("2:stm:-2,-2:rng:zon:2:rng:rev:0,5,1:rng:rot");
+//  ::process_commands("250,2:sch");
+//  ::process_commands("3:stm:2:rng:rev:rnd:sfd:flu:500,1,3:rng:sch:rst");
+//  ::process_commands("500,3:sch");
 
 #elif defined(RADIUS8) 
   ::process_commands("era:flu");

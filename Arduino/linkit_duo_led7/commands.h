@@ -49,7 +49,7 @@ class Commands
   void set_pin(byte pin, bool on);
   void set_brightness_level(byte level = 0);
   void clear();
-  void do_rotate(byte times, byte flush);
+  void do_rotate(byte times, byte flush, byte steps);
   void delay(int milliseconds);
   int random_num(int max, int min);
   
@@ -345,10 +345,13 @@ void Commands::do_wipe(){
   do_power_shift_object(0, visible_led_count, false);
 }
 
-void Commands::do_rotate(byte times = 1, byte flush = 0){
+void Commands::do_rotate(byte times = 1, byte flush = 0, byte steps = 1){
   times = max(1, times);
+  steps = max(1, steps);
   for(int i = 0; i < times; i++){
-    buffer->rotate(); 
+    for(int j = 0; j < steps; j++){
+      buffer->rotate(); 
+    }
     if(flush == 1){
       this->flush(true);  
     }    
@@ -430,6 +433,8 @@ int Commands::random_num(int max, int min){
     case -1: max = this->visible_led_count; break;
     case  0: max = buffer->get_width(); break;
   }
+
+  // of palette colors
 
   // could have special cases for minimum
   switch(min){
