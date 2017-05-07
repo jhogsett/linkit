@@ -334,14 +334,39 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       break;
 
     case CMD_PALETTE:
-      dependencies.buffer.push_color(::palette[dependencies.command_processor.sub_args[0]]);                                                      
-      reset_args = true;
-      break;
-      
+      {
+        // arg[0] the index into the palette of the color to insert, or where to stop rubberstamp insert
+        // arg[1] if > 0, this many palette colors are inserted counting down from the value
+        //                the counting down is done so the palette achieves a left-to-right order when inserted  
+        //                in this case arg[0] is the stopping point when counting down
+        int arg0 = dependencies.command_processor.sub_args[0];
+        int arg1 = dependencies.command_processor.sub_args[1];
+        if(arg1 > 0){
+          arg0 = max(0, arg0);
+          for(int i = arg1; i >= arg0; i--){
+            dependencies.buffer.push_color(::palette[i]);                      
+          }
+        } else {
+          dependencies.buffer.push_color(::palette[arg0]);                                                      
+        }
+        
+        reset_args = true;
+        break;
+      }
+            
     case CMD_SHUFFLE:
-      // arg[0] 0=shuffle, 1=reset to built-in palette, default = 0
+      // arg[0]:
+      //   0=shuffle
+      //   1=reset to built-in palette
+      //   2=generate complimentary colors
+      //   default = 0
       if(dependencies.command_processor.sub_args[0] == 1){
         ::reset_palette();  
+      } else if(dependencies.command_processor.sub_args[0] == 2){
+        // make every odd color the complimentary color of the previous even color
+        for(int i = 0; i < NUM_PALETTE_COLORS; i += 2){
+          palette[i+1] = ColorMath::complimentary_color(palette[i]);
+        }
       } else {
         ::shuffle_palette();
       }

@@ -7,10 +7,20 @@
 
 // vesions of mirror and flip that blend the colors
 
+// have virtual colors that always point to a position in the palette
+// how? colors are stored as RGB
+// can't add a flag indicating to treat it as an integer
+// could have an effects bit that means get from palette
+
+// use palette as a rubber stamp buffer for copying and pasting patterns
+
 // improvement: when the input buffer has too many incoming chars
 // unget the current building command so it can be gotten next
 // or discard the current building command and the rest of the buffer
 // or ignore the entire request as potentially truncated (though it's already processed commands)
+
+// take advantage of rest_of_buffer to allow sequencing:
+// 10,5:seq:pal:5:rep:flu --> would pass 5 thru 9 as arg[0] to the rest of the command line repeatedly
 
 
 // how to toggle macros without rewriting?
