@@ -1,8 +1,19 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-// eanble to support palettes
-#define USE_PALETTES
+// how to do complimentary colors?
+
+#include <PololuLedStrip.h>
+
+#define NUM_COLORS 23
+#define NPRETTY_COLORS 18
+
+#define NUM_PALETTE_COLORS NPRETTY_COLORS
+rgb_color palette[NUM_PALETTE_COLORS];
+
+// in pre-rendered colors, 20 = the max brightness, so at 100 brightness, it would multiply
+// 20 * (255 / 20) to get 255
+#define BRIGHTNESS_DIVISOR 20.0
 
 #define RED       (*Colors::get_color(Colors::red))
 #define ORANGE    (*Colors::get_color(Colors::orange))
@@ -35,15 +46,6 @@
 // to do: consider higher divisor
 // consider: specifying colors with full RGB values as full brightness color
 
-// in pre-rendered colors, 20 = the max brightness, so at 100 brightness, it would multiply
-// 20 * (255 / 20) to get 255
-#define BRIGHTNESS_DIVISOR 20.0
-
-#define NUM_COLORS 23
-#define NPRETTY_COLORS 18
-
-#include <PololuLedStrip.h>
-
 const rgb_color color_0 PROGMEM = {20,  0,  0}; // red
 const rgb_color color_1 PROGMEM = {20, 10,  0}; // orange
 const rgb_color color_2 PROGMEM = {20, 20,  0}; // yellow
@@ -56,7 +58,6 @@ const rgb_color color_8 PROGMEM = { 0, 10, 20}; // ltblue
 const rgb_color color_9 PROGMEM = {10, 20,  0}; // ltgreen
 const rgb_color color_10 PROGMEM = { 0, 20, 10}; // seafoam
 const rgb_color color_11 PROGMEM = {20,  0, 10}; // pink
-
 const rgb_color color_12 PROGMEM = {20, 15, 0}; // amber amb
 const rgb_color color_13 PROGMEM = {15, 20, 0}; // olive olv
 const rgb_color color_14 PROGMEM = {0, 15, 20}; // sky blue sky
@@ -120,6 +121,26 @@ const rgb_color * const Colors::get_color(color c){
   return_color.green = pgm_read_byte(p + 1);
   return_color.blue =  pgm_read_byte(p + 2);
   return &return_color;
+}
+
+void reset_palette(){
+  for(int i = 0; i < NPRETTY_COLORS; i++){
+    palette[i] = *Colors::get_color((Colors::color)i);
+  }
+}
+
+// from https://forum.arduino.cc/index.php?topic=345964.0
+void shuffle_palette()
+{
+  int last = 0;
+  rgb_color temp = palette[last];
+  for (int i=0; i < NUM_PALETTE_COLORS; i++)
+  {
+    int index = random(NUM_PALETTE_COLORS);
+    palette[last] = palette[index];
+    last = index;
+  }
+  palette[last] = temp;
 }
 
 #endif
