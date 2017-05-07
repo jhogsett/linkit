@@ -9,9 +9,9 @@ void setup() {
   dependencies.buffer.erase(true);
   dependencies.commands.set_brightness_level();
 
-#if !defined(MINI_DISC_19)
-  dependencies.self_test();
-#endif
+//#if !defined(MINI_DISC_19) && !(defined RADIUS8)
+//  dependencies.self_test();
+//#endif
 
 #if defined(MINI_DISC_19)
   ::process_commands("era:flu:70:lev");
@@ -26,10 +26,6 @@ void setup() {
 #elif defined(APOLLO_LIGHTS2)
   ::process_commands("70:lev:tun:flo:cfa:100:lev");
 
-//
-//50,0:sch
-//0,2:sch
-
 #elif defined(APOLLO_LIGHTS2_DEV) 
   ::process_commands("era:flu");
   ::process_commands("20:stm:rng:pos:rnd:twi:flu:rst");
@@ -43,17 +39,26 @@ void setup() {
   ::process_commands("28:stm:8:zon:blk:blk:9:zon:1:rev:blk:blk:rst");
   ::process_commands("29:stm:10:zon:blk:blk:11:zon:1:rev:blk:blk:rst");
 
-//  ::process_commands("2:stm:-2,-2:rng:zon:2:rng:rev:0,5,1:rng:rot");
-//  ::process_commands("250,2:sch");
-//  ::process_commands("3:stm:2:rng:rev:rnd:sfd:flu:500,1,3:rng:sch:rst");
-//  ::process_commands("500,3:sch");
-
-#elif defined(RADIUS8) 
+#elif defined(RADIUS8)
   ::process_commands("era:flu");
-  ::process_commands("0:stm:rng:pos:rnd:rst:flu");
-  ::process_commands("100,0,0:sch");
-  ::process_commands("1:stm:rng:pos:sfd:rst:flu");
-  ::process_commands("25,1,1:sch");
+  ::process_commands("10:stm:rng:pos:rnd:twi:flu:rst");
+  ::process_commands("50,10:sch");
+  ::process_commands("11:stm:rng:pos:sfd:flu:rst");
+  ::process_commands("15,11:sch");
+  ::process_commands("12:stm:-2,-2:rng:zon:2:rng:rev:0,3,1:rng:rot:rst");
+  ::process_commands("200,12:sch");
+
+#elif defined(WEARABLE_AND_GLASSES)
+  ::process_commands("era:flu");
+  ::process_commands("0:stm:rng:pos:rnd:twi:flu:rst");
+  ::process_commands("50,0:sch");
+  ::process_commands("1:stm:rng:pos:sfd:flu:rst");
+  ::process_commands("15,1:sch");
+  ::process_commands("10:stm:-2,-2:rng:zon");
+  ::process_commands("11:stm:2:rng:rev");
+  ::process_commands("12:stm:0,3,1:rng:rot");
+  ::process_commands("13:stm:10:run:11:run:12:run:rst");
+  ::process_commands("200,13:sch");
 
 #endif
 

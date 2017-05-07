@@ -194,6 +194,7 @@ void Commands::do_flood(){
 // 0: random color with no effect
 // 1: like #0 but will flood and repeat with random colors 
 // 2: like #1 but will also set random effects
+// others: b&w palette, all colors, all colors including blk
 void Commands::do_random(byte type){
   type = (type < 0) ? 0 : type;
   buffer->push_color(ColorMath::random_color());
@@ -427,7 +428,8 @@ void Commands::delay(int milliseconds){
 int Commands::random_num(int max, int min){
   // handle special cases
   switch(max){ 
-    case -4: max = NUM_DISPLAYS; break;
+    case -5: max = NUM_DISPLAYS; break;
+    case -4: max = NUM_PALETTE_COLORS; break;
     case -3: max = NUM_MACROS; break;
     case -2: max = buffer->get_zones(); break;
     case -1: max = this->visible_led_count; break;

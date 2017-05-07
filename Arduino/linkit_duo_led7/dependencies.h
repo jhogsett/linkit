@@ -246,6 +246,8 @@ void Dependencies::begin(){
   // generate the cubic ease in/elastic out animation 
   ElasticEase::generate_elastic_ease();
 #endif
+
+  ::reset_palette();
 }
 
 void Dependencies::self_test(){

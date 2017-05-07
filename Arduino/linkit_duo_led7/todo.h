@@ -3,6 +3,9 @@
 // add functions to command processor to access that buffer, like
 // - get pointer to the buffer
 
+// visual representation of eeprom memory
+
+// vesions of mirror and flip that blend the colors
 
 // improvement: when the input buffer has too many incoming chars
 // unget the current building command so it can be gotten next

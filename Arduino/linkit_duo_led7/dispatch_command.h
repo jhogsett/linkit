@@ -332,6 +332,31 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       }
       reset_args = true;
       break;
+
+    case CMD_PALETTE:
+      dependencies.buffer.push_color(::palette[dependencies.command_processor.sub_args[0]]);                                                      
+      reset_args = true;
+      break;
+      
+    case CMD_SHUFFLE:
+      // arg[0] 0=shuffle, 1=reset to built-in palette, default = 0
+      if(dependencies.command_processor.sub_args[0] == 1){
+        ::reset_palette();  
+      } else {
+        ::shuffle_palette();
+      }
+      reset_args = true;
+      break;
+  }
+
+  if(reset_args)
+    dependencies.command_processor.reset_args();   
+
+  return continue_dispatching;
+}
+
+
+
  
 //    case CMD_CONCAT:
       // arg[0] 
@@ -351,12 +376,4 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
 //          dependencies.command_processor.sub_args[0] = dividend / divisor;  
 //        }
 //      }
-  }
-
-  if(reset_args)
-    dependencies.command_processor.reset_args();   
-
-  return continue_dispatching;
-}
-
 

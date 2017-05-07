@@ -222,9 +222,9 @@
 #endif
 
 #if defined(DUAL_STRIP) || defined(RADIUS8)
-#define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
+#define EASE_ANIM_MARGIN 0           // safety margin for visual effects that go past the end of the LEDs
 #else
-#define EASE_ANIM_MARGIN 10           // safety margin for visual effects that go past the end of the LEDs
+#define EASE_ANIM_MARGIN 0           // safety margin for visual effects that go past the end of the LEDs
 #endif
 
 #ifdef NON_WORKING_INVALID
@@ -253,8 +253,8 @@
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 150
 #elif defined(USE_3_DISPLAYS) || defined(RADIUS8)
-#define BLINK_PERIOD 2000
-#define BREATHE_PERIOD 100
+#define BLINK_PERIOD 1000
+#define BREATHE_PERIOD 80
 #else
 #define BLINK_PERIOD 6000
 #define BREATHE_PERIOD 300
@@ -269,7 +269,7 @@
 #endif
 
 #if defined(RADIUS8)
-#define NUM_MEMORY_MACROS 2
+#define NUM_MEMORY_MACROS 0
 #else
 #define NUM_MEMORY_MACROS 10
 #endif
