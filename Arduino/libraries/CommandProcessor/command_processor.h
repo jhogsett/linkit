@@ -29,18 +29,19 @@ class CommandProcessor
   void acknowledge_command(bool force);
   void send_ack();
   int lookup_command(char * str);
-  int get_command(char * str);
+  int get_command();
   void save_args(char * str);
   void reset_args();
-  int process_command(char * str, char **rest_of_buffer);
-  int begin_get_commands(char * str, char **saveptr, char *, char **rest_of_buffer);
-  int get_next_command(char **saveptr, char **rest_of_buffer);
+  int process_command(char * str);
+  char * begin_get_commands(char *buffer, char **saveptr);
+  char * get_next_command(char **saveptr);
   char * get_input_buffer();
 
   private:
   bool str_equal_P(char *str1, const char *str2);
   bool is_command_P(char *str, const char *command);
   void get_sub_args(char * str);
+  void save_accumulator();
 };
 
 void CommandProcessor::begin(HardwareSerial *serial, const char* const *commands, byte num_commands){
@@ -54,6 +55,9 @@ bool CommandProcessor::input_available(){
   return serial->available() > 0;
 }
 
+// read a single command into the in-memory buffer
+// this does not need to be re-entrant
+// the effective buffer size may be this buffer width + 64-char serial buffer input size
 bool CommandProcessor::received_command(){
   if(input_available()){
     int c = serial->readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH-1);
@@ -95,6 +99,8 @@ bool CommandProcessor::is_command_P(char *str, const char *command){
 }
 
 void CommandProcessor::get_sub_args(char * args = NULL){
+  save_accumulator();
+
   if(args == NULL){
     args = this->str;
   }
@@ -110,10 +116,15 @@ void CommandProcessor::get_sub_args(char * args = NULL){
 }
 
 void CommandProcessor::reset_args(){
-  accumulator = sub_args[0];
+  save_accumulator();
+
   sub_args[0] = 0;
   sub_args[1] = 0;
   sub_args[2] = 0;
+}
+
+void CommandProcessor::save_accumulator(){
+  accumulator = sub_args[0];
 }
 
 int CommandProcessor::lookup_command(char * str){
@@ -129,30 +140,18 @@ int CommandProcessor::lookup_command(char * str){
   return CMD_NONE;
 }
 
-int CommandProcessor::get_command(char * str = NULL){
-  if(str == NULL){
-    str = this->str;
-  }
-  return lookup_command(str);
+// look up a command copied to the input buffer
+int CommandProcessor::get_command(){
+  return lookup_command(this->str);
 }
 
-int CommandProcessor::process_command(char * str, char **rest_of_buffer){
-  // make sure there's a string being processed
-  if(str[0] != '\0'){
-    // set a pointer to the rest of the buffer in case this command is setting a macro
-    *rest_of_buffer = (str + strlen(str) + 1);
-  } else {
-    // there's nothing to process; point to a terminated string
-    *rest_of_buffer = str;
-  }
-
+// process a command from a string or macro
+// this ensures arguments are parsed and saved
+int CommandProcessor::process_command(char * str){
   int command = lookup_command(str);
 
-  // if CMD_NONE is returned, the command wasn't found
-  // assume the string contains arguments to save
-  //
-  // the default save_args() should not be called by
-  // the calling code in this case
+  // if CMD_NONE is returned, the command wasn't found; parse the string for arguments
+  // the default save_args() should not be called by; the calling code in this case
   if(command == CMD_NONE){
     save_args(str);
   }
@@ -160,15 +159,16 @@ int CommandProcessor::process_command(char * str, char **rest_of_buffer){
   return command;
 }
 
-int CommandProcessor::begin_get_commands(char * str, char **saveptr, char * buffer, char **rest_of_buffer){
-  strcpy(buffer, str);
-  return process_command(strtok_r(buffer, DELIMITER_STR, saveptr), rest_of_buffer);
+char * CommandProcessor::begin_get_commands(char * buffer, char **saveptr){
+  return strtok_r(buffer, DELIMITER_STR, saveptr);
 }
 
-int CommandProcessor::get_next_command(char **saveptr, char **rest_of_buffer){
-  return process_command(strtok_r(NULL, DELIMITER_STR, saveptr), rest_of_buffer);
+char * CommandProcessor::get_next_command(char **saveptr){
+  return strtok_r(NULL, DELIMITER_STR, saveptr);
 }
 
+// read the contents serial buffer into the char buffer
+// this is used for setting macros that come in over serial
 char * CommandProcessor::get_input_buffer(){
   if(input_available()){
     int c = serial->readBytesUntil('\0', this->str, MAX_STRING_LENGTH-1);
