@@ -1,11 +1,13 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include "config.h"
+
 // for a schedule, need
 // - a macro number to run, a number of times to run, an interval between runs
 
 
-#define NUM_SCHEDULES 10
+#define NUM_SCHEDULES (NUM_MACROS)
 
 unsigned int schedule_period[NUM_SCHEDULES];  // zero means the schedule is turned off
 byte macro_number[NUM_SCHEDULES];    

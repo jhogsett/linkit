@@ -32,16 +32,16 @@ void setup() {
 
 #elif defined(APOLLO_LIGHTS2_DEV) 
   ::process_commands("era:flu");
-  ::process_commands("0:stm:rng:pos:rnd:twi:flu:rst");
-  ::process_commands("50,0,0:sch");
-  ::process_commands("1:stm:rng:pos:sfd:flu:rst");
-  ::process_commands("25,1:sch");
-  ::process_commands("5:stm:6,8,5:run:200:del");
-  ::process_commands("5000,5:sch");
-  ::process_commands("6:stm:7:run:8:run:9:run:flu");
-  ::process_commands("7:stm:6:zon:blk:blk:7:zon:1:rev:blk:blk::rst");
-  ::process_commands("8:stm:8:zon:blk:blk:9:zon:1:rev:blk:blk:rst");
-  ::process_commands("9:stm:10:zon:blk:blk:11:zon:1:rev:blk:blk:rst");
+  ::process_commands("20:stm:rng:pos:rnd:twi:flu:rst");
+  ::process_commands("50,20:sch");
+  ::process_commands("21:stm:rng:pos:sfd:flu:rst");
+  ::process_commands("25,21:sch");
+  ::process_commands("25:stm:26,8,5:run:200:del");
+  ::process_commands("5000,25:sch");
+  ::process_commands("26:stm:27:run:28:run:29:run:flu");
+  ::process_commands("27:stm:6:zon:blk:blk:7:zon:1:rev:blk:blk::rst");
+  ::process_commands("28:stm:8:zon:blk:blk:9:zon:1:rev:blk:blk:rst");
+  ::process_commands("29:stm:10:zon:blk:blk:11:zon:1:rev:blk:blk:rst");
 
 //  ::process_commands("2:stm:-2,-2:rng:zon:2:rng:rev:0,5,1:rng:rot");
 //  ::process_commands("250,2:sch");

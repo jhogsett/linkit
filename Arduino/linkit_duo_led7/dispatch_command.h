@@ -118,6 +118,24 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
     case CMD_TUNGSTEN:    
       dependencies.buffer.push_color(TUNGSTEN);                                                   
       break;
+    case CMD_AMBER:
+      dependencies.buffer.push_color(AMBER);                                                   
+      break;
+    case CMD_OLIVE:
+      dependencies.buffer.push_color(OLIVE);                                                   
+      break;
+    case CMD_SKYBLUE:
+      dependencies.buffer.push_color(SKYBLUE);                                                   
+      break;
+    case CMD_TURQUOISE:
+      dependencies.buffer.push_color(TURQUOISE);                                                   
+      break;
+    case CMD_LAVENDER:
+      dependencies.buffer.push_color(LAVENDER);                                                   
+      break;
+    case CMD_ROSE:
+      dependencies.buffer.push_color(ROSE);                                                   
+      break;
     case CMD_RANDOM:    
       dependencies.commands.do_random(dependencies.command_processor.sub_args[0]);                                                          
       reset_args = true;
