@@ -47,23 +47,23 @@ rgb_color palette[NUM_PALETTE_COLORS];
 // consider: specifying colors with full RGB values as full brightness color
 
 const rgb_color color_0 PROGMEM = {20,  0,  0}; // red
-const rgb_color color_1 PROGMEM = {20, 10,  0}; // orange
+const rgb_color color_1 PROGMEM = {20, 10,  0}; // orange    0,10,20=ltblue
 const rgb_color color_2 PROGMEM = {20, 20,  0}; // yellow
 const rgb_color color_3 PROGMEM = { 0, 20,  0}; // green
 const rgb_color color_4 PROGMEM = { 0,  0, 20}; // blue
-const rgb_color color_5 PROGMEM = {10,  0, 20}; // purple
+const rgb_color color_5 PROGMEM = {10,  0, 20}; // purple  10,20,0=ltgreen
 const rgb_color color_6 PROGMEM = { 0, 20, 20}; // cyan
 const rgb_color color_7 PROGMEM = {20,  0, 20}; // magenta
 const rgb_color color_8 PROGMEM = { 0, 10, 20}; // ltblue
 const rgb_color color_9 PROGMEM = {10, 20,  0}; // ltgreen
-const rgb_color color_10 PROGMEM = { 0, 20, 10}; // seafoam
+const rgb_color color_10 PROGMEM = { 0, 20, 10}; // seafoam  20,0,10=pink
 const rgb_color color_11 PROGMEM = {20,  0, 10}; // pink
-const rgb_color color_12 PROGMEM = {20, 15, 0}; // amber amb
-const rgb_color color_13 PROGMEM = {15, 20, 0}; // olive olv
-const rgb_color color_14 PROGMEM = {0, 15, 20}; // sky blue sky
-const rgb_color color_15 PROGMEM = {0, 20, 15}; // turquoise tur
-const rgb_color color_16 PROGMEM = {15, 0, 20}; // lavender lav
-const rgb_color color_17 PROGMEM = {20, 0, 15}; // rose ros
+const rgb_color color_12 PROGMEM = {20, 15, 0}; // amber amb    = 0,5,20 ? close=ltblue
+const rgb_color color_13 PROGMEM = {15, 20, 0}; // olive olv    = 5,0,20 ? close=purple
+const rgb_color color_14 PROGMEM = {0, 15, 20}; // sky blue sky = 20,5,0 ? close=orange
+const rgb_color color_15 PROGMEM = {0, 20, 15}; // turquoise tur = 20,0,5 ? close=pink
+const rgb_color color_16 PROGMEM = {15, 0, 20}; // lavender lav = 5,20,0 ? close=ltgreen
+const rgb_color color_17 PROGMEM = {20, 0, 15}; // rose ros = 0,20,5 ? close=seafoam
 
 const rgb_color color_18 PROGMEM = { 0,  0,  0}; // black
 const rgb_color color_19 PROGMEM = { 5,  5,  5}; // dkgray
@@ -105,6 +105,33 @@ class Colors
     white,
     tungsten
   };
+
+// this doesn't seem to be a viable way to remap these colors
+//  enum complimentary_color{
+//    cyan,
+//    ltblue,
+//    blue,
+//    magenta,
+//    yellow,
+//    ltgreen,
+//    red,
+//    green,
+//    orange,
+//    purple,
+//    pink,
+//    seafoam,
+//    ltblue,
+//    purple,
+//    orange,
+//    pink,
+//    ltgreen,
+//    seafoam,
+//    white,
+//    gray,
+//    dkgray,
+//    black,
+//    black
+//  };
 
   static const rgb_color * const get_color(color c);
 

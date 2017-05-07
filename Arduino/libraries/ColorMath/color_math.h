@@ -30,6 +30,7 @@ class ColorMath
   static int crossfade_steps();
   static rgb_color simple_scale_color(rgb_color color, float scale);
   static rgb_color simple_unscale_color(rgb_color color, float scale);
+  static rgb_color complimentary_color(rgb_color color);
 
   private:
   static bool swap_r_and_g;
@@ -103,6 +104,14 @@ rgb_color ColorMath::simple_unscale_color(rgb_color color, float scale){
     color.red / scale,
     color.green / scale,
     color.blue / scale
+  };
+}
+
+rgb_color ColorMath::complimentary_color(rgb_color color){
+  return (rgb_color){
+    BRIGHTNESS_DIVISOR - color.red,
+    BRIGHTNESS_DIVISOR - color.green,
+    BRIGHTNESS_DIVISOR - color.blue
   };
 }
 
