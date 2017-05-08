@@ -2,7 +2,7 @@
 #define COMMANDS_H
 
 #include "config.h"
-#include "zones.h"
+#include "zone_defs.h"
 
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
@@ -49,7 +49,7 @@ class Commands
   void set_pin(byte pin, bool on);
   void set_brightness_level(byte level = 0);
   void clear();
-  void do_rotate(byte times, byte flush, byte steps);
+  void do_rotate(byte times, byte steps, byte flush);
   void delay(int milliseconds);
   int random_num(int max, int min);
   
@@ -346,14 +346,16 @@ void Commands::do_wipe(){
   do_power_shift_object(0, visible_led_count, false);
 }
 
-void Commands::do_rotate(byte times = 1, byte flush = 0, byte steps = 1){
+// default to animated rotation to simplify macros
+void Commands::do_rotate(byte times, byte steps, byte flush){
   times = max(1, times);
   steps = max(1, steps);
+  flush = max(0, min(1, flush));
   for(int i = 0; i < times; i++){
     for(int j = 0; j < steps; j++){
       buffer->rotate(); 
     }
-    if(flush == 1){
+    if(flush == 0){
       this->flush(true);  
     }    
   }
@@ -425,24 +427,46 @@ void Commands::delay(int milliseconds){
   ::delay(milliseconds);
 }
 
+#define RANDOM_NUM_ACCUM      -6
+#define RANDOM_NUM_DISPLAYS   -5
+#define RANDOM_NUM_PALETTES   -4
+#define RANDOM_NUM_FINE_ZONES -3
+#define RANDOM_NUM_ZONES      -2
+#define RANDOM_NUM_LEDS       -1
+#define RANDOM_NUM_WIDTH       0
+
 int Commands::random_num(int max, int min){
   // handle special cases
   switch(max){ 
-    case -5: max = NUM_DISPLAYS; break;
-    case -4: max = NUM_PALETTE_COLORS; break;
-    case -3: max = NUM_MACROS; break;
-    case -2: max = buffer->get_zones(); break;
-    case -1: max = this->visible_led_count; break;
-    case  0: max = buffer->get_width(); break;
+    case RANDOM_NUM_ACCUM:
+      // need to add dependency on command processor
+      break;
+    case RANDOM_NUM_DISPLAYS: 
+      max = NUM_DISPLAYS; 
+      break;
+    
+    case RANDOM_NUM_PALETTES: 
+      max = NUM_PALETTE_COLORS; 
+      break;
+    
+    case RANDOM_NUM_FINE_ZONES:
+      min = FIRST_FINE_ZONE;
+      max = FINE_ZONES + 1; 
+      break;
+    
+    case RANDOM_NUM_ZONES: 
+      max = NUM_ZONES; 
+      break;
+
+    case RANDOM_NUM_LEDS: 
+      max = this->visible_led_count; 
+      break;
+    
+    case  RANDOM_NUM_WIDTH: 
+      max = buffer->get_width(); 
+      break;
   }
 
-  // of palette colors
-
-  // could have special cases for minimum
-  switch(min){
-    case -2: min = FINE_ZONES; break;
-  }
-  
   return random(min, max);  
 }
 

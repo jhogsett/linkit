@@ -1,8 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// #define REAL_ARDUINO
-
 // IoT Devices
 
 // 200-LED Radius-8 displays
@@ -23,6 +21,9 @@
 // 90-LED Apollo Lights Dev indoors
 #define APOLLO_LIGHTS2_DEV
 
+// 64-LED Wearable and Glasses
+// #define WEARABLE_AND_GLASSES
+
 // 3-72-LED Strips Status Monitor
 // #define STATUS_MONITOR
 
@@ -40,9 +41,6 @@
 
 // enable for WEARABLE + 72-LED Strip
 // #define WEARABLE_AND_STRIP
-
-// 64-LED Wearable and Glasses
-// #define WEARABLE_AND_GLASSES
 
 // 93-LED Wearable and Disc
 // #define WEARABLE_AND_DISC93
@@ -81,6 +79,10 @@
 
 #ifdef XMAS_LIGHTS
 #define STRAND2
+#endif
+
+#ifdef MINI_DISC_19
+#define REAL_ARDUINO
 #endif
 
 #if defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2)
@@ -269,7 +271,7 @@
 #endif
 
 #if defined(RADIUS8)
-#define NUM_MEMORY_MACROS 0
+#define NUM_MEMORY_MACROS 2
 #else
 #define NUM_MEMORY_MACROS 10
 #endif

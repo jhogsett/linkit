@@ -20,7 +20,8 @@
 #include "config.h"
 #include "command_defs.h"
 #include "commands.h"
-#include "zones.h"
+#include "zone_defs.h"
+#include <zones.h>
 
 class Dependencies
 {
@@ -91,6 +92,9 @@ class Dependencies
   
   // all the work is done in the commands class
   static Commands commands;
+
+  // zone positions
+  static Zones zones;
 
   // initialize all dependencies
   void begin();
@@ -191,6 +195,8 @@ Render Dependencies::renderer;
 // all the work is done in the commands class
 Commands Dependencies::commands;
 
+Zones Dependencies::zones;
+
 void Dependencies::begin(){
 
   // open internal serial connection to MT7688 for receiving commands
@@ -218,8 +224,11 @@ void Dependencies::begin(){
   ColorMath::begin(false);
 #endif
 
+  zones.begin(NUM_ZONES, FINE_ZONES, ::zone_offsets, ::zone_windows);
+
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
-  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, NUM_ZONES, zone_offsets, zone_windows); //, existence);
+//  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, NUM_ZONES, zone_offsets, zone_windows); //, existence);
+  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, &this->zones); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
   commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness);

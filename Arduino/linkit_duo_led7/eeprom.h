@@ -23,5 +23,10 @@ void erase_eeprom(char * pos, int count, byte fill = DEFAULT_ERASE_BYTE){
     eeprom_write_byte((unsigned char*)pos++, fill);
 }
 
+// returns true of eeprom appears to have been erased
+bool needs_programming(){
+  return eeprom_read_byte(0) == 0xff;
+}
+
 #endif
 

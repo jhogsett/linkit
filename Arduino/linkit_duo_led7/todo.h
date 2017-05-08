@@ -1,3 +1,42 @@
+// could have a command that ends the macro under certain conditions
+
+// shift command:
+// moves accum->arg0, arg0->arg1, arg1->arg2, arg2->accum
+// would this help?
+// want to do random rotation speed
+// need 0=times, 1=1 to show, 2=steps
+//   50:rng:    
+//   now a random number of times is in arg0
+//   3,1:rng
+//   now a random number of steps is in arg0 and times in the accumulator
+// accum=times
+// arg0=steps
+
+// arg could do:
+// accum->arg0
+// arg0->arg1
+// but need arg0 to go to arg2
+
+// need arg0 to be times
+// need arg1 to be 1
+// need arg2 to be steps
+
+// arg could do
+// rotate args0-2 N times forward (0->1, 1->2, 2->0), then swap arg0 with accumulator 
+
+// arg could:
+// preserve the arguments present
+// swap accum with 
+
+//:arg            :rot
+
+// delay broken, eventually seems to stop like it's delaying infinitely
+
+// maybe macro #10 should always be run on start up
+//   in the new case, it'll be empty and not do anything
+// this would allow consistent behavior with specific schedule macros after software updates
+
+
 // the command processor has a 60-char buffer
 // this should be reusable for tokenizing strings
 // add functions to command processor to access that buffer, like

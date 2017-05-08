@@ -20,8 +20,8 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       break;
     case CMD_ROTATE:
       // arg[0] # times to rotate, default = 1
-      // arg[0] 1=flush each time, 0=don't flush, default = 0
       // arg[1] # rotation steps each time, default = 1
+      // arg[2] 0=flush each time, 1=don't flush, default = 0
       dependencies.commands.do_rotate(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]); 
       reset_args = true;
       break;
@@ -355,23 +355,34 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       }
             
     case CMD_SHUFFLE:
-      // arg[0]:
-      //   0=shuffle
-      //   1=reset to built-in palette
-      //   2=generate complimentary colors
-      //   default = 0
-      if(dependencies.command_processor.sub_args[0] == 1){
-        ::reset_palette();  
-      } else if(dependencies.command_processor.sub_args[0] == 2){
-        // make every odd color the complimentary color of the previous even color
-        for(int i = 0; i < NUM_PALETTE_COLORS; i += 2){
-          palette[i+1] = ColorMath::complimentary_color(palette[i]);
-        }
-      } else {
-        ::shuffle_palette();
+      {
+        int arg0 = dependencies.command_processor.sub_args[0];
+        switch(arg0)
+        {
+          case 0:
+            // create a palette of random colors
+            ::shuffle_palette();
+            break;
+
+          case 1:
+            // reset palette to original built-in colors
+            ::reset_palette();  
+            break;
+
+          case 2:
+            // make every odd color the complimentary color of the previous even color
+            ::compliment_palette();
+            break;
+
+          case 3:
+            // create a palette of random complimentary color pairs
+            ::complimentary_palette();        
+             break;
+        }            
+
+        reset_args = true;
+        break;
       }
-      reset_args = true;
-      break;
   }
 
   if(reset_args)
