@@ -39,7 +39,7 @@ void setup() {
     ::process_commands("16:stm:1:zon:blk:blk:2:zon:1:rev:blk:blk::rst");
     ::process_commands("17:stm:3:zon:blk:blk:4:zon:1:rev:blk:blk:rst");
     ::process_commands("18:stm:5:zon:blk:blk:6:zon:1:rev:blk:blk:rst");
-    ::process_commands("19:stm:0,11:sch:0,12:sch:0,13:sch");
+    ::process_commands("19:stm:0,12:sch:0,13:sch:0,14:sch");
 
     // bubbling up dots
     ::process_commands("20:stm:50,21:sch:50,22:sch:25,23:sch");
