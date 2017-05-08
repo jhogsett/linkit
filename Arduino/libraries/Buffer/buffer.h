@@ -3,6 +3,7 @@
 
 #include <PololuLedStrip.h>
 #include <render.h>
+#include <zones.h>
 
 #define LEAVE_EFFECT -1
 #define NO_EFFECT 0
@@ -20,7 +21,8 @@ class Buffer
 #ifdef EXISTENCE_ENABLED
   void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, byte num_zones, byte *zone_offsets, byte *zone_windows, byte *existence);
 #else
-  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, byte num_zones, byte *zone_offsets, byte *zone_windows);
+//  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, byte num_zones, byte *zone_offsets, byte *zone_windows);
+  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones);
 #endif
 
   void display_buffer(rgb_color * pbuffer);
@@ -77,9 +79,10 @@ class Buffer
   int window_override = OVERRIDE_OFF;
   int offset_override = OVERRIDE_OFF;
 
-  byte num_zones;
-  byte *zone_offsets;
-  byte *zone_windows;
+//  byte num_zones;
+//  byte *zone_offsets;
+//  byte *zone_windows;
+  Zones *zones;
   byte current_zone = 0;
   bool reverse = false;
 
@@ -93,7 +96,7 @@ rgb_color *Buffer::render;
 #ifdef EXISTENCE_ENABLED
 void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, byte num_zones, byte *zone_offsets, byte *zone_windows, byte *existence){
 #else
-void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, byte num_zones, byte *zone_offsets, byte *zone_windows){
+void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones){
 #endif
 
   this->ledStrips = ledStrips;
@@ -112,9 +115,10 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
   this->existence = existence;
 #endif
 
-  this->num_zones = num_zones;
-  this->zone_offsets = zone_offsets;
-  this->zone_windows = zone_windows;
+//  this->num_zones = num_zones;
+//  this->zone_offsets = zone_offsets;
+//  this->zone_windows = zone_windows;
+  this->zones = zones;
   this->reverse = false;
   this->carry_color = black;
   this->carry_effect = NO_EFFECT;
@@ -312,7 +316,8 @@ int Buffer::get_window(){
   if(this->window_override != OVERRIDE_OFF){
     return this->window_override;
   } else {
-    return this->zone_windows[this->current_zone];
+    // return this->zone_windows[this->current_zone];
+    return this->zones->zone_window(this->current_zone);
   }
 }
 
@@ -328,7 +333,8 @@ byte Buffer::get_offset(){
   if(this->offset_override != OVERRIDE_OFF){
     return this->offset_override;
   } else {
-    return this->zone_offsets[this->current_zone];
+    // return this->zone_offsets[this->current_zone];
+    return this->zones->zone_offset(this->current_zone);
   }
 }
 
@@ -337,7 +343,7 @@ byte Buffer::get_width(){
 }
 
 void Buffer::set_zone(byte zone){
-  this->current_zone = max(0, min(this->num_zones - 1, zone));
+  this->current_zone = max(0, min(this->get_zones() - 1, zone));
   this->window_override = OVERRIDE_OFF;
   this->offset_override = OVERRIDE_OFF;
 }
@@ -367,7 +373,7 @@ void Buffer::set_reverse(bool reverse = true){
 }
 
 byte Buffer::get_zones(){
-  return this->num_zones;
+  return this->zones->get_num_zones();
 }
 
 // to do: support either orientation
