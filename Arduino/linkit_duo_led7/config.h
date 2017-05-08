@@ -270,8 +270,10 @@
 #define FADE_PERIOD 100
 #endif
 
-#if defined(RADIUS8)
+#if defined(RADIUS8) || defined(DISC93_DOUBLE)
 #define NUM_MEMORY_MACROS 2
+#elif defined(APOLLO_LIGHTS2_DEV)
+#define NUM_MEMORY_MACROS 7
 #else
 #define NUM_MEMORY_MACROS 10
 #endif

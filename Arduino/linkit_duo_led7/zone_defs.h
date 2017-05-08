@@ -26,8 +26,8 @@ const byte PROGMEM zone_windows[NUM_ZONES] = { 200,   6, 14, 26, 38, 52, 68, 84,
 
 #elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_DOUBLE)
 #define NUM_ZONES 11
-#define FINE_ZONES 6 //                6 rings starting in center   1st 3 rings,  last 3 rings,  rings 2-5,  rings 1-5
-const byte PROGMEM zone_offsets[NUM_ZONES] = { 0,    0, 1,  9, 21, 37, 61,         0,           21,            1,          0  };
+#define FINE_ZONES 6 //                              6 rings starting in center   1st 3 rings,  last 3 rings,  rings 2-5,  rings 1-5
+const byte PROGMEM zone_offsets[NUM_ZONES] = { 0,    0, 1,  9, 21, 37, 61,         0,           21,             1,          0 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 93,   1, 9, 21, 37, 61, 93,        21,           93,            61,         61 };
 
 

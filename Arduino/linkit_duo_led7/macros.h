@@ -163,5 +163,9 @@ void reset_all_macros(){
     reset_macro(i);
 }
 
+bool is_programmed(byte macro){
+  return ::eeprom_is_programmed(::get_eeprom_macro(macro));
+}
+
 #endif
 
