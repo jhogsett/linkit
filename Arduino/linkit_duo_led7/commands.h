@@ -50,9 +50,11 @@ class Commands
   void set_brightness_level(byte level = 0);
   void clear();
   void do_rotate(byte times, byte steps, byte flush);
-  void delay(int milliseconds);
+  void do_delay(int milliseconds);
   int random_num(int max, int min);
-  
+  int set_position(byte position);
+  int random_position();
+
   private:
   Buffer *buffer;
   Render *renderer;  
@@ -278,6 +280,7 @@ void Commands::do_copy(byte size, byte times, byte zoom){
 }
 
 // to do fix re: reverse
+// consider support a repeat of zero times (doing nothing)
 void Commands::do_repeat(byte times = 1){
   times = max(1, times);
   byte offset = buffer->get_offset();
@@ -423,8 +426,17 @@ void Commands::clear(){
   buffer->set_display(orig_display);
 }
 
-void Commands::delay(int milliseconds){
+void Commands::do_delay(int milliseconds){
   ::delay(milliseconds);
+}
+
+int Commands::set_position(byte position){
+  buffer->set_offset_override(position); 
+  buffer->set_window_override(position); 
+}
+
+int Commands::random_position(){
+  set_position(random(buffer->get_width()));
 }
 
 #define RANDOM_NUM_ACCUM      -6

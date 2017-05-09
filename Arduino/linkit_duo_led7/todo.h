@@ -1,4 +1,49 @@
+// would be cool to somehow do mappying where the zone rotations on radius8 could be done on the opposite axis
+// with mapping in place you should be able to apply rotations to rows and colums, in fact multiple rows and columns
+
+// it's possible that when mapping is in place, there's no such thing as zones
+// unmapped pixels just would be ignored
+// the expectation is it can be treated as an X x Y grid
+// radius8: w16 x h16
+// sphere: w10 x h17
+// disc (cylinder): w6 x h32 (this could simplify some effects on the projector)
+
+// disc mapping
+// col 6: full 0-31                 01234567890123456789012345678901 
+// col 5: 0-23 interpolated to 0-31 01223455678890112344567789001233
+// col 4: 0-15 interpolated to 0-31 00112233445566778899001122334455
+// col 3: 0-11 interpolated to 0-31 00011222333445556667788899900111
+// col 2: 0-7 interpolated to 0-31  00001111222233334444555566667777
+// col 1: 0 interpolated to 0-31    00000000000000000000000000000000
+
+// mapping would need to be done at the buffer level
+
+// need to implement mapping for radius8 & sphere
+
+// how would I draw a line?
+// 3,4:pos - to set the starting position
+// need to be able to specify macros to program in PROGMEM
+
+// 10,11:lin - sets the ending position
+//  but what would it do next?
+// idea: 10,11,7:lin - sets the ending position, and calls macro 7 for each distinct point
+
+
+
+
+// could have commands that take the rest of the input and do something with them iteratively, like an instead macro
+
 // could have a command that ends the macro under certain conditions
+
+// could have conditional macro running
+// arg0 = 0 or 1
+// arg1 = macro to run if 1
+// arg2 = macro to run if 0
+
+// passing two random numbers
+// 10,5:rng - now arg0 = number between 5-9 in arg0
+// 100,50:rng - now arg0 = number between 50-99 and accum = previous arg0
+// could do:
 
 // shift command:
 // moves accum->arg0, arg0->arg1, arg1->arg2, arg2->accum

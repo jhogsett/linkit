@@ -68,73 +68,96 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_RED:       
-      dependencies.buffer.push_color(RED);                                                      
+      dependencies.buffer.push_color(RED, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                      
+      reset_args = true;
       break;
     case CMD_GREEN:     
-      dependencies.buffer.push_color(GREEN);                                                    
+      dependencies.buffer.push_color(GREEN, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                    
+      reset_args = true;
       break;
     case CMD_BLUE:      
-      dependencies.buffer.push_color(BLUE);                                                     
+      dependencies.buffer.push_color(BLUE, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                     
+      reset_args = true;
       break;
     case CMD_BLACK:     
-      dependencies.buffer.push_color(BLACK);                                                    
+      dependencies.buffer.push_color(BLACK, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                    
+      reset_args = true;
       break;
     case CMD_YELLOW:    
-      dependencies.buffer.push_color(YELLOW);                                                   
+      dependencies.buffer.push_color(YELLOW, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_ORANGE:    
-      dependencies.buffer.push_color(ORANGE);                                                   
+      dependencies.buffer.push_color(ORANGE, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_PURPLE:    
-      dependencies.buffer.push_color(PURPLE);                                                   
+      dependencies.buffer.push_color(PURPLE, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_CYAN:      
-      dependencies.buffer.push_color(CYAN);                                                     
+      dependencies.buffer.push_color(CYAN, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                     
+      reset_args = true;
       break;
     case CMD_MAGENTA:   
-      dependencies.buffer.push_color(MAGENTA);                                                  
+      dependencies.buffer.push_color(MAGENTA, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                  
+      reset_args = true;
       break; 
     case CMD_PINK:      
-      dependencies.buffer.push_color(PINK);                                                     
+      dependencies.buffer.push_color(PINK, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                     
+      reset_args = true;
       break; 
     case CMD_WHITE:     
-      dependencies.buffer.push_color(WHITE);                                                    
+      dependencies.buffer.push_color(WHITE, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                    
+      reset_args = true;
       break; 
     case CMD_GRAY:      
-      dependencies.buffer.push_color(GRAY);                                                     
+      dependencies.buffer.push_color(GRAY, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                     
+      reset_args = true;
       break;
     case CMD_LTGREEN:   
-      dependencies.buffer.push_color(LTGREEN);                                                  
+      dependencies.buffer.push_color(LTGREEN, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                  
+      reset_args = true;
       break;
     case CMD_SEAFOAM:   
-      dependencies.buffer.push_color(SEAFOAM);                                                  
+      dependencies.buffer.push_color(SEAFOAM, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                  
+      reset_args = true;
       break;
     case CMD_LTBLUE:    
-      dependencies.buffer.push_color(LTBLUE);                                                   
+      dependencies.buffer.push_color(LTBLUE, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_DKGRAY:    
-      dependencies.buffer.push_color(DKGRAY);                                                   
+      dependencies.buffer.push_color(DKGRAY, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_TUNGSTEN:    
-      dependencies.buffer.push_color(TUNGSTEN);                                                   
+      dependencies.buffer.push_color(TUNGSTEN, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_AMBER:
-      dependencies.buffer.push_color(AMBER);                                                   
+      dependencies.buffer.push_color(AMBER, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_OLIVE:
-      dependencies.buffer.push_color(OLIVE);                                                   
+      dependencies.buffer.push_color(OLIVE, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_SKYBLUE:
-      dependencies.buffer.push_color(SKYBLUE);                                                   
+      dependencies.buffer.push_color(SKYBLUE, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_TURQUOISE:
-      dependencies.buffer.push_color(TURQUOISE);                                                   
+      dependencies.buffer.push_color(TURQUOISE, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_LAVENDER:
-      dependencies.buffer.push_color(LAVENDER);                                                   
+      dependencies.buffer.push_color(LAVENDER, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_ROSE:
-      dependencies.buffer.push_color(ROSE);                                                   
+      dependencies.buffer.push_color(ROSE, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                   
+      reset_args = true;
       break;
     case CMD_RANDOM:    
       dependencies.commands.do_random(dependencies.command_processor.sub_args[0]);                                                          
@@ -295,7 +318,7 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_DELAY:
-      dependencies.commands.delay(dependencies.command_processor.sub_args[0]);
+      dependencies.commands.do_delay(dependencies.command_processor.sub_args[0]);
       reset_args = true;
     case CMD_SET_MACRO_F:
       // alternate version of setting a macro that gets the remainder to copy 
@@ -320,17 +343,23 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       }
       break;
     case CMD_POSITION:
-      {
+ //     {
         // setting both to the same value ensures a single pixel will get set without shifting
         // use -1 as the position to disable position override
-        int position = dependencies.command_processor.sub_args[0];
-        dependencies.buffer.set_offset_override(position); 
-        dependencies.buffer.set_window_override(position); 
+//        int position = dependencies.command_processor.sub_args[0];
+//        dependencies.buffer.set_offset_override(position); 
+//        dependencies.buffer.set_window_override(position); 
+
+          dependencies.commands.set_position(dependencies.command_processor.sub_args[0]);
 
         // after using the pos command, the offset and window are left corrupted unless reset to 0,0
         // could do an auto reset after the next command
-      }
+ //     }
       reset_args = true;
+      break;
+
+    case CMD_RPOSITION:
+      dependencies.commands.random_position();
       break;
 
     case CMD_PALETTE:

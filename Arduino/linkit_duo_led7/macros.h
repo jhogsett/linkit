@@ -125,6 +125,15 @@ void process_commands(char * buffer){
   }while(cmd != CMD_NULL);
 }
 
+// process commands stored in PROGMEM 
+//void process_commands_P(const char * commands){
+void process_commands_P(const __FlashStringHelper * commands){
+  // copy the macro into the tokenizing buffer
+  char buffer[NUM_MACRO_CHARS]; 
+  strcpy_P(buffer, (const char *)commands);
+  process_commands(buffer);
+}
+
 void run_macro(int macro, int times, int delay_ = 0){
   // don't pass in this macro running's arguments
   dependencies.command_processor.reset_args();

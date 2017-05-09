@@ -7,7 +7,7 @@
 // #define RADIUS8
 
 // 93-LED Disc Projector
-// #define PROJECTOR
+#define PROJECTOR
 
 // 100-LED Xmas Lights
 // #define XMAS_LIGHTS
@@ -19,7 +19,7 @@
 // #define APOLLO_LIGHTS2
 
 // 90-LED Apollo Lights Dev indoors
-#define APOLLO_LIGHTS2_DEV
+// #define APOLLO_LIGHTS2_DEV
 
 // 64-LED Wearable and Glasses
 // #define WEARABLE_AND_GLASSES
@@ -146,12 +146,14 @@
 // standard brightness
 #if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES)
 #define DEFAULT_BRIGHTNESS_PERCENT 10
-#elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(STRIP2) || defined(STRIP3) || defined(DUAL_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE) || defined(APOLLO_LIGHTS2_DEV)
+#elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(STRIP2) || defined(STRIP3) || defined(DUAL_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(APOLLO_LIGHTS2_DEV) //  || defined(DISC93_DOUBLE) 
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #elif defined(STRAND1) || defined(STRAND2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #elif defined(MINI_DISC_19)
 #define DEFAULT_BRIGHTNESS_PERCENT 70
+#elif defined(DISC93_DOUBLE) 
+#define DEFAULT_BRIGHTNESS_PERCENT 50
 #else
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #endif
@@ -271,9 +273,9 @@
 #endif
 
 #if defined(RADIUS8) || defined(DISC93_DOUBLE)
-#define NUM_MEMORY_MACROS 2
+#define NUM_MEMORY_MACROS 4
 #elif defined(APOLLO_LIGHTS2_DEV)
-#define NUM_MEMORY_MACROS 7
+#define NUM_MEMORY_MACROS 10
 #else
 #define NUM_MEMORY_MACROS 10
 #endif
