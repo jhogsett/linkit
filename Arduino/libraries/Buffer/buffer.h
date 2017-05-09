@@ -27,7 +27,7 @@ class Buffer
 
   void display_buffer(rgb_color * pbuffer);
   void erase(bool display);
-  void push_color(rgb_color color, bool display, byte effect, byte max, byte start);
+  void push_color(rgb_color color, int times, bool display, byte effect, byte max, byte start);
   void push_rgb_color(byte red, byte green, byte blue);
   void push_hsl_color(int hue, int sat, int lit);
   void push_carry_color();
@@ -210,8 +210,8 @@ void Buffer::rotate(){
 
 void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse = false){
   if(reverse){
-    carry_color = buffer[start];
-    carry_effect = effects[start];
+    this->carry_color = buffer[start];
+    this->carry_effect = effects[start];
 
     for(byte i = start; i < (max - 1); i++){
       buffer[i] = buffer[i+1];
@@ -222,8 +222,8 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
 #endif
     }
   } else {
-    carry_color = buffer[max - 1];
-    carry_effect = effects[max - 1];
+    this->carry_color = buffer[max - 1];
+    this->carry_effect = effects[max - 1];
 
     for(byte i = max - 1; i >= (start + 1); i--){
       buffer[i] = buffer[i-1];
@@ -239,30 +239,33 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
 #ifdef EXISTENCE_ENABLED
 void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte id = NO_ID, byte start = 0)
 #else
-void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
+void Buffer::push_color(rgb_color color, int times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
 #endif
 {
   max = (max == 0) ? get_window() : max;
   start = (start == 0) ? get_offset() : start;
+  times = max(1, times);
 
-  shift_buffer(buffers[current_display], effects_buffers[current_display], max, start, this->reverse);
+  for(int i = 0; i < times; i++){
+    shift_buffer(buffers[current_display], effects_buffers[current_display], max, start, this->reverse);
 
-  if(this->reverse){
-    buffers[current_display][max-1] = ColorMath::correct_color(color);
-    effects_buffers[current_display][max-1] = effect;
+    if(this->reverse){
+      buffers[current_display][max-1] = ColorMath::correct_color(color);
+      effects_buffers[current_display][max-1] = effect;
 #ifdef EXISTENCE_ENABLED
-    existence[max-1] = id;
+      existence[max-1] = id;
 #endif
-  } else {
-    buffers[current_display][start] = ColorMath::correct_color(color);
-    effects_buffers[current_display][start] = effect;
+    } else {
+      buffers[current_display][start] = ColorMath::correct_color(color);
+      effects_buffers[current_display][start] = effect;
 #ifdef EXISTENCE_ENABLED
-    existence[start] = id;
+      existence[start] = id;
 #endif
-  }
+    }
 
-  if(display){
-    display_buffer(buffers[current_display]);
+    if(display){
+      display_buffer(buffers[current_display]);
+    }
   }
 }
   
@@ -278,7 +281,7 @@ void Buffer::push_hsl_color(int hue, int sat, int lit){
 }
 
 void Buffer::push_carry_color(){
-  push_color(carry_color, false, carry_effect);
+  push_color(carry_color, 1, false, carry_effect);
 }
 
 #ifdef EXISTENCE_ENABLED
@@ -404,7 +407,7 @@ void Buffer::finalize_shift(byte count, byte max){
 
   // to do: restrict to current zone
   for(byte i = 0; i < count; i++){
-    push_color(black, false, NO_EFFECT, max);
+    push_color(black, 1, false, NO_EFFECT, max);
   }
 }
 
