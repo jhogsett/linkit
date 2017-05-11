@@ -379,7 +379,7 @@ Get the Python code to run locally
 
     * cd ~/dev
     * git clone git@github.com:jhogsett/linkit.git
-    * cd python
+    * cd linkit/python
     * ./scripts/refresh
 
 #### TODO
