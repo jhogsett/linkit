@@ -320,6 +320,8 @@
 
     _Note: The `reboot` command can be used to reboot the Openwrt OS_
 
+----
+
 #### Quick Start
 
 Set up dev link to SD card
@@ -381,6 +383,40 @@ Get the Python code to run locally
     * git clone git@github.com:jhogsett/linkit.git
     * cd linkit/python
     * ./scripts/refresh
+
+Add the http_command start-up
+
+    * cd /etc/init.d
+    * vim http_command
+    
+    #!/bin/sh /etc/rc.common
+
+```bash
+SCRIPT_NAME="LED Web UI"
+SCRIPT_PGM="http_command.py"
+SCRIPT_PATH="/root/http_command.py /root/http_command.html /root/dev/linkit/python"
+#LOG_FILE="/root/dev/linkit/python/http_command.log"
+LOG_FILE="/dev/null"
+
+START=99
+STOP=50
+ 
+start() {       
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}                
+ 
+stop() {         
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PGM`
+}
+```
+
+    * chmod +x http_command
+    * http_command enable
+    * http_command start
+
+----
 
 #### TODO
 
