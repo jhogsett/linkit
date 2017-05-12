@@ -348,7 +348,7 @@ Add your Mac public key for no-password ssh login
 Fix Git in various ways
 
     * echo "#!/bin/sh" > ~/.gitssh.sh
-    * echo "dbclient -y -i ~/.ssh/id_rsa \$\*" >> ~/.gitssh.sh
+    * echo "dbclient -y -i ~/.ssh/id_rsa $*" >> ~/.gitssh.sh
     * chmod +x ~/.gitssh.sh
     * echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
         
@@ -389,9 +389,9 @@ Add the http_command start-up
     * cd /etc/init.d
     * vim http_command
     
-    #!/bin/sh /etc/rc.common
-
 ```bash
+#!/bin/sh /etc/rc.common
+
 SCRIPT_NAME="LED Web UI"
 SCRIPT_PGM="http_command.py"
 SCRIPT_PATH="/root/http_command.py /root/http_command.html /root/dev/linkit/python"
@@ -413,8 +413,8 @@ stop() {
 ```
 
     * chmod +x http_command
-    * http_command enable
-    * http_command start
+    * ./http_command enable
+    * ./http_command start
 
 ----
 
