@@ -1,4 +1,15 @@
-// can't run a packed macro set from another packed macro 
+// 0:set:20,0,0:rgb:0,20,0:rgb:0,0,20:rgb:flu
+// this resutls in red, followed by two blacks
+//    maybe args getting reset at wrong time
+
+
+// if macro run more often than fade period, no fading at all happens
+
+// can't set macros from eeprom macros
+
+// a form of rotate that automatically shifts in carry color
+
+// command to restore pre-programmed macros
 
 // would be nice to be able to measure the current usage via an analog pin
 

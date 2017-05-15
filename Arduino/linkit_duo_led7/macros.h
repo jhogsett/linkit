@@ -1,3 +1,8 @@
+// for some reason scheduling #21 runs but then stops as if it got canceled
+
+// when a macro sets multiple schedules, they don't get set right
+
+
 // not able to set a memory or eeprom macros from within an eeprom macro
 
 // when copying macros, have to ignore end of macro marker inside arguments, which can have a 0xff
@@ -121,18 +126,20 @@ void set_packed_memory_macro_from_eeprom(int macro, char * buffer){
 void set_packed_eeprom_macro_from_eeprom(int macro, char * buffer){
   char * str = ::get_eeprom_macro(macro);
 
-  eeprom_write_byte((byte*)(str+0), 15);
-  eeprom_write_byte((byte*)(str+1), 6);
-  eeprom_write_byte((byte*)(str+2), 1);
-  eeprom_write_byte((byte*)(str+3), 255);
+// this doesn't work
+//  eeprom_write_byte((byte*)(str+0), 15);
+//  eeprom_write_byte((byte*)(str+1), 6);
+//  eeprom_write_byte((byte*)(str+2), 1);
+//  eeprom_write_byte((byte*)(str+3), 255);
 
-//  byte b;
-//  while((b = eeprom_read_byte((byte*)buffer)) != MACRO_END_MARKER){
-//    eeprom_write_byte((byte*)str, b);
-//    buffer++;
-//    str++;
-//  }
-//  eeprom_write_byte((byte*)str, MACRO_END_MARKER);
+// this doesn't work
+  byte b;
+  while((b = eeprom_read_byte((byte*)buffer)) != MACRO_END_MARKER){
+    eeprom_write_byte((byte*)str, b);
+    buffer++;
+    str++;
+  }
+  eeprom_write_byte((byte*)str, MACRO_END_MARKER);
   
 //  char c;
 //  while((c = eeprom_read_byte((byte*)buffer++)) != MACRO_END_MARKER)
@@ -339,7 +346,7 @@ void set_packed_memory_macro(int macro, char * commands){
 
     // get the next command or argumemts
     command = dependencies.command_processor.get_next_command(&saveptr);
-    cmd = dependencies.command_processor.process_command(command);
+    cmd = dependencies.command_processor.lookup_command(command);
     
   }while(cmd != CMD_NULL);
 
@@ -391,7 +398,7 @@ void set_packed_eeprom_macro(int macro, char * commands){
 
     // get the next command or argumemts
     command = dependencies.command_processor.get_next_command(&saveptr);
-    cmd = dependencies.command_processor.process_command(command);
+    cmd = dependencies.command_processor.lookup_command(command);
     
   }while(cmd != CMD_NULL);
 
