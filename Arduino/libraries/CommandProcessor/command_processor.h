@@ -36,11 +36,11 @@ class CommandProcessor
   char * begin_get_commands(char *buffer, char **saveptr);
   char * get_next_command(char **saveptr);
   char * get_input_buffer();
+  void get_sub_args(char * str);
 
   private:
   bool str_equal_P(char *str1, const char *str2);
   bool is_command_P(char *str, const char *command);
-  void get_sub_args(char * str);
   void save_accumulator();
 };
 
