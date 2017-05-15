@@ -24,7 +24,11 @@ void process_schedules(){
     schedule_counter[i] = (schedule_counter[i] + 1) % schedule_period[i];
 
     if(schedule_counter[i] == 0){
+#ifdef USE_PACKED_MACROS
+      ::run_packed_macro(macro_number[i], run_times[i]);
+#else      
       ::run_macro(macro_number[i], run_times[i]);
+#endif
     }
   }
 }

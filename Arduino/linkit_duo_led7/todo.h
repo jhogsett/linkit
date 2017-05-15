@@ -1,3 +1,93 @@
+// can't run a packed macro set from another packed macro 
+
+// would be nice to be able to measure the current usage via an analog pin
+
+// for efficient macros
+// compile commands to binary equivalents
+// build a string of these binary bytes as long as real commands keep coming in
+// (for arguments, just store them like they're stored now)?
+// when an argument is encountered, store the so-far built string in the macro followed by a special command 
+//   that means: run the commands in the argument buffer as binary commands
+//   then store the arguments normalls
+// when processing binary commands, arguments are only parsed if a special command says the arguments buffer contains arguments
+//
+// set macro: 0:set:red:grn:blu:3:cpy:flu
+// "red:grn:blu:3:cpy:flu" is the macro
+// looks up the numbers for each command 15, 16, 17
+// when CMD_NONE is returned, it means the next thing is an argument, 
+// pack the commands found so far as bytes: 0x0f, 0x10, 0x11
+// use a command number outside of normal commands range to signal that the bytes just pulled are a series of binary commands; run them
+// 0f, 10, 11, f0
+/// in the case of arguments, dump the binary values of the arg0-2 integers into 6 bytes, following by a command that signals to extract the arg0
+// 00, 03, 00, 00, 00, 00, f1
+// so the whole set of bytes would be
+// 0f, 10, 11, f0, 00, 03, 00, 00, 00, 00, f1
+// running a macro: it already expects the packed format
+// 0f, 10, 11 
+
+// ---> idea: given that macros are compiled and run internally, they don't need to be RPN
+// f0, 0f, 10, 11 == run the following bytes as binary commands until an internal macro command is seen (or the byte following the f0 is the # of bytes of commands)
+// f1, 00, 03, 00, 00, 00, 00 == unpack these bytes as int arguments
+// f0, 05, 01, ff 
+
+// what about macros that set macros?
+//   the set command would work like normally, except the rest of the buffer would be copied over without needing to be parsed
+
+
+// need to be able to have a white flash but then resume the previous color/effect
+// - maybe reverts when the luminosity matches so it seems to fade out
+// - could have a trigger that could detect the end of fading out; macro would need to know the position
+// - there could be a standard after-fade color (default black) 
+//   - 
+
+// how to simplify switching?
+//    ::process_commands_P(F("19:stm:-1:sch:30000,19,20:sch:17:run"));
+//    ::process_commands_P(F("20:stm:-1:sch:60000,19,21:sch:18:run"));
+//    ::process_commands_P(F("21:stm:-1:sch:60000,19,19:sch:23:run"));
+
+// shooting star problem
+// need to continuously advance the position and place the latest color at the leading edge
+// could have a special form of run that sequences a series of arg[0] values
+// 3,10,5:seq = run macro three for each value from 5 to 10 
+// or 10,3,5:seq - allowing the count to be random
+// 20:seq - runs macro #0 20 times, with arg0 from 0-19
+// 20,1:seq = runs macro #1 20 times
+// 20,2,5:seq = runs macro 2 15 times, from 5 to 19
+// could have an advance command that sets the position to the next position
+
+// shooting star would be
+// 5:set:wht:brt:brt:sfd:flu
+// rps - random starting position
+// 2:rng:rev - random direction
+// 20,1,5:rng - random # between 1 and 19 with arg1 = 5
+// seq - sequence arg0 from 0 to n-1 and run macro 5 each time
+
+// need to make set vs stm automatic
+
+// could have a random macro command
+// 0,2,5:rnm = randomly run 0, 1 or 2, with 5 as arg0
+
+// cpy only needs to destroy render buffer if zooming
+// - unless copying on top of the same position
+// - could use the palette buffer if the pattern fits
+//   - would make rubber stamping possible
+
+// move logic out of display_command() into commands.h
+
+// would be nice if running a macro preserved the original args
+
+// could have a non-blinking blink, just display the dim color, for background decoration
+
+// need a way to clear carry color or not set it during a buffer shift
+
+// need a command to dump out all the macros
+
+// apply ease animation timing to rotations
+
+// when setting position and placing a rubber stamp, it only places one pixel (which is expected)
+// need a way to expand the window to easily place the whole stamp
+// for instance, -6:win could mean to expand the current window +6
+
 // would be cool to somehow do mappying where the zone rotations on radius8 could be done on the opposite axis
 // with mapping in place you should be able to apply rotations to rows and colums, in fact multiple rows and columns
 
@@ -18,6 +108,11 @@
 
 // mapping would need to be done at the buffer level
 
+// pos = map(x,y)
+// x,y:pos 
+// if a second argument is provided, it could mean  use x,y mapping
+// in the case of the zero default, the x positions would still be valid positions
+
 // need to implement mapping for radius8 & sphere
 
 // how would I draw a line?
@@ -31,7 +126,10 @@
 
 
 
-// could have commands that take the rest of the input and do something with them iteratively, like an instead macro
+// could have commands that take the rest of the input and do something with them iteratively, like an instant macro
+// 9:mac:commands:commands -> would run the commands 9 times
+// this could save macro space for one-off special repeat functions
+// 9,100:mac:commands -> would run the commands 9 times with 100ms delay between each
 
 // could have a command that ends the macro under certain conditions
 

@@ -30,6 +30,13 @@ const byte PROGMEM zone_windows[NUM_ZONES] = { 200,   6, 14, 26, 38, 52, 68, 84,
 const byte PROGMEM zone_offsets[NUM_ZONES] = { 0,    0, 1,  9, 21, 37, 61,         0,           21,             1,          0 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 93,   1, 9, 21, 37, 61, 93,        21,           93,            61,         61 };
 
+#elif defined(SPHERE)
+#define NUM_ZONES 13
+#define FINE_ZONES 10 //                             10 rows                                   top,bottom halves
+const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,   0, 1,  7, 18, 33, 50, 67, 82, 93,  99,     0,  50 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 100,  1, 7, 18, 33, 50, 67, 82, 93, 99, 100,    50, 100 };
+
+
 
 
 

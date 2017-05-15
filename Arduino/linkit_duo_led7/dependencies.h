@@ -218,7 +218,7 @@ void Dependencies::begin(){
 
   // start up the color math class
   // false = don't swap red & green
-#if defined(STRAND1) || defined(STRAND2) || defined(RADIUS8)
+#if defined(STRAND1) || defined(STRAND2) || defined(RADIUS8) || defined(SPHERE)
   ColorMath::begin(true);
 #else  
   ColorMath::begin(false);

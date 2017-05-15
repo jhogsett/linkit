@@ -3,11 +3,14 @@
 
 // IoT Devices
 
+// 100-LED Sphere
+// #define SPHERE
+
 // 200-LED Radius-8 displays
 // #define RADIUS8
 
 // 93-LED Disc Projector
-#define PROJECTOR
+// #define PROJECTOR
 
 // 100-LED Xmas Lights
 // #define XMAS_LIGHTS
@@ -19,7 +22,7 @@
 // #define APOLLO_LIGHTS2
 
 // 90-LED Apollo Lights Dev indoors
-// #define APOLLO_LIGHTS2_DEV
+#define APOLLO_LIGHTS2_DEV
 
 // 64-LED Wearable and Glasses
 // #define WEARABLE_AND_GLASSES
@@ -101,7 +104,7 @@
 #define AUTO_BRIGHTNESS_MAX 33
 #endif
 
-#if defined(STRAND1) || defined(STRAND2) || defined(DISC93) || defined(DUAL_STRIP) || defined(WEARABLE2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2) || defined(RADIUS8) || defined(APOLLO_LIGHTS2_DEV)
+#if defined(STRAND1) || defined(STRAND2) || defined(DISC93) || defined(DUAL_STRIP) || defined(WEARABLE2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2) || defined(RADIUS8) || defined(APOLLO_LIGHTS2_DEV) || defined(SPHERE)
 #define USE_1_DISPLAYS
 #elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE)  || defined(WEARABLE_AND_GLASSES)
 #define USE_2_DISPLAYS
@@ -148,7 +151,7 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 10
 #elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(STRIP2) || defined(STRIP3) || defined(DUAL_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(APOLLO_LIGHTS2_DEV) //  || defined(DISC93_DOUBLE) 
 #define DEFAULT_BRIGHTNESS_PERCENT 15
-#elif defined(STRAND1) || defined(STRAND2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2)
+#elif defined(STRAND1) || defined(STRAND2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2) || defined(SPHERE)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #elif defined(MINI_DISC_19)
 #define DEFAULT_BRIGHTNESS_PERCENT 70
@@ -171,7 +174,7 @@
 #define ANIM_LED_COUNT 93
 #elif defined(STRAND1)
 #define ANIM_LED_COUNT 50
-#elif defined(STRAND2) || defined(DISC93_AND_STRAND2)
+#elif defined(STRAND2) || defined(DISC93_AND_STRAND2) || defined(SPHERE)
 #define ANIM_LED_COUNT 100
 #elif defined(DUAL_STRIP)
 #define ANIM_LED_COUNT 144
@@ -203,7 +206,7 @@
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
 #define DEMO_DELAY 20
-#elif defined(STRAND2) || defined(RADIUS8)
+#elif defined(STRAND2) || defined(RADIUS8) || defined(SPHERE)
 #define DEMO_OBJECT_SIZE 10
 #define DEMO_GAP_SIZE 0
 #define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
@@ -244,7 +247,7 @@
 #elif defined(WEARABLE)
 #define BLINK_PERIOD 12000
 #define BREATHE_PERIOD 600
-#elif defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93) || defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV)
+#elif defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93) || defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV) || defined(SPHERE)
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 150
 #elif defined(DUAL_STRIP)

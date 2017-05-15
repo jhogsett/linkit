@@ -307,14 +307,16 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_SET_MACRO:
-      ::set_macro_from_serial(dependencies.command_processor.sub_args[0]);
+//      ::set_macro_from_serial(dependencies.command_processor.sub_args[0]);
+      ::set_packed_macro_from_serial(dependencies.command_processor.sub_args[0]);
       reset_args = true;
       break;
     case CMD_RUN_MACRO:
       // arg[0] macro number to run, default = 0
       // arg[1] number of times to run, default = 1
       // arg[0] milliseconds delay between runs, default = no delay
-      ::run_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
+      //::run_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
+      ::run_packed_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
       reset_args = true;
       break;
     case CMD_DELAY:
@@ -325,7 +327,9 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       //   from a string instead of the serial input buffer
       // this must be used when setting a macro from within another macro,
       //   or when using ::process_command() to set a macro  
-      ::set_macro_from_memory(dependencies.command_processor.sub_args[0], dispatch_data);
+//      ::set_macro_from_memory(dependencies.command_processor.sub_args[0], dispatch_data);
+      ::set_packed_macro(dependencies.command_processor.sub_args[0], dispatch_data);
+
       reset_args = true;
       // signal that no more commands should be processed (rest of buffer copied to macro)
       continue_dispatching = false;
@@ -343,18 +347,11 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       }
       break;
     case CMD_POSITION:
- //     {
-        // setting both to the same value ensures a single pixel will get set without shifting
-        // use -1 as the position to disable position override
-//        int position = dependencies.command_processor.sub_args[0];
-//        dependencies.buffer.set_offset_override(position); 
-//        dependencies.buffer.set_window_override(position); 
-
-          dependencies.commands.set_position(dependencies.command_processor.sub_args[0]);
-
-        // after using the pos command, the offset and window are left corrupted unless reset to 0,0
-        // could do an auto reset after the next command
- //     }
+      // arg[0] index of insertion pointer
+      //        if -1, start of current zone
+      //        if -2, end of current zone
+      //        if -3, center of current zone
+      dependencies.commands.set_position(dependencies.command_processor.sub_args[0]);
       reset_args = true;
       break;
 
@@ -365,9 +362,11 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
     case CMD_PALETTE:
       {
         // arg[0] the index into the palette of the color to insert, or where to stop rubberstamp insert
-        // arg[1] if > 0, this many palette colors are inserted counting down from the value
+        // arg[1] if > 0, colors are inserted counting down from this position
         //                the counting down is done so the palette achieves a left-to-right order when inserted  
         //                in this case arg[0] is the stopping point when counting down
+        // for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
+        
         int arg0 = dependencies.command_processor.sub_args[0];
         int arg1 = dependencies.command_processor.sub_args[1];
         if(arg1 > 0){

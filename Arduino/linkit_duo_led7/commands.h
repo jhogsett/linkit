@@ -52,7 +52,7 @@ class Commands
   void do_rotate(byte times, byte steps, byte flush);
   void do_delay(int milliseconds);
   int random_num(int max, int min);
-  int set_position(byte position);
+  int set_position(int position);
   int random_position();
 
   private:
@@ -222,6 +222,10 @@ void Commands::do_mirror(){
 }
 
 // to do: handle reverse direction
+// to do: copy only copies from position zero
+
+// todo: 
+// 
 void Commands::do_copy(byte size, byte times, byte zoom){
   size = max(1, size);
   zoom = max(1, zoom);
@@ -430,11 +434,37 @@ void Commands::do_delay(int milliseconds){
   ::delay(milliseconds);
 }
 
-int Commands::set_position(byte position){
+// special case positions:
+// -1 = start of zone
+// -2 = end of zone
+// -3 = center of zone
+int Commands::set_position(int position){
+  int current_offset = buffer->get_offset();
+  int current_window = buffer->get_window();
+
+  if(position == -1){
+    position = current_offset;
+  } else if(position == -2){
+    position = current_window;
+  } else if(position == -3){
+    position = (current_offset + current_window) / 2;
+  } else {
+    // offset into zone space
+    position = position + current_offset;
+  
+    // don't go below zone
+    position = max(current_offset, position);
+  
+    // don't go above zone
+    position = min(current_window, position);
+  }
+    
   buffer->set_offset_override(position); 
   buffer->set_window_override(position); 
 }
 
+// todo: position should be in relation to the current zone
+// todo: a position of zero here when a zone is selected means zero in zone #0
 int Commands::random_position(){
   set_position(random(buffer->get_width()));
 }
