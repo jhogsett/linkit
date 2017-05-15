@@ -22,7 +22,7 @@
 // #define APOLLO_LIGHTS2
 
 // 90-LED Apollo Lights Dev indoors
-// #define APOLLO_LIGHTS2_DEV
+#define APOLLO_LIGHTS2_DEV
 
 // 64-LED Wearable and Glasses
 // #define WEARABLE_AND_GLASSES
@@ -46,7 +46,7 @@
 // #define WEARABLE_AND_STRIP
 
 // 93-LED Wearable and Disc
-#define WEARABLE_AND_DISC93
+// #define WEARABLE_AND_DISC93
 
 // enable to change settings for the 93-LED disc
 // #define DISC93

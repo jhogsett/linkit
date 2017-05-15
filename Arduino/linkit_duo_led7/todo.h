@@ -1,7 +1,10 @@
+// could pack macros further by storing 1, 2 or 3 arguments
+
 // 0:set:20,0,0:rgb:0,20,0:rgb:0,0,20:rgb:flu
 // this resutls in red, followed by two blacks
 //    maybe args getting reset at wrong time
 
+// need to be able to choose a set of random numbers, and share them across macros
 
 // if macro run more often than fade period, no fading at all happens
 
