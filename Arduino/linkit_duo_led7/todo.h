@@ -1,3 +1,22 @@
+// memory macros may be running into problems due to arguments that include '\0'
+// //--> fixed, needs testing
+
+// need to start cutting out excess code, at 92%
+
+
+// repeat command doesn't work in reverse
+
+// need to be able to use the cpy and cfa commands together
+//   but cpy trashes the render buffer
+//   could have the cpy command use the palette if it fits and use the render buffer otherwise
+//   0 times when just grabbing copy of display
+
+// are there unnecessary buffers with packed macros?
+
+// 
+
+// have soem kind of auto-incrementor  
+
 // could pack macros further by storing 1, 2 or 3 arguments
 
 // 0:set:20,0,0:rgb:0,20,0:rgb:0,0,20:rgb:flu

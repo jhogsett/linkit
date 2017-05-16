@@ -10,7 +10,7 @@ void run_default_macro(){
 //                          0         1         2         3         4         5         6
 //                          0123456789012345678901234567890123456789012345678901234567890
 
-#if defined(SPHERE)
+#if defined(SPHERE) //|| defined(WEARABLE_AND_DISC93)
 //    ::process_commands_P(F("10:stm:5000,13:sch"));
 //    ::process_commands_P(F("11:stm:11:zon:0:pal:flo"));
 //    ::process_commands_P(F("12:stm:12:zon:1:pal:flo"));
@@ -25,15 +25,15 @@ void run_default_macro(){
     
     ::process_commands_P(F("15:stm:rps:wht:brt:brt:sfd:rst"));
     ::process_commands_P(F("16:stm:rps:1:rnd:sfd:flu:rst"));
-    ::process_commands_P(F("17:stm:fad:100,15:sch:20000,14:sch"));
-    ::process_commands_P(F("18:stm:fad:100,16:sch"));
+    ::process_commands_P(F("17:stm:fad:50,15:sch:20000,14:sch"));
+    ::process_commands_P(F("18:stm:fad:50,16:sch"));
     
-    ::process_commands_P(F("19:stm:-1:sch:30000,19,20:sch:17:run"));
+    ::process_commands_P(F("19:stm:-1:sch:60000,19,20:sch:17:run"));
     ::process_commands_P(F("20:stm:-1:sch:60000,19,21:sch:18:run"));
     ::process_commands_P(F("21:stm:-1:sch:60000,19,19:sch:23:run"));
 
     ::process_commands_P(F("22:stm:-3:rng:zon:rot:flu:rst"));
-    ::process_commands_P(F("23:stm:fad:2:rnd:flo:flu:100,22:sch"));
+    ::process_commands_P(F("23:stm:fad:2:rnd:flo:flu:50,22:sch"));
 
 #elif defined(MINI_DISC_19)
     // monument animation

@@ -33,7 +33,7 @@ class Commands
   void do_flood();
   void do_random(byte type);
   void do_mirror();
-  void do_copy(byte size, byte times, byte zoom);
+  void do_copy(int size, int times, int zoom);
   void do_repeat(byte times);
   void do_elastic_shift(byte count, byte max);
   void do_power_shift(byte count, byte max, bool fast_render);
@@ -224,62 +224,103 @@ void Commands::do_mirror(){
 // to do: handle reverse direction
 // to do: copy only copies from position zero
 
-// todo: 
-// 
-void Commands::do_copy(byte size, byte times, byte zoom){
+// copies pixels starting at the current offset (normally zero)
+// size - how many pixels to copy
+// times - how many times to duplicate it, 
+//         0 = repeat and fill the current window
+//        -1 = repeat and fill the current window
+void Commands::do_copy(int size, int times, int zoom){
   size = max(1, size);
   zoom = max(1, zoom);
 
   int effective_size = size * zoom;
-  
-  if(times < 1){
+
+  bool use_palette_buffer = false;
+  if(size <= NUM_PALETTE_COLORS)
+    // use the palette to store the color/effects data if it will fit
+    // this allows the render buffer to be used for crossfading
+    use_palette_buffer = true;
+
+  bool copy_only = false;
+  bool dupe_only = false;
+  if(times == -1){
+    // copy the pattern but don't paste it
+    copy_only = true;  
+  } else if(times == -2){
+    // duplicate the pattern but don't copy it first
+    dupe_only = true;
+    // can't pass in a specific number of times
+    // 1 is better than fill because it's less restrictive
+    times = 1;
+  } else if(times < 1){
     times = (buffer->get_width() / effective_size) - 0; // repeat and fill
   }
 
-  // copy the color pattern to the render buffer temporarily
-  for(int i = 0; i < size; i++){
-    byte dest = i;
-    byte source = buffer->get_offset() + i;
-    buffer->get_render_buffer()[dest] = buffer->get_buffer()[source]; 
-  }
-
-  // copy the colors
-  for(int i = 0; i < times; i++){
-    for(int j = 0; j < size; j++){
-      for(int k = 0; k < zoom; k++){
-        byte source = j;
-        byte dest = buffer->get_offset() + (i * effective_size) + (j * zoom) + k;
+  if(!copy_only && !dupe_only){
+    // copy the effects pattern to the buffer temporarily
+    for(int i = 0; i < size; i++){
+      byte dest = i;
+      byte source = buffer->get_offset() + i;
+      if(use_palette_buffer)
+        ::palette[dest].red = buffer->get_effects_buffer()[source];
+      else
+        buffer->get_render_buffer()[dest].red = buffer->get_effects_buffer()[source]; 
+    }
   
-        if(dest < buffer->get_window()){ // prevent buffer overrun
-          buffer->get_buffer()[dest] = buffer->get_render_buffer()[source];
+    // copy the effects
+    for(int i = 0; i < times; i++){
+      for(int j = 0; j < size; j++){
+        for(int k = 0; k < zoom; k++){
+          byte source = j;
+          byte dest = buffer->get_offset() + (i * effective_size) + (j * zoom) + k;
+  
+          if(dest < buffer->get_window()){ // prevent buffer overrun
+            if(use_palette_buffer)
+              buffer->get_effects_buffer()[dest] = ::palette[source].red;
+            else
+              buffer->get_effects_buffer()[dest] = buffer->get_render_buffer()[source].red;
+          }
         }
       }
     }
   }
   
-  // copy the effects pattern to the render buffer temporarily
-  for(int i = 0; i < size; i++){
-    byte source = buffer->get_offset() + i;
-    buffer->get_render_buffer()[i].red = buffer->get_effects_buffer()[source]; 
+  // copy the color pattern to the buffer temporarily
+  if(!dupe_only){
+    for(int i = 0; i < size; i++){
+      byte dest = i;
+      byte source = buffer->get_offset() + i;
+      if(use_palette_buffer)
+        ::palette[dest] = buffer->get_buffer()[source];
+      else
+        buffer->get_render_buffer()[dest] = buffer->get_buffer()[source]; 
+    }
   }
-
-  // copy the effects
-  for(int i = 0; i < times; i++){
-    for(int j = 0; j < size; j++){
-      for(int k = 0; k < zoom; k++){
-        byte source = j;
-        byte dest = buffer->get_offset() + (i * effective_size) + (j * zoom) + k;
   
-        if(dest < buffer->get_window()){ // prevent buffer overrun
-          buffer->get_effects_buffer()[dest] = buffer->get_render_buffer()[source].red;
+  if(!copy_only){
+    // copy the colors
+    for(int i = 0; i < times; i++){
+      for(int j = 0; j < size; j++){
+        for(int k = 0; k < zoom; k++){
+          byte source = j;
+          byte dest = buffer->get_offset() + (i * effective_size) + (j * zoom) + k;
+    
+          if(dest < buffer->get_window()){ // prevent buffer overrun
+            if(use_palette_buffer)
+              buffer->get_buffer()[dest] = ::palette[source];
+            else
+              buffer->get_buffer()[dest] = buffer->get_render_buffer()[source];
+          }
         }
       }
     }
   }
-
+      
   // erase the render buffer
-  for(int i = 0; i < visible_led_count; i++){
-    buffer->get_render_buffer()[i] = BLACK;  
+  if(!use_palette_buffer){
+    for(int i = 0; i < visible_led_count; i++){
+      buffer->get_render_buffer()[i] = BLACK;  
+    }
   }
 }
 
@@ -406,7 +447,11 @@ void Commands::reset(){
   low_power_mode = false;
   
   buffer->reset();
-  effects_processor->reset_effects();
+
+  // the effects shouldn't be reset
+  // otherwise when reset is used in macros
+  // if can interfere with the effects
+  // effects_processor->reset_effects();
 
   // the brightness shouldn't be set on reset, because the device could be set
   // to an appropriate brightness level already

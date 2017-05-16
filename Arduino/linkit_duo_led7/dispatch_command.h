@@ -314,7 +314,7 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
     case CMD_RUN_MACRO:
       // arg[0] macro number to run, default = 0
       // arg[1] number of times to run, default = 1
-      // arg[0] milliseconds delay between runs, default = no delay
+      // arg[3] milliseconds delay between runs, default = no delay
       //::run_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
       ::run_packed_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
       reset_args = true;

@@ -74,6 +74,26 @@ void set_packed_memory_macro_from_memory(int macro, char * buffer){
     *str = b;
     buffer++;
     str++;
+
+    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
+      // copy the packed arguments, which can be any value 0-255
+      // including the end of macro marker
+      int num_bytes;
+      switch(b){
+        case MACRO_ARG3_MARKER:
+          num_bytes = 6;
+          break;
+        case MACRO_ARG2_MARKER:
+          num_bytes = 4;
+          break;
+        case MACRO_ARG1_MARKER:
+          num_bytes = 2;
+          break;  
+      }
+      for(int i = 0; i < num_bytes; i++){
+        *str++ = *buffer++;  
+      }
+    }
   }
   *str = MACRO_END_MARKER;
 }
@@ -87,7 +107,30 @@ void set_packed_eeprom_macro_from_memory(int macro, char * buffer){
     eeprom_write_byte((byte*)str, b);
     buffer++;
     str++;
+
+    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
+      // copy the packed arguments, which can be any value 0-255
+      // including the end of macro marker
+      int num_bytes;
+      switch(b){
+        case MACRO_ARG3_MARKER:
+          num_bytes = 6;
+          break;
+        case MACRO_ARG2_MARKER:
+          num_bytes = 4;
+          break;
+        case MACRO_ARG1_MARKER:
+          num_bytes = 2;
+          break;  
+      }
+      for(int i = 0; i < num_bytes; i++){
+        eeprom_write_byte((byte*)str, *buffer);  
+        buffer++;
+        str++;
+      }
+    }
   }
+
   eeprom_write_byte((byte*)str, MACRO_END_MARKER);
   
 //  char c;
@@ -107,6 +150,28 @@ void set_packed_memory_macro_from_eeprom(int macro, char * buffer){
     *str = b;
     buffer++;
     str++;
+
+    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
+      // copy the packed arguments, which can be any value 0-255
+      // including the end of macro marker
+      int num_bytes;
+      switch(b){
+        case MACRO_ARG3_MARKER:
+          num_bytes = 6;
+          break;
+        case MACRO_ARG2_MARKER:
+          num_bytes = 4;
+          break;
+        case MACRO_ARG1_MARKER:
+          num_bytes = 2;
+          break;  
+      }
+      for(int i = 0; i < num_bytes; i++){
+        *str = eeprom_read_byte((byte*)buffer);  
+        buffer++;
+        str++;
+      }
+    }
   }
   *str = MACRO_END_MARKER;
 
@@ -139,7 +204,30 @@ void set_packed_eeprom_macro_from_eeprom(int macro, char * buffer){
     eeprom_write_byte((byte*)str, b);
     buffer++;
     str++;
+
+    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
+      // copy the packed arguments, which can be any value 0-255
+      // including the end of macro marker
+      int num_bytes;
+      switch(b){
+        case MACRO_ARG3_MARKER:
+          num_bytes = 6;
+          break;
+        case MACRO_ARG2_MARKER:
+          num_bytes = 4;
+          break;
+        case MACRO_ARG1_MARKER:
+          num_bytes = 2;
+          break;  
+      }
+      for(int i = 0; i < num_bytes; i++){
+        eeprom_write_byte((byte*)str, eeprom_read_byte((byte*)buffer));  
+        buffer++;
+        str++;
+      }
+    }
   }
+  
   eeprom_write_byte((byte*)str, MACRO_END_MARKER);
   
 //  char c;
@@ -458,15 +546,15 @@ void set_packed_macro_from_serial(int macro){
   set_packed_macro(macro, dependencies.command_processor.get_input_buffer());
 }
 
-void run_packed_memory_macro(int macro, int times, int delay_ = 0){
+void run_packed_memory_macro(int macro, int times){
   // don't pass in this macro running's arguments
   dependencies.command_processor.reset_args();
 
   times = max(1, times);
 
   char * macro_buffer = ::get_memory_macro(macro);
-  if(macro_buffer == NULL)
-    // not a valid macro location
+  if(macro_buffer == NULL || *macro_buffer == '\0')
+    // not a valid macro location or macro is empty
     return;
 
   for(int i = 0; i < times; i++){     
@@ -478,14 +566,14 @@ void run_packed_memory_macro(int macro, int times, int delay_ = 0){
       if(cmd >= ARG_MARKER_FIRST && cmd <= ARG_MARKER_LAST){
         int num_args;
         switch(cmd){
-          case MACRO_ARG1_MARKER:
-            num_args = 1;
+          case MACRO_ARG3_MARKER:
+            num_args = 3;
             break;
           case MACRO_ARG2_MARKER:
             num_args = 2;
             break;
-          case MACRO_ARG3_MARKER:
-            num_args = 3;
+          case MACRO_ARG1_MARKER:
+            num_args = 1;
             break;  
         }
 #else
@@ -522,7 +610,7 @@ void run_packed_memory_macro(int macro, int times, int delay_ = 0){
   }
 }
 
-void run_packed_eeprom_macro(int macro, int times, int delay_ = 0){
+void run_packed_eeprom_macro(int macro, int times){
   // don't pass in this macro running's arguments
   dependencies.command_processor.reset_args();
   
@@ -587,12 +675,14 @@ void run_packed_macro(int macro, int times, int delay_ = 0)
 {
   if(is_memory_macro(macro))
   {
-    run_packed_memory_macro(macro, times, delay_);
+    run_packed_memory_macro(macro, times);
   } 
   else if(is_eeprom_macro(macro))
   {
-    run_packed_eeprom_macro(macro, times, delay_);
+    run_packed_eeprom_macro(macro, times);
   }
+  if(delay_ > 0)
+    delay(delay_);
 }
 #endif
 #endif
