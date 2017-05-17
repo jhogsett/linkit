@@ -55,7 +55,8 @@ effects = ['bl1','bl2','bl3','bl4','bl5','bl6']
 effect_index = 0
 
 def loop():
-  command("0," + str(num_leds-1) + ":pso")
+  #command("0," + str(num_leds-1) + ":pso")
+  command("fad")
   osize = random.randrange(size_range_min, size_range_max) + 1
   times = int(num_leds / osize) + 0	
 
