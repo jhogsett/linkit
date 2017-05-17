@@ -9,11 +9,11 @@ s = None
 play_time = 5
 
 effects = [
-  "rnd:flo:5,0:cpy:cfa",
-  "rnd:flo:4,0:cpy:cfa",
-  "rnd:flo:3,0:cpy:cfa",
-  "rnd:flo:2,0:cpy:cfa",
-  "rnd:flo:cfa",
+  "1:rnd:flo:5,0:cpy:cfa",
+  "1:rnd:flo:4,0:cpy:cfa",
+  "1:rnd:flo:3,0:cpy:cfa",
+  "1:rnd:flo:2,0:cpy:cfa",
+  "1:rnd:flo:cfa",
   "red:org:grn:blu:pur:5,0:cpy:cfa"
 ]
 
