@@ -151,8 +151,8 @@ def loop():
       if not build_keys.has_key(key):                                                 
         insert_count += 4                                                             
 
-    if insert_count > 0:
-      command(str(visible_leds - insert_count) + "," + str(insert_count) + ":pso")
+    #if insert_count > 0:
+    #  command(str(visible_leds - insert_count) + "," + str(insert_count) + ":pso")
 
     build_keys = {} 
     for x in range(0, get_job_limit()):
