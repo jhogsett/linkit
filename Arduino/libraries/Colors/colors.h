@@ -1,8 +1,6 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-// how to do complimentary colors?
-
 #include <PololuLedStrip.h>
 
 #define NUM_COLORS 23
@@ -106,33 +104,6 @@ class Colors
     tungsten
   };
 
-// this doesn't seem to be a viable way to remap these colors
-//  enum complimentary_color{
-//    cyan,
-//    ltblue,
-//    blue,
-//    magenta,
-//    yellow,
-//    ltgreen,
-//    red,
-//    green,
-//    orange,
-//    purple,
-//    pink,
-//    seafoam,
-//    ltblue,
-//    purple,
-//    orange,
-//    pink,
-//    ltgreen,
-//    seafoam,
-//    white,
-//    gray,
-//    dkgray,
-//    black,
-//    black
-//  };
-
   static const rgb_color * const get_color(color c);
 
   private:
@@ -168,6 +139,33 @@ void shuffle_palette()
     last = index;
   }
   palette[last] = temp;
+}
+
+// create a complimentary color by inverting the values
+// within the 0 - BRIGHTNESS_DIVISOR range, since that
+// represents the entire pre-rendered color definition
+rgb_color complimentary_color(rgb_color color){
+  return (rgb_color){
+    BRIGHTNESS_DIVISOR - color.red,
+    BRIGHTNESS_DIVISOR - color.green,
+    BRIGHTNESS_DIVISOR - color.blue
+  };
+}
+
+// create pairs of complimentary colors by making each odd color
+// complimentary of the previous even color
+void compliment_palette()
+{
+  for(int i = 0; i < NUM_PALETTE_COLORS; i += 2)
+    ::palette[i+1] = complimentary_color(::palette[i]);
+}
+
+// create a random palette of complimentary color pairs
+void complimentary_palette()
+{
+  ::reset_palette();
+  ::shuffle_palette();
+  ::compliment_palette();
 }
 
 #endif

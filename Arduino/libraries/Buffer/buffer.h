@@ -55,7 +55,7 @@ class Buffer
   byte get_display();
   byte get_zones();
 
-  static const rgb_color black;
+  rgb_color black;
 
   // todo: is there an alternative to storing all these pointers?
   private:
@@ -89,8 +89,6 @@ class Buffer
   void shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse);
 };
 
-const rgb_color Buffer::black = {0,0,0};
-
 rgb_color *Buffer::render;
 
 #ifdef EXISTENCE_ENABLED
@@ -98,7 +96,7 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
 #else
 void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones){
 #endif
-
+  this->black = BLACK;
   this->ledStrips = ledStrips;
   this->current_display = 0;
   this->buffers = buffers;
@@ -115,9 +113,6 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
   this->existence = existence;
 #endif
 
-//  this->num_zones = num_zones;
-//  this->zone_offsets = zone_offsets;
-//  this->zone_windows = zone_windows;
   this->zones = zones;
   this->reverse = false;
   this->carry_color = black;
@@ -388,10 +383,14 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
   // to do: restrict to visible led count?
   maxx = min(maxx, safety_led_count);
 
+  // this is used repeatedly during a shift animation to render the
+
   // to do: start off offset
+  // to do: would it be faster to set each individual byte?
   for(byte i = 0; i < count; i++){
     render[i] = black;
   }
+
   // to do: add offset
   for(byte i = count; i < maxx; i++){
     if(fast_render)
