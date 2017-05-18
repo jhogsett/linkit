@@ -123,26 +123,13 @@ bool BlinkEffects::process(){
 
   if(blink_counter == blink1_time)
   {
-    if(blink_state){
-      blink_state = false;
-    } else {
-      blink_state = true;
-    }
-    should_flush = true;
-  }
+    blink_state = blink_state ? false : true;
+//    if(blink_state){
+//      blink_state = false;
+//    } else {
+//      blink_state = true;
+//    }
 
-  if(blinkc_counter == blink1_time)
-  {
-    if(blink_state_c){
-      blink_state_c = false;
-    } else {
-      blink_state_c = true;
-    }
-    should_flush = true;
-  }
-
-  if(blink_counter == blink1_time)
-  {
     blink_state_1 = true;
     blink_state_6 = false;
 
@@ -187,6 +174,17 @@ bool BlinkEffects::process(){
   {
     blink_state_6 = true;
     blink_state_5 = false;
+    should_flush = true;
+  }
+
+  if(blinkc_counter == blink1_time)
+  {
+    blink_state_c = blink_state_c ? false : true;
+//    if(blink_state_c){
+//      blink_state_c = false;
+//    } else {
+//      blink_state_c = true;
+//    }
     should_flush = true;
   }
 

@@ -151,21 +151,21 @@ void Buffer::erase(bool display = false)
   }
 }
 
-void Buffer::fade(float rate = 0.0){
-  rate = (rate == 0.0) ? fade_rate : rate;
-  byte *p = (byte *)buffers[current_display];
-  for(int i = get_offset(); i < get_window() * 3; i++){
-    *(p + i) *= rate;
-  }
-}
+//void Buffer::fade(float rate = 0.0){
+//  rate = (rate == 0.0) ? fade_rate : rate;
+//  byte *p = (byte *)buffers[current_display];
+//  for(int i = get_offset(); i < get_window() * 3; i++){
+//    *(p + i) *= rate;
+//  }
+//}
 
-void Buffer::fade_fast(){
-  byte *p;
-  p = (byte *)buffers[current_display];
-  for(byte i = get_offset(); i < get_window() * 3; i++){
-    *(p + i) = *(p + i) >> 1;
-  }
-}
+//void Buffer::fade_fast(){
+//  byte *p;
+//  p = (byte *)buffers[current_display];
+//  for(byte i = get_offset(); i < get_window() * 3; i++){
+//    *(p + i) = *(p + i) >> 1;
+//  }
+//}
 
 void Buffer::cross_fade(int step){
   for(int i = get_offset(); i < get_window(); i++){
@@ -286,7 +286,7 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
 #endif
 {
   buffers[current_display][pos] = ColorMath::correct_color(color);
-  
+
   if(effect != LEAVE_EFFECT){
     effects_buffers[current_display][pos] = effect;
   }

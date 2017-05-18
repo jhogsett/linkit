@@ -37,6 +37,7 @@ class EffectsProcessor
   bool process_effects();
 };
 
+// todo: move to progmem
 const byte EffectsProcessor::random_effects[] = { NO_EFFECT, BREATHE_ON, BLINK_ON, BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4, BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B }; //, BLINK_ON_P };
 
 void EffectsProcessor::begin(Buffer *buffer, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects){
@@ -70,11 +71,13 @@ void EffectsProcessor::reset_effects() {
 }
 
 bool EffectsProcessor::process_effects() {
-  bool should_flush = false;
-  should_flush = blink_effects->process() ? true : should_flush;
-  should_flush = breathe_effects->process() ? true : should_flush;
-  should_flush = fade_effects->process() ? true : should_flush;
-  return should_flush;
+//  bool should_flush = false;
+//  should_flush = blink_effects->process() ? true : should_flush;
+//  should_flush = breathe_effects->process() ? true : should_flush;
+//  should_flush = fade_effects->process() ? true : should_flush;
+//  return should_flush;
+
+  return blink_effects->process() || breathe_effects->process() || fade_effects->process();
 
   // twinkle is left out of deciding to flush
   // otherwise it would be rendering constantly

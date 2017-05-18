@@ -107,14 +107,6 @@ rgb_color ColorMath::simple_unscale_color(rgb_color color, float scale){
   };
 }
 
-rgb_color ColorMath::complimentary_color(rgb_color color){
-  return (rgb_color){
-    BRIGHTNESS_DIVISOR - color.red,
-    BRIGHTNESS_DIVISOR - color.green,
-    BRIGHTNESS_DIVISOR - color.blue
-  };
-}
-
 // hue: 0-359, sat: 0-255, val (lightness): 0-255
 rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {
   int r, g, b, base;
@@ -168,36 +160,25 @@ void ColorMath::set_brightness(byte brightness_percent){
 //  }
 }
 
-rgb_color ColorMath::add_color(rgb_color color1, rgb_color color2){
-  rgb_color new_color;
-  new_color.red = min(255, color1.red + color2.red);
-  new_color.green = min(255, color1.green + color2.green);
-  new_color.blue = min(255, color1.blue + color2.blue);
-  return new_color;
-}
-
-rgb_color ColorMath::subtract_color(rgb_color color1, rgb_color color2){
-  rgb_color new_color;
-  new_color.red = max(0, color1.red - color2.red);
-  new_color.green = max(0, color1.green - color2.green);
-  new_color.blue = max(0, color1.blue - color2.blue);
-  return new_color;
-}
+//rgb_color ColorMath::add_color(rgb_color color1, rgb_color color2){
+//  rgb_color new_color;
+//  new_color.red = min(255, color1.red + color2.red);
+//  new_color.green = min(255, color1.green + color2.green);
+//  new_color.blue = min(255, color1.blue + color2.blue);
+//  return new_color;
+//}
+//
+//rgb_color ColorMath::subtract_color(rgb_color color1, rgb_color color2){
+//  rgb_color new_color;
+//  new_color.red = max(0, color1.red - color2.red);
+//  new_color.green = max(0, color1.green - color2.green);
+//  new_color.blue = max(0, color1.blue - color2.blue);
+//  return new_color;
+//}
 
 // some sets have red and green swapped, usually false for led strips
 void ColorMath::begin(bool swap_r_and_g = true){
   ColorMath::swap_r_and_g = swap_r_and_g;
-
-#ifdef USE_PALETTES
-//  if(swap_r_and_g == true){
-//    for(byte i = 0; i < NPALETTE; i++){
-//      unsigned char value = palette[i].red;
-//      palette[i].red = palette[i].green;
-//      palette[i].green = value;
-//    }
-//  }
-//  memcpy(adjusted_palette, palette, sizeof(palette));
-#endif
 }
 
 int ColorMath::crossfade_steps(){
