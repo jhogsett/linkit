@@ -204,11 +204,16 @@ void process_commands(char * buffer){
   }while(cmd != CMD_NULL);
 }
 
+#define USE_COMMAND_BUFFER
 // process commands stored in PROGMEM 
 //void process_commands_P(const char * commands){
 void process_commands_P(const __FlashStringHelper * commands){
+#ifdef USE_COMMAND_BUFFER
+  char * buffer = dependencies.command_processor.borrow_char_buffer();
+#else
   // copy the macro into the tokenizing buffer
   char buffer[NUM_MACRO_CHARS]; // todo: can an existing buffer be used here?
+#endif
   strcpy_P(buffer, (const char *)commands);
   process_commands(buffer);
 }
@@ -483,7 +488,7 @@ void run_packed_eeprom_macro(int macro, int times){
   }
 }
 
-void run_packed_macro(int macro, int times, int delay_ = 0)
+void run_packed_macro(int macro, int times = 1, int delay_ = 0)
 {
   if(is_memory_macro(macro))
   {

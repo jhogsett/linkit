@@ -99,8 +99,8 @@ class Dependencies
   // initialize all dependencies
   void begin();
 
-  // show a display to indicate health of the rendering routines on startup
-  void self_test();
+//  // show a display to indicate health of the rendering routines on startup
+//  void self_test();
 };
 
 // global settings
@@ -259,25 +259,25 @@ void Dependencies::begin(){
   ::reset_palette();
 }
 
-void Dependencies::self_test(){
-
-#ifdef STATUS_MONITOR
-  // flash the red alarm light for one second
-  commands.set_pin(4, true);
-  delay(1000);
-  commands.set_pin(4, false);
-#endif
-
-#ifdef WEARABLE_AND_STRIP
-  commands.do_demo();
-#else
-  for(int i = 0; i < NUM_BUFFERS; i++){
-    commands.set_display((NUM_BUFFERS - 1) - i);
-    commands.do_demo();
-  }
-#endif
-
-  commands.reset();
-}
+//void Dependencies::self_test(){
+//
+//#ifdef STATUS_MONITOR
+//  // flash the red alarm light for one second
+//  commands.set_pin(4, true);
+//  delay(1000);
+//  commands.set_pin(4, false);
+//#endif
+//
+//#ifdef WEARABLE_AND_STRIP
+//  commands.do_demo();
+//#else
+//  for(int i = 0; i < NUM_BUFFERS; i++){
+//    commands.set_display((NUM_BUFFERS - 1) - i);
+//    commands.do_demo();
+//  }
+//#endif
+//
+//  commands.reset();
+//}
 #endif
 

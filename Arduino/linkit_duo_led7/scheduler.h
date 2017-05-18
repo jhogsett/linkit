@@ -7,8 +7,11 @@
 
 unsigned int schedule_period[NUM_SCHEDULES];  // zero means the schedule is turned off
 byte macro_number[NUM_SCHEDULES];             // could leave this off and assume schedule is same as macro to run, 
-byte run_times[NUM_SCHEDULES];                // but the ability to switch schedules to run different macros is the basis for toggling
-unsigned int schedule_counter[NUM_SCHEDULES];
+unsigned int schedule_counter[NUM_SCHEDULES]; // but the ability to switch schedules to run different macros is the basis for toggling
+
+#ifdef USE_RUN_TIMES
+byte run_times[NUM_SCHEDULES];
+#endif
 
 void process_schedules(){
   for(int i = 0; i < NUM_SCHEDULES; i++){
@@ -19,14 +22,20 @@ void process_schedules(){
     schedule_counter[i] = (schedule_counter[i] + 1) % schedule_period[i];
 
     if(schedule_counter[i] == 0){
+#ifdef USE_RUN_TIMES
       ::run_packed_macro(macro_number[i], run_times[i]);
+#else
+      ::run_packed_macro(macro_number[i]);
+#endif
     }
   }
 }
 
 void reset_schedule(int schedule_number){
   macro_number[schedule_number]     = 0;
+#ifdef USE_RUN_TIMES
   run_times[schedule_number]        = 0;
+#endif
   schedule_period[schedule_number]  = 0;
   schedule_counter[schedule_number] = 0;
 }
@@ -38,7 +47,11 @@ void reset_all_schedules(){
 }
 
 // if schedule period is -1, it clears all schedules
+#ifdef USE_RUN_TIMES
 void set_schedule(unsigned int schedule_period_, byte schedule_number, byte macro_number_, byte run_times_ = 1){
+#else
+void set_schedule(unsigned int schedule_period_, byte schedule_number, byte macro_number_){
+#endif
   if((int)schedule_period_ == -1){
     reset_all_schedules();  
     return;
@@ -53,7 +66,9 @@ void set_schedule(unsigned int schedule_period_, byte schedule_number, byte macr
 
   schedule_period[schedule_number]  = schedule_period_;
   macro_number[schedule_number]     = macro_number_;
+#ifdef USE_RUN_TIMES
   run_times[schedule_number]        = run_times_;
+#endif
 
   // set to zero for a complete schedule period to pass before it runs the macro (probably best)
   // could set to schedule_period - 1 to have the macro run immediately upon being set

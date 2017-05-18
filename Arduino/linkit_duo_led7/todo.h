@@ -1,3 +1,14 @@
+// command processor has str buffer 
+
+// optimize BlinkEffects::process()
+
+// switch out code that handles low power mode
+
+// the fade counter only decides when to automatically flush, not the rate at which fading happens; repeated renders will automatically fade the buffer color
+// the multi-run from the command line is spectacular, why is not applying the fade at the same rate?
+
+// slow fade doesn't work when running a macro repeatedly like 1000,0:run. It works when running it manually over serial.
+
 // anywhere I'm using BLACK should be changed to buffer->black;
 
 // need to slice up the memory into more macros

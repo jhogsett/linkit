@@ -14,7 +14,9 @@
 #define CROSSFADE_DELAY 1
 #endif
 
+#ifdef USE_LOW_POWER_MODE
 #define LOW_POWER_TIME 50
+#endif
 
 class Commands
 {
@@ -62,9 +64,11 @@ class Commands
   bool paused = false;
   byte default_brightness;
   byte visible_led_count;
+#ifdef USE_LOW_POWER_MODE
   bool low_power_mode = false;
   byte low_power_position = 0;
   int low_power_timer = 0;
+#endif
   AutoBrightnessBase *auto_brightness;
 
   void advance_low_power_position();
@@ -92,15 +96,19 @@ bool Commands::is_paused(){
 }
 
 void Commands::low_power(){
+#ifdef USE_LOW_POWER_MODE
   low_power_mode = true;
 
   // it's too jarring to reset these
   // low_power_position = 0;
   // low_power_timer = 0;
+#endif
 }
 
 void Commands::high_power(){
+#ifdef USE_LOW_POWER_MODE
   low_power_mode = false;
+#endif
 }
 
 void Commands::set_display(byte display){
@@ -409,20 +417,26 @@ void Commands::do_rotate(byte times, byte steps, byte flush){
   }
 }
 
+#ifdef USE_LOWER_POWER_MODE
 void Commands::advance_low_power_position(){
   if(low_power_timer++ % LOW_POWER_TIME == 0){
     low_power_position = ++low_power_position % visible_led_count; 
   }
 }
+#endif
 
 void Commands::flush(bool force_display = false){
   if(force_display || !paused){
+#ifdef USE_LOWER_POWER_MODE
     if(low_power_mode){
       renderer->render_buffer_low_power(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer(), low_power_position);
       advance_low_power_position();
     } else {
+#endif
       renderer->render_buffer(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
+#ifdef USE_LOWER_POWER_MODE
     }
+#endif
     buffer->display_buffer(buffer->get_render_buffer());
   }
 }
@@ -444,8 +458,10 @@ void Commands::flush_all(bool force_display){
 void Commands::reset(){
   // paused = false;
   
+#ifdef USE_LOWER_POWER_MODE
   low_power_mode = false;
-  
+#endif
+
   buffer->reset();
 
   // the effects shouldn't be reset
@@ -516,7 +532,7 @@ int Commands::random_position(){
 
 #define RANDOM_NUM_ACCUM      -6
 #define RANDOM_NUM_DISPLAYS   -5
-#define RANDOM_NUM_PALETTES   -4
+#define RANDOM_NUM_PALCOLORS  -4
 #define RANDOM_NUM_FINE_ZONES -3
 #define RANDOM_NUM_ZONES      -2
 #define RANDOM_NUM_LEDS       -1
@@ -532,7 +548,7 @@ int Commands::random_num(int max, int min){
       max = NUM_DISPLAYS; 
       break;
     
-    case RANDOM_NUM_PALETTES: 
+    case RANDOM_NUM_PALCOLORS: 
       max = NUM_PALETTE_COLORS; 
       break;
     
