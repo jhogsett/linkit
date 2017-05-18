@@ -20,5 +20,15 @@ Loading a jpeg
     python
     > import os,sys
     > import Image
-    jpgfile = Image.open("test.jpg")
+    > jpgfile = Image.open("test.jpg")
     
+Get pixel RGB value
+
+    g = Image.open("test2.gif")
+    > size = 16,16
+    g.thumbnail(size, Image.ANTIALIAS)
+    g.save("test2-tinythumb.gif")
+    r = g.convert("RGB")
+    r,g,b = r.getpixel((1,1))
+    print r,g,b
+    43 59 45
