@@ -1,6 +1,4 @@
-// not able to set a memory or eeprom macros from within an eeprom macro
-
-// when copying macros, have to ignore end of macro marker inside arguments, which can have a 0xff
+//! not able to set a memory or eeprom macros from within an eeprom macro
 
 #ifndef MACROS_H
 #define MACROS_H
@@ -15,25 +13,19 @@
 extern Dependencies dependencies;
 extern bool dispatch_command(int cmd, char *dispatch_data);
 
-#define USE_PACKED_MACROS
-#define USE_PACKED_ARGUMENTS
-
-#ifdef USE_PACKED_MACROS
 #define MACRO_END_MARKER 0xff
 
-#ifdef USE_PACKED_ARGUMENTS
-#define MACRO_ARG1_MARKER 0xfe
-#define MACRO_ARG2_MARKER 0xfd
-#define MACRO_ARG3_MARKER 0xfc
-#define ARG_MARKER_FIRST  MACRO_ARG3_MARKER
-#define ARG_MARKER_LAST   MACRO_ARG1_MARKER
-#else
-#define MACRO_ARG_MARKER 0xf7
-#endif
+#define MACRO_ARG1_MARKER 0xf9 
+#define MACRO_ARG2_MARKER 0xfa 
+#define MACRO_ARG3_MARKER 0xfb 
+#define MACRO_ARG4_MARKER 0xfc 
+#define MACRO_ARG5_MARKER 0xfd 
+#define MACRO_ARG6_MARKER 0xfe 
+#define ARG_MARKER_FIRST  MACRO_ARG1_MARKER
+#define ARG_MARKER_LAST   MACRO_ARG6_MARKER
 
 // this one doesn't need to be stored in macros, but it could be useful if supporting receiving binary commands
 #define MACRO_CMD_MARKER 0xf0
-#endif
 
 #define MAX_MEMORY_MACRO (NUM_MEMORY_MACROS - 1)
 #define MAX_EEPROM_MACRO (EEPROM_STARTING_MACRO + NUM_EEPROM_MACROS - 1)
@@ -64,32 +56,27 @@ char * get_eeprom_macro(int macro){
   return (char *)(effective_macro * NUM_MACRO_CHARS);
 }
 
-#ifdef USE_PACKED_MACROS
+int num_bytes_from_arg_marker(byte arg_marker){
+  return (arg_marker - ARG_MARKER_FIRST) + 1;
+}
+
+int num_words_from_arg_marker(byte arg_marker){
+  return num_bytes_from_arg_marker(arg_marker) / 2;
+}
+
 // copy bytes until the end of macro marker
 void set_packed_memory_macro_from_memory(int macro, char * buffer){
   char * str = ::get_memory_macro(macro);
 
   byte b;
-  while((b = *buffer) != MACRO_END_MARKER){
-    *str = b;
-    buffer++;
-    str++;
+  while((b = *buffer++) != MACRO_END_MARKER){
+    *str++ = b;
 
     if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
       // copy the packed arguments, which can be any value 0-255
       // including the end of macro marker
-      int num_bytes;
-      switch(b){
-        case MACRO_ARG3_MARKER:
-          num_bytes = 6;
-          break;
-        case MACRO_ARG2_MARKER:
-          num_bytes = 4;
-          break;
-        case MACRO_ARG1_MARKER:
-          num_bytes = 2;
-          break;  
-      }
+      int num_bytes = num_bytes_from_arg_marker(b);
+      
       for(int i = 0; i < num_bytes; i++){
         *str++ = *buffer++;  
       }
@@ -103,178 +90,66 @@ void set_packed_eeprom_macro_from_memory(int macro, char * buffer){
   char * str = ::get_eeprom_macro(macro);
 
   byte b;
-  while((b = *buffer) != MACRO_END_MARKER){
-    eeprom_write_byte((byte*)str, b);
-    buffer++;
-    str++;
+  while((b = *buffer++) != MACRO_END_MARKER){
+    eeprom_write_byte((byte*)str++, b);
 
     if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
       // copy the packed arguments, which can be any value 0-255
       // including the end of macro marker
-      int num_bytes;
-      switch(b){
-        case MACRO_ARG3_MARKER:
-          num_bytes = 6;
-          break;
-        case MACRO_ARG2_MARKER:
-          num_bytes = 4;
-          break;
-        case MACRO_ARG1_MARKER:
-          num_bytes = 2;
-          break;  
-      }
+      int num_bytes = num_bytes_from_arg_marker(b);
+
       for(int i = 0; i < num_bytes; i++){
-        eeprom_write_byte((byte*)str, *buffer);  
-        buffer++;
-        str++;
+        eeprom_write_byte((byte*)str++, *buffer++);  
       }
     }
   }
 
   eeprom_write_byte((byte*)str, MACRO_END_MARKER);
-  
-//  char c;
-//  while((c = *buffer++) != MACRO_END_MARKER)
-//    eeprom_write_byte((byte*)str++, c);
-//
-//  // write the end of macro marker
-//  eeprom_write_byte((byte*)str, MACRO_END_MARKER);
 }
 
 // copy bytes until the end of macro marker
 void set_packed_memory_macro_from_eeprom(int macro, char * buffer){
   char * str = ::get_memory_macro(macro);
 
-   byte b;
-  while((b = eeprom_read_byte((byte*)buffer)) != MACRO_END_MARKER){
-    *str = b;
-    buffer++;
-    str++;
+  byte b;
+  while((b = eeprom_read_byte((byte*)buffer++)) != MACRO_END_MARKER){
+    *str++ = b;
 
     if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
       // copy the packed arguments, which can be any value 0-255
       // including the end of macro marker
-      int num_bytes;
-      switch(b){
-        case MACRO_ARG3_MARKER:
-          num_bytes = 6;
-          break;
-        case MACRO_ARG2_MARKER:
-          num_bytes = 4;
-          break;
-        case MACRO_ARG1_MARKER:
-          num_bytes = 2;
-          break;  
-      }
+      int num_bytes = num_bytes_from_arg_marker(b);
+
       for(int i = 0; i < num_bytes; i++){
-        *str = eeprom_read_byte((byte*)buffer);  
-        buffer++;
-        str++;
+        *str++ = eeprom_read_byte((byte*)buffer++);  
       }
     }
   }
   *str = MACRO_END_MARKER;
-
-//
-//  if(str != NULL){
-//    char c;
-//    while((c = eeprom_read_byte((byte*)buffer++)) != MACRO_END_MARKER){
-//      *str = c;
-//      str++;
-//    }
-//
-//    // write the end of macro marker
-//    *str = MACRO_END_MARKER;
-//  }
 }
 
 // copy bytes until the end of macro marker
 void set_packed_eeprom_macro_from_eeprom(int macro, char * buffer){
   char * str = ::get_eeprom_macro(macro);
 
-// this doesn't work
-//  eeprom_write_byte((byte*)(str+0), 15);
-//  eeprom_write_byte((byte*)(str+1), 6);
-//  eeprom_write_byte((byte*)(str+2), 1);
-//  eeprom_write_byte((byte*)(str+3), 255);
-
-// this doesn't work
   byte b;
-  while((b = eeprom_read_byte((byte*)buffer)) != MACRO_END_MARKER){
-    eeprom_write_byte((byte*)str, b);
-    buffer++;
-    str++;
+  while((b = eeprom_read_byte((byte*)buffer++)) != MACRO_END_MARKER){
+    eeprom_write_byte((byte*)str++, b);
 
     if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
       // copy the packed arguments, which can be any value 0-255
       // including the end of macro marker
-      int num_bytes;
-      switch(b){
-        case MACRO_ARG3_MARKER:
-          num_bytes = 6;
-          break;
-        case MACRO_ARG2_MARKER:
-          num_bytes = 4;
-          break;
-        case MACRO_ARG1_MARKER:
-          num_bytes = 2;
-          break;  
-      }
+      int num_bytes = num_bytes_from_arg_marker(b);
+
       for(int i = 0; i < num_bytes; i++){
-        eeprom_write_byte((byte*)str, eeprom_read_byte((byte*)buffer));  
-        buffer++;
-        str++;
+        eeprom_write_byte((byte*)str++, eeprom_read_byte((byte*)buffer++));  
       }
     }
   }
   
   eeprom_write_byte((byte*)str, MACRO_END_MARKER);
-  
-//  char c;
-//  while((c = eeprom_read_byte((byte*)buffer++)) != MACRO_END_MARKER)
-//    eeprom_write_byte((byte*)str++, c);
-//
-//  // write the end of macro marker
-//  eeprom_write_byte((byte*)str, MACRO_END_MARKER);
 }
 
-#else
-
-void set_memory_macro_from_memory(int macro, char * buffer){
-  char * str = ::get_memory_macro(macro);
-  if(str != NULL)
-    strcpy(str, buffer);   
-}
-
-void set_eeprom_macro_from_memory(int macro, char * buffer){
-  char * str = ::get_eeprom_macro(macro);
-  strcpy_eeprom_from_memory(str, buffer);   
-}
-
-// used with the "stm" command to set a macro from memory
-// buffer is the "rest of buffer" pointer to either memory or eeprom
-void set_macro_from_memory(int macro, char * buffer){
-  if(is_memory_macro(macro))
-    set_memory_macro_from_memory(macro, buffer);
-  else if(is_eeprom_macro(macro))
-    set_eeprom_macro_from_memory(macro, buffer);
-}
-
-// used with the "set" command to set a macro from the serial input buffer
-void set_macro_from_serial(int macro){
-  set_macro_from_memory(macro, dependencies.command_processor.get_input_buffer());
-}
-
-// copies the macro from memory or eeprom to the tokenizing buffer
-void get_macro_for_processing(int macro, char * buffer){
-  if(is_memory_macro(macro))
-    strcpy(buffer, get_memory_macro(macro));
-  else if(is_eeprom_macro(macro))
-    strcpy_memory_from_eeprom(buffer, get_eeprom_macro(macro));   
-}
-#endif
-
-// TODO @@@
 // process the series of commands and arguments in the passed memory buffer
 // the string must be tokenizable by strtok (get's corrupted)
 void process_commands(char * buffer){
@@ -329,53 +204,20 @@ void process_commands(char * buffer){
   }while(cmd != CMD_NULL);
 }
 
-// TODO @@@
 // process commands stored in PROGMEM 
 //void process_commands_P(const char * commands){
 void process_commands_P(const __FlashStringHelper * commands){
   // copy the macro into the tokenizing buffer
-  char buffer[NUM_MACRO_CHARS]; 
+  char buffer[NUM_MACRO_CHARS]; // todo: can an existing buffer be used here?
   strcpy_P(buffer, (const char *)commands);
   process_commands(buffer);
 }
-
-#if !defined(USE_PACKED_MACROS)
-void run_macro(int macro, int times, int delay_ = 0){
-  // don't pass in this macro running's arguments
-  dependencies.command_processor.reset_args();
-  
-  if(times < 1){
-    times = 1;
-  }
-
-  // copy the macro into the tokenizing buffer
-  // either from memory or eeprom
-  char buffer[NUM_MACRO_CHARS]; 
-
-  for(int i = 0; i < times; i++){     
-    get_macro_for_processing(macro, buffer);
-
-    if(buffer != '\0')
-      process_commands(buffer);
-
-    if(delay_ != 0)
-      delay(delay_);
-
-    if(buffer == '\0')
-      break;
-  }
-}
-#endif
 
 void reset_macro(int macro){
   if(is_memory_macro(macro))
     ::get_memory_macro(macro)[0] = '\0';
   else if(is_eeprom_macro(macro))
-#ifdef USE_PACKED_MACROS
     eeprom_write_byte((byte*)::get_eeprom_macro(macro), MACRO_END_MARKER);
-#else  
-    strcpy_eeprom_from_memory(::get_eeprom_macro(macro), "\0");
-#endif
 }
 
 void reset_all_macros(){
@@ -387,7 +229,21 @@ bool is_programmed(byte macro){
   return ::eeprom_is_programmed(::get_eeprom_macro(macro));
 }
 
-#ifdef USE_PACKED_MACROS
+void determine_arg_marker(byte &arg_marker, byte &num_args){
+  if(dependencies.command_processor.sub_args[2] != 0){
+    arg_marker = MACRO_ARG6_MARKER;
+    num_args = 3;
+  } else if(dependencies.command_processor.sub_args[1] != 0){
+    arg_marker = MACRO_ARG4_MARKER;
+    num_args = 2;
+  } else if(dependencies.command_processor.sub_args[0] >= 1 && dependencies.command_processor.sub_args[0] <= 255 ) {
+    arg_marker = MACRO_ARG1_MARKER;
+  } else if(dependencies.command_processor.sub_args[0] != 0){
+    arg_marker = MACRO_ARG2_MARKER;
+    num_args = 1;
+  }
+}
+
 void set_packed_memory_macro(int macro, char * commands){
   char * macro_buffer = ::get_memory_macro(macro);
   if(macro_buffer == NULL)
@@ -420,31 +276,21 @@ void set_packed_memory_macro(int macro, char * commands){
       // this is a set of arguments
       dependencies.command_processor.get_sub_args(command);
 
-#ifdef USE_PACKED_ARGUMENTS
       // pack the arguments 
-      int num_args = 0;
       byte arg_marker;
-      if(dependencies.command_processor.sub_args[2] != 0){
-        num_args = 3;
-        arg_marker = MACRO_ARG3_MARKER;
-      } else if(dependencies.command_processor.sub_args[1] != 0){
-        num_args = 2;
-        arg_marker = MACRO_ARG2_MARKER;
-      } else if(dependencies.command_processor.sub_args[0] != 0){
-        num_args = 1;
-        arg_marker = MACRO_ARG1_MARKER;
-      }
+      byte num_args = 0;
+      determine_arg_marker(arg_marker, num_args);
 
       // write arguments marker
       *macro_buffer++ = arg_marker;
- #else
-      // write arguments marker
-      int num_args = 3;
-      *macro_buffer++ = MACRO_ARG_MARKER;
-#endif
-      for(int i = 0; i < num_args; i++){
-        *((int *)macro_buffer) = dependencies.command_processor.sub_args[i];
-        macro_buffer += 2;
+
+      if(arg_marker == MACRO_ARG1_MARKER){
+        *macro_buffer++ = (byte)dependencies.command_processor.sub_args[0];
+      } else {
+        for(int i = 0; i < num_args; i++){
+          *((int *)macro_buffer) = dependencies.command_processor.sub_args[i];
+          macro_buffer += 2;
+        }
       }
     } else {
       // write the command byte to the macro buffer
@@ -490,34 +336,22 @@ void set_packed_eeprom_macro(int macro, char * commands){
       // this is a set of arguments
       dependencies.command_processor.get_sub_args(command);
 
-#ifdef USE_PACKED_ARGUMENTS
       // pack the arguments 
-      int num_args = 0;
       byte arg_marker;
-      if(dependencies.command_processor.sub_args[2] != 0){
-        num_args = 3;
-        arg_marker = MACRO_ARG3_MARKER;
-      } else if(dependencies.command_processor.sub_args[1] != 0){
-        num_args = 2;
-        arg_marker = MACRO_ARG2_MARKER;
-      } else if(dependencies.command_processor.sub_args[0] != 0){
-        num_args = 1;
-        arg_marker = MACRO_ARG1_MARKER;
-      }
+      byte num_args = 0;
+      determine_arg_marker(arg_marker, num_args);
 
       // write arguments marker
       eeprom_write_byte((byte*)macro_buffer++, arg_marker);
-#else
-      int num_args = 3;
-
-      // write arguments marker
-      eeprom_write_byte((byte*)macro_buffer++, MACRO_ARG_MARKER);
-#endif
 
       // pack the arguments 
-      for(int i = 0; i < num_args; i++){
-        eeprom_write_word((word*)macro_buffer, (word)dependencies.command_processor.sub_args[i]);
-        macro_buffer += 2;
+      if(arg_marker == MACRO_ARG1_MARKER){
+        eeprom_write_byte((byte*)macro_buffer++, dependencies.command_processor.sub_args[0] & 0xff);
+      } else {
+        for(int i = 0; i < num_args; i++){
+          eeprom_write_word((word*)macro_buffer, (word)dependencies.command_processor.sub_args[i]);
+          macro_buffer += 2;
+        }
       }
     } else {
       // write the command byte to the macro buffer
@@ -562,28 +396,17 @@ void run_packed_memory_macro(int macro, int times){
 
     byte cmd;
     while((cmd = *macro_buffer++) != MACRO_END_MARKER){
-#ifdef USE_PACKED_ARGUMENTS
       if(cmd >= ARG_MARKER_FIRST && cmd <= ARG_MARKER_LAST){
-        int num_args;
-        switch(cmd){
-          case MACRO_ARG3_MARKER:
-            num_args = 3;
-            break;
-          case MACRO_ARG2_MARKER:
-            num_args = 2;
-            break;
-          case MACRO_ARG1_MARKER:
-            num_args = 1;
-            break;  
-        }
-#else
-      if(cmd == MACRO_ARG_MARKER){
-        int num_args = 3;  
-#endif
         // unpack the arguments
-        for(int i = 0; i < num_args; i++){
-          dependencies.command_processor.sub_args[i] = *((int *)macro_buffer);
-          macro_buffer += 2;
+        if(cmd == MACRO_ARG1_MARKER){
+          // the most common case a value 1-255
+          dependencies.command_processor.sub_args[0] = *(int *)macro_buffer++ & 0xff;
+        } else {
+          int num_args = num_words_from_arg_marker(cmd);
+          for(int i = 0; i < num_args; i++){
+            dependencies.command_processor.sub_args[i] = *((int *)macro_buffer);
+            macro_buffer += 2;
+          }
         }
       } else {
         // if setting a packed memory macro from a packed memory macro, 
@@ -623,28 +446,17 @@ void run_packed_eeprom_macro(int macro, int times){
     while((cmd = eeprom_read_byte((byte*)macro_buffer)) != MACRO_END_MARKER){
       macro_buffer++;
 
-#ifdef USE_PACKED_ARGUMENTS
       if(cmd >= ARG_MARKER_FIRST && cmd <= ARG_MARKER_LAST){
-        int num_args;
-        switch(cmd){
-          case MACRO_ARG1_MARKER:
-            num_args = 1;
-            break;
-          case MACRO_ARG2_MARKER:
-            num_args = 2;
-            break;
-          case MACRO_ARG3_MARKER:
-            num_args = 3;
-            break;  
-        }
-#else
-      if(cmd == MACRO_ARG_MARKER){
-        int num_args = 3;  
-#endif      
         // unpack the arguments
-        for(int i = 0; i < num_args; i++){
-          dependencies.command_processor.sub_args[i] = (int)eeprom_read_word((word*)macro_buffer);
-          macro_buffer += 2;
+        if(cmd == MACRO_ARG1_MARKER){
+          // the most common case a value 1-255
+          dependencies.command_processor.sub_args[0] = eeprom_read_byte((byte*)macro_buffer++);
+        } else {
+          int num_args = num_words_from_arg_marker(cmd);
+          for(int i = 0; i < num_args; i++){
+            dependencies.command_processor.sub_args[i] = (int)eeprom_read_word((word*)macro_buffer);
+            macro_buffer += 2;
+          }
         }
       } else {
         // if setting a packed memory macro from a packed memory macro, 
@@ -684,6 +496,5 @@ void run_packed_macro(int macro, int times, int delay_ = 0)
   if(delay_ > 0)
     delay(delay_);
 }
-#endif
 #endif
 

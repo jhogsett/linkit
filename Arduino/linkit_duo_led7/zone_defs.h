@@ -32,9 +32,15 @@ const byte PROGMEM zone_windows[NUM_ZONES] = { 93,   1, 9, 21, 37, 61, 93,      
 
 #elif defined(SPHERE)
 #define NUM_ZONES 13
-#define FINE_ZONES 10 //                             10 rows                                   top,bottom halves
+#define FINE_ZONES 10 //                             10 rows                                   bottom,top halves
 const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,   0, 1,  7, 18, 33, 50, 67, 82, 93,  99,     0,  50 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 100,  1, 7, 18, 33, 50, 67, 82, 93, 99, 100,    50, 100 };
+
+#elif defined(DUAL_STRIP)
+#define NUM_ZONES 16
+#define FINE_ZONES 8 //                              8 eighths                                 halves     quarters
+const byte PROGMEM zone_offsets[NUM_ZONES] = {   0,   0, 18, 36, 54, 72,  90, 108, 126,         0,  72,     36,  0, 36,  72, 108 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 144,  18, 36, 54, 72, 90, 108, 126, 144,        72, 144,    108, 36, 72, 108, 144 };
 
 
 
@@ -42,13 +48,6 @@ const byte PROGMEM zone_windows[NUM_ZONES] = { 100,  1, 7, 18, 33, 50, 67, 82, 9
 
 
 // TODO rearrange these zones
-
-#elif defined(DUAL_STRIP)
-#define NUM_ZONES 16
-#define FINE_ZONES 8
-// all, two halves, center half, four quarters, eight eighths
-byte zone_offsets[NUM_ZONES] = {   0,  0,  72,  36,  0, 36,  72, 108,  0, 18, 36, 54, 72,  90, 108, 126 };
-byte zone_windows[NUM_ZONES] = { 144, 72, 144, 108, 36, 72, 108, 144, 18, 36, 54, 72, 90, 108, 126, 144 };
 
 #elif defined(DISC93_AND_STRAND2)
 #define NUM_ZONES 11

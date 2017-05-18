@@ -10,7 +10,7 @@ void run_default_macro(){
 //                          0         1         2         3         4         5         6
 //                          0123456789012345678901234567890123456789012345678901234567890
 
-#if defined(SPHERE) //|| defined(WEARABLE_AND_DISC93)
+#if defined(SPHERE) || defined(DUAL_STRIP) //|| defined(WEARABLE_AND_DISC93)
 //    ::process_commands_P(F("10:stm:5000,13:sch"));
 //    ::process_commands_P(F("11:stm:11:zon:0:pal:flo"));
 //    ::process_commands_P(F("12:stm:12:zon:1:pal:flo"));

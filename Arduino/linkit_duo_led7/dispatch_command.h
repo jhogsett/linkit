@@ -80,7 +80,7 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_BLACK:     
-      dependencies.buffer.push_color(BLACK, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                    
+      dependencies.buffer.push_color(dependencies.buffer.black, dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);                                                    
       reset_args = true;
       break;
     case CMD_YELLOW:    

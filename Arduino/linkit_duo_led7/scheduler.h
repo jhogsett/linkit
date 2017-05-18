@@ -3,32 +3,23 @@
 
 #include "config.h"
 
-// for a schedule, need
-// - a macro number to run, a number of times to run, an interval between runs
-
-
-#define NUM_SCHEDULES (NUM_MACROS)
+#define NUM_SCHEDULES NUM_MACROS
 
 unsigned int schedule_period[NUM_SCHEDULES];  // zero means the schedule is turned off
-byte macro_number[NUM_SCHEDULES];    
-byte run_times[NUM_SCHEDULES];       
+byte macro_number[NUM_SCHEDULES];             // could leave this off and assume schedule is same as macro to run, 
+byte run_times[NUM_SCHEDULES];                // but the ability to switch schedules to run different macros is the basis for toggling
 unsigned int schedule_counter[NUM_SCHEDULES];
 
 void process_schedules(){
   for(int i = 0; i < NUM_SCHEDULES; i++){
 
-    if(schedule_period[i] == 0){
+    if(schedule_period[i] == 0)
       continue;
-    }
     
     schedule_counter[i] = (schedule_counter[i] + 1) % schedule_period[i];
 
     if(schedule_counter[i] == 0){
-#ifdef USE_PACKED_MACROS
       ::run_packed_macro(macro_number[i], run_times[i]);
-#else      
-      ::run_macro(macro_number[i], run_times[i]);
-#endif
     }
   }
 }

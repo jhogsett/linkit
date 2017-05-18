@@ -1,15 +1,20 @@
+// anywhere I'm using BLACK should be changed to buffer->black;
+
+// need to slice up the memory into more macros
+// determine the byte load for current macros
+
 // memory macros may be running into problems due to arguments that include '\0'
 // //--> fixed, needs testing
 
 // need to start cutting out excess code, at 92%
 
+//! idea: allow real-time redefinition of what the color black is, to allow effects on top of other colors
+
+// idea: per-zone settable settings that affect rendering
+// - brightness, black level, direction, 
+// - when you set certain values, they stick to the zone you're on
 
 // repeat command doesn't work in reverse
-
-// need to be able to use the cpy and cfa commands together
-//   but cpy trashes the render buffer
-//   could have the cpy command use the palette if it fits and use the render buffer otherwise
-//   0 times when just grabbing copy of display
 
 // are there unnecessary buffers with packed macros?
 
@@ -17,13 +22,14 @@
 
 // have soem kind of auto-incrementor  
 
-// could pack macros further by storing 1, 2 or 3 arguments
+// could pack macros further by storing only one byte (most argument usage is 0-255)
 
 // 0:set:20,0,0:rgb:0,20,0:rgb:0,0,20:rgb:flu
 // this resutls in red, followed by two blacks
 //    maybe args getting reset at wrong time
 
 // need to be able to choose a set of random numbers, and share them across macros
+//   palette could be used for this - could hold three arguments worth of random numbers
 
 // if macro run more often than fade period, no fading at all happens
 

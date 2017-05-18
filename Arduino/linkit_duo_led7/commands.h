@@ -160,7 +160,7 @@ void Commands::do_bright(){
 
 void Commands::do_fade(){
   for(int i = buffer->get_offset(); i < buffer->get_window(); i++){
-    buffer->get_buffer()[i] = Buffer::black;
+    buffer->get_buffer()[i] = buffer->black;
     buffer->get_effects_buffer()[i] = NO_EFFECT;
   }
   do_crossfade();
@@ -319,7 +319,7 @@ void Commands::do_copy(int size, int times, int zoom){
   // erase the render buffer
   if(!use_palette_buffer){
     for(int i = 0; i < visible_led_count; i++){
-      buffer->get_render_buffer()[i] = BLACK;  
+      buffer->get_render_buffer()[i] = buffer->black;  
     }
   }
 }

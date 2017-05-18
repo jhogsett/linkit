@@ -22,7 +22,7 @@
 // #define APOLLO_LIGHTS2
 
 // 90-LED Apollo Lights Dev indoors
-// #define APOLLO_LIGHTS2_DEV
+#define APOLLO_LIGHTS2_DEV
 
 // 64-LED Wearable and Glasses
 // #define WEARABLE_AND_GLASSES
@@ -46,7 +46,7 @@
 // #define WEARABLE_AND_STRIP
 
 // 93-LED Wearable and Disc
-#define WEARABLE_AND_DISC93
+// #define WEARABLE_AND_DISC93
 
 // enable to change settings for the 93-LED disc
 // #define DISC93
@@ -84,7 +84,7 @@
 #define STRAND2
 #endif
 
-#ifdef MINI_DISC_19
+#if defined(MINI_DISC_19) || defined(DUAL_STRIP)
 #define REAL_ARDUINO
 #endif
 
@@ -275,18 +275,16 @@
 #define FADE_PERIOD 100
 #endif
 
-#if defined(RADIUS8) || defined(DISC93_DOUBLE)
+#if defined(RADIUS8) || defined(DISC93_DOUBLE) || defined(DUAL_STRIP)
 #define NUM_MEMORY_MACROS 4
-#elif defined(APOLLO_LIGHTS2_DEV)
-#define NUM_MEMORY_MACROS 10
 #else
 #define NUM_MEMORY_MACROS 10
 #endif
 
 #define EEPROM_STARTING_MACRO (NUM_MEMORY_MACROS)
-#define NUM_EEPROM_MACROS 20
+#define NUM_EEPROM_MACROS 25
 #define NUM_MACROS (NUM_MEMORY_MACROS + NUM_EEPROM_MACROS)
-#define NUM_MACRO_CHARS 50
+#define NUM_MACRO_CHARS 40
 
 class Config
 {
