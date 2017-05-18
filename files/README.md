@@ -32,3 +32,7 @@ Get pixel RGB value
     r,g,b = r.getpixel((1,1))
     print r,g,b
     43 59 45
+
+Piping FFMPEG data via python
+
+    http://zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/
