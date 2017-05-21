@@ -36,3 +36,8 @@ Get pixel RGB value
 Piping FFMPEG data via python
 
     http://zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/
+
+Quickly capturing video frames
+
+    ffmpeg -y -f v4l2 -framerate 30 -video_size 640x480 -i /dev/video0 -vframes 2 test%0d.jpg
+    
