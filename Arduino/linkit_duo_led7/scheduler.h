@@ -3,6 +3,8 @@
 
 #include "config.h"
 
+extern Dependencies dependencies;
+
 #define NUM_SCHEDULES NUM_MACROS
 
 unsigned int schedule_period[NUM_SCHEDULES];  // zero means the schedule is turned off

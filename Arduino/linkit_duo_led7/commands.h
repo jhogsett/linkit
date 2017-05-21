@@ -485,6 +485,7 @@ void Commands::clear(){
   byte orig_display = buffer->get_current_display();
   for(int i = 0; i < NUM_BUFFERS; i++){
     buffer->set_display(i);
+    buffer->reset_black_level();
     buffer->erase(true);                                                          
   }
 

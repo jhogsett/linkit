@@ -1,4 +1,8 @@
-// command processor has str buffer 
+// the fade problem is when running from within a schedule. Running a macro N times from another macro works from the command line
+
+
+
+// have fade effect consider current black level
 
 // optimize BlinkEffects::process()
 

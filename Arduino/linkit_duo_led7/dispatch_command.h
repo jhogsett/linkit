@@ -407,6 +407,11 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
         reset_args = true;
         break;
       }
+    case CMD_SETBLACK:
+    {
+      rgb_color black_level = {dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]};
+      dependencies.buffer.set_black_level(black_level);
+    }
   }
 
   if(reset_args)

@@ -18,10 +18,11 @@ void setup() {
 }
 
 void loop(){ 
-  if(dependencies.command_processor.received_command())
+  CommandProcessor &command_processor = dependencies.command_processor;
+  if(command_processor.received_command())
   {
-    ::dispatch_command(dependencies.command_processor.get_command());
-    dependencies.command_processor.acknowledge_command();
+    ::dispatch_command(command_processor.get_command());
+    command_processor.acknowledge_command();
 
     // resync the effects to a blank state to minimize visual artifacts 
     // of pausing and restarting if there are display changes
@@ -38,11 +39,6 @@ void loop(){
     if(dependencies.effects_processor.process_effects())
       dependencies.commands.flush_all();
 
-//    // do schedule processing
-//    if(!dependencies.commands.is_paused()){
-//      process_schedules();
-//    }
-      
   }
 }
 

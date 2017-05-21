@@ -7,7 +7,7 @@
 // #define SPHERE
 
 // 200-LED Radius-8 displays
-#define RADIUS8
+// #define RADIUS8
 
 // 93-LED Disc Projector
 // #define PROJECTOR
@@ -22,7 +22,7 @@
 // #define APOLLO_LIGHTS2
 
 // 90-LED Apollo Lights Dev indoors
-// #define APOLLO_LIGHTS2_DEV
+#define APOLLO_LIGHTS2_DEV
 
 // 64-LED Wearable and Glasses
 // #define WEARABLE_AND_GLASSES

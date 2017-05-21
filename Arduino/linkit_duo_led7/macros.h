@@ -165,8 +165,10 @@ void process_commands(char * buffer){
   // to hold onto the strtok_r state
   char *saveptr;
 
+  CommandProcessor &command_processor = dependencies.command_processor;
+
   // get the first command or set of arguments
-  char *command = dependencies.command_processor.begin_get_commands(buffer, &saveptr);
+  char *command = command_processor.begin_get_commands(buffer, &saveptr);
 
   // point to the remaining string after this command + terminator
   // this is needed for copying strings when setting macros
@@ -175,7 +177,7 @@ void process_commands(char * buffer){
   char * rest_of_buffer = min(command + strlen(command) + 1, last_char);
 
   // process the command or arguments
-  int cmd = dependencies.command_processor.process_command(command);
+  int cmd = command_processor.process_command(command);
 
   if(cmd == CMD_NULL){
     // there was no command or arguments
@@ -197,9 +199,9 @@ void process_commands(char * buffer){
     }
 
     // get the next set command or argumemts
-    command = dependencies.command_processor.get_next_command(&saveptr);
+    command = command_processor.get_next_command(&saveptr);
     rest_of_buffer = min(command + strlen(command) + 1, last_char);
-    cmd = dependencies.command_processor.process_command(command);
+    cmd = command_processor.process_command(command);
     
   }while(cmd != CMD_NULL);
 }
@@ -235,17 +237,22 @@ bool is_programmed(byte macro){
 }
 
 void determine_arg_marker(byte &arg_marker, byte &num_args){
-  if(dependencies.command_processor.sub_args[2] != 0){
+  int * sub_args = dependencies.command_processor.sub_args;
+
+  if(sub_args[2] != 0){
     arg_marker = MACRO_ARG6_MARKER;
     num_args = 3;
-  } else if(dependencies.command_processor.sub_args[1] != 0){
+  } else if(sub_args[1] != 0){
     arg_marker = MACRO_ARG4_MARKER;
     num_args = 2;
-  } else if(dependencies.command_processor.sub_args[0] >= 1 && dependencies.command_processor.sub_args[0] <= 255 ) {
-    arg_marker = MACRO_ARG1_MARKER;
-  } else if(dependencies.command_processor.sub_args[0] != 0){
-    arg_marker = MACRO_ARG2_MARKER;
-    num_args = 1;
+  } else {
+    int arg0 = sub_args[0];
+    if(arg0 >= 1 && arg0 <= 255 ) {
+      arg_marker = MACRO_ARG1_MARKER;
+    } else if(arg0 != 0){
+      arg_marker = MACRO_ARG2_MARKER;
+      num_args = 1;
+    }
   }
 }
 
@@ -265,10 +272,11 @@ void set_packed_memory_macro(int macro, char * commands){
   // to hold onto the strtok_r state
   char *saveptr;
 
-  // get the first command or set of arguments
-  char *command = dependencies.command_processor.begin_get_commands(commands, &saveptr);
+  CommandProcessor &command_processor = dependencies.command_processor;
 
-  int cmd = dependencies.command_processor.lookup_command(command);
+  // get the first command or set of arguments
+  char *command = command_processor.begin_get_commands(commands, &saveptr);
+  int cmd = command_processor.lookup_command(command);
 
   if(cmd == CMD_NULL){
     // no commands; empty buffer
@@ -279,7 +287,7 @@ void set_packed_memory_macro(int macro, char * commands){
   do{
     if(cmd == CMD_NONE){
       // this is a set of arguments
-      dependencies.command_processor.get_sub_args(command);
+      command_processor.get_sub_args(command);
 
       // pack the arguments 
       byte arg_marker;
@@ -290,10 +298,10 @@ void set_packed_memory_macro(int macro, char * commands){
       *macro_buffer++ = arg_marker;
 
       if(arg_marker == MACRO_ARG1_MARKER){
-        *macro_buffer++ = (byte)dependencies.command_processor.sub_args[0];
+        *macro_buffer++ = (byte)command_processor.sub_args[0];
       } else {
         for(int i = 0; i < num_args; i++){
-          *((int *)macro_buffer) = dependencies.command_processor.sub_args[i];
+          *((int *)macro_buffer) = command_processor.sub_args[i];
           macro_buffer += 2;
         }
       }
@@ -303,8 +311,8 @@ void set_packed_memory_macro(int macro, char * commands){
     }
 
     // get the next command or argumemts
-    command = dependencies.command_processor.get_next_command(&saveptr);
-    cmd = dependencies.command_processor.lookup_command(command);
+    command = command_processor.get_next_command(&saveptr);
+    cmd = command_processor.lookup_command(command);
     
   }while(cmd != CMD_NULL);
 
@@ -325,10 +333,11 @@ void set_packed_eeprom_macro(int macro, char * commands){
   // to hold onto the strtok_r state
   char *saveptr;
 
-  // get the first command or set of arguments
-  char *command = dependencies.command_processor.begin_get_commands(commands, &saveptr);
+  CommandProcessor &command_processor = dependencies.command_processor;
 
-  int cmd = dependencies.command_processor.lookup_command(command);
+  // get the first command or set of arguments
+  char *command = command_processor.begin_get_commands(commands, &saveptr);
+  int cmd = command_processor.lookup_command(command);
 
   if(cmd == CMD_NULL){
     // no commands; empty buffer
@@ -339,7 +348,7 @@ void set_packed_eeprom_macro(int macro, char * commands){
   do{
     if(cmd == CMD_NONE){
       // this is a set of arguments
-      dependencies.command_processor.get_sub_args(command);
+      command_processor.get_sub_args(command);
 
       // pack the arguments 
       byte arg_marker;
@@ -350,11 +359,12 @@ void set_packed_eeprom_macro(int macro, char * commands){
       eeprom_write_byte((byte*)macro_buffer++, arg_marker);
 
       // pack the arguments 
+      int * sub_args = command_processor.sub_args;
       if(arg_marker == MACRO_ARG1_MARKER){
-        eeprom_write_byte((byte*)macro_buffer++, dependencies.command_processor.sub_args[0] & 0xff);
+        eeprom_write_byte((byte*)macro_buffer++, sub_args[0] & 0xff);
       } else {
         for(int i = 0; i < num_args; i++){
-          eeprom_write_word((word*)macro_buffer, (word)dependencies.command_processor.sub_args[i]);
+          eeprom_write_word((word*)macro_buffer, (word)sub_args[i]);
           macro_buffer += 2;
         }
       }
@@ -364,8 +374,8 @@ void set_packed_eeprom_macro(int macro, char * commands){
     }
 
     // get the next command or argumemts
-    command = dependencies.command_processor.get_next_command(&saveptr);
-    cmd = dependencies.command_processor.lookup_command(command);
+    command = command_processor.get_next_command(&saveptr);
+    cmd = command_processor.lookup_command(command);
     
   }while(cmd != CMD_NULL);
 
@@ -390,14 +400,16 @@ void run_packed_memory_macro(int macro, int times){
   dependencies.command_processor.reset_args();
 
   times = max(1, times);
+  char * cached_macro_buffer = ::get_memory_macro(macro);
 
-  char * macro_buffer = ::get_memory_macro(macro);
+  char * macro_buffer = cached_macro_buffer;
   if(macro_buffer == NULL || *macro_buffer == '\0')
     // not a valid macro location or macro is empty
     return;
 
+  int * sub_args = dependencies.command_processor.sub_args;
   for(int i = 0; i < times; i++){     
-    macro_buffer = ::get_memory_macro(macro);
+    macro_buffer = cached_macro_buffer;
 
     byte cmd;
     while((cmd = *macro_buffer++) != MACRO_END_MARKER){
@@ -405,11 +417,11 @@ void run_packed_memory_macro(int macro, int times){
         // unpack the arguments
         if(cmd == MACRO_ARG1_MARKER){
           // the most common case a value 1-255
-          dependencies.command_processor.sub_args[0] = *(int *)macro_buffer++ & 0xff;
+          sub_args[0] = *macro_buffer++;
         } else {
           int num_args = num_words_from_arg_marker(cmd);
           for(int i = 0; i < num_args; i++){
-            dependencies.command_processor.sub_args[i] = *((int *)macro_buffer);
+            sub_args[i] = *((int *)macro_buffer);
             macro_buffer += 2;
           }
         }
@@ -418,7 +430,7 @@ void run_packed_memory_macro(int macro, int times){
         //   use a special version of set memory macro from memory 
         //   that copies until the end of macro marked, instead of \0
         if(cmd == CMD_SET_MACRO_F){
-          int new_macro = dependencies.command_processor.sub_args[0];
+          int new_macro = sub_args[0];
           if(is_memory_macro(new_macro))
             set_packed_memory_macro_from_memory(new_macro, macro_buffer);
           else if(is_eeprom_macro(new_macro))
@@ -443,9 +455,11 @@ void run_packed_eeprom_macro(int macro, int times){
   dependencies.command_processor.reset_args();
   
   times = max(1, times);
-  
+  char * cached_macro_buffer = ::get_eeprom_macro(macro);
+
+  int * sub_args = dependencies.command_processor.sub_args;
   for(int i = 0; i < times; i++){     
-    char * macro_buffer = ::get_eeprom_macro(macro);
+    char * macro_buffer = cached_macro_buffer;
     
     byte cmd;
     while((cmd = eeprom_read_byte((byte*)macro_buffer)) != MACRO_END_MARKER){
@@ -455,11 +469,11 @@ void run_packed_eeprom_macro(int macro, int times){
         // unpack the arguments
         if(cmd == MACRO_ARG1_MARKER){
           // the most common case a value 1-255
-          dependencies.command_processor.sub_args[0] = eeprom_read_byte((byte*)macro_buffer++);
+          sub_args[0] = eeprom_read_byte((byte*)macro_buffer++);
         } else {
           int num_args = num_words_from_arg_marker(cmd);
           for(int i = 0; i < num_args; i++){
-            dependencies.command_processor.sub_args[i] = (int)eeprom_read_word((word*)macro_buffer);
+            sub_args[i] = (int)eeprom_read_word((word*)macro_buffer);
             macro_buffer += 2;
           }
         }
@@ -468,10 +482,11 @@ void run_packed_eeprom_macro(int macro, int times){
         //   use a special version of set memory macro from memory 
         //   that copies until the end of macro marked, instead of \0
         if(cmd == CMD_SET_MACRO_F){
-          if(is_memory_macro(macro)){
-            set_packed_memory_macro_from_eeprom(macro, macro_buffer);
+          int new_macro = sub_args[0];
+          if(is_memory_macro(new_macro)){
+            set_packed_memory_macro_from_eeprom(new_macro, macro_buffer);
           } else if(is_eeprom_macro(macro)){
-            set_packed_eeprom_macro_from_eeprom(macro, macro_buffer);
+            set_packed_eeprom_macro_from_eeprom(new_macro, macro_buffer);
           }
         
         // remaining macro has been consumed
