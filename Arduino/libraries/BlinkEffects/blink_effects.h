@@ -124,11 +124,6 @@ bool BlinkEffects::process(){
   if(blink_counter == blink1_time)
   {
     blink_state = blink_state ? false : true;
-//    if(blink_state){
-//      blink_state = false;
-//    } else {
-//      blink_state = true;
-//    }
 
     blink_state_1 = true;
     blink_state_6 = false;
@@ -180,11 +175,6 @@ bool BlinkEffects::process(){
   if(blinkc_counter == blink1_time)
   {
     blink_state_c = blink_state_c ? false : true;
-//    if(blink_state_c){
-//      blink_state_c = false;
-//    } else {
-//      blink_state_c = true;
-//    }
     should_flush = true;
   }
 

@@ -3,10 +3,6 @@
 
 // pickup: make ColorMath the authority on brightness levels
 
-// enable to support palettes
-// to do: disable palettes
-//#define USE_PALETTES
-
 #include <PololuLedStrip.h>
 #include <colors.h>
 #include <power_ease.h>
@@ -231,13 +227,9 @@ rgb_color ColorMath::correct_color(rgb_color color){
     return color;
 }
 
-//#ifdef USE_PALETTES
 // needed in renderer
 rgb_color ColorMath::random_color(){
   return *Colors::get_color((Colors::color)random(NPRETTY_COLORS));
-//  return palette[random(NPRETTY_COLORS)];
 }
-
-//#endif
 
 #endif
