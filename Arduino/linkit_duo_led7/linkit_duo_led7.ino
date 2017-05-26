@@ -9,8 +9,9 @@ void setup() {
   dependencies.commands.reset();
   dependencies.buffer.erase(true);
   dependencies.commands.set_brightness_level();
-
-  run_default_macro();
+  ::reset_all_schedules();
+  
+  ::run_default_macro();
 
   // force a command acknowledgement to wake up any script that may be halted 
   // waiting for a character to be sent due to a new Arduino sketch being uploaded
@@ -32,7 +33,7 @@ void loop(){
   {
     // do schedule processing
     if(!dependencies.commands.is_paused()){
-      process_schedules();
+      ::process_schedules();
     }
     
     // process the effects and update the display if needed

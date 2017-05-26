@@ -22,6 +22,7 @@
 #include "commands.h"
 #include "zone_defs.h"
 #include <zones.h>
+//#include "scheduler.h"
 
 class Dependencies
 {
@@ -218,7 +219,7 @@ void Dependencies::begin(){
 
   // start up the color math class
   // false = don't swap red & green
-#if defined(STRAND1) || defined(STRAND2) || defined(RADIUS8) || defined(SPHERE)
+#if defined(STRAND1) || defined(STRAND2) || defined(RADIUS8) || defined(SPHERE) || defined(WEARABLE_AND_HARDHAT)
   ColorMath::begin(true);
 #else  
   ColorMath::begin(false);
@@ -257,6 +258,7 @@ void Dependencies::begin(){
 #endif
 
   ::reset_palette();
+//  ::reset_all_schedules();
 }
 
 //void Dependencies::self_test(){

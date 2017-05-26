@@ -70,8 +70,8 @@ class Commands
   int low_power_timer = 0;
 #endif
   AutoBrightnessBase *auto_brightness;
-
   void advance_low_power_position();
+
 };
 
 void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness){
@@ -531,20 +531,33 @@ int Commands::random_position(){
   set_position(random(buffer->get_width()));
 }
 
-#define RANDOM_NUM_ACCUM      -6
-#define RANDOM_NUM_DISPLAYS   -5
-#define RANDOM_NUM_PALCOLORS  -4
-#define RANDOM_NUM_FINE_ZONES -3
-#define RANDOM_NUM_ZONES      -2
-#define RANDOM_NUM_LEDS       -1
-#define RANDOM_NUM_WIDTH       0
+#define RANDOM_NUM_ACCUM           -8
+#define RANDOM_NUM_ZONES           -7
+#define RANDOM_NUM_LEDS            -6
+#define RANDOM_NUM_DISPLAYS        -5
+#define RANDOM_NUM_PALCOLORS       -4
+#define RANDOM_NUM_FINE_ZONES      -3
+#define RANDOM_NUM_WIDTH_NOT_EMPTY -2
+#define RANDOM_NUM_WIDTH_EMPTY     -1
+#define RANDOM_NUM_WIDTH            0
 
 int Commands::random_num(int max, int min){
   // handle special cases
+  bool non_empty_only = false;
+  bool empty_only = false;
   switch(max){ 
     case RANDOM_NUM_ACCUM:
       // need to add dependency on command processor
       break;
+
+    case RANDOM_NUM_ZONES: 
+      max = NUM_ZONES; 
+      break;
+
+    case RANDOM_NUM_LEDS: 
+      max = this->visible_led_count; 
+      break;
+    
     case RANDOM_NUM_DISPLAYS: 
       max = NUM_DISPLAYS; 
       break;
@@ -558,20 +571,48 @@ int Commands::random_num(int max, int min){
       max = FINE_ZONES + 1; 
       break;
     
-    case RANDOM_NUM_ZONES: 
-      max = NUM_ZONES; 
+    case RANDOM_NUM_WIDTH_NOT_EMPTY: 
+      // this could get a script stuck if there are no non-black positions
+      non_empty_only = true;
+      max = buffer->get_width(); 
       break;
 
-    case RANDOM_NUM_LEDS: 
-      max = this->visible_led_count; 
+    case RANDOM_NUM_WIDTH_EMPTY:
+      // this could get a script stuck if there are no black positions
+      empty_only = true;
+      max = buffer->get_width(); 
       break;
-    
+
     case  RANDOM_NUM_WIDTH: 
       max = buffer->get_width(); 
       break;
   }
 
-  return random(min, max);  
+  if(empty_only){
+    byte protection = 0;
+    rgb_color * buf = buffer->get_buffer();
+    byte width = buffer->get_width();
+    do{
+      byte pos = random(min, max); 
+      if(ColorMath::equal(buf[pos], buffer->black)){
+        return pos;
+      }
+    }while(protection++ <= width);
+    return 0;
+  } else if(non_empty_only){
+    byte protection = 0;
+    rgb_color * buf = buffer->get_buffer();
+    byte width = buffer->get_width();
+    do{
+      byte pos = random(min, max); 
+      if(!ColorMath::equal(buf[pos], buffer->black)){
+        return pos;
+      }
+    }while(protection++ <= width);
+    return 0;
+  } else {
+    return random(min, max);  
+  }
 }
 
 void Commands::do_demo(){

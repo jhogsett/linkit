@@ -1,6 +1,14 @@
+// the infinite loop protection could also be a trigger, when all full or all empty
+
+// could have certain commands that end the macro under certain conditions
+
+// random position, only choosing among ones that match the current black level
+
+//? reverse rotate doesn't work on zone 1 of glasses
+
 // the fade problem is when running from within a schedule. Running a macro N times from another macro works from the command line
 
-
+// stp command to to -1:sch:clr:pau
 
 // have fade effect consider current black level
 

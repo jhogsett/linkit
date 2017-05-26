@@ -2,8 +2,7 @@
 #define SCHEDULER_H
 
 #include "config.h"
-
-extern Dependencies dependencies;
+#include "macros.h"
 
 #define NUM_SCHEDULES NUM_MACROS
 
