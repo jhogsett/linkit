@@ -27,6 +27,7 @@ class ColorMath
   static rgb_color simple_scale_color(rgb_color color, float scale);
   static rgb_color simple_unscale_color(rgb_color color, float scale);
   static rgb_color complimentary_color(rgb_color color);
+  static bool equal(rgb_color color1, rgb_color color2);
 
   private:
   static bool swap_r_and_g;
@@ -73,8 +74,8 @@ const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
   return (rgb_color){
-    ((color.red / BRIGHTNESS_DIVISOR) * 255) * scale, 
-    ((color.green / BRIGHTNESS_DIVISOR) * 255) * scale, 
+    ((color.red / BRIGHTNESS_DIVISOR) * 255) * scale,
+    ((color.green / BRIGHTNESS_DIVISOR) * 255) * scale,
     ((color.blue / BRIGHTNESS_DIVISOR) *255) * scale
   };
 }
@@ -230,6 +231,13 @@ rgb_color ColorMath::correct_color(rgb_color color){
 // needed in renderer
 rgb_color ColorMath::random_color(){
   return *Colors::get_color((Colors::color)random(NPRETTY_COLORS));
+}
+
+bool ColorMath::equal(rgb_color color1, rgb_color color2){
+  if(color1.red == color2.red && color1.green == color2.green && color1.blue == color2.blue){
+    return true;
+  }
+  return false;
 }
 
 #endif
