@@ -53,9 +53,9 @@ class Commands
   void clear();
   void do_rotate(byte times, byte steps, byte flush);
   void do_delay(int milliseconds);
-  int random_num(int max, int min);
+  int random_num(int max, int min = 0);
   int set_position(int position);
-  int random_position();
+  void random_position(int type);
 
   private:
   Buffer *buffer;
@@ -236,7 +236,8 @@ void Commands::do_mirror(){
 // size - how many pixels to copy
 // times - how many times to duplicate it, 
 //         0 = repeat and fill the current window
-//        -1 = repeat and fill the current window
+//        -1 = copy the pattern to the palette buffer but don't duplicate
+//        -2 = duplicate the pattern in the palette buffer but don't copy first
 void Commands::do_copy(int size, int times, int zoom){
   size = max(1, size);
   zoom = max(1, zoom);
@@ -261,7 +262,7 @@ void Commands::do_copy(int size, int times, int zoom){
     // 1 is better than fill because it's less restrictive
     times = 1;
   } else if(times < 1){
-    times = (buffer->get_width() / effective_size) - 0; // repeat and fill
+    times = (buffer->get_width() / effective_size) + 1; // repeat and fill
   }
 
   if(!copy_only && !dupe_only){
@@ -292,14 +293,15 @@ void Commands::do_copy(int size, int times, int zoom){
       }
     }
   }
-  
+
   // copy the color pattern to the buffer temporarily
   if(!dupe_only){
     for(int i = 0; i < size; i++){
       byte dest = i;
       byte source = buffer->get_offset() + i;
       if(use_palette_buffer)
-        ::palette[dest] = buffer->get_buffer()[source];
+        // uncorrect corrected color so it works in the palette for push_color()
+        ::palette[dest] = ColorMath::correct_color(buffer->get_buffer()[source]);
       else
         buffer->get_render_buffer()[dest] = buffer->get_buffer()[source]; 
     }
@@ -315,7 +317,8 @@ void Commands::do_copy(int size, int times, int zoom){
     
           if(dest < buffer->get_window()){ // prevent buffer overrun
             if(use_palette_buffer)
-              buffer->get_buffer()[dest] = ::palette[source];
+              // correct the uncorrected color in the palette
+              buffer->get_buffer()[dest] = ColorMath::correct_color(::palette[source]);
             else
               buffer->get_buffer()[dest] = buffer->get_render_buffer()[source];
           }
@@ -525,10 +528,27 @@ int Commands::set_position(int position){
   buffer->set_window_override(position); 
 }
 
+#define RANDOM_NUM_WIDTH_NOT_EMPTY -2
+#define RANDOM_NUM_WIDTH_EMPTY     -1
+#define RANDOM_NUM_WIDTH            0
+
 // todo: position should be in relation to the current zone
 // todo: a position of zero here when a zone is selected means zero in zone #0
-int Commands::random_position(){
-  set_position(random(buffer->get_width()));
+void Commands::random_position(int type){
+  int position;
+  switch(type){
+    case RANDOM_NUM_WIDTH_NOT_EMPTY:
+      position = random_num(RANDOM_NUM_WIDTH_NOT_EMPTY);
+      break;
+    case RANDOM_NUM_WIDTH_EMPTY:
+      position = random_num(RANDOM_NUM_WIDTH_EMPTY);
+      break;
+    case RANDOM_NUM_WIDTH:
+      position = random_num(RANDOM_NUM_WIDTH);
+      break; 
+  }
+  
+  set_position(position);
 }
 
 #define RANDOM_NUM_ACCUM           -8
@@ -537,9 +557,6 @@ int Commands::random_position(){
 #define RANDOM_NUM_DISPLAYS        -5
 #define RANDOM_NUM_PALCOLORS       -4
 #define RANDOM_NUM_FINE_ZONES      -3
-#define RANDOM_NUM_WIDTH_NOT_EMPTY -2
-#define RANDOM_NUM_WIDTH_EMPTY     -1
-#define RANDOM_NUM_WIDTH            0
 
 int Commands::random_num(int max, int min){
   // handle special cases

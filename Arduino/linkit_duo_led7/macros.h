@@ -256,16 +256,16 @@ void determine_arg_marker(byte &arg_marker, byte &num_args){
   }
 }
 
-void set_packed_memory_macro(int macro, char * commands){
+byte set_packed_memory_macro(int macro, char * commands){
   char * macro_buffer = ::get_memory_macro(macro);
   if(macro_buffer == NULL)
     // not a valid memory macro location
-    return;
+    return 0;
 
   if(commands == NULL || *commands == '\0'){
     // no commands; empty the macro
     *macro_buffer = MACRO_END_MARKER;
-    return;
+    return 0;
   }
 
   // begin_get_commands() and get_next_command() need an external pointer
@@ -281,9 +281,10 @@ void set_packed_memory_macro(int macro, char * commands){
   if(cmd == CMD_NULL){
     // no commands; empty buffer
     *macro_buffer = MACRO_END_MARKER;
-    return;
+    return 0;
   }
     
+  byte byte_count = 0;
   do{
     if(cmd == CMD_NONE){
       // this is a set of arguments
@@ -296,18 +297,22 @@ void set_packed_memory_macro(int macro, char * commands){
 
       // write arguments marker
       *macro_buffer++ = arg_marker;
-
+      byte_count++;
+      
       if(arg_marker == MACRO_ARG1_MARKER){
         *macro_buffer++ = (byte)command_processor.sub_args[0];
+        byte_count++;
       } else {
         for(int i = 0; i < num_args; i++){
           *((int *)macro_buffer) = command_processor.sub_args[i];
           macro_buffer += 2;
+          byte_count += 2;
         }
       }
     } else {
       // write the command byte to the macro buffer
       *macro_buffer++ = (byte)cmd;
+      byte_count++;
     }
 
     // get the next command or argumemts
@@ -318,15 +323,17 @@ void set_packed_memory_macro(int macro, char * commands){
 
   // write end of macro marker
   *macro_buffer = MACRO_END_MARKER;
+
+  return byte_count;
 }
 
-void set_packed_eeprom_macro(int macro, char * commands){
+byte set_packed_eeprom_macro(int macro, char * commands){
   char * macro_buffer = ::get_eeprom_macro(macro);
 
   if(commands == NULL || *commands == '\0'){
     // no commands; empty the macro
     eeprom_write_byte((byte*)macro_buffer, MACRO_END_MARKER);
-    return;
+    return 0;
   }
 
   // begin_get_commands() and get_next_command() need an external pointer
@@ -342,9 +349,10 @@ void set_packed_eeprom_macro(int macro, char * commands){
   if(cmd == CMD_NULL){
     // no commands; empty buffer
     eeprom_write_byte((byte*)macro_buffer, MACRO_END_MARKER);
-    return;
+    return 0;
   }
-    
+
+  byte byte_count = 0;
   do{
     if(cmd == CMD_NONE){
       // this is a set of arguments
@@ -357,20 +365,24 @@ void set_packed_eeprom_macro(int macro, char * commands){
 
       // write arguments marker
       eeprom_write_byte((byte*)macro_buffer++, arg_marker);
-
+      byte_count++;
+      
       // pack the arguments 
       int * sub_args = command_processor.sub_args;
       if(arg_marker == MACRO_ARG1_MARKER){
         eeprom_write_byte((byte*)macro_buffer++, sub_args[0] & 0xff);
+        byte_count++;
       } else {
         for(int i = 0; i < num_args; i++){
           eeprom_write_word((word*)macro_buffer, (word)sub_args[i]);
           macro_buffer += 2;
+          byte_count += 2;
         }
       }
     } else {
       // write the command byte to the macro buffer
       eeprom_write_byte((byte*)macro_buffer++, cmd);
+      byte_count++;
     }
 
     // get the next command or argumemts
@@ -381,18 +393,20 @@ void set_packed_eeprom_macro(int macro, char * commands){
 
   // write end of macro marker
   eeprom_write_byte((byte*)macro_buffer, MACRO_END_MARKER);
+
+  return byte_count;
 }
 
-void set_packed_macro(int macro, char * commands){
+byte set_packed_macro(int macro, char * commands){
   if(is_memory_macro(macro))
-    set_packed_memory_macro(macro, commands);
+    return set_packed_memory_macro(macro, commands);
   else if(is_eeprom_macro(macro))
-    set_packed_eeprom_macro(macro, commands);
+    return set_packed_eeprom_macro(macro, commands);
 }
 
 // used with the "set" command to set a macro from the serial input buffer
-void set_packed_macro_from_serial(int macro){
-  set_packed_macro(macro, dependencies.command_processor.get_input_buffer());
+byte set_packed_macro_from_serial(int macro){
+  return set_packed_macro(macro, dependencies.command_processor.get_input_buffer());
 }
 
 void run_packed_memory_macro(int macro, int times){
@@ -429,7 +443,8 @@ void run_packed_memory_macro(int macro, int times){
         // if setting a packed memory macro from a packed memory macro, 
         //   use a special version of set memory macro from memory 
         //   that copies until the end of macro marked, instead of \0
-        if(cmd == CMD_SET_MACRO_F){
+//        if(cmd == CMD_SET_MACRO_F){
+        if(cmd == CMD_SET_MACRO){
           int new_macro = sub_args[0];
           if(is_memory_macro(new_macro))
             set_packed_memory_macro_from_memory(new_macro, macro_buffer);
@@ -481,7 +496,8 @@ void run_packed_eeprom_macro(int macro, int times){
         // if setting a packed memory macro from a packed memory macro, 
         //   use a special version of set memory macro from memory 
         //   that copies until the end of macro marked, instead of \0
-        if(cmd == CMD_SET_MACRO_F){
+//        if(cmd == CMD_SET_MACRO_F){
+        if(cmd == CMD_SET_MACRO){
           int new_macro = sub_args[0];
           if(is_memory_macro(new_macro)){
             set_packed_memory_macro_from_eeprom(new_macro, macro_buffer);

@@ -1,8 +1,21 @@
+// replace color feature
+
+// effect: the color value refers to a palette position not an RGB value
+//   this would also allow for 16 extra bits of effects data
+//     for instance fading into a color
+
+// where possible, special mode ints should be positive so they can be randomized
+
+// 
+
+// for red/green swapped led strands, the carry color comes back flipped, as does copying to the palette and then duplicating
+// when copying, the data is just copied, but when using pal command, it uses push color, which swaps the red/green first
+
+// cpy needs to overlap the end
+
 // the infinite loop protection could also be a trigger, when all full or all empty
 
 // could have certain commands that end the macro under certain conditions
-
-// random position, only choosing among ones that match the current black level
 
 //? reverse rotate doesn't work on zone 1 of glasses
 

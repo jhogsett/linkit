@@ -307,7 +307,19 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_SET_MACRO:
-      ::set_packed_macro_from_serial(dependencies.command_processor.sub_args[0]);
+      {
+        if(dispatch_data != NULL){
+          // being used internally
+          ::set_packed_macro(dependencies.command_processor.sub_args[0], dispatch_data);          
+
+          // signal that no more commands should be processed (rest of buffer copied to macro)
+          continue_dispatching = false;
+        } else {
+          // being used over serial
+          byte num_bytes = ::set_packed_macro_from_serial(dependencies.command_processor.sub_args[0]);
+          dependencies.command_processor.send_int(num_bytes);
+        }
+      }
       reset_args = true;
       break;
     case CMD_RUN_MACRO:
@@ -320,17 +332,14 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
     case CMD_DELAY:
       dependencies.commands.do_delay(dependencies.command_processor.sub_args[0]);
       reset_args = true;
-    case CMD_SET_MACRO_F:
-      // alternate version of setting a macro that gets the remainder to copy 
-      //   from a string instead of the serial input buffer
-      // this must be used when setting a macro from within another macro,
-      //   or when using ::process_command() to set a macro  
-      ::set_packed_macro(dependencies.command_processor.sub_args[0], dispatch_data);
-
-      reset_args = true;
-      // signal that no more commands should be processed (rest of buffer copied to macro)
-      continue_dispatching = false;
       break;
+
+    case CMD_STOP:
+      ::reset_all_schedules();
+      dependencies.commands.clear();                                                            
+      dependencies.commands.pause();                                                            
+      break;      
+
     case CMD_RANDOM_NUM:
       {
         // arg[0] maximum random number (see Commands::random_num() for special constant values)
@@ -352,7 +361,9 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       break;
 
     case CMD_RPOSITION:
-      dependencies.commands.random_position();
+      // arg[0] if -1, only 
+      dependencies.commands.random_position(dependencies.command_processor.sub_args[0]);
+      reset_args = true;
       break;
 
     case CMD_PALETTE:

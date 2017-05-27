@@ -5,6 +5,7 @@
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
+
 #define CMD_FLUSH         1
 #define CMD_ERASE         2
 #define CMD_ROTATE        3
@@ -89,7 +90,7 @@
 #define CMD_SET_MACRO    82
 #define CMD_RUN_MACRO    83
 #define CMD_DELAY        84
-#define CMD_SET_MACRO_F  85
+#define CMD_STOP         85
 #define CMD_RANDOM_NUM   86
 #define CMD_POSITION     87
 #define CMD_RPOSITION    88
@@ -181,7 +182,7 @@ const char cmd_081[] PROGMEM = "sbt";
 const char cmd_082[] PROGMEM = "set";
 const char cmd_083[] PROGMEM = "run";
 const char cmd_084[] PROGMEM = "del";
-const char cmd_085[] PROGMEM = "stm";
+const char cmd_085[] PROGMEM = "stp";
 const char cmd_086[] PROGMEM = "rng";
 const char cmd_087[] PROGMEM = "pos";
 const char cmd_088[] PROGMEM = "rps";
