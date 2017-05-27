@@ -12,8 +12,9 @@ def flush_input():
                                         
 def wait_for_ack():                       
   while s.inWaiting() <= 0:               
-    pass                                  
-  s.read(s.inWaiting())                   
+    pass
+  while s.inWaiting() > 0:
+    print s.read(s.inWaiting())                   
 
 def command(cmd_text):
   s.write((':::' + cmd_text + ':').encode())   
@@ -26,7 +27,7 @@ def setup():
   if len(sys.argv) > 1:
     for arg in sys.argv:
       command(arg)
-    exit()    
+    sys.exit("\nSent.\n")    
 
 cmd = ""
 last_cmd = cmd
@@ -41,6 +42,8 @@ def loop():
      command(cmd)
      last_cmd = cmd
 
+  except EOFError:
+    sys.exit("\nExiting...\n")
   except KeyboardInterrupt:                                                                         
     sys.exit("\nExiting...\n")                                                    
   except Exception:                           
