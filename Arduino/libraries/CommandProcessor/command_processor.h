@@ -38,6 +38,7 @@ class CommandProcessor
   char * get_input_buffer();
   void get_sub_args(char * str);
   char * borrow_char_buffer();
+  void send_int(int value);
 
   private:
   bool str_equal_P(char *str1, const char *str2);
@@ -78,6 +79,10 @@ void CommandProcessor::acknowledge_command(bool force = false){
 
 void CommandProcessor::send_ack(){
   serial->write("k");
+}
+
+void CommandProcessor::send_int(int value){
+  serial->print(value);
 }
 
 void CommandProcessor::save_args(char * args = NULL){

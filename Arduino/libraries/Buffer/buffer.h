@@ -136,7 +136,7 @@ void Buffer::reset(){
 void Buffer::display_buffer(rgb_color * pbuffer){
   ledStrips[current_display]->write(pbuffer, visible_led_count);
 }
-  
+
 void Buffer::erase(bool display = false)
 {
   int offset = get_offset();
@@ -257,7 +257,7 @@ void Buffer::push_color(rgb_color color, int times = 1, bool display = false, by
     shift_buffer(buffer, effects, max, start, this->reverse);
 
     if(this->reverse){
-      buffer[max-1] = ColorMath::correct_color(color);
+      buffer[max-1] = ColorMath ::correct_color(color);
       effects[max-1] = effect;
 #ifdef EXISTENCE_ENABLED
       existence[max-1] = id;
@@ -275,7 +275,7 @@ void Buffer::push_color(rgb_color color, int times = 1, bool display = false, by
     }
   }
 }
-  
+
 void Buffer::push_rgb_color(byte red, byte green, byte blue){
   rgb_color color = (rgb_color){red, green, blue};
   color = ColorMath::unscale_color(color, default_brightness_scale);
@@ -316,7 +316,7 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
     display_buffer(buffer);
   }
 }
-  
+
 void Buffer::set_window_override(int window){
   if(window < 0){
     this->window_override = OVERRIDE_OFF;
