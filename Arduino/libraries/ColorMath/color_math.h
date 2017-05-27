@@ -3,10 +3,6 @@
 
 // pickup: make ColorMath the authority on brightness levels
 
-// enable to support palettes
-// to do: disable palettes
-//#define USE_PALETTES
-
 #include <PololuLedStrip.h>
 #include <colors.h>
 #include <power_ease.h>
@@ -31,6 +27,7 @@ class ColorMath
   static rgb_color simple_scale_color(rgb_color color, float scale);
   static rgb_color simple_unscale_color(rgb_color color, float scale);
   static rgb_color complimentary_color(rgb_color color);
+  static bool equal(rgb_color color1, rgb_color color2);
 
   private:
   static bool swap_r_and_g;
@@ -77,8 +74,8 @@ const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
   return (rgb_color){
-    ((color.red / BRIGHTNESS_DIVISOR) * 255) * scale, 
-    ((color.green / BRIGHTNESS_DIVISOR) * 255) * scale, 
+    ((color.red / BRIGHTNESS_DIVISOR) * 255) * scale,
+    ((color.green / BRIGHTNESS_DIVISOR) * 255) * scale,
     ((color.blue / BRIGHTNESS_DIVISOR) *255) * scale
   };
 }
@@ -104,14 +101,6 @@ rgb_color ColorMath::simple_unscale_color(rgb_color color, float scale){
     color.red / scale,
     color.green / scale,
     color.blue / scale
-  };
-}
-
-rgb_color ColorMath::complimentary_color(rgb_color color){
-  return (rgb_color){
-    BRIGHTNESS_DIVISOR - color.red,
-    BRIGHTNESS_DIVISOR - color.green,
-    BRIGHTNESS_DIVISOR - color.blue
   };
 }
 
@@ -168,36 +157,25 @@ void ColorMath::set_brightness(byte brightness_percent){
 //  }
 }
 
-rgb_color ColorMath::add_color(rgb_color color1, rgb_color color2){
-  rgb_color new_color;
-  new_color.red = min(255, color1.red + color2.red);
-  new_color.green = min(255, color1.green + color2.green);
-  new_color.blue = min(255, color1.blue + color2.blue);
-  return new_color;
-}
-
-rgb_color ColorMath::subtract_color(rgb_color color1, rgb_color color2){
-  rgb_color new_color;
-  new_color.red = max(0, color1.red - color2.red);
-  new_color.green = max(0, color1.green - color2.green);
-  new_color.blue = max(0, color1.blue - color2.blue);
-  return new_color;
-}
+//rgb_color ColorMath::add_color(rgb_color color1, rgb_color color2){
+//  rgb_color new_color;
+//  new_color.red = min(255, color1.red + color2.red);
+//  new_color.green = min(255, color1.green + color2.green);
+//  new_color.blue = min(255, color1.blue + color2.blue);
+//  return new_color;
+//}
+//
+//rgb_color ColorMath::subtract_color(rgb_color color1, rgb_color color2){
+//  rgb_color new_color;
+//  new_color.red = max(0, color1.red - color2.red);
+//  new_color.green = max(0, color1.green - color2.green);
+//  new_color.blue = max(0, color1.blue - color2.blue);
+//  return new_color;
+//}
 
 // some sets have red and green swapped, usually false for led strips
 void ColorMath::begin(bool swap_r_and_g = true){
   ColorMath::swap_r_and_g = swap_r_and_g;
-
-#ifdef USE_PALETTES
-//  if(swap_r_and_g == true){
-//    for(byte i = 0; i < NPALETTE; i++){
-//      unsigned char value = palette[i].red;
-//      palette[i].red = palette[i].green;
-//      palette[i].green = value;
-//    }
-//  }
-//  memcpy(adjusted_palette, palette, sizeof(palette));
-#endif
 }
 
 int ColorMath::crossfade_steps(){
@@ -250,13 +228,16 @@ rgb_color ColorMath::correct_color(rgb_color color){
     return color;
 }
 
-//#ifdef USE_PALETTES
 // needed in renderer
 rgb_color ColorMath::random_color(){
   return *Colors::get_color((Colors::color)random(NPRETTY_COLORS));
-//  return palette[random(NPRETTY_COLORS)];
 }
 
-//#endif
+bool ColorMath::equal(rgb_color color1, rgb_color color2){
+  if(color1.red == color2.red && color1.green == color2.green && color1.blue == color2.blue){
+    return true;
+  }
+  return false;
+}
 
 #endif

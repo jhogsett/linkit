@@ -37,6 +37,7 @@ class CommandProcessor
   char * get_next_command(char **saveptr);
   char * get_input_buffer();
   void get_sub_args(char * str);
+  char * borrow_char_buffer();
 
   private:
   bool str_equal_P(char *str1, const char *str2);
@@ -179,7 +180,8 @@ char * CommandProcessor::get_input_buffer(){
   }
 }
 
+char * CommandProcessor::borrow_char_buffer(){
+  return this->str;
+}
 
 #endif
-
- //need to prevent string getting corrupted by being tokenized

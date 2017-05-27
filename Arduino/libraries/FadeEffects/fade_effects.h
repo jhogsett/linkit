@@ -41,7 +41,7 @@ void FadeEffects::reset(){
   fade_counter = 0;
 }
 
-bool FadeEffects::process(){
+  bool FadeEffects::process(){
   bool should_flush = false;
   fade_counter = (fade_counter + 1) % fade_period;
 

@@ -5,12 +5,16 @@
 
 void run_default_macro(){
 
+// #define FORCE_PROGRAM_MACROS
+
+#if !defined(FORCE_PROGRAM_MACROS)
   if(!::is_programmed(DEFAULT_MACRO)){
+#endif
 
 //                          0         1         2         3         4         5         6
 //                          0123456789012345678901234567890123456789012345678901234567890
 
-#if defined(SPHERE) || defined(DUAL_STRIP) //|| defined(WEARABLE_AND_DISC93)
+#if defined(SPHERE) || defined(DUAL_STRIP) || defined(WEARABLE_AND_HARDHAT) // || defined(APOLLO_LIGHTS2) //|| defined(WEARABLE_AND_DISC93)
 //    ::process_commands_P(F("10:stm:5000,13:sch"));
 //    ::process_commands_P(F("11:stm:11:zon:0:pal:flo"));
 //    ::process_commands_P(F("12:stm:12:zon:1:pal:flo"));
@@ -23,8 +27,8 @@ void run_default_macro(){
     ::process_commands_P(F("13:stm:11:run:12:run"));
     ::process_commands_P(F("14:stm:13:run:20000,10000,14:rng:sch"));
     
-    ::process_commands_P(F("15:stm:rps:wht:brt:brt:sfd:rst"));
-    ::process_commands_P(F("16:stm:rps:1:rnd:sfd:flu:rst"));
+    ::process_commands_P(F("15:stm:-1:rng:pos:wht:brt:brt:sfd:rst"));
+    ::process_commands_P(F("16:stm:-1:rng:pos:1:rnd:sfd:flu:rst"));
     ::process_commands_P(F("17:stm:fad:50,15:sch:20000,14:sch"));
     ::process_commands_P(F("18:stm:fad:50,16:sch"));
     
@@ -44,9 +48,22 @@ void run_default_macro(){
     ::process_commands_P(F("14:stm:3:zon:rot:flu:rst"));
     ::process_commands_P(F("15:stm:2:zon:rot:flu:rst"));
 
-#elif defined(APOLLO_LIGHTS2)
-    // fade into tungsten lamps
-    ::process_commands_P(F("10:stm:70:lev:tun:flo:cfa:100:lev"));
+//#elif defined(APOLLO_LIGHTS2) //|| defined(APOLLO_LIGHTS2_DEV)
+//    ::process_commands_P(F("10:stm:11:run"));
+//
+//    ::process_commands_P(F("11:stm:era:70:lev:13,120:run:tun:flo:cfa:100:lev"));
+//
+//    ::process_commands_P(F("12:stm:100,13:sch:10000,14:sch"));
+//    ::process_commands_P(F("13:stm:rps:1:rnd:sfd:flu:rst"));
+//
+//    ::process_commands_P(F("14:stm:15,15:run:500:del"));
+//    ::process_commands_P(F("15:stm:16:run:17:run:18:run:flu"));
+//    ::process_commands_P(F("16:stm:1:zon:1:blk:2:zon:1:rev:1:blk:rst"));
+//    ::process_commands_P(F("17:stm:3:zon:1:blk:4:zon:1:rev:1:blk:rst"));
+//    ::process_commands_P(F("18:stm:5:zon:1:blk:6:zon:1:rev:1:blk:rst"));
+
+//    // fade into tungsten lamps
+//    ::process_commands_P(F("10:stm:70:lev:tun:flo:cfa:100:lev"));
 
 #elif defined(APOLLO_LIGHTS2_DEV) 
     // start up
@@ -54,8 +71,8 @@ void run_default_macro(){
 
     // random colors with drains
     ::process_commands_P(F("11:stm:50,12:sch:25,13:sch:5000,14:sch"));
-    ::process_commands_P(F("12:stm:rps:rnd:twi:flu:rst"));
-    ::process_commands_P(F("13:stm:rps:sfd:flu:rst"));
+    ::process_commands_P(F("12:stm:-1:rng:pos:rnd:twi:flu:rst"));
+    ::process_commands_P(F("13:stm:-2:rng:pos:sfd:flu:rst"));
     ::process_commands_P(F("14:stm:15,8,5:run:200:del"));
     ::process_commands_P(F("15:stm:16:run:17:run:18:run:flu"));
     ::process_commands_P(F("16:stm:1:zon:2:blk:2:zon:1:rev:2:blk:rst"));
@@ -72,9 +89,13 @@ void run_default_macro(){
     ::process_commands_P(F("25:stm:-1:sch:11:run:10000,25,26:sch"));
     ::process_commands_P(F("26:stm:-1:sch:20:run:10000,25,25:sch"));
 
-#elif defined(WEARABLE_AND_GLASSES) || defined(RADIUS8) || defined(PROJECTOR) || defined(WEARABLE_AND_DISC93)
+#elif defined(WEARABLE_AND_GLASSES) || defined(RADIUS8) || defined(PROJECTOR) || defined(WEARABLE_AND_DISC93) || defined(DISC93)
     // random colors and random zone rotations
+#ifdef DISC93
+    ::process_commands_P(F("10:stm:100:lev:era:50,11:sch:15,12:sch:200,16:sch"));
+#else    
     ::process_commands_P(F("10:stm:era:50,11:sch:15,12:sch:200,16:sch"));
+#endif
     ::process_commands_P(F("11:stm:rng:pos:rnd:twi:flu:rst"));
     ::process_commands_P(F("12:stm:rng:pos:sfd:flu:rst"));
     ::process_commands_P(F("13:stm:-3:rng:zon"));
@@ -82,7 +103,10 @@ void run_default_macro(){
     ::process_commands_P(F("15:stm:0,3:rng:rot"));
     ::process_commands_P(F("16:stm:13:run:14:run:15:run:rst"));
 #endif
+
+#if !defined(FORCE_PROGRAM_MACROS)
   }
+#endif
   
   // run auto-start macro
   if(::is_programmed(DEFAULT_MACRO)){

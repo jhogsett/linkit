@@ -307,7 +307,6 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       reset_args = true;
       break;
     case CMD_SET_MACRO:
-//      ::set_macro_from_serial(dependencies.command_processor.sub_args[0]);
       ::set_packed_macro_from_serial(dependencies.command_processor.sub_args[0]);
       reset_args = true;
       break;
@@ -315,7 +314,6 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       // arg[0] macro number to run, default = 0
       // arg[1] number of times to run, default = 1
       // arg[3] milliseconds delay between runs, default = no delay
-      //::run_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
       ::run_packed_macro(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]);
       reset_args = true;
       break;
@@ -327,7 +325,6 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       //   from a string instead of the serial input buffer
       // this must be used when setting a macro from within another macro,
       //   or when using ::process_command() to set a macro  
-//      ::set_macro_from_memory(dependencies.command_processor.sub_args[0], dispatch_data);
       ::set_packed_macro(dependencies.command_processor.sub_args[0], dispatch_data);
 
       reset_args = true;
@@ -340,7 +337,6 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
         // arg[1] minimum random number (default=0)
         // arg[2] copied into arg[1] to allow passing another argument
         int random_num = dependencies.commands.random_num(dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1]);
-        // dependencies.command_processor.reset_args();   
         dependencies.command_processor.sub_args[0] = random_num;
         dependencies.command_processor.sub_args[1] = dependencies.command_processor.sub_args[2];
         dependencies.command_processor.sub_args[2] = 0;
@@ -411,6 +407,11 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
         reset_args = true;
         break;
       }
+    case CMD_SETBLACK:
+    {
+      rgb_color black_level = {dependencies.command_processor.sub_args[0], dependencies.command_processor.sub_args[1], dependencies.command_processor.sub_args[2]};
+      dependencies.buffer.set_black_level(black_level);
+    }
   }
 
   if(reset_args)
@@ -418,26 +419,4 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
 
   return continue_dispatching;
 }
-
-
-
- 
-//    case CMD_CONCAT:
-      // arg[0] 
-//    case CMD_DIVIDE:
-//      {
-//        // arg[0] divisor, if zero, it's a no-op
-//        // arg[1] dividend, if zero, the accumulated value is used
-//        int divisor = dependencies.command_processor.sub_args[0];
-//        int dividend = dependencies.command_processor.sub_args[1];
-//
-//        if(divisor == 0)
-//          break;
-//
-//        if(dividend == 0){
-//          dependencies.command_processor.sub_args[0] = dependencies.command_processor.accumulator / divisor;
-//        } else {
-//          dependencies.command_processor.sub_args[0] = dividend / divisor;  
-//        }
-//      }
 

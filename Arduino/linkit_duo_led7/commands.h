@@ -14,7 +14,9 @@
 #define CROSSFADE_DELAY 1
 #endif
 
+#ifdef USE_LOW_POWER_MODE
 #define LOW_POWER_TIME 50
+#endif
 
 class Commands
 {
@@ -62,12 +64,14 @@ class Commands
   bool paused = false;
   byte default_brightness;
   byte visible_led_count;
+#ifdef USE_LOW_POWER_MODE
   bool low_power_mode = false;
   byte low_power_position = 0;
   int low_power_timer = 0;
+#endif
   AutoBrightnessBase *auto_brightness;
-
   void advance_low_power_position();
+
 };
 
 void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness){
@@ -92,15 +96,19 @@ bool Commands::is_paused(){
 }
 
 void Commands::low_power(){
+#ifdef USE_LOW_POWER_MODE
   low_power_mode = true;
 
   // it's too jarring to reset these
   // low_power_position = 0;
   // low_power_timer = 0;
+#endif
 }
 
 void Commands::high_power(){
+#ifdef USE_LOW_POWER_MODE
   low_power_mode = false;
+#endif
 }
 
 void Commands::set_display(byte display){
@@ -409,20 +417,26 @@ void Commands::do_rotate(byte times, byte steps, byte flush){
   }
 }
 
+#ifdef USE_LOWER_POWER_MODE
 void Commands::advance_low_power_position(){
   if(low_power_timer++ % LOW_POWER_TIME == 0){
     low_power_position = ++low_power_position % visible_led_count; 
   }
 }
+#endif
 
 void Commands::flush(bool force_display = false){
   if(force_display || !paused){
+#ifdef USE_LOWER_POWER_MODE
     if(low_power_mode){
       renderer->render_buffer_low_power(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer(), low_power_position);
       advance_low_power_position();
     } else {
+#endif
       renderer->render_buffer(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
+#ifdef USE_LOWER_POWER_MODE
     }
+#endif
     buffer->display_buffer(buffer->get_render_buffer());
   }
 }
@@ -444,8 +458,10 @@ void Commands::flush_all(bool force_display){
 void Commands::reset(){
   // paused = false;
   
+#ifdef USE_LOWER_POWER_MODE
   low_power_mode = false;
-  
+#endif
+
   buffer->reset();
 
   // the effects shouldn't be reset
@@ -469,6 +485,7 @@ void Commands::clear(){
   byte orig_display = buffer->get_current_display();
   for(int i = 0; i < NUM_BUFFERS; i++){
     buffer->set_display(i);
+    buffer->reset_black_level();
     buffer->erase(true);                                                          
   }
 
@@ -514,33 +531,25 @@ int Commands::random_position(){
   set_position(random(buffer->get_width()));
 }
 
-#define RANDOM_NUM_ACCUM      -6
-#define RANDOM_NUM_DISPLAYS   -5
-#define RANDOM_NUM_PALETTES   -4
-#define RANDOM_NUM_FINE_ZONES -3
-#define RANDOM_NUM_ZONES      -2
-#define RANDOM_NUM_LEDS       -1
-#define RANDOM_NUM_WIDTH       0
+#define RANDOM_NUM_ACCUM           -8
+#define RANDOM_NUM_ZONES           -7
+#define RANDOM_NUM_LEDS            -6
+#define RANDOM_NUM_DISPLAYS        -5
+#define RANDOM_NUM_PALCOLORS       -4
+#define RANDOM_NUM_FINE_ZONES      -3
+#define RANDOM_NUM_WIDTH_NOT_EMPTY -2
+#define RANDOM_NUM_WIDTH_EMPTY     -1
+#define RANDOM_NUM_WIDTH            0
 
 int Commands::random_num(int max, int min){
   // handle special cases
+  bool non_empty_only = false;
+  bool empty_only = false;
   switch(max){ 
     case RANDOM_NUM_ACCUM:
       // need to add dependency on command processor
       break;
-    case RANDOM_NUM_DISPLAYS: 
-      max = NUM_DISPLAYS; 
-      break;
-    
-    case RANDOM_NUM_PALETTES: 
-      max = NUM_PALETTE_COLORS; 
-      break;
-    
-    case RANDOM_NUM_FINE_ZONES:
-      min = FIRST_FINE_ZONE;
-      max = FINE_ZONES + 1; 
-      break;
-    
+
     case RANDOM_NUM_ZONES: 
       max = NUM_ZONES; 
       break;
@@ -549,12 +558,61 @@ int Commands::random_num(int max, int min){
       max = this->visible_led_count; 
       break;
     
+    case RANDOM_NUM_DISPLAYS: 
+      max = NUM_DISPLAYS; 
+      break;
+    
+    case RANDOM_NUM_PALCOLORS: 
+      max = NUM_PALETTE_COLORS; 
+      break;
+    
+    case RANDOM_NUM_FINE_ZONES:
+      min = FIRST_FINE_ZONE;
+      max = FINE_ZONES + 1; 
+      break;
+    
+    case RANDOM_NUM_WIDTH_NOT_EMPTY: 
+      // this could get a script stuck if there are no non-black positions
+      non_empty_only = true;
+      max = buffer->get_width(); 
+      break;
+
+    case RANDOM_NUM_WIDTH_EMPTY:
+      // this could get a script stuck if there are no black positions
+      empty_only = true;
+      max = buffer->get_width(); 
+      break;
+
     case  RANDOM_NUM_WIDTH: 
       max = buffer->get_width(); 
       break;
   }
 
-  return random(min, max);  
+  if(empty_only){
+    byte protection = 0;
+    rgb_color * buf = buffer->get_buffer();
+    byte width = buffer->get_width();
+    do{
+      byte pos = random(min, max); 
+      if(ColorMath::equal(buf[pos], buffer->black)){
+        return pos;
+      }
+    }while(protection++ <= width);
+    return 0;
+  } else if(non_empty_only){
+    byte protection = 0;
+    rgb_color * buf = buffer->get_buffer();
+    byte width = buffer->get_width();
+    do{
+      byte pos = random(min, max); 
+      if(!ColorMath::equal(buf[pos], buffer->black)){
+        return pos;
+      }
+    }while(protection++ <= width);
+    return 0;
+  } else {
+    return random(min, max);  
+  }
 }
 
 void Commands::do_demo(){

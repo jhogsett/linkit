@@ -22,6 +22,7 @@
 #include "commands.h"
 #include "zone_defs.h"
 #include <zones.h>
+//#include "scheduler.h"
 
 class Dependencies
 {
@@ -99,8 +100,8 @@ class Dependencies
   // initialize all dependencies
   void begin();
 
-  // show a display to indicate health of the rendering routines on startup
-  void self_test();
+//  // show a display to indicate health of the rendering routines on startup
+//  void self_test();
 };
 
 // global settings
@@ -218,7 +219,7 @@ void Dependencies::begin(){
 
   // start up the color math class
   // false = don't swap red & green
-#if defined(STRAND1) || defined(STRAND2) || defined(RADIUS8) || defined(SPHERE)
+#if defined(STRAND1) || defined(STRAND2) || defined(RADIUS8) || defined(SPHERE) || defined(WEARABLE_AND_HARDHAT)
   ColorMath::begin(true);
 #else  
   ColorMath::begin(false);
@@ -257,27 +258,28 @@ void Dependencies::begin(){
 #endif
 
   ::reset_palette();
+//  ::reset_all_schedules();
 }
 
-void Dependencies::self_test(){
-
-#ifdef STATUS_MONITOR
-  // flash the red alarm light for one second
-  commands.set_pin(4, true);
-  delay(1000);
-  commands.set_pin(4, false);
-#endif
-
-#ifdef WEARABLE_AND_STRIP
-  commands.do_demo();
-#else
-  for(int i = 0; i < NUM_BUFFERS; i++){
-    commands.set_display((NUM_BUFFERS - 1) - i);
-    commands.do_demo();
-  }
-#endif
-
-  commands.reset();
-}
+//void Dependencies::self_test(){
+//
+//#ifdef STATUS_MONITOR
+//  // flash the red alarm light for one second
+//  commands.set_pin(4, true);
+//  delay(1000);
+//  commands.set_pin(4, false);
+//#endif
+//
+//#ifdef WEARABLE_AND_STRIP
+//  commands.do_demo();
+//#else
+//  for(int i = 0; i < NUM_BUFFERS; i++){
+//    commands.set_display((NUM_BUFFERS - 1) - i);
+//    commands.do_demo();
+//  }
+//#endif
+//
+//  commands.reset();
+//}
 #endif
 

@@ -42,6 +42,12 @@ const byte PROGMEM zone_windows[NUM_ZONES] = { 100,  1, 7, 18, 33, 50, 67, 82, 9
 const byte PROGMEM zone_offsets[NUM_ZONES] = {   0,   0, 18, 36, 54, 72,  90, 108, 126,         0,  72,     36,  0, 36,  72, 108 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 144,  18, 36, 54, 72, 90, 108, 126, 144,        72, 144,    108, 36, 72, 108, 144 };
 
+#elif defined(WEARABLE_AND_HARDHAT) 
+#define NUM_ZONES 6 
+#define FINE_ZONES 4 //                              fine, bottom up                              
+const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,   0,  17, 31, 41 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 44,   17, 31, 41, 44 };
+
 
 
 

@@ -3,6 +3,9 @@
 
 // IoT Devices
 
+// 44-LED Wearable and Hard Hat
+// #define WEARABLE_AND_HARDHAT
+
 // 100-LED Sphere
 // #define SPHERE
 
@@ -10,7 +13,7 @@
 // #define RADIUS8
 
 // 93-LED Disc Projector
-// #define PROJECTOR
+//#define PROJECTOR
 
 // 100-LED Xmas Lights
 // #define XMAS_LIGHTS
@@ -84,7 +87,7 @@
 #define STRAND2
 #endif
 
-#if defined(MINI_DISC_19) || defined(DUAL_STRIP)
+#if defined(MINI_DISC_19) || defined(DUAL_STRIP) || defined(DISC93)
 #define REAL_ARDUINO
 #endif
 
@@ -106,7 +109,7 @@
 
 #if defined(STRAND1) || defined(STRAND2) || defined(DISC93) || defined(DUAL_STRIP) || defined(WEARABLE2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2) || defined(RADIUS8) || defined(APOLLO_LIGHTS2_DEV) || defined(SPHERE)
 #define USE_1_DISPLAYS
-#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE)  || defined(WEARABLE_AND_GLASSES)
+#elif  defined(STRIP2) || defined(DISC93_AND_STRIP) || defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(DISC93_DOUBLE)  || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_HARDHAT)                                 
 #define USE_2_DISPLAYS
 #elif defined(STRIP3) || defined(MAXLEDS) //|| defined(WEARABLE_AND_GLASSES) 
 #define USE_3_DISPLAYS
@@ -125,11 +128,11 @@
 #define NUM_BUFFERS 1
 #endif
 
-#if defined(DISC93) || defined(DISC93_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) // || defined(WEARABLE_AND_GLASSES) 
+#if defined(DISC93_AND_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) // || defined(WEARABLE_AND_GLASSES) defined(DISC93) || 
 #define DISPLAY_PIN1 11
 #define DISPLAY_PIN2 10
 #define DISPLAY_PIN3 12
-#elif defined(WEARABLE_AND_GLASSES)
+#elif defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_HARDHAT)
 #define DISPLAY_PIN1 11
 #define DISPLAY_PIN2 12
 #define DISPLAY_PIN3 10
@@ -151,7 +154,7 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 10
 #elif defined(DISC93) || defined(DISC93_AND_STRIP) || defined(STRIP2) || defined(STRIP3) || defined(DUAL_STRIP) || defined(WEARABLE_AND_DISC93) || defined(DISC93_AND_STRAND2) || defined(APOLLO_LIGHTS2_DEV) //  || defined(DISC93_DOUBLE) 
 #define DEFAULT_BRIGHTNESS_PERCENT 15
-#elif defined(STRAND1) || defined(STRAND2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2) || defined(SPHERE)
+#elif defined(STRAND1) || defined(STRAND2) || defined(APOLLO_LIGHTS) || defined(APOLLO_LIGHTS2) || defined(SPHERE) || defined(WEARABLE_AND_HARDHAT)
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #elif defined(MINI_DISC_19)
 #define DEFAULT_BRIGHTNESS_PERCENT 70
@@ -186,6 +189,8 @@
 #define ANIM_LED_COUNT 200
 #elif defined(MINI_DISC_19)
 #define ANIM_LED_COUNT 19
+#elif defined(WEARABLE_AND_HARDHAT)
+#define ANIM_LED_COUNT 44
 #else
 #define ANIM_LED_COUNT 72
 #endif
@@ -248,12 +253,12 @@
 #define BLINK_PERIOD 12000
 #define BREATHE_PERIOD 600
 #elif defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93) || defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV) || defined(SPHERE)
-#define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 150
+#define BLINK_PERIOD 1500
+#define BREATHE_PERIOD 100
 #elif defined(DUAL_STRIP)
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 100
-#elif defined(USE_1_DISPLAYS)
+#elif defined(USE_1_DISPLAYS) || defined(WEARABLE_AND_HARDHAT)
 #define BLINK_PERIOD 6000
 #define BREATHE_PERIOD 300
 #elif defined(USE_2_DISPLAYS)
@@ -275,16 +280,16 @@
 #define FADE_PERIOD 100
 #endif
 
-#if defined(RADIUS8) || defined(DISC93_DOUBLE) || defined(DUAL_STRIP)
+#if defined(RADIUS8) || defined(DISC93_DOUBLE) || defined(DUAL_STRIP) || defined(DISC93)
 #define NUM_MEMORY_MACROS 4
 #else
 #define NUM_MEMORY_MACROS 10
 #endif
 
 #define EEPROM_STARTING_MACRO (NUM_MEMORY_MACROS)
-#define NUM_EEPROM_MACROS 25
+#define NUM_EEPROM_MACROS 40
 #define NUM_MACROS (NUM_MEMORY_MACROS + NUM_EEPROM_MACROS)
-#define NUM_MACRO_CHARS 40
+#define NUM_MACRO_CHARS 25
 
 class Config
 {
