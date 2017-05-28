@@ -10,7 +10,6 @@ void setup() {
   dependencies.buffer.erase(true);
   dependencies.commands.set_brightness_level();
   ::reset_all_schedules();
-  
   ::run_default_macro();
 
   // force a command acknowledgement to wake up any script that may be halted 

@@ -1,3 +1,18 @@
+// 
+
+
+
+
+
+
+// running a macro destroys the arguments
+// -- it would be more helpful if it restore the previous arguments so arguments could be passed into macros
+
+// would pop/push args be helpful?
+
+// for command could be x,y,z:for
+// x = start, y = end, z = macro to run passing in arg0
+
 // replace color feature
 
 // effect: the color value refers to a palette position not an RGB value

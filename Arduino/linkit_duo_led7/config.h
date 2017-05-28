@@ -10,7 +10,7 @@
 // #define SPHERE
 
 // 200-LED Radius-8 displays
-// #define RADIUS8
+#define RADIUS8
 
 // 93-LED Disc Projector
 //#define PROJECTOR
@@ -25,7 +25,7 @@
 // #define APOLLO_LIGHTS2
 
 // 90-LED Apollo Lights Dev indoors
-#define APOLLO_LIGHTS2_DEV
+// #define APOLLO_LIGHTS2_DEV
 
 // 64-LED Wearable and Glasses
 // #define WEARABLE_AND_GLASSES
@@ -196,42 +196,42 @@
 #endif
 
 // demo parameters
-#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE2) || defined(MINI_DISC_19) // || defined(WEARABLE_AND_GLASSES)
-#define DEMO_OBJECT_SIZE 1
-#define DEMO_GAP_SIZE 0
-#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
-#define DEMO_DELAY 125
-#elif defined(DISC93) || defined(WEARABLE_AND_DISC93) || defined(DISC93_DOUBLE) || defined(REAL_ARDUINO)
-#define DEMO_OBJECT_SIZE 3
-#define DEMO_GAP_SIZE 0
-#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
-#define DEMO_DELAY 35
-#elif defined(DISC93_AND_STRIP) || defined(DISC93_AND_STRAND2)
-#define DEMO_OBJECT_SIZE 7
-#define DEMO_GAP_SIZE 0
-#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
-#define DEMO_DELAY 20
-#elif defined(STRAND2) || defined(RADIUS8) || defined(SPHERE)
-#define DEMO_OBJECT_SIZE 10
-#define DEMO_GAP_SIZE 0
-#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
-#define DEMO_DELAY 35
-#elif defined(DUAL_STRIP)
-#define DEMO_OBJECT_SIZE 7
-#define DEMO_GAP_SIZE 1
-#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
-#define DEMO_DELAY 0
-#elif defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV)
-#define DEMO_OBJECT_SIZE 9
-#define DEMO_GAP_SIZE 0
-#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
-#define DEMO_DELAY 0
-#else
-#define DEMO_OBJECT_SIZE 3
-#define DEMO_GAP_SIZE 1
-#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
-#define DEMO_DELAY 0
-#endif
+//#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE2) || defined(MINI_DISC_19) // || defined(WEARABLE_AND_GLASSES)
+//#define DEMO_OBJECT_SIZE 1
+//#define DEMO_GAP_SIZE 0
+//#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+//#define DEMO_DELAY 125
+//#elif defined(DISC93) || defined(WEARABLE_AND_DISC93) || defined(DISC93_DOUBLE) || defined(REAL_ARDUINO)
+//#define DEMO_OBJECT_SIZE 3
+//#define DEMO_GAP_SIZE 0
+//#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+//#define DEMO_DELAY 35
+//#elif defined(DISC93_AND_STRIP) || defined(DISC93_AND_STRAND2)
+//#define DEMO_OBJECT_SIZE 7
+//#define DEMO_GAP_SIZE 0
+//#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+//#define DEMO_DELAY 20
+//#elif defined(STRAND2) || defined(RADIUS8) || defined(SPHERE)
+//#define DEMO_OBJECT_SIZE 10
+//#define DEMO_GAP_SIZE 0
+//#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+//#define DEMO_DELAY 35
+//#elif defined(DUAL_STRIP)
+//#define DEMO_OBJECT_SIZE 7
+//#define DEMO_GAP_SIZE 1
+//#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+//#define DEMO_DELAY 0
+//#elif defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV)
+//#define DEMO_OBJECT_SIZE 9
+//#define DEMO_GAP_SIZE 0
+//#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+//#define DEMO_DELAY 0
+//#else
+//#define DEMO_OBJECT_SIZE 3
+//#define DEMO_GAP_SIZE 1
+//#define DEMO_TOTAL_SIZE (DEMO_OBJECT_SIZE + DEMO_GAP_SIZE)
+//#define DEMO_DELAY 0
+//#endif
 
 #if defined(DUAL_STRIP) || defined(RADIUS8)
 #define EASE_ANIM_MARGIN 0           // safety margin for visual effects that go past the end of the LEDs
@@ -287,9 +287,9 @@
 #endif
 
 #define EEPROM_STARTING_MACRO (NUM_MEMORY_MACROS)
-#define NUM_EEPROM_MACROS 40
+#define NUM_EEPROM_MACROS 51
 #define NUM_MACROS (NUM_MEMORY_MACROS + NUM_EEPROM_MACROS)
-#define NUM_MACRO_CHARS 25
+#define NUM_MACRO_CHARS 20
 
 class Config
 {

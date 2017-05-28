@@ -14,7 +14,7 @@ void run_default_macro(){
 //                          0         1         2         3         4         5         6
 //                          0123456789012345678901234567890123456789012345678901234567890
 
-#if defined(SPHERE) || defined(DUAL_STRIP) || defined(WEARABLE_AND_HARDHAT) // || defined(APOLLO_LIGHTS2) //|| defined(WEARABLE_AND_DISC93)
+#if defined(SPHERE) || defined(DUAL_STRIP) || defined(WEARABLE_AND_HARDHAT) || defined(RADIUS8) // || defined(APOLLO_LIGHTS2) //|| defined(WEARABLE_AND_DISC93)
 //    ::process_commands_P(F("10:set:5000,13:sch"));
 //    ::process_commands_P(F("11:set:11:zon:0:pal:flo"));
 //    ::process_commands_P(F("12:set:12:zon:1:pal:flo"));
@@ -48,22 +48,27 @@ void run_default_macro(){
     ::process_commands_P(F("14:set:3:zon:rot:flu:rst"));
     ::process_commands_P(F("15:set:2:zon:rot:flu:rst"));
 
-//#elif defined(APOLLO_LIGHTS2) //|| defined(APOLLO_LIGHTS2_DEV)
-//    ::process_commands_P(F("10:set:11:run"));
-//
-//    ::process_commands_P(F("11:set:era:70:lev:13,120:run:tun:flo:cfa:100:lev"));
-//
-//    ::process_commands_P(F("12:set:100,13:sch:10000,14:sch"));
-//    ::process_commands_P(F("13:set:rps:1:rnd:sfd:flu:rst"));
-//
-//    ::process_commands_P(F("14:set:15,15:run:500:del"));
-//    ::process_commands_P(F("15:set:16:run:17:run:18:run:flu"));
-//    ::process_commands_P(F("16:set:1:zon:1:blk:2:zon:1:rev:1:blk:rst"));
-//    ::process_commands_P(F("17:set:3:zon:1:blk:4:zon:1:rev:1:blk:rst"));
-//    ::process_commands_P(F("18:set:5:zon:1:blk:6:zon:1:rev:1:blk:rst"));
+#elif defined(APOLLO_LIGHTS2) //|| defined(APOLLO_LIGHTS2_DEV)
+    // random colors into warm white
+    ::process_commands_P(F("10:set:clr:era:70:lev:13,120:run:tun:flo:cfa:100:lev"));
 
-//    // fade into tungsten lamps
-//    ::process_commands_P(F("10:set:70:lev:tun:flo:cfa:100:lev"));
+    // sparking colors with drain
+    ::process_commands_P(F("11:set:clr:100,13:sch:10000,14:sch"));
+
+    // sparkling white
+    ::process_commands_P(F("12:set:clr:200,19:sch"));
+
+    ::process_commands_P(F("13:set:-1:rps:1:rnd:sfd:flu:rst"));
+    ::process_commands_P(F("14:set:15,15:run:500:del"));
+    ::process_commands_P(F("15:set:16:run:17:run:18:run:flu"));
+    ::process_commands_P(F("16:set:1:zon:1:blk:2:zon:1:rev:1:blk:rst"));
+    ::process_commands_P(F("17:set:3:zon:1:blk:4:zon:1:rev:1:blk:rst"));
+    ::process_commands_P(F("18:set:5:zon:1:blk:6:zon:1:rev:1:blk:rst"));
+
+    ::process_commands_P(F("19:set:-1:rps:wht:sfd:flu:rst"));
+
+    // fade into tungsten lamps
+    ::process_commands_P(F("10:set:70:lev:tun:flo:cfa:100:lev"));
 
 #elif defined(APOLLO_LIGHTS2_DEV) 
     // start up
@@ -89,7 +94,7 @@ void run_default_macro(){
     ::process_commands_P(F("25:set:-1:sch:11:run:10000,25,26:sch"));
     ::process_commands_P(F("26:set:-1:sch:20:run:10000,25,25:sch"));
 
-#elif defined(WEARABLE_AND_GLASSES) || defined(RADIUS8) || defined(PROJECTOR) || defined(WEARABLE_AND_DISC93) || defined(DISC93)
+#elif defined(WEARABLE_AND_GLASSES) || defined(PROJECTOR) || defined(WEARABLE_AND_DISC93) || defined(DISC93) // || defined(RADIUS8) 
     // random colors and random zone rotations
 #ifdef DISC93
     ::process_commands_P(F("10:set:100:lev:era:50,11:sch:15,12:sch:200,16:sch"));

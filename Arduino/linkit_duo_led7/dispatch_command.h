@@ -252,8 +252,8 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
     case CMD_WIPE:     
       dependencies.commands.do_wipe();                                                     
       break;
-    case CMD_ESHIFT:    
-      dependencies.commands.do_elastic_shift(dependencies.command_processor.sub_args[0]); 
+    case CMD_ESHIFT_OPEN:    
+      //dependencies.commands.do_elastic_shift(dependencies.command_processor.sub_args[0]); 
       reset_args = true;
       break;
     case CMD_PSHIFT:    
@@ -267,11 +267,11 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
     case CMD_CFADE:      
       dependencies.commands.do_crossfade();                                                            
       break;
-    case CMD_LOPOWER:
-      dependencies.commands.low_power();                                               
+    case CMD_LOPOWER_OPEN:
+      //dependencies.commands.low_power();                                               
       break;
-    case CMD_HIPOWER:
-      dependencies.commands.high_power();                                               
+    case CMD_HIPOWER_OPEN:
+      //dependencies.commands.high_power();                                               
       break;
     case CMD_PINON:    
       dependencies.commands.set_pin(dependencies.command_processor.sub_args[0], true); 
@@ -281,8 +281,8 @@ bool dispatch_command(int cmd, char *dispatch_data = NULL){
       dependencies.commands.set_pin(dependencies.command_processor.sub_args[0], false); 
       reset_args = true;
       break;
-    case CMD_DEMO:      
-      dependencies.commands.do_demo();                                                                                                                                    
+    case CMD_DEMO_OPEN:      
+      //dependencies.commands.do_demo();                                                                                                                                    
       break;
     case CMD_SETBLINKC:
       dependencies.blink_effects.set_custom_blink(dependencies.command_processor.sub_args[0]);

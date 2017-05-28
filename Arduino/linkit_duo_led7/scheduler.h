@@ -15,7 +15,7 @@ byte run_times[NUM_SCHEDULES];
 #endif
 
 void process_schedules(){
-  for(int i = 0; i < NUM_SCHEDULES; i++){
+  for(byte i = 0; i < NUM_SCHEDULES; i++){
 
     if(schedule_period[i] == 0)
       continue;
@@ -32,7 +32,7 @@ void process_schedules(){
   }
 }
 
-void reset_schedule(int schedule_number){
+void reset_schedule(byte schedule_number){
   macro_number[schedule_number]     = 0;
 #ifdef USE_RUN_TIMES
   run_times[schedule_number]        = 0;
@@ -42,7 +42,7 @@ void reset_schedule(int schedule_number){
 }
 
 void reset_all_schedules(){
-  for(int i = 0; i < NUM_SCHEDULES; i++){
+  for(byte i = 0; i < NUM_SCHEDULES; i++){
     reset_schedule(i); 
   }
 }
@@ -75,7 +75,6 @@ void set_schedule(unsigned int schedule_period_, byte schedule_number, byte macr
   // could set to schedule_period - 1 to have the macro run immediately upon being set
   schedule_counter[schedule_number] = 0;
 }
-
 
 #endif
 
