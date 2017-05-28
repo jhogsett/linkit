@@ -51,6 +51,7 @@ class Buffer
   void set_zone(byte zone);
   void reset();
   void set_reverse(bool reverse);
+  bool get_reverse();
   void rotate();
   byte get_display();
   byte get_zones();
@@ -139,11 +140,13 @@ void Buffer::display_buffer(rgb_color * pbuffer){
 
 void Buffer::erase(bool display = false)
 {
-  int offset = get_offset();
-  int window = get_window();
+  byte offset = get_offset();
+  byte window = get_window();
+  rgb_color * buf = buffers[current_display];
+  byte * effects = effects_buffers[current_display];
   for(byte i = offset; i < window; i++){
-    buffers[current_display][i] = black;
-    effects_buffers[current_display][i] = NO_EFFECT;
+    buf[i] = black;
+    effects[i] = NO_EFFECT;
 
 #ifdef EXISTENCE_ENABLED
     existence[i] = NO_ID;
@@ -151,7 +154,7 @@ void Buffer::erase(bool display = false)
   }
 
   if(display){
-    display_buffer(buffers[current_display]);
+    display_buffer(buf);
   }
 }
 
@@ -172,12 +175,12 @@ void Buffer::erase(bool display = false)
 //}
 
 void Buffer::cross_fade(int step){
-  int offset = get_offset();
-  int window = get_window();
+  byte offset = get_offset();
+  byte window = get_window();
   rgb_color *buffer = buffers[current_display];
   byte* effects = effects_buffers[current_display];
 
-  for(int i = offset; i < window; i++){
+  for(byte i = offset; i < window; i++){
     rgb_color *pb = buffer + i;
     rgb_color *pr = render + i;
     rgb_color rendered_color = renderer->render(pb, effects[i]);
@@ -383,6 +386,10 @@ void Buffer::set_reverse(bool reverse = true){
   this->reverse = reverse;
 }
 
+bool Buffer::get_reverse(){
+  return this->reverse;
+}
+
 byte Buffer::get_zones(){
   return this->zones->get_num_zones();
 }
@@ -428,9 +435,12 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
 void Buffer::finalize_shift(byte count, byte max){
 
   // to do: restrict to current zone
-  for(byte i = 0; i < count; i++){
-    push_color(black, 1, false, NO_EFFECT, max);
-  }
+//  for(byte i = 0; i < count; i++){
+//    push_color(black, 1, false, NO_EFFECT, max);
+//  }
+  push_color(black, count, false, NO_EFFECT, max);
+
+
 }
 
 #endif
