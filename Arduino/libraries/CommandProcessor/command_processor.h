@@ -62,7 +62,7 @@ bool CommandProcessor::input_available(){
 // the effective buffer size may be this buffer width + 64-char serial buffer input size
 bool CommandProcessor::received_command(){
   if(input_available()){
-    int c = serial->readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH-1);
+    byte c = serial->readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH-1);
     this->str[c] = 0;
     return true;
   } else {
@@ -91,7 +91,7 @@ void CommandProcessor::save_args(char * args = NULL){
 
 // str2 is a pointer to a string in PROGMEM
 bool CommandProcessor::str_equal_P(char *str1, const char *str2){
-  for(int i = 0; i < MAX_STRING_LENGTH; i++){
+  for(byte i = 0; i < MAX_STRING_LENGTH; i++){
     char c1 = *(str1 + i);
     char c2 = (char)pgm_read_byte(str2 + i);
     if(c1 == 0 && c2 == 0) return true;

@@ -18,7 +18,7 @@ class FadeEffects
   void reset();
   bool process();
   static bool is_handled_effect(byte effect);
-  rgb_color apply_fade(rgb_color color, int effect);
+  rgb_color apply_fade(rgb_color color, byte effect);
 
   private:
 
@@ -60,7 +60,7 @@ bool FadeEffects::is_handled_effect(byte effect){
   return effect >= FADE_MIN && effect <= FADE_MAX;
 }
 
-rgb_color FadeEffects::apply_fade(rgb_color color, int effect){
+rgb_color FadeEffects::apply_fade(rgb_color color, byte effect){
   if(should_apply()){
     switch(effect){
       case SLOW_FADE:

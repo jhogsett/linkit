@@ -122,7 +122,7 @@ const rgb_color * const Colors::get_color(color c){
 }
 
 void reset_palette(){
-  for(int i = 0; i < NPRETTY_COLORS; i++){
+  for(byte i = 0; i < NPRETTY_COLORS; i++){
     palette[i] = *Colors::get_color((Colors::color)i);
   }
 }
@@ -130,11 +130,11 @@ void reset_palette(){
 // from https://forum.arduino.cc/index.php?topic=345964.0
 void shuffle_palette()
 {
-  int last = 0;
+  byte last = 0;
   rgb_color temp = palette[last];
-  for (int i=0; i < NUM_PALETTE_COLORS; i++)
+  for (byte i=0; i < NUM_PALETTE_COLORS; i++)
   {
-    int index = random(NUM_PALETTE_COLORS);
+    byte index = random(NUM_PALETTE_COLORS);
     palette[last] = palette[index];
     last = index;
   }
@@ -152,11 +152,13 @@ rgb_color complimentary_color(rgb_color color){
   };
 }
 
+// to do: compliment whole palette instead of in pairs
+
 // create pairs of complimentary colors by making each odd color
 // complimentary of the previous even color
 void compliment_palette()
 {
-  for(int i = 0; i < NUM_PALETTE_COLORS; i += 2)
+  for(byte i = 0; i < NUM_PALETTE_COLORS; i += 2)
     ::palette[i+1] = complimentary_color(::palette[i]);
 }
 

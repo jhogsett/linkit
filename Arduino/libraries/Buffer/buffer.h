@@ -27,7 +27,7 @@ class Buffer
 
   void display_buffer(rgb_color * pbuffer);
   void erase(bool display);
-  void push_color(rgb_color color, int times, bool display, byte effect, byte max, byte start);
+  void push_color(rgb_color color, byte times, bool display, byte effect, byte max, byte start);
   void push_rgb_color(byte red, byte green, byte blue);
   void push_hsl_color(int hue, int sat, int lit);
   void push_carry_color();
@@ -36,16 +36,16 @@ class Buffer
   void set_color(byte pos, rgb_color color, bool display, byte effect);
   void fade(float rate);
   void fade_fast();
-  void cross_fade(int step);
-  int get_window();
+  void cross_fade(byte step);
+  byte get_window();
   void set_display(byte display);
   void set_buffer(byte buffer);
   rgb_color * get_buffer();
   byte * get_effects_buffer();
   byte get_current_display();
   rgb_color * get_render_buffer();
-  void set_offset_override(int offset);
-  void set_window_override(int window);
+  void set_offset_override(byte offset);
+  void set_window_override(byte window);
   byte get_offset();
   byte get_width();
   void set_zone(byte zone);
@@ -81,9 +81,6 @@ class Buffer
   int window_override = OVERRIDE_OFF;
   int offset_override = OVERRIDE_OFF;
 
-//  byte num_zones;
-//  byte *zone_offsets;
-//  byte *zone_windows;
   Zones *zones;
   byte current_zone = 0;
   bool reverse = false;
@@ -174,7 +171,7 @@ void Buffer::erase(bool display = false)
 //  }
 //}
 
-void Buffer::cross_fade(int step){
+void Buffer::cross_fade(byte step){
   byte offset = get_offset();
   byte window = get_window();
   rgb_color *buffer = buffers[current_display];
@@ -246,7 +243,7 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
 #ifdef EXISTENCE_ENABLED
 void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte id = NO_ID, byte start = 0)
 #else
-void Buffer::push_color(rgb_color color, int times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
+void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
 #endif
 {
   rgb_color * buffer = buffers[current_display];
@@ -256,7 +253,7 @@ void Buffer::push_color(rgb_color color, int times = 1, bool display = false, by
   start = (start == 0) ? get_offset() : start;
   times = max(1, times);
 
-  for(int i = 0; i < times; i++){
+  for(byte i = 0; i < times; i++){
     shift_buffer(buffer, effects, max, start, this->reverse);
 
     if(this->reverse){
@@ -320,7 +317,7 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
   }
 }
 
-void Buffer::set_window_override(int window){
+void Buffer::set_window_override(byte window){
   if(window < 0){
     this->window_override = OVERRIDE_OFF;
   } else {
@@ -328,7 +325,7 @@ void Buffer::set_window_override(int window){
   }
 }
 
-int Buffer::get_window(){
+byte Buffer::get_window(){
   if(this->window_override != OVERRIDE_OFF){
     return this->window_override;
   } else {
@@ -336,7 +333,7 @@ int Buffer::get_window(){
   }
 }
 
-void Buffer::set_offset_override(int offset){
+void Buffer::set_offset_override(byte offset){
   if(offset < 0){
     this->offset_override = OVERRIDE_OFF;
   } else {

@@ -21,9 +21,9 @@ class ColorMath
   static rgb_color add_color(rgb_color color1, rgb_color color2);
   static rgb_color subtract_color(rgb_color color1, rgb_color color2);
   static rgb_color blend_colors(rgb_color color1, rgb_color color2, float strength);
-  static rgb_color crossfade_colors(int step, rgb_color color1, rgb_color color2);
+  static rgb_color crossfade_colors(byte step, rgb_color color1, rgb_color color2);
   static rgb_color correct_color(rgb_color color);
-  static int crossfade_steps();
+  static byte crossfade_steps();
   static rgb_color simple_scale_color(rgb_color color, float scale);
   static rgb_color simple_unscale_color(rgb_color color, float scale);
   static rgb_color complimentary_color(rgb_color color);
@@ -34,7 +34,7 @@ class ColorMath
   static const float PROGMEM crossfade[];
 
   static byte blend_component(byte component1, byte component2, float strength);
-  static byte crossfade_component(int step, byte component1, byte component2);
+  static byte crossfade_component(byte step, byte component1, byte component2);
 };
 
 bool ColorMath::swap_r_and_g;
@@ -178,15 +178,15 @@ void ColorMath::begin(bool swap_r_and_g = true){
   ColorMath::swap_r_and_g = swap_r_and_g;
 }
 
-int ColorMath::crossfade_steps(){
+byte ColorMath::crossfade_steps(){
   return CROSSFADE_STEPS;
 }
 
 // on subsequent steps, component1 must be set to the return value of the previous step
 // the steps must go from zero, to and including CROSSFADE_STEPS
-byte ColorMath::crossfade_component(int step, byte component1, byte component2){
+byte ColorMath::crossfade_component(byte step, byte component1, byte component2){
   if(step > 1){
-    int prev_step = step - 1;
+    byte prev_step = step - 1;
     int prevc2 = component2 * pgm_read_float(&crossfade[prev_step]);
     int restored_c1 = (component1 - prevc2) / pgm_read_float(&crossfade[CROSSFADE_STEPS - prev_step]);
     component1 = restored_c1;
@@ -198,7 +198,7 @@ byte ColorMath::crossfade_component(int step, byte component1, byte component2){
 }
 
 //  color1 is the dominant color for strength (0.0 = all color1)
-rgb_color ColorMath::crossfade_colors(int step, rgb_color color1, rgb_color color2){
+rgb_color ColorMath::crossfade_colors(byte step, rgb_color color1, rgb_color color2){
   rgb_color result;
   result.red = crossfade_component(step, color1.red, color2.red);
   result.green = crossfade_component(step, color1.green, color2.green);
