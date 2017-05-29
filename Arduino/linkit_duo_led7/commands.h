@@ -1,6 +1,8 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#include <avr/eeprom.h>
+
 #include "config.h"
 #include "zone_defs.h"
 
@@ -8,20 +10,38 @@
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
 
+#define MACRO_END_MARKER 0xff
+
+#define MACRO_ARG1_MARKER 0xf9 
+#define MACRO_ARG2_MARKER 0xfa 
+#define MACRO_ARG3_MARKER 0xfb 
+#define MACRO_ARG4_MARKER 0xfc 
+#define MACRO_ARG5_MARKER 0xfd 
+#define MACRO_ARG6_MARKER 0xfe 
+#define ARG_MARKER_FIRST  MACRO_ARG1_MARKER
+#define ARG_MARKER_LAST   MACRO_ARG6_MARKER
+
+// this one doesn't need to be stored in macros, but it could be useful if supporting receiving binary commands
+#define MACRO_CMD_MARKER 0xf0
+
+#define MAX_MEMORY_MACRO (NUM_MEMORY_MACROS - 1)
+#define MAX_EEPROM_MACRO (EEPROM_STARTING_MACRO + NUM_EEPROM_MACROS - 1)
+#define MAX_MACRO (NUM_MACROS - 1)
+
+#define DEFAULT_ERASE_BYTE 0xff
+
+#define NUM_SCHEDULES NUM_MACROS
+
 #if defined(MINI_DISC_19)
 #define CROSSFADE_DELAY 50
 #else
 #define CROSSFADE_DELAY 1
 #endif
 
-#ifdef USE_LOW_POWER_MODE
-#define LOW_POWER_TIME 50
-#endif
-
 class Commands
 {
   public:
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness);
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects);
   void pause();
   void resume();
   bool is_paused();
@@ -56,31 +76,63 @@ class Commands
   int random_num(int max, int min = 0);
   void set_position(int position);
   void random_position(int type);
+  bool dispatch_command(int cmd, byte *dispatch_data = NULL);
+
+  byte set_macro(byte macro, char * commands);
+  byte set_macro_from_serial(byte macro);
+  void run_macro(byte macro, int times = 1, int delay_ = 0);
+  bool is_memory_macro(byte macro);
+  bool is_eeprom_macro(byte macro);
+  byte * get_memory_macro(byte macro);
+  byte * get_eeprom_macro(byte macro);
+  byte num_bytes_from_arg_marker(byte arg_marker);
+  byte num_words_from_arg_marker(byte arg_marker);
+  void set_memory_macro_from_memory(byte macro, byte * buffer);
+  void set_eeprom_macro_from_memory(byte macro, byte * buffer);
+  void set_memory_macro_from_eeprom(byte macro, byte * buffer);
+  void set_eeprom_macro_from_eeprom(byte macro, byte * buffer);
+  void process_commands(char * buffer);
+  void process_commands_P(const __FlashStringHelper * commands);
+  void reset_macro(byte macro);
+  void reset_all_macros();
+  bool is_programmed(byte macro);
+  void determine_arg_marker(byte &arg_marker, byte &num_args);
+  byte set_memory_macro(byte macro, char * commands);
+  byte set_eeprom_macro(byte macro, char * commands);
+  void run_memory_macro(byte macro, int times);
+  void run_eeprom_macro(byte macro, int times);
+  void process_schedules();
+  void reset_schedule(byte schedule_number);
+  void reset_all_schedules();
+  void set_schedule(unsigned int schedule_period_, byte schedule_number, byte macro_number_);
 
   private:
   Buffer *buffer;
   Render *renderer;  
   EffectsProcessor *effects_processor;
+  CommandProcessor *command_processor;
+  BlinkEffects *blink_effects;
+  BreatheEffects *breathe_effects;
   bool paused = false;
   byte default_brightness;
   byte visible_led_count;
-#ifdef USE_LOW_POWER_MODE
-  bool low_power_mode = false;
-  byte low_power_position = 0;
-  int low_power_timer = 0;
-#endif
   AutoBrightnessBase *auto_brightness;
-  void advance_low_power_position();
-
+  static byte macros[NUM_MEMORY_MACROS][NUM_MACRO_CHARS];
+  static unsigned int schedule_period[NUM_SCHEDULES];  // zero means the schedule is turned off
+  static byte macro_number[NUM_SCHEDULES];             // could leave this off and assume schedule is same as macro to run, 
+  static unsigned int schedule_counter[NUM_SCHEDULES]; // but the ability to switch schedules to run different macros is the basis for toggling
 };
 
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness){
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects){
   this->buffer = buffer;
   this->renderer = renderer;
   this->effects_processor = effects_processor;
   this->default_brightness = default_brightness;
   this->visible_led_count = visible_led_count;
   this->auto_brightness = auto_brightness;
+  this->command_processor = command_processor;
+  this->blink_effects = blink_effects;
+  this->breathe_effects = breathe_effects;
 }
 
 void Commands::pause(){
@@ -94,22 +146,6 @@ void Commands::resume(){
 bool Commands::is_paused(){
   return paused;
 }
-
-//void Commands::low_power(){
-//#ifdef USE_LOW_POWER_MODE
-//  low_power_mode = true;
-//
-//  // it's too jarring to reset these
-//  // low_power_position = 0;
-//  // low_power_timer = 0;
-//#endif
-//}
-//
-//void Commands::high_power(){
-//#ifdef USE_LOW_POWER_MODE
-//  low_power_mode = false;
-//#endif
-//}
 
 void Commands::set_display(byte display){
   buffer->set_display(display);
@@ -580,10 +616,11 @@ void Commands::random_position(int type){
   set_position(position);
 }
 
-#define RANDOM_NUM_ACCUM           -8
-#define RANDOM_NUM_ZONES           -7
-#define RANDOM_NUM_LEDS            -6
-#define RANDOM_NUM_DISPLAYS        -5
+//#define RANDOM_NUM_ACCUM           -8
+//#define RANDOM_NUM_ZONES           -7
+//#define RANDOM_NUM_LEDS            -6
+//#define RANDOM_NUM_DISPLAYS        -5
+
 #define RANDOM_NUM_PALCOLORS       -4
 #define RANDOM_NUM_FINE_ZONES      -3
 
@@ -592,21 +629,21 @@ int Commands::random_num(int max, int min){
   bool non_empty_only = false;
   bool empty_only = false;
   switch(max){ 
-    case RANDOM_NUM_ACCUM:
-      // need to add dependency on command processor
-      break;
-
-    case RANDOM_NUM_ZONES: 
-      max = NUM_ZONES; 
-      break;
-
-    case RANDOM_NUM_LEDS: 
-      max = this->visible_led_count; 
-      break;
-    
-    case RANDOM_NUM_DISPLAYS: 
-      max = NUM_DISPLAYS; 
-      break;
+//    case RANDOM_NUM_ACCUM:
+//      // need to add dependency on command processor
+//      break;
+//
+//    case RANDOM_NUM_ZONES: 
+//      max = NUM_ZONES; 
+//      break;
+//
+//    case RANDOM_NUM_LEDS: 
+//      max = this->visible_led_count; 
+//      break;
+//    
+//    case RANDOM_NUM_DISPLAYS: 
+//      max = NUM_DISPLAYS; 
+//      break;
     
     case RANDOM_NUM_PALCOLORS: 
       max = NUM_PALETTE_COLORS; 
@@ -659,57 +696,961 @@ int Commands::random_num(int max, int min){
   }
 }
 
-//void Commands::do_demo(){
-//  int count;  
-//  int window;
-//  int size_;
-//  int gap_;
-//  int delay_;
-//  
-//#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93)
-//  if(buffer->get_display() == 1){
-//    count = 8; 
-//    window = 8;
-//    size_ = 1;
-//    gap_ = 0;
-//    delay_ = 125;
-//  } else {
-//#endif
-//    
-//  size_ = DEMO_TOTAL_SIZE;
-//  gap_ = DEMO_GAP_SIZE;
-//  delay_ = DEMO_DELAY;
-//  count = visible_led_count / DEMO_TOTAL_SIZE;  
-//  window = visible_led_count;
-//    
-//#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93)
-//  }
-//#endif
-//  
-//  for(byte i = 0; i < count; i++){
-////#ifdef APOLLO_LIGHTS2
-////    rgb_color color = WHITE;
-////#else
-//    rgb_color color = ColorMath::random_color();
-////#endif
-//    do_power_shift_object(size_, window);
-//    window -= size_;
-//#ifdef APOLLO_LIGHTS2
-//    byte effect = NO_EFFECT;
-//#else
-//    byte effect = EffectsProcessor::random_effect();
-//  #endif
-//    for(byte j = gap_; j < size_; j++){
-//      buffer->set_color(j, color, false, effect);
-//    }
-//    delay(delay_);
-//  }
-//
-//#ifdef APOLLO_LIGHTS2
-//  buffer->push_color(TUNGSTEN);
-//  do_flood();
-//#endif
-//}
+bool Commands::dispatch_command(int cmd, byte *dispatch_data){
+  bool continue_dispatching = true;
+  bool reset_args = false;
+  
+  switch(cmd){
+    case CMD_NONE:      
+      command_processor->save_args();                                        
+      break;
+    case CMD_FLUSH:     
+      flush(true);                                                              
+      break;
+    case CMD_ERASE:     
+      buffer->erase(false);                                                          
+      break;
+    case CMD_ROTATE:
+      // arg[0] # times to rotate, default = 1
+      // arg[1] # rotation steps each time, default = 1
+      // arg[2] 0=flush each time, 1=don't flush, default = 0
+      do_rotate(command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]); 
+      reset_args = true;
+      break;
+    case CMD_REPEAT:    
+      do_repeat(command_processor->sub_args[0]); 
+      reset_args = true;
+      break;
+    case CMD_COPY:   
+      do_copy(command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]); 
+      reset_args = true;
+      break;
+    case CMD_FLOOD:     
+      do_flood();                                                           
+      break;
+    case CMD_MIRROR:    
+      do_mirror();                                                          
+      break;
+    case CMD_DISPLAY:    
+      set_display(command_processor->sub_args[0]); 
+      reset_args = true;
+      break;
+    case CMD_ZONE:
+      buffer->set_zone(command_processor->sub_args[0]); 
+      reset_args = true;
+      break;
+    case CMD_WINDOW:    
+      buffer->set_window_override(command_processor->sub_args[0]); 
+      reset_args = true;
+      break;
+    case CMD_OFFSET:
+      buffer->set_offset_override(command_processor->sub_args[0]); 
+      reset_args = true;
+      break;
+    case CMD_REVERSE:
+      buffer->set_reverse(command_processor->sub_args[0] == 1 ? true : false); 
+      reset_args = true;
+      break;
+    case CMD_RGBCOLOR:  
+      buffer->push_rgb_color(command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]); 
+      reset_args = true;
+      break;
+    case CMD_HSLCOLOR:  
+      buffer->push_hsl_color(command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]); 
+      reset_args = true;
+      break;
+    case CMD_RED:       
+      buffer->push_color(RED, command_processor->sub_args[0], command_processor->sub_args[1]);                                                      
+      reset_args = true;
+      break;
+    case CMD_GREEN:     
+      buffer->push_color(GREEN, command_processor->sub_args[0], command_processor->sub_args[1]);                                                    
+      reset_args = true;
+      break;
+    case CMD_BLUE:      
+      buffer->push_color(BLUE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                     
+      reset_args = true;
+      break;
+    case CMD_BLACK:     
+      buffer->push_color(buffer->black, command_processor->sub_args[0], command_processor->sub_args[1]);                                                    
+      reset_args = true;
+      break;
+    case CMD_YELLOW:    
+      buffer->push_color(YELLOW, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_ORANGE:    
+      buffer->push_color(ORANGE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_PURPLE:    
+      buffer->push_color(PURPLE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_CYAN:      
+      buffer->push_color(CYAN, command_processor->sub_args[0], command_processor->sub_args[1]);                                                     
+      reset_args = true;
+      break;
+    case CMD_MAGENTA:   
+      buffer->push_color(MAGENTA, command_processor->sub_args[0], command_processor->sub_args[1]);                                                  
+      reset_args = true;
+      break; 
+    case CMD_PINK:      
+      buffer->push_color(PINK, command_processor->sub_args[0], command_processor->sub_args[1]);                                                     
+      reset_args = true;
+      break; 
+    case CMD_WHITE:     
+      buffer->push_color(WHITE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                    
+      reset_args = true;
+      break; 
+    case CMD_GRAY:      
+      buffer->push_color(GRAY, command_processor->sub_args[0], command_processor->sub_args[1]);                                                     
+      reset_args = true;
+      break;
+    case CMD_LTGREEN:   
+      buffer->push_color(LTGREEN, command_processor->sub_args[0], command_processor->sub_args[1]);                                                  
+      reset_args = true;
+      break;
+    case CMD_SEAFOAM:   
+      buffer->push_color(SEAFOAM, command_processor->sub_args[0], command_processor->sub_args[1]);                                                  
+      reset_args = true;
+      break;
+    case CMD_LTBLUE:    
+      buffer->push_color(LTBLUE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_DKGRAY:    
+      buffer->push_color(DKGRAY, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_TUNGSTEN:    
+      buffer->push_color(TUNGSTEN, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_AMBER:
+      buffer->push_color(AMBER, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_OLIVE:
+      buffer->push_color(OLIVE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_SKYBLUE:
+      buffer->push_color(SKYBLUE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_TURQUOISE:
+      buffer->push_color(TURQUOISE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_LAVENDER:
+      buffer->push_color(LAVENDER, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_ROSE:
+      buffer->push_color(ROSE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      reset_args = true;
+      break;
+    case CMD_RANDOM:    
+      do_random(command_processor->sub_args[0]);                                                          
+      reset_args = true;
+      break; 
+    case CMD_BLEND:     
+      do_blend(command_processor->sub_args[0]);                                                           
+      reset_args = true;
+      break;
+    case CMD_MAX:         
+      do_max();                                                             
+      break;
+    case CMD_DIM:       
+      do_dim();                                                             
+      break;
+    case CMD_BRIGHT:    
+      do_bright();                                                          
+      break;
+    case CMD_BLINK:     
+      effects_processor->start_effect(BLINK_ON);                                               
+      break;
+    case CMD_BLINK1:    
+      effects_processor->start_effect(BLINK_ON_1);                                             
+      break;
+    case CMD_BLINK2:    
+      effects_processor->start_effect(BLINK_ON_2);                                             
+      break;
+    case CMD_BLINK3:    
+      effects_processor->start_effect(BLINK_ON_3);                                             
+      break;
+    case CMD_BLINK4:    
+      effects_processor->start_effect(BLINK_ON_4);                                             
+      break;
+    case CMD_BLINK5:    
+      effects_processor->start_effect(BLINK_ON_5);                                            
+      break;
+    case CMD_BLINK6:    
+      effects_processor->start_effect(BLINK_ON_6);                                             
+      break;
+    case CMD_BLINKR:    
+      effects_processor->start_blinking_r();                                                   
+      break;
+    case CMD_BLINKA:    
+      effects_processor->start_effect(BLINK_ON_A);                                             
+      break;
+    case CMD_BLINKB:    
+      effects_processor->start_effect(BLINK_ON_B);                                             
+      break;
+    case CMD_BLINKC:
+      effects_processor->start_effect(BLINK_ON_C);                                               
+      break;
+    case CMD_BREATHE:   
+      effects_processor->start_effect(BREATHE_ON);                                             
+      break;
+    case CMD_SLOW_FADE:
+      effects_processor->start_effect(SLOW_FADE);                                             
+      break;
+    case CMD_FAST_FADE:
+      effects_processor->start_effect(FAST_FADE);                                             
+      break;
+    case CMD_TWINKLE:
+      effects_processor->start_effect(TWINKLE_ON);                                             
+      break;
+    case CMD_RAW:
+      effects_processor->start_effect(RAW_ON);                                             
+      break;
+    case CMD_STATIC:    
+      effects_processor->start_effect(STATIC_ON);                                                                                                                      
+      break;
+    case CMD_EFFECTR:   
+      effects_processor->start_effect_r();                                                     
+      break;
+    case CMD_PAUSE:     
+      pause();
+      break;
+    case CMD_CONTINUE:  
+      resume();
+      break;
+    case CMD_RESET:     
+      reset();                                                              
+      break;
+    case CMD_CLEAR:      
+      clear();                                                            
+      break;
+    case CMD_LEVEL:
+      set_brightness_level(command_processor->sub_args[0]); 
+      reset_args = true;
+      break;
+    case CMD_FADE:      
+      do_fade();                                                            
+      break;
+    case CMD_WIPE:     
+      do_wipe();                                                     
+      break;
+    case CMD_ESHIFT_OPEN:    
+      //do_elastic_shift(command_processor->sub_args[0]); 
+      reset_args = true;
+      break;
+    case CMD_PSHIFT:    
+      do_power_shift(command_processor->sub_args[0]);  
+      reset_args = true;
+      break;
+    case CMD_PSHIFTO:   
+      do_power_shift_object(command_processor->sub_args[0], command_processor->sub_args[1]); 
+      reset_args = true;
+      break;
+    case CMD_CFADE:      
+      do_crossfade();                                                            
+      break;
+    case CMD_LOPOWER_OPEN:
+      //low_power();                                               
+      break;
+    case CMD_HIPOWER_OPEN:
+      //high_power();                                               
+      break;
+    case CMD_PINON:    
+      set_pin(command_processor->sub_args[0], true); 
+      reset_args = true;
+      break;
+    case CMD_PINOFF:    
+      set_pin(command_processor->sub_args[0], false); 
+      reset_args = true;
+      break;
+    case CMD_DEMO_OPEN:      
+      //do_demo();                                                                                                                                    
+      break;
+    case CMD_SETBLINKC:
+      blink_effects->set_custom_blink(command_processor->sub_args[0]);
+      reset_args = true;
+      break;
+    case CMD_SETBLINKP:
+      blink_effects->set_blink_period(command_processor->sub_args[0]);
+      reset_args = true;
+      break;
+    case CMD_SCHEDULE:
+      // arg[0] schedule period 0-65534, -1 clears all schedules
+      // arg[1] schedule number, default schedule #0 
+      // arg[2] macro number, default same as schedule #
+      set_schedule(command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      reset_args = true;
+      break;
+    case CMD_CARRY:
+      buffer->push_carry_color();
+      break;
+    case CMD_SETBREATHET:
+      breathe_effects->set_breathe_time(command_processor->sub_args[0]);
+      reset_args = true;
+      break;
+    case CMD_SET_MACRO:
+      {
+        if(dispatch_data != NULL){
+          // being used internally
+          set_macro(command_processor->sub_args[0], (char*)dispatch_data);          
+
+          // signal that no more commands should be processed (rest of buffer copied to macro)
+          continue_dispatching = false;
+        } else {
+          // being used over serial
+          byte num_bytes = set_macro_from_serial(command_processor->sub_args[0]);
+          command_processor->send_int(num_bytes);
+        }
+      }
+      reset_args = true;
+      break;
+    case CMD_RUN_MACRO:
+      // arg[0] macro number to run, default = 0
+      // arg[1] number of times to run, default = 1
+      // arg[3] milliseconds delay between runs, default = no delay
+      run_macro(command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      reset_args = true;
+      break;
+    case CMD_DELAY:
+      do_delay(command_processor->sub_args[0]);
+      reset_args = true;
+      break;
+
+    case CMD_STOP:
+      reset_all_schedules();
+      clear();                                                            
+      pause();                                                            
+      break;      
+
+    case CMD_RANDOM_NUM:
+      {
+        // arg[0] maximum random number (see Commands::random_num() for special constant values)
+        // arg[1] minimum random number (default=0)
+        // arg[2] copied into arg[1] to allow passing another argument
+        int ran = random_num(command_processor->sub_args[0], command_processor->sub_args[1]);
+        command_processor->sub_args[0] = ran;
+        command_processor->sub_args[1] = command_processor->sub_args[2];
+        command_processor->sub_args[2] = 0;
+      }
+      break;
+    case CMD_POSITION:
+      // arg[0] index of insertion pointer
+      //        if -1, start of current zone
+      //        if -2, end of current zone
+      //        if -3, center of current zone
+      set_position(command_processor->sub_args[0]);
+      reset_args = true;
+      break;
+
+    case CMD_RPOSITION:
+      // arg[0] if -1, only 
+      random_position(command_processor->sub_args[0]);
+      reset_args = true;
+      break;
+
+    case CMD_PALETTE:
+      {
+        // arg[0] the index into the palette of the color to insert, or where to stop rubberstamp insert
+        // arg[1] if > 0, colors are inserted counting down from this position
+        //                the counting down is done so the palette achieves a left-to-right order when inserted  
+        //                in this case arg[0] is the stopping point when counting down
+        // for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
+        
+        int arg0 = command_processor->sub_args[0];
+        int arg1 = command_processor->sub_args[1];
+        if(arg1 > 0){
+          arg0 = max(0, arg0);
+          for(int i = arg1; i >= arg0; i--){
+            buffer->push_color(::palette[i]);                      
+          }
+        } else {
+          buffer->push_color(::palette[arg0]);                                                      
+        }
+        
+        reset_args = true;
+        break;
+      }
+            
+    case CMD_SHUFFLE:
+      {
+        int arg0 = command_processor->sub_args[0];
+        switch(arg0)
+        {
+          case 0:
+            // create a palette of random colors
+            ::shuffle_palette();
+            break;
+
+          case 1:
+            // reset palette to original built-in colors
+            ::reset_palette();  
+            break;
+
+          case 2:
+            // make every odd color the complimentary color of the previous even color
+            ::compliment_palette();
+            break;
+
+          case 3:
+            // create a palette of random complimentary color pairs
+            ::complimentary_palette();        
+             break;
+        }            
+
+        reset_args = true;
+        break;
+      }
+    case CMD_SETBLACK:
+    {
+      rgb_color black_level = {command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]};
+      buffer->set_black_level(black_level);
+    }
+  }
+
+  if(reset_args)
+    command_processor->reset_args();   
+
+  return continue_dispatching;
+}
+
+// in-memory macros
+byte Commands::macros[NUM_MEMORY_MACROS][NUM_MACRO_CHARS];
+
+bool Commands::is_memory_macro(byte macro){
+  return macro >= 0 && macro <= MAX_MEMORY_MACRO;
+}
+
+bool Commands::is_eeprom_macro(byte macro){
+  return macro >= EEPROM_STARTING_MACRO && macro <= MAX_EEPROM_MACRO;
+}
+
+// get a read/write pointer to a memory macro slot
+byte * Commands::get_memory_macro(byte macro){
+  if(macro < 0 || macro > MAX_MEMORY_MACRO){
+    return NULL;
+  }
+  return macros[macro];
+}
+
+// get an eeprom accessible pointer to an eeprom macro slot
+byte * Commands::get_eeprom_macro(byte macro){
+  byte effective_macro = macro - EEPROM_STARTING_MACRO;
+  return (byte*)(effective_macro * NUM_MACRO_CHARS);
+}
+
+byte Commands::num_bytes_from_arg_marker(byte arg_marker){
+  return (arg_marker - ARG_MARKER_FIRST) + 1;
+}
+
+byte Commands::num_words_from_arg_marker(byte arg_marker){
+  return num_bytes_from_arg_marker(arg_marker) / 2;
+}
+
+// copy bytes until the end of macro marker
+void Commands::set_memory_macro_from_memory(byte macro, byte * buffer){
+  byte * str = get_memory_macro(macro);
+
+  byte b;
+  while((b = *buffer++) != MACRO_END_MARKER){
+    *str++ = b;
+
+    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
+      // copy the packed arguments, which can be any value 0-255
+      // including the end of macro marker
+      byte num_bytes = num_bytes_from_arg_marker(b);
+      
+      for(byte i = 0; i < num_bytes; i++){
+        *str++ = *buffer++;  
+      }
+    }
+  }
+  *str = MACRO_END_MARKER;
+}
+
+// copy bytes until the end of macro marker
+void Commands::set_eeprom_macro_from_memory(byte macro, byte * buffer){
+  byte * str = get_eeprom_macro(macro);
+
+  byte b;
+  while((b = *buffer++) != MACRO_END_MARKER){
+    eeprom_write_byte(str++, b);
+
+    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
+      // copy the packed arguments, which can be any value 0-255
+      // including the end of macro marker
+      byte num_bytes = num_bytes_from_arg_marker(b);
+
+      for(byte i = 0; i < num_bytes; i++){
+        eeprom_write_byte(str++, *buffer++);  
+      }
+    }
+  }
+
+  eeprom_write_byte(str, MACRO_END_MARKER);
+}
+
+// copy bytes until the end of macro marker
+void Commands::set_memory_macro_from_eeprom(byte macro, byte * buffer){
+  byte * str = get_memory_macro(macro);
+
+  byte b;
+  while((b = eeprom_read_byte(buffer++)) != MACRO_END_MARKER){
+    *str++ = b;
+
+    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
+      // copy the packed arguments, which can be any value 0-255
+      // including the end of macro marker
+      byte num_bytes = num_bytes_from_arg_marker(b);
+
+      for(byte i = 0; i < num_bytes; i++){
+        *str++ = eeprom_read_byte(buffer++);  
+      }
+    }
+  }
+  *str = MACRO_END_MARKER;
+}
+
+// copy bytes until the end of macro marker
+void Commands::set_eeprom_macro_from_eeprom(byte macro, byte * buffer){
+  byte * str = get_eeprom_macro(macro);
+
+  byte b;
+  while((b = eeprom_read_byte(buffer++)) != MACRO_END_MARKER){
+    eeprom_write_byte(str++, b);
+
+    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
+      // copy the packed arguments, which can be any value 0-255
+      // including the end of macro marker
+      byte num_bytes = num_bytes_from_arg_marker(b);
+
+      for(byte i = 0; i < num_bytes; i++){
+        eeprom_write_byte(str++, eeprom_read_byte(buffer++));  
+      }
+    }
+  }
+  
+  eeprom_write_byte(str, MACRO_END_MARKER);
+}
+
+// process the series of commands and arguments in the passed memory buffer
+// the string must be tokenizable by strtok (get's corrupted)
+void Commands::process_commands(char * buffer){
+  if(buffer == NULL || *buffer == '\0'){
+    return;
+  }
+
+  // point to the end of the buffer for overrun protection
+  // this points at the terminator
+  char *last_char = buffer + strlen(buffer);
+
+  // begin_get_commands() and get_next_command() need an external pointer
+  // to hold onto the strtok_r state
+  char *saveptr;
+
+  // get the first command or set of arguments
+  char *command = command_processor->begin_get_commands(buffer, &saveptr);
+
+  // point to the remaining string after this command + terminator
+  // this is needed for copying strings when setting macros
+  // if this is the last command in the string, the location 
+  //   1 past the string + terminator overruns the end of the buffer
+  byte * rest_of_buffer = (byte*)min(command + strlen(command) + 1, last_char);
+
+  // process the command or arguments
+  int cmd = command_processor->process_command(command);
+
+  if(cmd == CMD_NULL){
+    // there was no command or arguments
+    return;
+  }
+
+  do{
+    // CMD_NONE is returned when there are arguments instead of a command
+    // arguments are not dispatched they're captured in CommandProcessor::process_command()
+    if(cmd != CMD_NONE){
+      // send the command to the dispatcher to be run
+      // pass the pointer to the rest of the buffer 
+      //   in case it's needed to set a macro
+      if(!dispatch_command(cmd, rest_of_buffer)){
+        // false means the rest of the buffer has been copied 
+        // so there are no more commands to process 
+        return;
+      }
+    }
+
+    // get the next set command or argumemts
+    command = command_processor->get_next_command(&saveptr);
+    rest_of_buffer = (byte*)min(command + strlen(command) + 1, last_char);
+    cmd = command_processor->process_command(command);
+    
+  }while(cmd != CMD_NULL);
+}
+
+// process commands stored in PROGMEM 
+void Commands::process_commands_P(const __FlashStringHelper * commands){
+  char * buffer = command_processor->borrow_char_buffer();
+  strcpy_P(buffer, (const char *)commands);
+  process_commands(buffer);
+}
+
+void Commands::reset_macro(byte macro){
+  if(is_memory_macro(macro))
+    get_memory_macro(macro)[0] = '\0';
+  else if(is_eeprom_macro(macro))
+    eeprom_write_byte(get_eeprom_macro(macro), MACRO_END_MARKER);
+}
+
+void Commands::reset_all_macros(){
+  for(byte i = 0; i < NUM_MACROS; i++)
+    reset_macro(i);
+}
+
+bool Commands::is_programmed(byte macro){
+  return eeprom_read_byte(get_eeprom_macro(macro)) != DEFAULT_ERASE_BYTE;
+}
+
+void Commands::determine_arg_marker(byte &arg_marker, byte &num_args){
+  int * sub_args = command_processor->sub_args;
+
+  if(sub_args[2] != 0){
+    arg_marker = MACRO_ARG6_MARKER;
+    num_args = 3;
+  } else if(sub_args[1] != 0){
+    arg_marker = MACRO_ARG4_MARKER;
+    num_args = 2;
+  } else {
+    int arg0 = sub_args[0];
+    if(arg0 >= 1 && arg0 <= 255 ) {
+      arg_marker = MACRO_ARG1_MARKER;
+    } else if(arg0 != 0){
+      arg_marker = MACRO_ARG2_MARKER;
+      num_args = 1;
+    }
+  }
+}
+
+byte Commands::set_memory_macro(byte macro, char * commands){
+  byte * macro_buffer = get_memory_macro(macro);
+  if(macro_buffer == NULL)
+    // not a valid memory macro location
+    return 0;
+
+  if(commands == NULL || *commands == '\0'){
+    // no commands; empty the macro
+    *macro_buffer = MACRO_END_MARKER;
+    return 0;
+  }
+
+  // begin_get_commands() and get_next_command() need an external pointer
+  // to hold onto the strtok_r state
+  char *saveptr;
+
+  // get the first command or set of arguments
+  char *command = command_processor->begin_get_commands(commands, &saveptr);
+  int cmd = command_processor->lookup_command(command);
+
+  if(cmd == CMD_NULL){
+    // no commands; empty buffer
+    *macro_buffer = MACRO_END_MARKER;
+    return 0;
+  }
+    
+  byte byte_count = 0;
+  do{
+    if(cmd == CMD_NONE){
+      // this is a set of arguments
+      command_processor->get_sub_args(command);
+
+      // pack the arguments 
+      byte arg_marker;
+      byte num_args = 0;
+      determine_arg_marker(arg_marker, num_args);
+
+      // write arguments marker
+      *macro_buffer++ = arg_marker;
+      byte_count++;
+      
+      if(arg_marker == MACRO_ARG1_MARKER){
+        *macro_buffer++ = (byte)command_processor->sub_args[0];
+        byte_count++;
+      } else {
+        for(byte i = 0; i < num_args; i++){
+          *((int *)macro_buffer) = command_processor->sub_args[i];
+          macro_buffer += 2;
+          byte_count += 2;
+        }
+      }
+    } else {
+      // write the command byte to the macro buffer
+      *macro_buffer++ = (byte)cmd;
+      byte_count++;
+    }
+
+    // get the next command or argumemts
+    command = command_processor->get_next_command(&saveptr);
+    cmd = command_processor->lookup_command(command);
+    
+  }while(cmd != CMD_NULL);
+
+  // write end of macro marker
+  *macro_buffer = MACRO_END_MARKER;
+
+  return byte_count;
+}
+
+byte Commands::set_eeprom_macro(byte macro, char * commands){
+  byte * macro_buffer = get_eeprom_macro(macro);
+
+  if(commands == NULL || *commands == '\0'){
+    // no commands; empty the macro
+    eeprom_write_byte(macro_buffer, MACRO_END_MARKER);
+    return 0;
+  }
+
+  // begin_get_commands() and get_next_command() need an external pointer
+  // to hold onto the strtok_r state
+  char *saveptr;
+
+  // get the first command or set of arguments
+  char *command = command_processor->begin_get_commands(commands, &saveptr);
+  int cmd = command_processor->lookup_command(command);
+
+  if(cmd == CMD_NULL){
+    // no commands; empty buffer
+    eeprom_write_byte(macro_buffer, MACRO_END_MARKER);
+    return 0;
+  }
+
+  byte byte_count = 0;
+  do{
+    if(cmd == CMD_NONE){
+      // this is a set of arguments
+      command_processor->get_sub_args(command);
+
+      // pack the arguments 
+      byte arg_marker;
+      byte num_args = 0;
+      determine_arg_marker(arg_marker, num_args);
+
+      // write arguments marker
+      eeprom_write_byte(macro_buffer++, arg_marker);
+      byte_count++;
+      
+      // pack the arguments 
+      int * sub_args = command_processor->sub_args;
+      if(arg_marker == MACRO_ARG1_MARKER){
+        eeprom_write_byte(macro_buffer++, sub_args[0] & 0xff);
+        byte_count++;
+      } else {
+        for(byte i = 0; i < num_args; i++){
+          eeprom_write_word((word*)macro_buffer, (word)sub_args[i]);
+          macro_buffer += 2;
+          byte_count += 2;
+        }
+      }
+    } else {
+      // write the command byte to the macro buffer
+      eeprom_write_byte(macro_buffer++, cmd);
+      byte_count++;
+    }
+
+    // get the next command or argumemts
+    command = command_processor->get_next_command(&saveptr);
+    cmd = command_processor->lookup_command(command);
+    
+  }while(cmd != CMD_NULL);
+
+  // write end of macro marker
+  eeprom_write_byte(macro_buffer, MACRO_END_MARKER);
+
+  return byte_count;
+}
+
+byte Commands::set_macro(byte macro, char * commands){
+  if(is_memory_macro(macro))
+    return set_memory_macro(macro, commands);
+  else if(is_eeprom_macro(macro))
+    return set_eeprom_macro(macro, commands);
+}
+
+// used with the "set" command to set a macro from the serial input buffer
+byte Commands::set_macro_from_serial(byte macro){
+  return set_macro(macro, command_processor->get_input_buffer());
+}
+
+void Commands::run_memory_macro(byte macro, int times){
+  // don't pass in this macro running's arguments
+  command_processor->reset_args();
+
+  times = max(1, times);
+  byte * cached_macro_buffer = get_memory_macro(macro);
+
+  byte * macro_buffer = cached_macro_buffer;
+  if(macro_buffer == NULL || *macro_buffer == '\0')
+    // not a valid macro location or macro is empty
+    return;
+
+  int * sub_args = command_processor->sub_args;
+  for(int i = 0; i < times; i++){     
+    macro_buffer = cached_macro_buffer;
+
+    byte cmd;
+    while((cmd = *macro_buffer++) != MACRO_END_MARKER){
+      if(cmd >= ARG_MARKER_FIRST && cmd <= ARG_MARKER_LAST){
+        // unpack the arguments
+        if(cmd == MACRO_ARG1_MARKER){
+          // the most common case a value 1-255
+          sub_args[0] = *macro_buffer++;
+        } else {
+          byte num_args = num_words_from_arg_marker(cmd);
+          for(byte i = 0; i < num_args; i++){
+            sub_args[i] = *((int *)macro_buffer);
+            macro_buffer += 2;
+          }
+        }
+      } else {
+        if(cmd == CMD_SET_MACRO){
+          byte new_macro = sub_args[0];
+          if(is_memory_macro(new_macro))
+            set_memory_macro_from_memory(new_macro, macro_buffer);
+          else if(is_eeprom_macro(new_macro))
+            set_eeprom_macro_from_memory(new_macro, macro_buffer);
+
+          // remaining macro has been consumed
+          return;
+        } else {
+          if(!dispatch_command(cmd, macro_buffer)){
+            // the remaining macro buffer has been copied to set a macro
+            // so there are no more commands to dispatch
+            return;
+          }
+        }
+      }
+    }
+  }
+}
+
+void Commands::run_eeprom_macro(byte macro, int times){
+  // don't pass in this macro running's arguments
+  command_processor->reset_args();
+  
+  times = max(1, times);
+  byte * cached_macro_buffer = get_eeprom_macro(macro);
+
+  int * sub_args = command_processor->sub_args;
+  for(int i = 0; i < times; i++){     
+    byte * macro_buffer = cached_macro_buffer;
+    
+    byte cmd;
+    while((cmd = eeprom_read_byte(macro_buffer)) != MACRO_END_MARKER){
+      macro_buffer++;
+
+      if(cmd >= ARG_MARKER_FIRST && cmd <= ARG_MARKER_LAST){
+        // unpack the arguments
+        if(cmd == MACRO_ARG1_MARKER){
+          // the most common case a value 1-255
+          sub_args[0] = eeprom_read_byte(macro_buffer++);
+        } else {
+          byte num_args = num_words_from_arg_marker(cmd);
+          for(byte i = 0; i < num_args; i++){
+            sub_args[i] = (int)eeprom_read_word((word*)macro_buffer);
+            macro_buffer += 2;
+          }
+        }
+      } else {
+        if(cmd == CMD_SET_MACRO){
+          byte new_macro = sub_args[0];
+          if(is_memory_macro(new_macro)){
+            set_memory_macro_from_eeprom(new_macro, macro_buffer);
+          } else if(is_eeprom_macro(macro)){
+            set_eeprom_macro_from_eeprom(new_macro, macro_buffer);
+          }
+        
+        // remaining macro has been consumed
+        return;
+        } else {
+        if(!dispatch_command(cmd, macro_buffer)){
+          // the remaining macro buffer has been copied to set a macro
+          // so there are no more commands to dispatch
+          return;
+          }
+        }
+      }
+    }
+  }
+}
+
+void Commands::run_macro(byte macro, int times, int delay_)
+{
+  if(is_memory_macro(macro))
+    run_memory_macro(macro, times);
+  else if(is_eeprom_macro(macro))
+    run_eeprom_macro(macro, times);
+
+  if(delay_ > 0)
+    delay(delay_);
+}
+
+unsigned int Commands::schedule_period[NUM_SCHEDULES];  // zero means the schedule is turned off
+byte Commands::macro_number[NUM_SCHEDULES];             // could leave this off and assume schedule is same as macro to run, 
+unsigned int Commands::schedule_counter[NUM_SCHEDULES]; // but the ability to switch schedules to run different macros is the basis for toggling
+
+void Commands::process_schedules(){
+  for(byte i = 0; i < NUM_SCHEDULES; i++){
+
+    if(schedule_period[i] == 0)
+      continue;
+    
+    schedule_counter[i] = (schedule_counter[i] + 1) % schedule_period[i];
+
+    if(schedule_counter[i] == 0){
+      run_macro(macro_number[i]);
+    }
+  }
+}
+
+void Commands::reset_schedule(byte schedule_number){
+  macro_number[schedule_number]     = 0;
+  schedule_period[schedule_number]  = 0;
+  schedule_counter[schedule_number] = 0;
+}
+
+void Commands::reset_all_schedules(){
+  for(byte i = 0; i < NUM_SCHEDULES; i++){
+    reset_schedule(i); 
+  }
+}
+
+// if schedule period is -1, it clears all schedules
+void Commands::set_schedule(unsigned int schedule_period_, byte schedule_number, byte macro_number_){
+  if((int)schedule_period_ == -1){
+    reset_all_schedules();  
+    return;
+  }
+
+  if(macro_number_ == 0){
+    // default the macro to be the same as the schedule
+    macro_number_ = schedule_number;
+  }
+  
+  reset_schedule(schedule_number);
+  schedule_period[schedule_number]  = schedule_period_;
+  macro_number[schedule_number]     = macro_number_;
+
+  // set to zero for a complete schedule period to pass before it runs the macro (probably best)
+  // could set to schedule_period - 1 to have the macro run immediately upon being set
+  schedule_counter[schedule_number] = 0;
+}
 
 #endif
 

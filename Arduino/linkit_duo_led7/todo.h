@@ -1,9 +1,28 @@
 // 
 
+// would be nice to flood by adding instead of replacing colors, maybe an effect that governs how the color gets placed
 
+// want to generate x, y
+// fr0: for new arg0 = arg1-1 to arg0 
+//   pass through arg2 as arg1
+//   for each cycle 
+//     need an int to store value
+//     increment value
+//     set arg0 to value
+// fr1: for new arg1 = arg0 to arg2 exclusive
 
+// set red at each position
+// 90,0:fr0:pos:red
 
+// blast through a random section
+// pick a random starting position in current width
+// pick a random ending position, in the going direction, up to the end of the current width
+// -- could have a command that chooses a random range in current width going in current direction
+//      -x:rps
 
+// need command to set offset and window from arg0, arg1
+
+// simpler form of 'for' - calls macro for each pixel in the current window, setting position to just that pixel, moving according to reverse flag
 
 // running a macro destroys the arguments
 // -- it would be more helpful if it restore the previous arguments so arguments could be passed into macros

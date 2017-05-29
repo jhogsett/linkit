@@ -22,7 +22,6 @@
 #include "commands.h"
 #include "zone_defs.h"
 #include <zones.h>
-//#include "scheduler.h"
 
 class Dependencies
 {
@@ -96,6 +95,12 @@ class Dependencies
 
   // zone positions
   static Zones zones;
+
+//  static Dispatcher dispatcher;
+//
+//  static Macros macros;
+//
+//  static Scheduler scheduler;
 
   // initialize all dependencies
   void begin();
@@ -198,6 +203,10 @@ Commands Dependencies::commands;
 
 Zones Dependencies::zones;
 
+//Dispatcher Dependencies::dispatcher;
+//
+//Macros Dependencies::macros;
+
 void Dependencies::begin(){
 
   // open internal serial connection to MT7688 for receiving commands
@@ -232,7 +241,7 @@ void Dependencies::begin(){
   buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, &this->zones); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
-  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness);
+  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness, &this->command_processor, &this->blink_effects, &this->breathe_effects);
 
   // set up the blink effects counter and states
   blink_effects.begin(config.blink_period);
@@ -251,6 +260,12 @@ void Dependencies::begin(){
 
   // set a higher-quality random seed by reading values from an unconnected analog input
   randomizer.randomize();
+
+//  macros.begin(&this->dispatcher, CommandProcessor * command_processor);
+//  
+//  scheduler.begin(&this->macros);
+
+  //dispatcher.begin(&this->command_processor, &this->commands, &this->buffer, &this->effects_processor, &this->blink_effects, &this->breathe_effects, &this->macros, &this->scheduler);
 
 #ifdef USE_ELASTIC_EASE
   // generate the cubic ease in/elastic out animation 
