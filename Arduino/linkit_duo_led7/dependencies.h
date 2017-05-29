@@ -96,12 +96,6 @@ class Dependencies
   // zone positions
   static Zones zones;
 
-//  static Dispatcher dispatcher;
-//
-//  static Macros macros;
-//
-//  static Scheduler scheduler;
-
   // initialize all dependencies
   void begin();
 
@@ -203,10 +197,6 @@ Commands Dependencies::commands;
 
 Zones Dependencies::zones;
 
-//Dispatcher Dependencies::dispatcher;
-//
-//Macros Dependencies::macros;
-
 void Dependencies::begin(){
 
   // open internal serial connection to MT7688 for receiving commands
@@ -261,40 +251,19 @@ void Dependencies::begin(){
   // set a higher-quality random seed by reading values from an unconnected analog input
   randomizer.randomize();
 
-//  macros.begin(&this->dispatcher, CommandProcessor * command_processor);
-//  
-//  scheduler.begin(&this->macros);
-
-  //dispatcher.begin(&this->command_processor, &this->commands, &this->buffer, &this->effects_processor, &this->blink_effects, &this->breathe_effects, &this->macros, &this->scheduler);
-
 #ifdef USE_ELASTIC_EASE
   // generate the cubic ease in/elastic out animation 
   ElasticEase::generate_elastic_ease();
 #endif
 
-  ::reset_palette();
-//  ::reset_all_schedules();
+  buffer.erase(true);
+  Colors::reset_palette();
+  commands.reset();
+  commands.set_brightness_level();
+  commands.reset_all_schedules();
+  commands.run_default_macro();
+
 }
 
-//void Dependencies::self_test(){
-//
-//#ifdef STATUS_MONITOR
-//  // flash the red alarm light for one second
-//  commands.set_pin(4, true);
-//  delay(1000);
-//  commands.set_pin(4, false);
-//#endif
-//
-//#ifdef WEARABLE_AND_STRIP
-//  commands.do_demo();
-//#else
-//  for(int i = 0; i < NUM_BUFFERS; i++){
-//    commands.set_display((NUM_BUFFERS - 1) - i);
-//    commands.do_demo();
-//  }
-//#endif
-//
-//  commands.reset();
-//}
 #endif
 

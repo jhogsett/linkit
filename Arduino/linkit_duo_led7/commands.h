@@ -30,6 +30,8 @@
 
 #define DEFAULT_ERASE_BYTE 0xff
 
+#define DEFAULT_MACRO 10
+
 #define NUM_SCHEDULES NUM_MACROS
 
 #if defined(MINI_DISC_19)
@@ -42,9 +44,20 @@ class Commands
 {
   public:
   void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects);
+  bool is_macro_programmed(byte macro);
+  void process_commands(const __FlashStringHelper * commands);
+  void reset();
+  void set_brightness_level(byte level = 0);
+  void reset_all_schedules();
+  bool dispatch_command(int cmd, byte *dispatch_data = NULL);
+  bool is_paused();
+  void process_schedules();
+  void flush_all(bool force_display = false);
+  void run_default_macro();
+  
+  private:
   void pause();
   void resume();
-  bool is_paused();
   void do_blend(byte strength);
   void do_max();
   void do_dim();
@@ -62,22 +75,17 @@ class Commands
   void do_power_shift_object(byte width, byte shift, bool fast_render);
   void do_demo();
   void flush(bool force_display);
-  void flush_all(bool force_display = false);
-  void reset();
   void low_power();
   void high_power();
   void set_display(byte display);
   void set_buffer(byte nbuffer);
   void set_pin(byte pin, bool on);
-  void set_brightness_level(byte level = 0);
   void clear();
   void do_rotate(byte times, byte steps, byte flush);
   void do_delay(int milliseconds);
   int random_num(int max, int min = 0);
   void set_position(int position);
   void random_position(int type);
-  bool dispatch_command(int cmd, byte *dispatch_data = NULL);
-
   byte set_macro(byte macro, char * commands);
   byte set_macro_from_serial(byte macro);
   void run_macro(byte macro, int times = 1, int delay_ = 0);
@@ -92,21 +100,16 @@ class Commands
   void set_memory_macro_from_eeprom(byte macro, byte * buffer);
   void set_eeprom_macro_from_eeprom(byte macro, byte * buffer);
   void process_commands(char * buffer);
-  void process_commands_P(const __FlashStringHelper * commands);
   void reset_macro(byte macro);
   void reset_all_macros();
-  bool is_programmed(byte macro);
   void determine_arg_marker(byte &arg_marker, byte &num_args);
   byte set_memory_macro(byte macro, char * commands);
   byte set_eeprom_macro(byte macro, char * commands);
   void run_memory_macro(byte macro, int times);
   void run_eeprom_macro(byte macro, int times);
-  void process_schedules();
   void reset_schedule(byte schedule_number);
-  void reset_all_schedules();
   void set_schedule(unsigned int schedule_period_, byte schedule_number, byte macro_number_);
 
-  private:
   Buffer *buffer;
   Render *renderer;  
   EffectsProcessor *effects_processor;
@@ -322,12 +325,16 @@ void Commands::do_copy(byte size, int times, byte zoom){
   rgb_color * buf = buffer->get_buffer();
   rgb_color * render_buffer = buffer->get_render_buffer();
 
+  rgb_color * palette;
+  if(use_palette_buffer)
+    palette = Colors::get_palette();
+
   if(!copy_only && !dupe_only){
     // copy the effects pattern to the buffer temporarily
     for(byte i = 0; i < size; i++){
       byte source = offset + i;
       if(use_palette_buffer)
-        ::palette[i].red = effects[source];
+        palette[i].red = effects[source];
       else
         render_buffer[i].red = effects[source]; 
     }
@@ -341,7 +348,7 @@ void Commands::do_copy(byte size, int times, byte zoom){
   
           if(dest < window){ // prevent buffer overrun
             if(use_palette_buffer)
-              effects[dest] = ::palette[source].red;
+              effects[dest] = palette[source].red;
             else
               effects[dest] = render_buffer[source].red;
           }
@@ -356,7 +363,7 @@ void Commands::do_copy(byte size, int times, byte zoom){
       byte source = offset + i;
       if(use_palette_buffer)
         // uncorrect corrected color so it works in the palette for push_color()
-        ::palette[i] = ColorMath::correct_color(buf[source]);
+        palette[i] = ColorMath::correct_color(buf[source]);
       else
         render_buffer[i] = buf[source]; 
     }
@@ -373,7 +380,7 @@ void Commands::do_copy(byte size, int times, byte zoom){
           if(dest < window){ // prevent buffer overrun
             if(use_palette_buffer)
               // correct the uncorrected color in the palette
-              buf[dest] = ColorMath::correct_color(::palette[source]);
+              buf[dest] = ColorMath::correct_color(palette[source]);
             else
               buf[dest] = render_buffer[source];
           }
@@ -1070,11 +1077,12 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
         int arg1 = command_processor->sub_args[1];
         if(arg1 > 0){
           arg0 = max(0, arg0);
+          rgb_color * palette = Colors::get_palette();
           for(int i = arg1; i >= arg0; i--){
-            buffer->push_color(::palette[i]);                      
+            buffer->push_color(palette[i]);                      
           }
         } else {
-          buffer->push_color(::palette[arg0]);                                                      
+          buffer->push_color(Colors::get_palette()[arg0]);                                                      
         }
         
         reset_args = true;
@@ -1088,22 +1096,22 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
         {
           case 0:
             // create a palette of random colors
-            ::shuffle_palette();
+            Colors::shuffle_palette();
             break;
 
           case 1:
             // reset palette to original built-in colors
-            ::reset_palette();  
+            Colors::reset_palette();  
             break;
 
           case 2:
             // make every odd color the complimentary color of the previous even color
-            ::compliment_palette();
+            Colors::compliment_palette();
             break;
 
           case 3:
             // create a palette of random complimentary color pairs
-            ::complimentary_palette();        
+            Colors::complimentary_palette();        
              break;
         }            
 
@@ -1297,7 +1305,7 @@ void Commands::process_commands(char * buffer){
 }
 
 // process commands stored in PROGMEM 
-void Commands::process_commands_P(const __FlashStringHelper * commands){
+void Commands::process_commands(const __FlashStringHelper * commands){
   char * buffer = command_processor->borrow_char_buffer();
   strcpy_P(buffer, (const char *)commands);
   process_commands(buffer);
@@ -1315,7 +1323,7 @@ void Commands::reset_all_macros(){
     reset_macro(i);
 }
 
-bool Commands::is_programmed(byte macro){
+bool Commands::is_macro_programmed(byte macro){
   return eeprom_read_byte(get_eeprom_macro(macro)) != DEFAULT_ERASE_BYTE;
 }
 
@@ -1650,6 +1658,115 @@ void Commands::set_schedule(unsigned int schedule_period_, byte schedule_number,
   // set to zero for a complete schedule period to pass before it runs the macro (probably best)
   // could set to schedule_period - 1 to have the macro run immediately upon being set
   schedule_counter[schedule_number] = 0;
+}
+
+void Commands::run_default_macro(){
+
+// #define FORCE_PROGRAM_MACROS
+
+#if !defined(FORCE_PROGRAM_MACROS)
+  if(!is_macro_programmed(DEFAULT_MACRO)){
+#endif
+
+#if defined(SPHERE) || defined(DUAL_STRIP) || defined(WEARABLE_AND_HARDHAT) || defined(RADIUS8) // || defined(APOLLO_LIGHTS2) //|| defined(WEARABLE_AND_DISC93)
+    process_commands(F("10:set:19:run"));
+
+    process_commands(F("11:set:wht:brt:brt:flo:flu:30:del"));
+    process_commands(F("12:set:rnd:brt:brt:sfd:flo:flu"));
+    process_commands(F("13:set:11:run:12:run"));
+    process_commands(F("14:set:13:run:20000,10000,14:rng:sch"));
+    
+    process_commands(F("15:set:rps:wht:brt:brt:sfd:rst"));
+    process_commands(F("16:set:rps:1:rnd:sfd:flu:rst"));
+    process_commands(F("17:set:fad:50,15:sch:20000,14:sch"));
+    process_commands(F("18:set:fad:50,16:sch"));
+    
+    process_commands(F("19:set:-1:sch:60000,19,20:sch:17:run"));
+    process_commands(F("20:set:-1:sch:60000,19,21:sch:18:run"));
+    process_commands(F("21:set:-1:sch:60000,19,19:sch:23:run"));
+
+    process_commands(F("22:set:-3:rng:zon:rot:flu:rst"));
+    process_commands(F("23:set:fad:2:rnd:flo:flu:50,22:sch"));
+
+#elif defined(MINI_DISC_19)
+    // monument animation
+    process_commands(F("10:set:100:lev:800,14:sch:1600,15:sch:60000,13:sch"));
+    process_commands(F("11:set:3:zon:0,2:pal:2,0,6:cpy"));
+    process_commands(F("12:set:2:zon:0,2:pal:2,0,3:cpy"));
+    process_commands(F("13:set:3:shf:11:run:12:run:rst"));
+    process_commands(F("14:set:3:zon:rot:flu:rst"));
+    process_commands(F("15:set:2:zon:rot:flu:rst"));
+
+#elif defined(APOLLO_LIGHTS2) //|| defined(APOLLO_LIGHTS2_DEV)
+    // random colors into warm white
+    process_commands(F("10:set:clr:era:70:lev:13,120:run:tun:flo:cfa:100:lev"));
+
+    // sparking colors with drain
+    process_commands(F("11:set:clr:100,13:sch:10000,14:sch"));
+
+    // sparkling white
+    process_commands(F("12:set:clr:200,19:sch"));
+
+    process_commands(F("13:set:-1:rps:1:rnd:sfd:flu:rst"));
+    process_commands(F("14:set:15,15:run:500:del"));
+    process_commands(F("15:set:16:run:17:run:18:run:flu"));
+    process_commands(F("16:set:1:zon:1:blk:2:zon:1:rev:1:blk:rst"));
+    process_commands(F("17:set:3:zon:1:blk:4:zon:1:rev:1:blk:rst"));
+    process_commands(F("18:set:5:zon:1:blk:6:zon:1:rev:1:blk:rst"));
+
+    process_commands(F("19:set:-1:rps:wht:sfd:flu:rst"));
+
+    // fade into tungsten lamps
+    process_commands(F("10:set:70:lev:tun:flo:cfa:100:lev"));
+
+#elif defined(APOLLO_LIGHTS2_DEV) 
+    // start up
+    process_commands(F("10:set:25:run"));
+
+    // random colors with drains
+    process_commands(F("11:set:60,12:sch:20,13:sch:5000,14:sch"));
+    process_commands(F("12:set:-1:rps:rnd:twi:flu:rst"));
+    process_commands(F("13:set:-2:rps:sfd:flu:rst"));
+    process_commands(F("14:set:15,8,5:run:200:del"));
+    process_commands(F("15:set:16:run:17:run:18:run:flu"));
+    process_commands(F("16:set:1:zon:2:blk:2:zon:1:rev:2:blk:rst"));
+    process_commands(F("17:set:3:zon:2:blk:4:zon:1:rev:2:blk:rst"));
+    process_commands(F("18:set:5:zon:2:blk:6:zon:1:rev:2:blk:rst"));
+
+    // bubbling up dots
+    process_commands(F("20:set:100,21:sch:50,22:sch:15,23:sch"));
+    process_commands(F("21:set:9:zon:rnd:flu:4,1,1:rng:blk:flu")); 
+    process_commands(F("22:set:10:zon:car:flu"));
+    process_commands(F("23:set:11:zon:car:flu"));
+
+    // switch betwen the two patterns
+    process_commands(F("25:set:-1:sch:11:run:10000,25,26:sch"));
+    process_commands(F("26:set:-1:sch:20:run:10000,25,25:sch"));
+
+#elif defined(WEARABLE_AND_GLASSES) || defined(PROJECTOR) || defined(WEARABLE_AND_DISC93) || defined(DISC93) // || defined(RADIUS8) 
+    // random colors and random zone rotations
+#ifdef DISC93
+    process_commands(F("10:set:100:lev:era:50,11:sch:15,12:sch:200,16:sch"));
+#else    
+    process_commands(F("10:set:era:50,11:sch:15,12:sch:200,16:sch"));
+#endif
+    process_commands(F("11:set:rng:pos:rnd:twi:flu:rst"));
+    process_commands(F("12:set:rng:pos:sfd:flu:rst"));
+    process_commands(F("13:set:-3:rng:zon"));
+    process_commands(F("14:set:2:rng:rev"));
+    process_commands(F("15:set:0,3:rng:rot"));
+    process_commands(F("16:set:13:run:14:run:15:run:rst"));
+#endif
+
+#if !defined(FORCE_PROGRAM_MACROS)
+  }
+#endif
+  
+  // run auto-start macro
+  if(is_macro_programmed(DEFAULT_MACRO)){
+    process_commands(F("10:run"));
+  }
+
 }
 
 #endif
