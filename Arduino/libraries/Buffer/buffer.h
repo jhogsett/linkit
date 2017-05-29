@@ -26,6 +26,7 @@ class Buffer
 #endif
 
   void display_buffer(rgb_color * pbuffer);
+  void render_display();
   void erase(bool display);
   void push_color(rgb_color color, byte times, bool display, byte effect, byte max, byte start);
   void push_rgb_color(byte red, byte green, byte blue);
@@ -135,6 +136,12 @@ void Buffer::display_buffer(rgb_color * pbuffer){
   ledStrips[current_display]->write(pbuffer, visible_led_count);
 }
 
+// todo might want choice of slow or fast render
+void Buffer::render_display(){
+  renderer->render_buffer(render, this->buffers[current_display], visible_led_count, this->effects_buffers[current_display]);
+  display_buffer(render);
+}
+
 void Buffer::erase(bool display = false)
 {
   byte offset = get_offset();
@@ -151,7 +158,7 @@ void Buffer::erase(bool display = false)
   }
 
   if(display){
-    display_buffer(buf);
+    render_display();
   }
 }
 
@@ -271,7 +278,7 @@ void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, b
     }
 
     if(display){
-      display_buffer(buffer);
+      render_display();
     }
   }
 }
@@ -313,7 +320,7 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
 #endif
 
   if(display){
-    display_buffer(buffer);
+    render_display();
   }
 }
 

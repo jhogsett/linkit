@@ -7,7 +7,6 @@
 #define NPRETTY_COLORS 18
 
 #define NUM_PALETTE_COLORS NPRETTY_COLORS
-rgb_color palette[NUM_PALETTE_COLORS];
 
 // in pre-rendered colors, 20 = the max brightness, so at 100 brightness, it would multiply
 // 20 * (255 / 20) to get 255
@@ -106,12 +105,22 @@ class Colors
 
   static const rgb_color * const get_color(color c);
 
+  static void reset_palette();
+  static void shuffle_palette();
+  static rgb_color complimentary_color(rgb_color color);
+  static void compliment_palette();
+  static void complimentary_palette();
+  static rgb_color * get_palette();
+
   private:
   // this is pointed-to as the return value for get_color()
   static rgb_color return_color;
+  static rgb_color palette[NUM_PALETTE_COLORS];
 };
 
 rgb_color Colors::return_color = {0,0,0};
+
+rgb_color Colors::palette[NUM_PALETTE_COLORS];
 
 const rgb_color * const Colors::get_color(color c){
   void *p = (void*)pgm_read_word(&(color_array[c]));
@@ -121,14 +130,14 @@ const rgb_color * const Colors::get_color(color c){
   return &return_color;
 }
 
-void reset_palette(){
+void Colors::reset_palette(){
   for(byte i = 0; i < NPRETTY_COLORS; i++){
     palette[i] = *Colors::get_color((Colors::color)i);
   }
 }
 
 // from https://forum.arduino.cc/index.php?topic=345964.0
-void shuffle_palette()
+void Colors::shuffle_palette()
 {
   byte last = 0;
   rgb_color temp = palette[last];
@@ -144,7 +153,7 @@ void shuffle_palette()
 // create a complimentary color by inverting the values
 // within the 0 - BRIGHTNESS_DIVISOR range, since that
 // represents the entire pre-rendered color definition
-rgb_color complimentary_color(rgb_color color){
+rgb_color Colors::complimentary_color(rgb_color color){
   return (rgb_color){
     BRIGHTNESS_DIVISOR - color.red,
     BRIGHTNESS_DIVISOR - color.green,
@@ -156,18 +165,22 @@ rgb_color complimentary_color(rgb_color color){
 
 // create pairs of complimentary colors by making each odd color
 // complimentary of the previous even color
-void compliment_palette()
+void Colors::compliment_palette()
 {
   for(byte i = 0; i < NUM_PALETTE_COLORS; i += 2)
-    ::palette[i+1] = complimentary_color(::palette[i]);
+    palette[i+1] = complimentary_color(palette[i]);
 }
 
 // create a random palette of complimentary color pairs
-void complimentary_palette()
+void Colors::complimentary_palette()
 {
-  ::reset_palette();
-  ::shuffle_palette();
-  ::compliment_palette();
+  reset_palette();
+  shuffle_palette();
+  compliment_palette();
+}
+
+rgb_color * Colors::get_palette(){
+  return palette;
 }
 
 #endif
