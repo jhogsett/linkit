@@ -260,7 +260,7 @@ void Dependencies::begin(){
   Colors::reset_palette();
   commands.reset();
   commands.set_brightness_level();
-  commands.reset_all_schedules();
+  commands.scheduler.reset_all_schedules();
   commands.run_default_macro();
 
 }
