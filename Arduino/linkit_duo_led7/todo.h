@@ -1,4 +1,8 @@
-// 
+// 3:rnd = random palette color 
+
+// have a way of generating palette colors
+// one hue, many lightnesses
+// one lightness, many hues, varying step angle
 
 // would be nice to flood by adding instead of replacing colors, maybe an effect that governs how the color gets placed
 
