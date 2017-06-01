@@ -60,6 +60,10 @@ class Macros
   void run_memory_macro(byte macro, int times);
   void run_eeprom_macro(byte macro, int times);
 
+  byte read_byte(byte * buffer, bool from_eeprom);
+  void write_byte(byte * buffer, bool to_eeprom, byte data);
+  void set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom);
+
 };
 
 // in-memory macros
@@ -100,34 +104,37 @@ byte Macros::num_words_from_arg_marker(byte arg_marker){
   return num_bytes_from_arg_marker(arg_marker) / 2;
 }
 
-// copy bytes until the end of macro marker
-void Macros::set_memory_macro_from_memory(byte macro, byte * buffer){
-  byte * str = get_memory_macro(macro);
+byte Macros::read_byte(byte * buffer, bool from_eeprom){
+  if(from_eeprom)
+    return eeprom_read_byte(buffer);
+  else
+    return *buffer;
+}
 
-  byte b;
-  while((b = *buffer++) != MACRO_END_MARKER){
-    *str++ = b;
-
-    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
-      // copy the packed arguments, which can be any value 0-255
-      // including the end of macro marker
-      byte num_bytes = num_bytes_from_arg_marker(b);
-
-      for(byte i = 0; i < num_bytes; i++){
-        *str++ = *buffer++;
-      }
-    }
-  }
-  *str = MACRO_END_MARKER;
+void Macros::write_byte(byte * buffer, bool to_eeprom, byte data){
+  if(to_eeprom)
+    eeprom_write_byte(buffer, data);
+  else
+    *buffer = data;
 }
 
 // copy bytes until the end of macro marker
-void Macros::set_eeprom_macro_from_memory(byte macro, byte * buffer){
-  byte * str = get_eeprom_macro(macro);
+void Macros::set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom){
+  bool to_eeprom;
+  byte * macro_data;
+  if(is_memory_macro(macro)){
+    macro_data = get_memory_macro(macro);
+    to_eeprom = false;
+  } else {
+    macro_data = get_eeprom_macro(macro);
+    to_eeprom = true;
+  }
 
   byte b;
-  while((b = *buffer++) != MACRO_END_MARKER){
-    eeprom_write_byte(str++, b);
+  while((b = read_byte(buffer, from_eeprom)) != MACRO_END_MARKER){
+    write_byte(macro_data, to_eeprom, b);
+    macro_data++;
+    buffer++;
 
     if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
       // copy the packed arguments, which can be any value 0-255
@@ -135,55 +142,13 @@ void Macros::set_eeprom_macro_from_memory(byte macro, byte * buffer){
       byte num_bytes = num_bytes_from_arg_marker(b);
 
       for(byte i = 0; i < num_bytes; i++){
-        eeprom_write_byte(str++, *buffer++);
+        write_byte(macro_data, to_eeprom, read_byte(buffer, from_eeprom));
+        macro_data++;
+        buffer++;
       }
     }
   }
-
-  eeprom_write_byte(str, MACRO_END_MARKER);
-}
-
-// copy bytes until the end of macro marker
-void Macros::set_memory_macro_from_eeprom(byte macro, byte * buffer){
-  byte * str = get_memory_macro(macro);
-
-  byte b;
-  while((b = eeprom_read_byte(buffer++)) != MACRO_END_MARKER){
-    *str++ = b;
-
-    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
-      // copy the packed arguments, which can be any value 0-255
-      // including the end of macro marker
-      byte num_bytes = num_bytes_from_arg_marker(b);
-
-      for(byte i = 0; i < num_bytes; i++){
-        *str++ = eeprom_read_byte(buffer++);
-      }
-    }
-  }
-  *str = MACRO_END_MARKER;
-}
-
-// copy bytes until the end of macro marker
-void Macros::set_eeprom_macro_from_eeprom(byte macro, byte * buffer){
-  byte * str = get_eeprom_macro(macro);
-
-  byte b;
-  while((b = eeprom_read_byte(buffer++)) != MACRO_END_MARKER){
-    eeprom_write_byte(str++, b);
-
-    if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST){
-      // copy the packed arguments, which can be any value 0-255
-      // including the end of macro marker
-      byte num_bytes = num_bytes_from_arg_marker(b);
-
-      for(byte i = 0; i < num_bytes; i++){
-        eeprom_write_byte(str++, eeprom_read_byte(buffer++));
-      }
-    }
-  }
-
-  eeprom_write_byte(str, MACRO_END_MARKER);
+  write_byte(macro_data, to_eeprom, MACRO_END_MARKER);
 }
 
 void Macros::reset_macro(byte macro){
@@ -404,10 +369,7 @@ void Macros::run_memory_macro(byte macro, int times){
       } else {
         if(cmd == CMD_SET_MACRO){
           byte new_macro = sub_args[0];
-          if(is_memory_macro(new_macro))
-            set_memory_macro_from_memory(new_macro, macro_buffer);
-          else if(is_eeprom_macro(new_macro))
-            set_eeprom_macro_from_memory(new_macro, macro_buffer);
+            set_macro_from_macro(new_macro, macro_buffer, false);
 
           // remaining macro has been consumed
           return;
@@ -453,11 +415,7 @@ void Macros::run_eeprom_macro(byte macro, int times){
       } else {
         if(cmd == CMD_SET_MACRO){
           byte new_macro = sub_args[0];
-          if(is_memory_macro(new_macro)){
-            set_memory_macro_from_eeprom(new_macro, macro_buffer);
-          } else if(is_eeprom_macro(macro)){
-            set_eeprom_macro_from_eeprom(new_macro, macro_buffer);
-          }
+            set_macro_from_macro(new_macro, macro_buffer, true);
 
         // remaining macro has been consumed
         return;
