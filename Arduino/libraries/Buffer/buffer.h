@@ -162,22 +162,6 @@ void Buffer::erase(bool display = false)
   }
 }
 
-//void Buffer::fade(float rate = 0.0){
-//  rate = (rate == 0.0) ? fade_rate : rate;
-//  byte *p = (byte *)buffers[current_display];
-//  for(int i = get_offset(); i < get_window() * 3; i++){
-//    *(p + i) *= rate;
-//  }
-//}
-
-//void Buffer::fade_fast(){
-//  byte *p;
-//  p = (byte *)buffers[current_display];
-//  for(byte i = get_offset(); i < get_window() * 3; i++){
-//    *(p + i) = *(p + i) >> 1;
-//  }
-//}
-
 void Buffer::cross_fade(byte step){
   byte offset = get_offset();
   byte window = get_window();

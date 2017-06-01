@@ -13,7 +13,6 @@ class ColorMath
 {
   public:
   static void begin(bool swap_r_and_g);
-  static void set_brightness(byte brightness_percent);
   static rgb_color random_color();
   static rgb_color scale_color(rgb_color color, float scale);
   static rgb_color unscale_color(rgb_color color, float scale);
@@ -148,13 +147,6 @@ rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {
     }
   }
   return (rgb_color){r, g, b};
-}
-
-void ColorMath::set_brightness(byte brightness_percent){
-//  float percent = brightness_percent / 100.0;
-//  for(byte i = 0; i < NPALETTE; i++){
-//    adjusted_palette[i] = scale_color(palette[i], percent);
-//  }
 }
 
 //rgb_color ColorMath::add_color(rgb_color color1, rgb_color color2){
