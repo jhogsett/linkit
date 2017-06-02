@@ -376,7 +376,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
         if(arg1 > 0){
           arg0 = max(0, arg0);
           rgb_color * palette = Colors::get_palette();
-          for(int i = arg1; i >= arg0; i--){
+          for(byte i = arg1; i >= arg0; i--){
             buffer->push_color(palette[i]);                      
           }
         } else {

@@ -1,10 +1,19 @@
+// be able to set the fade rate, to four digits, 0.9999 would be 9999:sfr
+
+// need a dbg or tst command
+// 0:tst - returns current display buffer data over serial
+// 1:tst - returns current 
+
+// 20,10:rng:psh:30,20:rng
+//           psh pushes arg0 to arg1, and arg1 to arg2
+
 // 3:rnd = random palette color 
 
 // have a way of generating palette colors
 // one hue, many lightnesses
 // one lightness, many hues, varying step angle
 
-// would be nice to flood by adding instead of replacing colors, maybe an effect that governs how the color gets placed
+// would be nice to flood by adding instead of replacing colors, maybe an effect that governs how the color gets placed (whether it adds or overwrites)
 
 // want to generate x, y
 // fr0: for new arg0 = arg1-1 to arg0 
@@ -17,6 +26,9 @@
 
 // set red at each position
 // 90,0:fr0:pos:red
+
+
+
 
 // blast through a random section
 // pick a random starting position in current width

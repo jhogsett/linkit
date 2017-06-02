@@ -25,6 +25,7 @@ class Commands
   public:
   
   void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects);
+  void process_events();
   void process_commands(char * buffer);
   void process_commands(const __FlashStringHelper * commands);
   void reset();
@@ -101,6 +102,34 @@ void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects
   macros.begin(command_processor, &Commands::dispatch_function);
   scheduler.begin(&macros);
 }
+
+/////////////////////////////////
+// THIS IS THE MAIN EVENT LOOP
+/////////////////////////////////
+void Commands::process_events(){
+  if(command_processor->received_command())
+  {
+    dispatch_command(command_processor->get_command());
+    command_processor->acknowledge_command();
+
+    // resync the effects to a blank state to minimize visual artifacts 
+    // of pausing and restarting if there are display changes
+    effects_processor->reset_effects();
+  }
+  else 
+  {
+    // do schedule processing
+    if(!is_paused()){
+      scheduler.process_schedules();
+    }
+    
+    // process the effects and update the display if needed
+    if(effects_processor->process_effects())
+      flush_all();
+  }
+}
+/////////////////////////////////
+/////////////////////////////////
 
 bool Commands::dispatch_function(int cmd, byte *dispatch_data){
   return me->dispatch_command(cmd, dispatch_data);  
@@ -381,18 +410,14 @@ void Commands::do_repeat(byte times = 1){
     if(effect == RANDOM0){
       // repeat the same color, no effect
       buffer->push_color(color, 1, NO_EFFECT);
-//      buffer->get_effects_buffer()[offset] = NO_EFFECT;
     } else if(effect == RANDOM1){
       // changing random color only, no random effect
       buffer->push_color(ColorMath::random_color(), 1, effect);
-//      buffer->get_effects_buffer()[offset] = effect;
     } else if(effect == RANDOM2){
       // changing random color and random effect
       buffer->push_color(ColorMath::random_color(), 1, EffectsProcessor::random_effect());
-//      buffer->get_effects_buffer()[offset] = EffectsProcessor::random_effect();
     } else {
       buffer->push_color(color, 1, effect);
-//      buffer->get_effects_buffer()[offset] = effect;
     }
   }
 }
@@ -451,26 +476,9 @@ void Commands::do_rotate(byte times, byte steps, byte flush){
   }
 }
 
-//#ifdef USE_LOWER_POWER_MODE
-//void Commands::advance_low_power_position(){
-//  if(low_power_timer++ % LOW_POWER_TIME == 0){
-//    low_power_position = ++low_power_position % visible_led_count; 
-//  }
-//}
-//#endif
-
 void Commands::flush(bool force_display = false){
   if(force_display || !paused){
-//#ifdef USE_LOWER_POWER_MODE
-//    if(low_power_mode){
-//      renderer->render_buffer_low_power(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer(), low_power_position);
-//      advance_low_power_position();
-//    } else {
-//#endif
-      renderer->render_buffer(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
-//#ifdef USE_LOWER_POWER_MODE
-//    }
-//#endif
+    renderer->render_buffer(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
     buffer->display_buffer(buffer->get_render_buffer());
   }
 }
@@ -492,10 +500,6 @@ void Commands::flush_all(bool force_display){
 void Commands::reset(){
   // paused = false;
   
-//#ifdef USE_LOWER_POWER_MODE
-//  low_power_mode = false;
-//#endif
-
   buffer->reset();
 
   // the effects shouldn't be reset
@@ -671,7 +675,7 @@ int Commands::random_num(int max, int min){
   }
 }
 
-// process the series of commands and arguments in the passed memory buffer
+// process the series of unpacked commands and arguments in the passed memory buffer
 // the string must be tokenizable by strtok (get's corrupted)
 void Commands::process_commands(char * buffer){
   if(buffer == NULL || *buffer == '\0'){
@@ -684,6 +688,7 @@ void Commands::process_commands(char * buffer){
 
   // begin_get_commands() and get_next_command() need an external pointer
   // to hold onto the strtok_r state
+  // this allows this function to be recursive
   char *saveptr;
 
   // get the first command or set of arguments
