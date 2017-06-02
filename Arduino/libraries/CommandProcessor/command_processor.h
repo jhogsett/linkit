@@ -51,6 +51,10 @@ void CommandProcessor::begin(HardwareSerial *serial, const char* const *commands
   this->commands = commands;
   this->num_commands = num_commands;
   this->serial = serial;
+
+  // force a command acknowledgement to wake up any script that may be halted
+  // waiting for a character to be sent due to a new Arduino sketch being uploaded
+  acknowledge_command(true);
 }
 
 bool CommandProcessor::input_available(){
