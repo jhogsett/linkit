@@ -361,12 +361,16 @@ _NOTE: if this doesn't work, check your copying and pasting (check that \$\* is 
     
 Set up global and user profiles
 
-    vim /etc/profile _(for all users)_
-    alias ls='ls -al' (or your desired customization)
+_for all users:_
+
+    vim /etc/profile
+    alias ls='ls -al'
     alias cc='/root/color_command.py'
 
-    vim /root/.profile (for root user)
-    add export KEY={THE KEY}
+_for root user:_
+
+    vim /root/.profile
+    export KEY={CircirCI Key}
 
 Prepare to sync files between the SD card and the root directory
 
