@@ -1,5 +1,4 @@
 #include "dependencies.h"
-//#include "default_macros.h"
 
 Dependencies dependencies;
 Commands * commands = &dependencies.commands;

@@ -6,6 +6,7 @@
 
 #include "config.h"
 #include "zone_defs.h"
+#include "sequencer.h"
 
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
@@ -24,7 +25,7 @@ class Commands
 {
   public:
   
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects);
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, Sequencer *sequencer);
   void process_events();
   void process_commands(char * buffer);
   void process_commands(const __FlashStringHelper * commands);
@@ -63,11 +64,14 @@ class Commands
   void set_buffer(byte nbuffer);
   void set_pin(byte pin, bool on);
   void clear();
-  void do_rotate(byte times, byte steps, byte flush);
+  void do_rotate(byte times, byte steps, bool flush);
   void do_delay(int milliseconds);
   int random_num(int max, int min = 0);
   void set_position(int position);
   void random_position(int type);
+  int do_sequence(byte type, int arg0, int arg1, int arg2);
+  int do_set_sequence(byte type, int arg0, int arg1, int arg2);
+  int do_next_sequence(int arg0, int arg1, int arg2);
 
   Buffer *buffer;
   Render *renderer;  
@@ -81,13 +85,14 @@ class Commands
   AutoBrightnessBase *auto_brightness;
   static Macros macros;
   static Commands * me;
+  Sequencer *sequencer;
 };
 
 Macros Commands::macros;
 Scheduler Commands::scheduler;
 Commands * Commands::me;
 
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects){
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, Sequencer *sequencer){
   this->me = this;
   this->buffer = buffer;
   this->renderer = renderer;
@@ -98,6 +103,7 @@ void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects
   this->command_processor = command_processor;
   this->blink_effects = blink_effects;
   this->breathe_effects = breathe_effects;
+  this->sequencer = sequencer;
 
   macros.begin(command_processor, &Commands::dispatch_function);
   scheduler.begin(&macros);
@@ -461,16 +467,14 @@ void Commands::do_wipe(){
   do_power_shift_object(0, visible_led_count, false);
 }
 
-// default to animated rotation to simplify macros
-void Commands::do_rotate(byte times, byte steps, byte flush){
+void Commands::do_rotate(byte times, byte steps, bool flush){
   times = max(1, times);
   steps = max(1, steps);
-  flush = max(0, min(1, flush));
   for(byte i = 0; i < times; i++){
     for(byte j = 0; j < steps; j++){
       buffer->rotate(); 
     }
-    if(flush == 0){
+    if(flush){
       this->flush(true);  
     }    
   }
@@ -675,6 +679,39 @@ int Commands::random_num(int max, int min){
   }
 }
 
+// 1:10:0:seq - set sequence #1 to 0 - 9, reset to 0
+// 1:10:2:seq - set sequence #1 to 2 - 9, reset to 2
+// seq - get next number from sequence #0
+// 1:seq - get next number from #1
+// 1:-1:seq - get current number from #1
+// 1:-2:seq - get opposite of current number from #1 (for range 0-9 and current number 4, this would be 5)
+// 1:-3:seq - reset #1 to low and return it
+// 1:0:2:seq - get next number from #1, stepping by 2
+// 1:0:-1:seq - get next number from #1, stepping by -1
+
+int Commands::do_sequence(byte type, int arg0, int arg1, int arg2){
+  if(arg1 > 0){
+    //                           num   high  low
+    return do_set_sequence(type, arg0, arg1, arg2);
+  } else {
+    //                      num   adv   step
+    return do_next_sequence(arg0, arg1, arg2);
+  }
+}
+
+int Commands::do_set_sequence(byte type, int arg0, int arg1, int arg2){
+  // values are entered in high,low order, so low can be skipped if zero
+  // note the reverse argument order compared to do_next_sequence()
+  //                         low   high
+  sequencer->set(arg0, type, arg2, arg1);
+  return 0;
+}
+
+int Commands::do_next_sequence(int arg0, int arg1, int arg2){
+  //                    adv   step
+  return sequencer->next(arg0, arg1, arg2);
+}
+
 // process the series of unpacked commands and arguments in the passed memory buffer
 // the string must be tokenizable by strtok (get's corrupted)
 void Commands::process_commands(char * buffer){
@@ -688,7 +725,7 @@ void Commands::process_commands(char * buffer){
 
   // begin_get_commands() and get_next_command() need an external pointer
   // to hold onto the strtok_r state
-  // this allows this function to be recursive
+  // this allows this function to be reentrant
   char *saveptr;
 
   // get the first command or set of arguments

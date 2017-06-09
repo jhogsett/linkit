@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS     91
+#define NUM_COMMANDS     95
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
@@ -73,7 +73,7 @@
 #define CMD_LEVEL        65
 #define CMD_FADE         66
 #define CMD_WIPE         67
-#define CMD_ESHIFT_OPEN       68
+#define CMD_ANIM_ROTATE  68
 #define CMD_PSHIFT       69
 #define CMD_PSHIFTO      70
 #define CMD_CFADE        71
@@ -97,6 +97,10 @@
 #define CMD_PALETTE      89
 #define CMD_SHUFFLE      90
 #define CMD_SETBLACK     91
+#define CMD_SEQ_WHEEL    92
+#define CMD_SEQ_SWING    93
+#define CMD_SEQ_DRIVE    94
+#define CMD_SEQ_BOUND    95
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "era";
@@ -165,7 +169,7 @@ const char cmd_064[] PROGMEM = "clr";
 const char cmd_065[] PROGMEM = "lev";
 const char cmd_066[] PROGMEM = "fad";
 const char cmd_067[] PROGMEM = "wip";
-const char cmd_068[] PROGMEM = "esh";
+const char cmd_068[] PROGMEM = "art";
 const char cmd_069[] PROGMEM = "psh";
 const char cmd_070[] PROGMEM = "pso";
 const char cmd_071[] PROGMEM = "cfa";
@@ -189,6 +193,10 @@ const char cmd_088[] PROGMEM = "rps";
 const char cmd_089[] PROGMEM = "pal";
 const char cmd_090[] PROGMEM = "shf";
 const char cmd_091[] PROGMEM = "sbl";
+const char cmd_092[] PROGMEM = "seq";
+const char cmd_093[] PROGMEM = "sqs";
+const char cmd_094[] PROGMEM = "sqd";
+const char cmd_095[] PROGMEM = "sqb";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
@@ -200,7 +208,7 @@ const char* const command_strings[] PROGMEM = {
    cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070,
    cmd_071, cmd_072, cmd_073, cmd_074, cmd_075, cmd_076, cmd_077, cmd_078, cmd_079, cmd_080,
    cmd_081, cmd_082, cmd_083, cmd_084, cmd_085, cmd_086, cmd_087, cmd_088, cmd_089, cmd_090,
-   cmd_091
+   cmd_091, cmd_092, cmd_093, cmd_094, cmd_095
 };
 
 #endif

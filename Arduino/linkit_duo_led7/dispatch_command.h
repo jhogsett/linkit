@@ -19,7 +19,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       // arg[0] # times to rotate, default = 1
       // arg[1] # rotation steps each time, default = 1
       // arg[2] 0=flush each time, 1=don't flush, default = 0
-      do_rotate(command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]); 
+      do_rotate(command_processor->sub_args[0], command_processor->sub_args[1], false); 
       reset_args = true;
       break;
     case CMD_REPEAT:    
@@ -249,8 +249,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_WIPE:     
       do_wipe();                                                     
       break;
-    case CMD_ESHIFT_OPEN:    
-      //do_elastic_shift(command_processor->sub_args[0]); 
+    case CMD_ANIM_ROTATE:    
+      // arg[0] # times to rotate, default = 1
+      // arg[1] # rotation steps each time, default = 1
+      do_rotate(command_processor->sub_args[0], command_processor->sub_args[1], true); 
       reset_args = true;
       break;
     case CMD_PSHIFT:    
@@ -421,6 +423,30 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       rgb_color black_level = {command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]};
       buffer->set_black_level(black_level);
     }
+    case CMD_SEQ_WHEEL:
+      command_processor->sub_args[0] = do_sequence(SEQUENCE_WHEEL, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      command_processor->sub_args[1] = 0;
+      command_processor->sub_args[2] = 0;
+      // don't reset args
+      break;
+    case CMD_SEQ_SWING:
+      command_processor->sub_args[0] = do_sequence(SEQUENCE_SWING, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      command_processor->sub_args[1] = 0;
+      command_processor->sub_args[2] = 0;
+      // don't reset args
+      break;
+    case CMD_SEQ_DRIVE:
+      command_processor->sub_args[0] = do_sequence(SEQUENCE_DRIVE, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      command_processor->sub_args[1] = 0;
+      command_processor->sub_args[2] = 0;
+      // don't reset args
+      break;
+    case CMD_SEQ_BOUND:
+      command_processor->sub_args[0] = do_sequence(SEQUENCE_BOUND, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      command_processor->sub_args[1] = 0;
+      command_processor->sub_args[2] = 0;
+      // don't reset args
+      break;
   }
 
   if(reset_args)

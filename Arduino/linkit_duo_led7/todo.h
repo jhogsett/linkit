@@ -1,8 +1,191 @@
+// need to be able to link sequencers (triggers?)
+
+// concept of "objects"
+// - hidden/shown
+// - moved around
+// - could be as simple as offset + window + color & effect
+// - could be a complex pattern like a bell curve of lit leds around a center point
+
+// rng means random number generator, could have a sequential number generator
+// 10:seq - sequences numbers 0 - 9 then repeats
+// 10:5:set - sequences numbers 5 - 9 then repeats
+// 10:5:1:set - sequences numbers 5 - 9, then 8 -6, then repeat
+//
+// need to be able to have multiple sequencers
+// 10:seq - sequences numbers 0 - 9 for sequencer #0 then repeats
+// 10:1:seq - sequences numbers 0 - 9 for sequencer #1 then repeats
+// 10:2:5:seq - sequences numbers 5 - 9 for sequencer #0 then repeats
+// 10:osc - oscillates numbers 0 - 9, then 8 - 1, for oscillator #0, then repeats
+// 10:1:osc - same but for osc #1
+// 10:2:5:osc - sequences 5 - 9, then 8 -6 for #2 then repeats
+//
+// might be better if arg0 is the seq/osc #
+// then, a call like 1,10:seq sets up a sequencer for 0-9, then a call like 1:seq uses it (1,10:seq would also user it? or would reset it?)
+//
+// for seq might want a way to stop rather than repeat
+//
+// could have types: sequence once, sequence circular, sequence oscillatory
+
+// simplest sng
+// 10:sng
+// 0:sng (arg0 is now zero)
+// 0:sng (arg0 is now one) ...
+
+
+// need to ensure not getting same random color twice in a row (will make things prettier)
+
+
+
+
+////
+// 
+// sqi, sqj, sqk
+// 
+// -1,0,1000:sqi - set to range 0-999, repeating
+// 0:sqi - get the next number
+// 1:sqi - get the current number
+// 2:sqi - get the previous number (for erasure)
+// -2:sqi - reset to the start of the current range
+// -1:sqi - reset to the default range (0 - # LEDs)
+// j & k are the same, usable at the same time
+// 
+// sqx, sqy, sqz
+// 
+// -1,0,1000:sqx - set to range 0-999, then 998-1, repeating
+// 
+// y & z are the same, usable at the same time
+//
+// to bounce a ball in 1D in full width
+// 0:set:-1:sqx
+// 1:set:sqx:off:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// rearrange config into device profiles
+
+// running a macro destroys the arguments
+// -- it could be more helpful if it restored the previous arguments so arguments could be passed into macros
+// -- could have a command that recovers the previous args
+
+// replace color feature
+
+// effect: the color value refers to a palette position not an RGB value
+//   this would also allow for 16 extra bits of effects data
+//     for instance fading into a color
+
+// where possible, special mode ints should be positive so they can be randomized
+
+// for red/green swapped led strands, the carry color comes back flipped
+
+// cpy needs to overlap the end
+
+// the infinite loop protection could also be a trigger, when all full or all empty
+// triggers could be a set of slots that get set to a macro to run when triggers
+
+// could have certain commands that end the macro under certain conditions
+
+// the fade problem is when running from within a schedule. Running a macro N times from another macro works from the command line
+// the fade counter only decides when to automatically flush, not the rate at which fading happens; repeated renders will automatically fade the buffer color
+// the multi-run from the command line is spectacular, why is not applying the fade at the same rate?
+
+// optimize BlinkEffects::process()
+
+// a form of rotate that automatically shifts in carry color
+
+// how to simplify switching?
+//    ::process_commands_P(F("19:stm:-1:sch:30000,19,20:sch:17:run"));
+//    ::process_commands_P(F("20:stm:-1:sch:60000,19,21:sch:18:run"));
+//    ::process_commands_P(F("21:stm:-1:sch:60000,19,19:sch:23:run"));
+
+// shooting star problem
+// need to continuously advance the position and place the latest color at the leading edge
+// could have a special form of run that sequences a series of arg[0] values
+// 3,10,5:seq = run macro three for each value from 5 to 10 
+// or 10,3,5:seq - allowing the count to be random
+// 20:seq - runs macro #0 20 times, with arg0 from 0-19
+// 20,1:seq = runs macro #1 20 times
+// 20,2,5:seq = runs macro 2 15 times, from 5 to 19
+// could have an advance command that sets the position to the next position
+// shooting star would be
+// 5:set:wht:brt:brt:sfd:flu
+// rps - random starting position
+// 2:rng:rev - random direction
+// 20,1,5:rng - random # between 1 and 19 with arg1 = 5
+// seq - sequence arg0 from 0 to n-1 and run macro 5 each time
+
+// could have a non-blinking blink, just display the dim color, for background decoration
+
+// need a way to clear carry color or not set it during a buffer shift
+
+// apply ease animation timing to rotations
+
+// when setting position and placing a rubber stamp, it only places one pixel (which is expected)
+// need a way to expand the window to easily place the whole stamp
+// for instance, -6:win could mean to expand the current window +6
+
+// would be cool to somehow do mappying where the zone rotations on radius8 could be done on the opposite axis
+// with mapping in place you should be able to apply rotations to rows and colums, in fact multiple rows and columns
+// it's possible that when mapping is in place, there's no such thing as zones
+// unmapped pixels just would be ignored
+// the expectation is it can be treated as an X x Y grid
+// radius8: w16 x h16
+// sphere: w10 x h17
+// disc (cylinder): w6 x h32 (this could simplify some effects on the projector)
+// disc mapping
+// col 6: full 0-31                 01234567890123456789012345678901 
+// col 5: 0-23 interpolated to 0-31 01223455678890112344567789001233
+// col 4: 0-15 interpolated to 0-31 00112233445566778899001122334455
+// col 3: 0-11 interpolated to 0-31 00011222333445556667788899900111
+// col 2: 0-7 interpolated to 0-31  00001111222233334444555566667777
+// col 1: 0 interpolated to 0-31    00000000000000000000000000000000
+// mapping would need to be done at the buffer level
+// pos = map(x,y)
+// x,y:pos 
+// if a second argument is provided, it could mean  use x,y mapping
+// in the case of the zero default, the x positions would still be valid positions
+// need to implement mapping for radius8 & sphere
+
+// how would I draw a line?
+// 3,4:pos - to set the starting position
+// 10,11:lin - sets the ending position
+//  but what would it do next?
+// idea: 10,11,7:lin - sets the ending position, and calls macro 7 for each distinct point
+
+// vesions of mirror and flip that blend the colors
+
+// for zones, have several configurations that can be chosen in real time by device type
+
+// move mechanical buffer operations like mirror to Buffer class
+
+
+
+
+
+
+
+
+
+
 // be able to set the fade rate, to four digits, 0.9999 would be 9999:sfr
 
 // need a dbg or tst command
 // 0:tst - returns current display buffer data over serial
-// 1:tst - returns current 
+// 1:tst - returns current render buffer
+// 2:tst - returns contents of macros
+// 3:tst - last received command
+// etc 
 
 // 20,10:rng:psh:30,20:rng
 //           psh pushes arg0 to arg1, and arg1 to arg2
@@ -24,11 +207,11 @@
 //     set arg0 to value
 // fr1: for new arg1 = arg0 to arg2 exclusive
 
+// for command could be x,y,z:for
+// x = start, y = end, z = macro to run passing in arg0
+
 // set red at each position
 // 90,0:fr0:pos:red
-
-
-
 
 // blast through a random section
 // pick a random starting position in current width
@@ -40,61 +223,9 @@
 
 // simpler form of 'for' - calls macro for each pixel in the current window, setting position to just that pixel, moving according to reverse flag
 
-// running a macro destroys the arguments
-// -- it would be more helpful if it restore the previous arguments so arguments could be passed into macros
-
 // would pop/push args be helpful?
 
-// for command could be x,y,z:for
-// x = start, y = end, z = macro to run passing in arg0
-
-// replace color feature
-
-// effect: the color value refers to a palette position not an RGB value
-//   this would also allow for 16 extra bits of effects data
-//     for instance fading into a color
-
-// where possible, special mode ints should be positive so they can be randomized
-
-// 
-
-// for red/green swapped led strands, the carry color comes back flipped, as does copying to the palette and then duplicating
-// when copying, the data is just copied, but when using pal command, it uses push color, which swaps the red/green first
-
-// cpy needs to overlap the end
-
-// the infinite loop protection could also be a trigger, when all full or all empty
-
-// could have certain commands that end the macro under certain conditions
-
-//? reverse rotate doesn't work on zone 1 of glasses
-
-// the fade problem is when running from within a schedule. Running a macro N times from another macro works from the command line
-
-// stp command to to -1:sch:clr:pau
-
-// have fade effect consider current black level
-
-// optimize BlinkEffects::process()
-
-// switch out code that handles low power mode
-
-// the fade counter only decides when to automatically flush, not the rate at which fading happens; repeated renders will automatically fade the buffer color
-// the multi-run from the command line is spectacular, why is not applying the fade at the same rate?
-
 // slow fade doesn't work when running a macro repeatedly like 1000,0:run. It works when running it manually over serial.
-
-// anywhere I'm using BLACK should be changed to buffer->black;
-
-// need to slice up the memory into more macros
-// determine the byte load for current macros
-
-// memory macros may be running into problems due to arguments that include '\0'
-// //--> fixed, needs testing
-
-// need to start cutting out excess code, at 92%
-
-//! idea: allow real-time redefinition of what the color black is, to allow effects on top of other colors
 
 // idea: per-zone settable settings that affect rendering
 // - brightness, black level, direction, 
@@ -102,13 +233,7 @@
 
 // repeat command doesn't work in reverse
 
-// are there unnecessary buffers with packed macros?
-
-// 
-
 // have soem kind of auto-incrementor  
-
-// could pack macros further by storing only one byte (most argument usage is 0-255)
 
 // 0:set:20,0,0:rgb:0,20,0:rgb:0,0,20:rgb:flu
 // this resutls in red, followed by two blacks
@@ -119,144 +244,26 @@
 
 // if macro run more often than fade period, no fading at all happens
 
-// can't set macros from eeprom macros
-
-// a form of rotate that automatically shifts in carry color
-
 // command to restore pre-programmed macros
 
 // would be nice to be able to measure the current usage via an analog pin
-
-// for efficient macros
-// compile commands to binary equivalents
-// build a string of these binary bytes as long as real commands keep coming in
-// (for arguments, just store them like they're stored now)?
-// when an argument is encountered, store the so-far built string in the macro followed by a special command 
-//   that means: run the commands in the argument buffer as binary commands
-//   then store the arguments normalls
-// when processing binary commands, arguments are only parsed if a special command says the arguments buffer contains arguments
-//
-// set macro: 0:set:red:grn:blu:3:cpy:flu
-// "red:grn:blu:3:cpy:flu" is the macro
-// looks up the numbers for each command 15, 16, 17
-// when CMD_NONE is returned, it means the next thing is an argument, 
-// pack the commands found so far as bytes: 0x0f, 0x10, 0x11
-// use a command number outside of normal commands range to signal that the bytes just pulled are a series of binary commands; run them
-// 0f, 10, 11, f0
-/// in the case of arguments, dump the binary values of the arg0-2 integers into 6 bytes, following by a command that signals to extract the arg0
-// 00, 03, 00, 00, 00, 00, f1
-// so the whole set of bytes would be
-// 0f, 10, 11, f0, 00, 03, 00, 00, 00, 00, f1
-// running a macro: it already expects the packed format
-// 0f, 10, 11 
-
-// ---> idea: given that macros are compiled and run internally, they don't need to be RPN
-// f0, 0f, 10, 11 == run the following bytes as binary commands until an internal macro command is seen (or the byte following the f0 is the # of bytes of commands)
-// f1, 00, 03, 00, 00, 00, 00 == unpack these bytes as int arguments
-// f0, 05, 01, ff 
-
-// what about macros that set macros?
-//   the set command would work like normally, except the rest of the buffer would be copied over without needing to be parsed
-
 
 // need to be able to have a white flash but then resume the previous color/effect
 // - maybe reverts when the luminosity matches so it seems to fade out
 // - could have a trigger that could detect the end of fading out; macro would need to know the position
 // - there could be a standard after-fade color (default black) 
-//   - 
-
-// how to simplify switching?
-//    ::process_commands_P(F("19:stm:-1:sch:30000,19,20:sch:17:run"));
-//    ::process_commands_P(F("20:stm:-1:sch:60000,19,21:sch:18:run"));
-//    ::process_commands_P(F("21:stm:-1:sch:60000,19,19:sch:23:run"));
-
-// shooting star problem
-// need to continuously advance the position and place the latest color at the leading edge
-// could have a special form of run that sequences a series of arg[0] values
-// 3,10,5:seq = run macro three for each value from 5 to 10 
-// or 10,3,5:seq - allowing the count to be random
-// 20:seq - runs macro #0 20 times, with arg0 from 0-19
-// 20,1:seq = runs macro #1 20 times
-// 20,2,5:seq = runs macro 2 15 times, from 5 to 19
-// could have an advance command that sets the position to the next position
-
-// shooting star would be
-// 5:set:wht:brt:brt:sfd:flu
-// rps - random starting position
-// 2:rng:rev - random direction
-// 20,1,5:rng - random # between 1 and 19 with arg1 = 5
-// seq - sequence arg0 from 0 to n-1 and run macro 5 each time
-
-// need to make set vs stm automatic
 
 // could have a random macro command
 // 0,2,5:rnm = randomly run 0, 1 or 2, with 5 as arg0
 
-// cpy only needs to destroy render buffer if zooming
-// - unless copying on top of the same position
-// - could use the palette buffer if the pattern fits
-//   - would make rubber stamping possible
-
-// move logic out of display_command() into commands.h
-
 // would be nice if running a macro preserved the original args
 
-// could have a non-blinking blink, just display the dim color, for background decoration
-
-// need a way to clear carry color or not set it during a buffer shift
-
 // need a command to dump out all the macros
-
-// apply ease animation timing to rotations
-
-// when setting position and placing a rubber stamp, it only places one pixel (which is expected)
-// need a way to expand the window to easily place the whole stamp
-// for instance, -6:win could mean to expand the current window +6
-
-// would be cool to somehow do mappying where the zone rotations on radius8 could be done on the opposite axis
-// with mapping in place you should be able to apply rotations to rows and colums, in fact multiple rows and columns
-
-// it's possible that when mapping is in place, there's no such thing as zones
-// unmapped pixels just would be ignored
-// the expectation is it can be treated as an X x Y grid
-// radius8: w16 x h16
-// sphere: w10 x h17
-// disc (cylinder): w6 x h32 (this could simplify some effects on the projector)
-
-// disc mapping
-// col 6: full 0-31                 01234567890123456789012345678901 
-// col 5: 0-23 interpolated to 0-31 01223455678890112344567789001233
-// col 4: 0-15 interpolated to 0-31 00112233445566778899001122334455
-// col 3: 0-11 interpolated to 0-31 00011222333445556667788899900111
-// col 2: 0-7 interpolated to 0-31  00001111222233334444555566667777
-// col 1: 0 interpolated to 0-31    00000000000000000000000000000000
-
-// mapping would need to be done at the buffer level
-
-// pos = map(x,y)
-// x,y:pos 
-// if a second argument is provided, it could mean  use x,y mapping
-// in the case of the zero default, the x positions would still be valid positions
-
-// need to implement mapping for radius8 & sphere
-
-// how would I draw a line?
-// 3,4:pos - to set the starting position
-// need to be able to specify macros to program in PROGMEM
-
-// 10,11:lin - sets the ending position
-//  but what would it do next?
-// idea: 10,11,7:lin - sets the ending position, and calls macro 7 for each distinct point
-
-
-
 
 // could have commands that take the rest of the input and do something with them iteratively, like an instant macro
 // 9:mac:commands:commands -> would run the commands 9 times
 // this could save macro space for one-off special repeat functions
 // 9,100:mac:commands -> would run the commands 9 times with 100ms delay between each
-
-// could have a command that ends the macro under certain conditions
 
 // could have conditional macro running
 // arg0 = 0 or 1
@@ -298,28 +305,12 @@
 
 //:arg            :rot
 
-// delay broken, eventually seems to stop like it's delaying infinitely
-
-// maybe macro #10 should always be run on start up
-//   in the new case, it'll be empty and not do anything
-// this would allow consistent behavior with specific schedule macros after software updates
-
-
-// the command processor has a 60-char buffer
-// this should be reusable for tokenizing strings
-// add functions to command processor to access that buffer, like
-// - get pointer to the buffer
-
 // visual representation of eeprom memory
-
-// vesions of mirror and flip that blend the colors
 
 // have virtual colors that always point to a position in the palette
 // how? colors are stored as RGB
 // can't add a flag indicating to treat it as an integer
 // could have an effects bit that means get from palette
-
-// use palette as a rubber stamp buffer for copying and pasting patterns
 
 // improvement: when the input buffer has too many incoming chars
 // unget the current building command so it can be gotten next
@@ -328,38 +319,6 @@
 
 // take advantage of rest_of_buffer to allow sequencing:
 // 10,5:seq:pal:5:rep:flu --> would pass 5 thru 9 as arg[0] to the rest of the command line repeatedly
-
-
-// how to toggle macros without rewriting?
-// - could toggle by setting which macro the schedule runs
-//   
-//
-
-// would be nice to be able to repeat the same random color in different zones
-// need some way to find out what the color is when doing something later
-// could have a pal(ette) command that takes a color number, 
-//   and a (sh)u(f)fle command that mixes them up uniquely
-//   then to reuse the first two random colors
-//     shf:1:zon:0:pal:2:zon:1:pal:3:zon:0:pal:4:zon:1:pal
-
-// eeprom for macros
-// 
-// setting a macro: 
-//   three cases
-//     setting from serial
-//       copy remainder of buffer from serial to eeprom followed by zero
-//     setting from string
-//       copy remainder of string to eeprom followed by zero
-//     setting from eeprom
-//       copy from eeprom to eeprom until the value is zero followed by zero 
-// 
-// running a macro:
-//   have a special version of process_command() for eeproms
-//     need a replacement for strtok to parse the commands  
-// 
-// the eeprom can't be used for real-time rewriting for toggling because it will wear out too quickly
-// maybe have a small in-memory macro buffer just for toggling use, macro #2 and higher would operate out of the eeprom
-// have a variable number of in-memory vs eeprom macros depending on available memory and application
 
 // other inputs to rnd: choose one of any of the available colors, choose one of the b&w colors
 
@@ -433,8 +392,6 @@
 
 // be able to save/restore macros/schedules to eeprom 
 
-
-
 // remix
 
 // flip command to reverse all bits in current zone
@@ -488,8 +445,6 @@
 
 // how to have the cpy command cpy to a specific location?
 
-
-
 // command to rerun macro 
 
 // shortcut for continuing with another macro
@@ -504,10 +459,6 @@
 // color command ignore lines starting with pound
 
 // third parameter to run macro: delay between runs
-
-// could store macros pre-looked up by storing the cmd ID instead of the string
-//    would allow for longer macros
-//    have to deal with arguments somehow 
 
 // pretty wifi output
 // logging
@@ -525,15 +476,10 @@
 
 // change arguments to all be ints, and create one more for a total of four
 
-// del command delays, perhaps logarithmically 
-
 // should be able to rerun the last set of commands with an automatic macro
-
-// for zones, have several configurations that can be chosen in real time by device type
 
 // each device should periodically check for new versions of http_command.py and http_command.html and copy to /root any new versions
 // how often? 4 hours?
-
 
 // "safe" colors for car
 
@@ -550,26 +496,14 @@
 
 // sparkle: specify width of segments and gaps
 
-
-//apollo: patterns that look like "it's charging up"
-
-/* return values: 'k' followed by additional bytes, or just return an integer value
-use cases:
-
-get number of leds
-get light level
-read value of a pin (analog or digital)
-read current set brightness level
-
-
+/* 
 
 add reboot command
 
-h\ave a schedule that ges triggers upon a carry being set, could automatically wired together two zones
+have a schedule that gets triggered upon a carry being set, could automatically wired together two zones
 -- could have other kinds of triggers
 
 -- figure out when to automatically reset blink period to default, like on clear
-
 
 also: set an analog value on a pin
 */
@@ -579,24 +513,6 @@ also: set an analog value on a pin
 // html needs all the commands shortened
 
 // show/hide by zone
-
-
-// handle ^d on color_command.py:
-//command: Traceback (most recent call last):
-//  File "/root/color_command.py", line 52, in <module>
-//    loop()
-//  File "/root/color_command.py", line 37, in loop
-//    cmd = raw_input('command: ')
-//EOFError
-
-
-
-
-
-
-
-
-// ensure sub arg 0 is an unsigned in (?)
 
 /* glasses
 
@@ -643,14 +559,6 @@ kitt kar like back and forth
 
  */
 
-
-
-
-
-
-// carry the color and effect that drops off the end of a buffer operation,
-//    then have a special "color" that inserts it.
-
 // if paused, bre effect renders black, causing probems transitioning between animations and breathing (blink renders ok)
 
 // for wearable, have both ways to launch circleci7
@@ -669,25 +577,13 @@ kitt kar like back and forth
 
 // problems with offset and window
 // pshifto - starts at [0]
-// crossfade - leaves only pixels inside the zone (??? in further testing it seemed to work just fine)
-
-// rotation using power shift timing
-
 
 // clean up
 /////////////////////
 
 // store blink states as bits not bools
 
-// move zones to a class (especially for self explanatory comments)
-
-// move mechanical buffer operations like mirror to Buffer class
-
-// animation routines may be inefficient
-
 // see if auto brigtness needs to use that ram for its buffer
-
-
 
 
 // new effects
@@ -716,12 +612,6 @@ kitt kar like back and forth
 
 // shutter / slide in / slide out / random change / etc. transitions
 
-// would be nice for force it to hi power
-
-// detect non-battery power and stay in hi power
-
-// demo mode - keeps going until non-demo command.
-
 // synchronize effects each time the low power led positions changes
 // after pause, allow breathing and blinking to come to a halt first
 
@@ -742,17 +632,9 @@ kitt kar like back and forth
 
 // transition: all leds get sucked into one LED position
 
-
-
 // new hardware features
 
 // command to set an analog output to a particular value
-
-
-
-
-
-
 
 // python:
 // ci-skip build status is "not_run"
@@ -777,7 +659,6 @@ if there's no new builds, display an alternate low power version
 
 seems like it would be better to let the arduino handle the low power rendering so the python script isn't in charge of an effect.
 
-
 lowpower command means:
 
  - could be: normal display effects, but all-but-one LEDs are blacked out (or not rendered).
@@ -795,12 +676,4 @@ lowpower command means:
 
 // need to close a running app before starting circleci
 // need to stop circleci if running an app
-
-
-
-
-
-
-
-
 
