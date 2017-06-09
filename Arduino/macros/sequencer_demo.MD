@@ -1,3 +1,4 @@
+```
 1:set:0,0,3:seq:pos:1,-1:seq:pal:ffd:rst:flu
 2:set:1:seq
 3:set:0,60,30:seq:1,18:seq
@@ -6,3 +7,4 @@
 6:set:2,30:sqs
 7:set:2,0,3:sqs:pos:red:ffd:rst:2,-2:sqs:pos:blu:sfd:rst:flu
 5:run:cnt
+```
