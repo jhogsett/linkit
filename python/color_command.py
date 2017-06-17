@@ -4,20 +4,23 @@ import serial
 import time
 import sys
 
-s = None
-inter_command_delay = 0.1
+response_wait = 0.5
+s = None                        
 
-def flush_input():                        
-  s.flushInput()
-                                        
-def wait_for_ack():                       
-  while s.inWaiting() <= 0:               
+def flush_input():              
+  s.flushInput()  
+
+def wait_for_ack():
+  time.sleep(response_wait)
+  while s.inWaiting() <= 0:
     pass
+#  time.sleep(response_wait)
   while s.inWaiting() > 0:
-    print s.read(s.inWaiting())                   
+    print s.read(s.inWaiting()),
+  print
 
 def command(cmd_text):
-  s.write((':::' + cmd_text + ':').encode())   
+  s.write((cmd_text + ':').encode())   
   wait_for_ack()
 
 def setup(): 
