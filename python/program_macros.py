@@ -28,16 +28,11 @@ s = None
 def setup(): 
   global s 
   s = serial.Serial("/dev/ttyS0", 115200) 
+  command(":::stp:stp")
 
-  if len(sys.argv) > 1:
-    for arg in sys.argv:
-      command(arg)
-    sys.exit("\nSent.\n")    
+def apollo_macros(): 
+  print "apollo macros:"
 
-#cmd = ""
-#last_cmd = cmd
-
-def loop(): 
   # tunsten lamp                                 
   set_macro(10, "clr:-1:sch:1:pau:21:run");     
   set_macro(10, "clr:-1:sch:1:pau:21:run");
@@ -76,8 +71,55 @@ def loop():
   set_macro(43, "25,35:sch:26,36:sch");                     
   set_macro(44, "41:run:42:run:43:run");                    
                                                               
-  set_macro(45, "3:shf");                                   
+  set_macro(45, "shf");                                   
   set_macro(46, "700,45:sch");   
+
+def default_macros():
+  apollo_macros()
+
+def threeway_macros():
+  print "three way macros"
+
+  set_macro(10, "19:run");
+
+  set_macro(11, "wht:brt:brt:flo:flu:30:del");
+  set_macro(12, "rnd:brt:brt:sfd:flo:flu");
+  set_macro(13, "11:run:12:run");
+  set_macro(14, "13:run:20000,10000,14:rng:sch");
+    
+  set_macro(15, "rps:wht:brt:brt:sfd:rst");
+  set_macro(16, "rps:1:rnd:sfd:flu:rst");
+  set_macro(17, "fad:50,15:sch:20000,14:sch");
+  set_macro(18, "fad:50,16:sch");
+    
+  set_macro(19, "-1:sch:60000,19,20:sch:17:run");
+  set_macro(20, "-1:sch:60000,19,21:sch:18:run");
+  set_macro(21, "-1:sch:60000,19,19:sch:23:run");
+
+  set_macro(22, "-3:rng:zon:art:flu:rst");
+  set_macro(23, "fad:2:rnd:flo:flu:50,22:sch");
+
+def oneway_macros():
+  print "one way macros"
+
+  set_macro(10, "era:50,11:sch:15,12:sch:200,16:sch");
+  set_macro(11, "rng:pos:rnd:twi:flu:rst");
+  set_macro(12, "rng:pos:sfd:flu:rst");
+  set_macro(13, "-3:rng:zon");
+  set_macro(14, "2:rng:rev");
+  set_macro(15, "0,3:rng:art");
+  set_macro(16, "13:run:14:run:15:run:rst");
+
+def loop():                                  
+  if len(sys.argv) > 1:
+    if sys.argv[1] == "apollo":
+      apollo_macros()
+    elif sys.argv[1] == "threeway":
+      threeway_macros()
+    elif sys.argv[1] == "oneway":
+      oneway_macros()
+  else:
+    default_macros()
 
 if __name__ == '__main__': 
   setup() 
