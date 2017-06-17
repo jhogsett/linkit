@@ -7,6 +7,8 @@ import sys
 response_wait = 0.1
 s = None                                                     
 debug_mode = False  
+num_tests = 0
+num_failures = 0
 
 def flush_input():                        
   s.flushInput()
@@ -75,26 +77,38 @@ def normal():
   return "\x1b[39m" 
 
 def red(text):
-  print "\x1b[31m" + text + normal()
+  print "\x1b[31m" + text + normal(),
+  sys.stdout.flush()
 
 def green(text):                                              
-  print "\x1b[32m" + text + normal()
+  print "\x1b[32m" + text + normal(),
+  sys.stdout.flush()                                              
 
 def cyan(text):
-  print "\x1b[36m" + text + normal()
+  print "\x1b[36m" + text + normal(),
+  sys.stdout.flush()                                              
+
+def blue(text):                                                   
+  print "\x1b[34m" + text + normal(),                             
+  sys.stdout.flush()   
+
+num_leds = 0
 
 def test(number, description):
-  global test_number, test_description
+  global test_number, test_description, num_leds
+  print
   test_number = number
   test_description = description 
-  cyan("test #" + str(test_number) + " " + test_description + ": ")
+  num_leds = command_int("0,0:tst")              
+  cyan("test #" + str(test_number) + " " + test_description + " ")
   command(":::stp:stp")
 
 def fail(got, expected):
   red("failed! expected: " + expected + " got: " + got)
+  print
 
 def succeed():
-  green("succeeded")
+  green(".")
 
 def expect_equal(got, expected):
   if got != expected:
@@ -120,22 +134,46 @@ def spec_3():
   str = command_str("3,0,1:tst")
   expect_equal(str, "38,0,0,")              
 
+def spec_4():
+  test(4, "it erases the rendered value")
+  command("era:flu")
+  str = command_str("3,0,1:tst")                                 
+  expect_equal(str, "0,0,0,")  
 
+def spec_5():
+  test(5, "it repeats the color value only once")
+  command("grn:rep:flu")
+  str = command_str("2,0,1:tst") 
+  expect_equal(str, "0,20,0,")
+  str = command_str("2,1,1:tst")           
+  expect_equal(str, "0,20,0,")  
+  str = command_str("2,2,1:tst")           
+  expect_equal(str, "0,0,0,") 
 
-
-
-
-
-
+def spec_6():
+  test(6, "it floods all leds")
+  command("pur:flo:flu")
+  num_leds = command_int("0,0:tst")
+  for i in range(num_leds):
+    str_ = command_str("2," + str(i) + ",1:tst")                                  
+    expect_equal(str_, "10,0,20,")                                    
+   
+def spec_7():
+  test(7, "it mirrors the pattern accurately")
+  command("cyn:yel:mag:mir:flu")
+  str_ = command_str("2,0,3:tst")
+  expect_equal(str_, "20,0,20,20,20,0,0,20,20,")
+  str_ = command_str("2," + str(num_leds - 3) + ",3:tst")                 
+  expect_equal(str_, "0,20,20,20,20,0,20,0,20,")
   
 def loop():                                  
   spec_1()
   spec_2()
   spec_3()
-
-
-
-
+  spec_4()
+  spec_5()
+  spec_6()
+  spec_7()
 
 
 
