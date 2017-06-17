@@ -38,6 +38,9 @@ class Macros
   void reset_macro(byte macro);
   void reset_all_macros();
 
+  byte begin_dump_macro(byte macro, byte **position);
+  byte continue_dump_macro(byte macro, byte **position);
+
   private:
 
   static byte macros[NUM_MEMORY_MACROS][NUM_MACRO_CHARS];
@@ -184,11 +187,14 @@ void Macros::determine_arg_marker(byte &arg_marker, byte &num_args){
     num_args = 2;
   } else {
     int arg0 = sub_args[0];
-    if(arg0 >= 1 && arg0 <= 255 ) {
+    if(arg0 >= 0 && arg0 <= 255 ) {
       arg_marker = MACRO_ARG1_MARKER;
     } else if(arg0 != 0){
       arg_marker = MACRO_ARG2_MARKER;
       num_args = 1;
+    } else {
+      //arg_marker = MACRO_ARG2_MARKER;
+      num_args = 0;
     }
   }
 }
@@ -244,23 +250,25 @@ byte Macros::set_macro(byte macro, char * commands){
 
       // write arguments marker
 //      *macro_buffer = arg_marker;
-      write_byte(macro_buffer, to_eeprom, arg_marker);
-      macro_buffer++;
-      byte_count++;
-
-      if(arg_marker == MACRO_ARG1_MARKER){
-//        *macro_buffer = (byte)command_processor->sub_args[0];
-        write_byte(macro_buffer, to_eeprom, (byte)command_processor->sub_args[0]);
+//      if(num_args > 0){
+        write_byte(macro_buffer, to_eeprom, arg_marker);
         macro_buffer++;
         byte_count++;
-      } else {
-        for(byte i = 0; i < num_args; i++){
-          //*((int *)macro_buffer) = command_processor->sub_args[i];
-          write_word((word*)macro_buffer, to_eeprom, (word)command_processor->sub_args[i]);
-          macro_buffer += 2;
-          byte_count += 2;
+
+        if(arg_marker == MACRO_ARG1_MARKER){
+//        *macro_buffer = (byte)command_processor->sub_args[0];
+          write_byte(macro_buffer, to_eeprom, (byte)command_processor->sub_args[0]);
+          macro_buffer++;
+          byte_count++;
+        } else {
+          for(byte i = 0; i < num_args; i++){
+            //*((int *)macro_buffer) = command_processor->sub_args[i];
+            write_word((word*)macro_buffer, to_eeprom, (word)command_processor->sub_args[i]);
+            macro_buffer += 2;
+            byte_count += 2;
+          }
         }
-      }
+//      }
     } else {
       // write the command byte to the macro buffer
       //*macro_buffer = (byte)cmd;
@@ -351,5 +359,22 @@ void Macros::run_macro(byte macro, int times, int delay_){
   }
 }
 
+byte Macros::begin_dump_macro(byte macro, byte **position){
+  bool from_eeprom;
+  if(is_eeprom_macro(macro)){
+    *position = get_eeprom_macro(macro);
+    from_eeprom = true;
+  } else {
+    *position = get_memory_macro(macro);
+    from_eeprom = false;
+  }
+
+  return read_byte(*position, from_eeprom);
+}
+
+byte Macros::continue_dump_macro(byte macro, byte **position){
+  *position = *position + 1;
+  return read_byte(*position, is_eeprom_macro(macro));
+}
 #endif
 

@@ -12,6 +12,7 @@
 class CommandProcessor
 {
   public:
+
   char str[MAX_STRING_LENGTH];
 
   int sub_args[NUM_SUB_ARGS];
@@ -39,8 +40,10 @@ class CommandProcessor
   void get_sub_args(char * str);
   char * borrow_char_buffer();
   void send_int(int value);
+  void send_ints(int value);
 
   private:
+
   bool str_equal_P(char *str1, const char *str2);
   bool is_command_P(char *str, const char *command);
   void save_accumulator();
@@ -87,6 +90,13 @@ void CommandProcessor::send_ack(){
 
 void CommandProcessor::send_int(int value){
   serial->print(value);
+}
+
+#define INT_DELIMITER_CHAR ','
+
+void CommandProcessor::send_ints(int value){
+  serial->print(value);
+  serial->print(INT_DELIMITER_CHAR);
 }
 
 void CommandProcessor::save_args(char * args = NULL){
