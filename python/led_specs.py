@@ -101,7 +101,7 @@ def test(number, description):
   test_description = description 
   num_leds = command_int("0,0:tst")              
   cyan("test #" + str(test_number) + " " + test_description + " ")
-  command(":::stp:stp")
+  command(":::stp:stp:20:lev")
 
 def fail(got, expected):
   red("failed! expected: " + expected + " got: " + got)
@@ -116,11 +116,18 @@ def expect_equal(got, expected):
   else:
     succeed()
 
+def expect_buffer(command_, start, count, expected):
+  command(command_)
+  str_ = command_str("2," + str(start) + "," + str(count) + ":tst")                                 
+  expect_equal(str_[:-1], expected)
+
 def spec_1():
   test(1, "it sets a pre-rendered red value in the buffer")
-  command("red")
-  str = command_str("2,0,1:tst")
-  expect_equal(str, "20,0,0,")
+#  command("red")
+#  str = command_str("2,0,1:tst")
+#  expect_equal(str, "20,0,0,")
+
+  expect_buffer("red", 0, 1, "20,0,0")
 
 def spec_2():
   test(2, "it doesn't render while paused")
@@ -132,10 +139,13 @@ def spec_3():
   test(3, "it renders a rendered red value in the render buffer")
   command("red:flu")
   str = command_str("3,0,1:tst")
-  expect_equal(str, "38,0,0,")              
+  expect_equal(str, "51,0,0,")              
 
 def spec_4():
   test(4, "it erases the rendered value")
+  command("red:flu")
+  str = command_str("3,0,1:tst")                                 
+  expect_equal(str, "51,0,0,")                                    
   command("era:flu")
   str = command_str("3,0,1:tst")                                 
   expect_equal(str, "0,0,0,")  
@@ -143,12 +153,8 @@ def spec_4():
 def spec_5():
   test(5, "it repeats the color value only once")
   command("grn:rep:flu")
-  str = command_str("2,0,1:tst") 
-  expect_equal(str, "0,20,0,")
-  str = command_str("2,1,1:tst")           
-  expect_equal(str, "0,20,0,")  
-  str = command_str("2,2,1:tst")           
-  expect_equal(str, "0,0,0,") 
+  str = command_str("2,0,3:tst") 
+  expect_equal(str, "0,20,0,0,20,0,0,0,0,")
 
 def spec_6():
   test(6, "it floods all leds")
@@ -165,6 +171,12 @@ def spec_7():
   expect_equal(str_, "20,0,20,20,20,0,0,20,20,")
   str_ = command_str("2," + str(num_leds - 3) + ",3:tst")                 
   expect_equal(str_, "0,20,20,20,20,0,20,0,20,")
+
+def spec_8():
+  test(8, "it places two colors (only)")
+  command("2:yel:flu")
+  str = command_str("2,0,3:tst")
+  expect_equal(str, "20,20,0,20,20,0,0,0,0,")
   
 def loop():                                  
   spec_1()
@@ -174,7 +186,7 @@ def loop():
   spec_5()
   spec_6()
   spec_7()
-
+  spec_8()
 
 
 
