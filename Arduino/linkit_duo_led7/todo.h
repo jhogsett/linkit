@@ -1,4 +1,32 @@
+// divide blink wheel by blink period, for instnace 5999 / 1000 to get 0 through 5, 
+//   store that figure and only display blink if it matches effect blink number
+
+// command to run a range of macros, like 20,29:rmm runs macros 20 through 29 in order
+
+// 0,255,255:hsl at 100:lev is less bright than red at 100:lev (hsl brightness compensation problem?)
+
+// palette, need to change brightness up/down, distribute HSL colors various ways
+
+// allow setting a seed value for random number generation
+// -- would have to be a private seed (feed value back as seed?) to have a repeatable sequence
+
+// more colors: argon, neon, xenon, sodium
+
+// need a way to set a sequence relatively, like to cover a zone
+
+// need a way to pause background effects but keep schedules running
+
+// ability to set current sequence value to a random number in range
+
+// opposite value doesn't seem to work proper except starting a zero
+
+// ignore out of range sequencer numbers
+
+// need a way to reset all sequncers (-1:seq?)
+
 // need to be able to link sequencers (triggers?)
+
+// have the ability to set drawing mode: overwrite, add, etc.
 
 // concept of "objects"
 // - hidden/shown

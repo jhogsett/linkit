@@ -19,6 +19,7 @@ class FadeEffects
   bool process();
   static bool is_handled_effect(byte effect);
   rgb_color apply_fade(rgb_color color, byte effect);
+  void set_fade_rate(float fade_rate);
 
   private:
 
@@ -41,7 +42,7 @@ void FadeEffects::reset(){
   fade_counter = 0;
 }
 
-  bool FadeEffects::process(){
+bool FadeEffects::process(){
   bool should_flush = false;
   fade_counter = (fade_counter + 1) % fade_period;
 
@@ -73,6 +74,10 @@ rgb_color FadeEffects::apply_fade(rgb_color color, byte effect){
   }
 
   return color;
+}
+
+void FadeEffects::set_fade_rate(float fade_rate){
+  this->fade_rate = fade_rate;
 }
 
 rgb_color FadeEffects::apply_slow_fade(rgb_color color){

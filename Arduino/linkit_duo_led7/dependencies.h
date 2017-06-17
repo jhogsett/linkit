@@ -3,14 +3,20 @@
 
 #include <PololuLedStrip.h>
 #include <random_seed.h>
+
+#ifdef USE_AUTO_BRIGHTNESS
 #include <auto_brightness.h>
+#endif
+
 #include <color_math.h>
 #include <colors.h>
 #include <command_processor.h>
 #include <power_ease.h>
+
 #ifdef USE_ELASTIC_EASE
 #include <elastic_ease.h>
 #endif
+
 #include <blink_effects.h>
 #include <breathe_effects.h>
 #include <fade_effects.h>
@@ -71,8 +77,10 @@ class Dependencies
   // for generating higher-quality random number seeds
   static RandomSeed<RANDOM_SEED_PIN> randomizer;
 
+#ifdef USE_AUTO_BRIGHTNESS
   // auto-brightness setting hardware driver
   static AutoBrightness<LIGHT_SENSOR_PIN> auto_brightness;
+#endif
 
   // processes incoming commands
   static CommandProcessor command_processor;
@@ -176,8 +184,10 @@ PololuLedStripBase* Dependencies::ledStrips[config.num_displays] =
 // for generating higher-quality random number seeds
 RandomSeed<RANDOM_SEED_PIN> Dependencies::randomizer;
 
+#ifdef USE_AUTO_BRIGHTNESS
 // auto-brightness setting hardware driver
 AutoBrightness<LIGHT_SENSOR_PIN> Dependencies::auto_brightness;
+#endif
 
 // processes incoming commands
 CommandProcessor Dependencies::command_processor;
@@ -212,8 +222,10 @@ void Dependencies::begin(){
   Serial1.begin(BAUD_RATE); 
 #endif
 
+#ifdef USE_AUTO_BRIGHTNESS
   // start up auto-brightness hardware driver
   auto_brightness.begin(AUTO_BRIGHTNESS_MIN, AUTO_BRIGHTNESS_MAX);
+#endif
 
   // start up command processor, listening on the serial port and looking for the passed commands
 #ifdef REAL_ARDUINO
@@ -235,11 +247,14 @@ void Dependencies::begin(){
   sequencer.begin();
 
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
-//  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, NUM_ZONES, zone_offsets, zone_windows); //, existence);
-  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, &this->zones); //, existence);
+  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, &this->zones); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
-  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness, &this->command_processor, &this->blink_effects, &this->breathe_effects, &this->sequencer);
+#ifdef USE_AUTO_BRIGHTNESS
+  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness, &this->command_processor, &this->blink_effects, &this->breathe_effects, &this->fade_effects, &this->sequencer);
+#else
+  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->command_processor, &this->blink_effects, &this->breathe_effects, &this->fade_effects, &this->sequencer);
+#endif
 
   // set up the blink effects counter and states
   blink_effects.begin(config.blink_period);
@@ -269,8 +284,11 @@ void Dependencies::begin(){
   commands.reset();
   commands.set_brightness_level();
   commands.scheduler.reset_all_schedules();
-  commands.run_default_macro();
-
+  
+#ifdef USE_DEFAULT_MACROS
+commands.run_default_macro();
+#endif
+  commands.process_commands(F("10:run"));
 }
 
 #endif

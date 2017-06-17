@@ -8,22 +8,12 @@
 #define LEAVE_EFFECT -1
 #define NO_EFFECT 0
 
-#ifdef EXISTENCE_ENABLED
-#define LEAVE_ID -1
-#define NO_ID 0
-#endif
-
 #define OVERRIDE_OFF -1
 
 class Buffer
 {
   public:
-#ifdef EXISTENCE_ENABLED
-  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, byte num_zones, byte *zone_offsets, byte *zone_windows, byte *existence);
-#else
-//  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, byte num_zones, byte *zone_offsets, byte *zone_windows);
-  void begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones);
-#endif
+  void begin(PololuLedStripBase **ledStrips, byte default_brightness, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones);
 
   void display_buffer(rgb_color * pbuffer);
   void render_display();
@@ -71,13 +61,8 @@ class Buffer
   Render *renderer;
   byte safety_led_count;
   byte visible_led_count;
-  float fade_rate;
   rgb_color carry_color;
   byte carry_effect;
-
-#ifdef EXISTENCE_ENABLED
-  byte *existence;
-#endif
 
   int window_override = OVERRIDE_OFF;
   int offset_override = OVERRIDE_OFF;
@@ -91,11 +76,7 @@ class Buffer
 
 rgb_color *Buffer::render;
 
-#ifdef EXISTENCE_ENABLED
-void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, byte num_zones, byte *zone_offsets, byte *zone_windows, byte *existence){
-#else
-void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, float fade_rate, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones){
-#endif
+void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones){
   this->black = BLACK;
   this->ledStrips = ledStrips;
   this->current_display = 0;
@@ -106,13 +87,8 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, floa
   this->renderer = renderer;
   this->safety_led_count = safety_led_count;
   this->visible_led_count = visible_led_count;
-  this->fade_rate = fade_rate;
   this->window_override = OVERRIDE_OFF;
   this->offset_override = OVERRIDE_OFF;
-#ifdef EXISTENCE_ENABLED
-  this->existence = existence;
-#endif
-
   this->zones = zones;
   this->reverse = false;
   this->carry_color = black;
@@ -151,10 +127,6 @@ void Buffer::erase(bool display = false)
   for(byte i = offset; i < window; i++){
     buf[i] = black;
     effects[i] = NO_EFFECT;
-
-#ifdef EXISTENCE_ENABLED
-    existence[i] = NO_ID;
-#endif
   }
 
   if(display){
@@ -211,10 +183,6 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
     for(byte i = start; i < (max - 1); i++){
       buffer[i] = buffer[i+1];
       effects[i] = effects[i+1];
-
-#ifdef EXISTENCE_ENABLED
-      existence[i] = existence[i+1];
-#endif
     }
   } else {
     this->carry_color = buffer[max - 1];
@@ -223,19 +191,11 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
     for(byte i = max - 1; i >= (start + 1); i--){
       buffer[i] = buffer[i-1];
       effects[i] = effects[i-1];
-
-#ifdef EXISTENCE_ENABLED
-      existence[i] = existence[i-1];
-#endif
     }
   }
 }
 
-#ifdef EXISTENCE_ENABLED
-void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte id = NO_ID, byte start = 0)
-#else
 void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
-#endif
 {
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
@@ -250,15 +210,9 @@ void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, b
     if(this->reverse){
       buffer[max-1] = ColorMath ::correct_color(color);
       effects[max-1] = effect;
-#ifdef EXISTENCE_ENABLED
-      existence[max-1] = id;
-#endif
     } else {
       buffer[start] = ColorMath::correct_color(color);
       effects[start] = effect;
-#ifdef EXISTENCE_ENABLED
-      existence[start] = id;
-#endif
     }
 
     if(display){
@@ -282,11 +236,7 @@ void Buffer::push_carry_color(){
   push_color(carry_color, 1, false, carry_effect);
 }
 
-#ifdef EXISTENCE_ENABLED
-void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT, byte id = NO_ID)
-#else
 void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT)
-#endif
 {
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
@@ -296,12 +246,6 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
   if(effect != LEAVE_EFFECT){
     effects[pos] = effect;
   }
-
-#ifdef EXISTENCE_ENABLED
-  if(id != LEAVE_ID){
-    existence[pos] = id;
-  }
-#endif
 
   if(display){
     render_display();

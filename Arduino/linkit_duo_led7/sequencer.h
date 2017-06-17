@@ -1,12 +1,16 @@
 #ifndef SEQUENCER_H
 #define SEQUENCER_H
 
-#define NUM_SEQUENCES 5
+#define NUM_SEQUENCES 6
 
-#define SEQUENCE_WHEEL 0
-#define SEQUENCE_SWING 1
-#define SEQUENCE_DRIVE 2
-#define SEQUENCE_BOUND 3
+#define SEQUENCE_WHEEL       0
+#define SEQUENCE_SWING       1
+#define SEQUENCE_DRIVE       2
+#define SEQUENCE_BOUND       3
+#define SEQUENCE_WHEEL_POWER 4
+#define SEQUENCE_SWING_POWER 5
+#define SEQUENCE_DRIVE_POWER 4
+#define SEQUENCE_BOUND_POWER 5
 
 #define STATE_NORMAL   0
 #define STATE_REVERSE  1
@@ -77,7 +81,8 @@ int Sequence::next(int advancement, int step){
       this->reset();
       return this->current;
     case ADVANCE_OPPOSITE:
-      return this->max - this->current;
+      //this->increment(step);
+      return (this->max - this->current) + this->low;
     case ADVANCE_CURRENT:
       return this->current;
     case ADVANCE_NEXT:
@@ -99,11 +104,11 @@ int Sequence::increment(int step){
 }
 
 int Sequence::increment_wheel(int step){
-  this->current = this->current + step;
+  this->current += step;
 
   if(this->current > this->max){
-    int step_remaining = step - (this->current - this->max);
-    this->current = this->low + step_remaining;    
+    int step_carry = step - (this->current - this->max);
+    this->current = this->low + step_carry;    
   }
 
   return this->current;
@@ -122,8 +127,8 @@ int Sequence::increment_swing_normal(int step){
   this->current += step;
   
   if(this->current > this->max){
-    int step_remaining = step - (this->current - this->max);
-    this->current -= step_remaining;
+    int step_reflect = this->current - this->max;
+    this->current = this->max - step_reflect;
     this->state = STATE_REVERSE;
   }
   return this->current;
@@ -133,8 +138,8 @@ int Sequence::increment_swing_reverse(int step){
   this->current -= step;
 
   if(this->current < this->low){
-    int step_remaining = step - (this->low - this->current);
-    this->current += step_remaining;
+    int step_reflect = this->low - this->current;
+    this->current = this->low + step_reflect;
     this->state = STATE_NORMAL;
   }
   return this->current;
@@ -167,23 +172,19 @@ int Sequence::increment_bound_normal(int step){
   this->current += step;
 
   if(this->current > this->max){
-    int step_remaining = step - (this->current - this->max);
-    this->current -= step_remaining;
+    int step_carry = this->current - this->max;
+    this->current = this->max - step_carry;
     this->state = STATE_STOP;
   }
   return this->current;
 }
 
 int Sequence::increment_bound_reverse(int step){
-  if(this->state == STATE_STOP)
+  if(this->current <= this->low){
     return this->low;
-
-  this->current -= step;
-  if(this->current < this->low){
-    int step_remaining = step - (this->low - this->current);
-    this->current += step_remaining;
-    this->state = STATE_NORMAL;
-  }
+  } else {
+    this->current -= step;
+    }
 
   return this->current;
 }
