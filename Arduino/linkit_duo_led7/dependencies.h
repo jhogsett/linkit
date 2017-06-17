@@ -22,7 +22,7 @@
 #include "commands.h"
 #include "zone_defs.h"
 #include <zones.h>
-//#include "scheduler.h"
+#include "sequencer.h"
 
 class Dependencies
 {
@@ -96,6 +96,9 @@ class Dependencies
 
   // zone positions
   static Zones zones;
+
+  // sequencers
+  static Sequencer sequencer;
 
   // initialize all dependencies
   void begin();
@@ -198,6 +201,8 @@ Commands Dependencies::commands;
 
 Zones Dependencies::zones;
 
+Sequencer Dependencies::sequencer;
+
 void Dependencies::begin(){
 
   // open internal serial connection to MT7688 for receiving commands
@@ -227,12 +232,14 @@ void Dependencies::begin(){
 
   zones.begin(NUM_ZONES, FINE_ZONES, ::zone_offsets, ::zone_windows);
 
+  sequencer.begin();
+
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
 //  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, NUM_ZONES, zone_offsets, zone_windows); //, existence);
   buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, FADE_RATE, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, &this->zones); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
-  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness);
+  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness, &this->command_processor, &this->blink_effects, &this->breathe_effects, &this->sequencer);
 
   // set up the blink effects counter and states
   blink_effects.begin(config.blink_period);
@@ -257,29 +264,14 @@ void Dependencies::begin(){
   ElasticEase::generate_elastic_ease();
 #endif
 
-  ::reset_palette();
-//  ::reset_all_schedules();
+  buffer.erase(true);
+  Colors::reset_palette();
+  commands.reset();
+  commands.set_brightness_level();
+  commands.scheduler.reset_all_schedules();
+  commands.run_default_macro();
+
 }
 
-//void Dependencies::self_test(){
-//
-//#ifdef STATUS_MONITOR
-//  // flash the red alarm light for one second
-//  commands.set_pin(4, true);
-//  delay(1000);
-//  commands.set_pin(4, false);
-//#endif
-//
-//#ifdef WEARABLE_AND_STRIP
-//  commands.do_demo();
-//#else
-//  for(int i = 0; i < NUM_BUFFERS; i++){
-//    commands.set_display((NUM_BUFFERS - 1) - i);
-//    commands.do_demo();
-//  }
-//#endif
-//
-//  commands.reset();
-//}
 #endif
 

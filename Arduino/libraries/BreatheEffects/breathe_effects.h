@@ -5,7 +5,7 @@
 
 #define BREATHE_TIME 500
 #define BREATHE_BRIGHTNESS_MAX DEFAULT_BRIGHTNESS_PERCENT
-#define BREATHE_MAX_STEP 22 
+#define BREATHE_MAX_STEP 22
 #define BREATHE_BRIGHTNESS_MIN 0
 
 class BreatheEffects
@@ -19,7 +19,8 @@ class BreatheEffects
   bool process();
   bool is_handled_effect(byte effect);
   float breathe_ratio();
- 
+  void set_breathe_time(int time);
+
   private:
   int breathe_time = BREATHE_TIME;
   int breathe_counter = 0;
@@ -69,7 +70,7 @@ bool BreatheEffects::process(){
 
   breathe_counter = (breathe_counter + 1) % breathe_time;
   if(breathe_counter == 0){
-    int next_breathe_step = breathe_step + breathe_direction;
+    byte next_breathe_step = breathe_step + breathe_direction;
     if(next_breathe_step < 0 || next_breathe_step >= BREATHE_MAX_STEP){
       breathe_direction *= -1;
     }
@@ -85,6 +86,10 @@ bool BreatheEffects::is_handled_effect(byte effect){
 
 float BreatheEffects::breathe_ratio(){
   return pgm_read_float(&breathe_steps[BREATHE_MAX_STEP - breathe_step]);
+}
+
+void BreatheEffects::set_breathe_time(int time){
+  this->breathe_time = time;
 }
 
 #endif

@@ -26,8 +26,9 @@ class Buffer
 #endif
 
   void display_buffer(rgb_color * pbuffer);
+  void render_display();
   void erase(bool display);
-  void push_color(rgb_color color, int times, bool display, byte effect, byte max, byte start);
+  void push_color(rgb_color color, byte times, bool display, byte effect, byte max, byte start);
   void push_rgb_color(byte red, byte green, byte blue);
   void push_hsl_color(int hue, int sat, int lit);
   void push_carry_color();
@@ -36,21 +37,22 @@ class Buffer
   void set_color(byte pos, rgb_color color, bool display, byte effect);
   void fade(float rate);
   void fade_fast();
-  void cross_fade(int step);
-  int get_window();
+  void cross_fade(byte step);
+  byte get_window();
   void set_display(byte display);
   void set_buffer(byte buffer);
   rgb_color * get_buffer();
   byte * get_effects_buffer();
   byte get_current_display();
   rgb_color * get_render_buffer();
-  void set_offset_override(int offset);
-  void set_window_override(int window);
+  void set_offset_override(byte offset);
+  void set_window_override(byte window);
   byte get_offset();
   byte get_width();
   void set_zone(byte zone);
   void reset();
   void set_reverse(bool reverse);
+  bool get_reverse();
   void rotate();
   byte get_display();
   byte get_zones();
@@ -80,9 +82,6 @@ class Buffer
   int window_override = OVERRIDE_OFF;
   int offset_override = OVERRIDE_OFF;
 
-//  byte num_zones;
-//  byte *zone_offsets;
-//  byte *zone_windows;
   Zones *zones;
   byte current_zone = 0;
   bool reverse = false;
@@ -136,14 +135,22 @@ void Buffer::reset(){
 void Buffer::display_buffer(rgb_color * pbuffer){
   ledStrips[current_display]->write(pbuffer, visible_led_count);
 }
-  
+
+// todo might want choice of slow or fast render
+void Buffer::render_display(){
+  renderer->render_buffer(render, this->buffers[current_display], visible_led_count, this->effects_buffers[current_display]);
+  display_buffer(render);
+}
+
 void Buffer::erase(bool display = false)
 {
-  int offset = get_offset();
-  int window = get_window();
+  byte offset = get_offset();
+  byte window = get_window();
+  rgb_color * buf = buffers[current_display];
+  byte * effects = effects_buffers[current_display];
   for(byte i = offset; i < window; i++){
-    buffers[current_display][i] = black;
-    effects_buffers[current_display][i] = NO_EFFECT;
+    buf[i] = black;
+    effects[i] = NO_EFFECT;
 
 #ifdef EXISTENCE_ENABLED
     existence[i] = NO_ID;
@@ -151,33 +158,17 @@ void Buffer::erase(bool display = false)
   }
 
   if(display){
-    display_buffer(buffers[current_display]);
+    render_display();
   }
 }
 
-//void Buffer::fade(float rate = 0.0){
-//  rate = (rate == 0.0) ? fade_rate : rate;
-//  byte *p = (byte *)buffers[current_display];
-//  for(int i = get_offset(); i < get_window() * 3; i++){
-//    *(p + i) *= rate;
-//  }
-//}
-
-//void Buffer::fade_fast(){
-//  byte *p;
-//  p = (byte *)buffers[current_display];
-//  for(byte i = get_offset(); i < get_window() * 3; i++){
-//    *(p + i) = *(p + i) >> 1;
-//  }
-//}
-
-void Buffer::cross_fade(int step){
-  int offset = get_offset();
-  int window = get_window();
+void Buffer::cross_fade(byte step){
+  byte offset = get_offset();
+  byte window = get_window();
   rgb_color *buffer = buffers[current_display];
   byte* effects = effects_buffers[current_display];
 
-  for(int i = offset; i < window; i++){
+  for(byte i = offset; i < window; i++){
     rgb_color *pb = buffer + i;
     rgb_color *pr = render + i;
     rgb_color rendered_color = renderer->render(pb, effects[i]);
@@ -243,7 +234,7 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
 #ifdef EXISTENCE_ENABLED
 void Buffer::push_color(rgb_color color, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte id = NO_ID, byte start = 0)
 #else
-void Buffer::push_color(rgb_color color, int times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
+void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
 #endif
 {
   rgb_color * buffer = buffers[current_display];
@@ -253,11 +244,11 @@ void Buffer::push_color(rgb_color color, int times = 1, bool display = false, by
   start = (start == 0) ? get_offset() : start;
   times = max(1, times);
 
-  for(int i = 0; i < times; i++){
+  for(byte i = 0; i < times; i++){
     shift_buffer(buffer, effects, max, start, this->reverse);
 
     if(this->reverse){
-      buffer[max-1] = ColorMath::correct_color(color);
+      buffer[max-1] = ColorMath ::correct_color(color);
       effects[max-1] = effect;
 #ifdef EXISTENCE_ENABLED
       existence[max-1] = id;
@@ -271,11 +262,11 @@ void Buffer::push_color(rgb_color color, int times = 1, bool display = false, by
     }
 
     if(display){
-      display_buffer(buffer);
+      render_display();
     }
   }
 }
-  
+
 void Buffer::push_rgb_color(byte red, byte green, byte blue){
   rgb_color color = (rgb_color){red, green, blue};
   color = ColorMath::unscale_color(color, default_brightness_scale);
@@ -313,11 +304,11 @@ void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte eff
 #endif
 
   if(display){
-    display_buffer(buffer);
+    render_display();
   }
 }
-  
-void Buffer::set_window_override(int window){
+
+void Buffer::set_window_override(byte window){
   if(window < 0){
     this->window_override = OVERRIDE_OFF;
   } else {
@@ -325,7 +316,7 @@ void Buffer::set_window_override(int window){
   }
 }
 
-int Buffer::get_window(){
+byte Buffer::get_window(){
   if(this->window_override != OVERRIDE_OFF){
     return this->window_override;
   } else {
@@ -333,7 +324,7 @@ int Buffer::get_window(){
   }
 }
 
-void Buffer::set_offset_override(int offset){
+void Buffer::set_offset_override(byte offset){
   if(offset < 0){
     this->offset_override = OVERRIDE_OFF;
   } else {
@@ -383,6 +374,10 @@ void Buffer::set_reverse(bool reverse = true){
   this->reverse = reverse;
 }
 
+bool Buffer::get_reverse(){
+  return this->reverse;
+}
+
 byte Buffer::get_zones(){
   return this->zones->get_num_zones();
 }
@@ -428,9 +423,12 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
 void Buffer::finalize_shift(byte count, byte max){
 
   // to do: restrict to current zone
-  for(byte i = 0; i < count; i++){
-    push_color(black, 1, false, NO_EFFECT, max);
-  }
+//  for(byte i = 0; i < count; i++){
+//    push_color(black, 1, false, NO_EFFECT, max);
+//  }
+  push_color(black, count, false, NO_EFFECT, max);
+
+
 }
 
 #endif

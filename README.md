@@ -326,68 +326,72 @@
 
 Set up dev link to SD card
 
-    * cd /Media/SD-P1
-    * mkdir dev
-    * cd ~
-    * ln -s /Media/SD-P1/dev dev
+    cd /Media/SD-P1
+    mkdir dev
+    cd ~
+    ln -s /Media/SD-P1/dev dev
 
 Create and grab an RSA public key
 
-    * mkdir ~/.ssh
-    * dropbearkey -t rsa -f ~/.ssh/id_rsa
-    * dropbearkey -y -f ~/.ssh/id_rsa | head -n 2 | tail -1
+    mkdir ~/.ssh
+    dropbearkey -t rsa -f ~/.ssh/id_rsa
+    dropbearkey -y -f ~/.ssh/id_rsa | head -n 2 | tail -1
     
-    Copy the public key that's output and add it to your account at Github.com
+_Copy the public key that's output and add it to your account at Github.com_
 
 Add your Mac public key for no-password ssh login
 
-    * vim /etc/dropbear/authorized_keys
+    vim /etc/dropbear/authorized_keys
     
-    Add your key and save the file
+_Add your key and save the file_
 
 Fix Git in various ways
 
-    * echo "#!/bin/sh" > ~/.gitssh.sh
-    * echo "dbclient -y -i ~/.ssh/id_rsa $*" >> ~/.gitssh.sh
-    * chmod +x ~/.gitssh.sh
-    * echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
+    echo "#!/bin/sh" > ~/.gitssh.sh
+    echo "dbclient -y -i ~/.ssh/id_rsa $*" >> ~/.gitssh.sh
+    chmod +x ~/.gitssh.sh
+    echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
         
 _NOTE: if this doesn't work, check your copying and pasting (check that \$\* is $*)_
     
-    * git config --global user.email "{YOUR EMAIL}"
-    * git config --global user.name "{YOUR FULL NAME}"
-    * ln -s $(which git) /usr/lib/git-core/git
-    * git config --global core.pager cat
+    git config --global user.email "{YOUR EMAIL}"
+    git config --global user.name "{YOUR FULL NAME}"
+    ln -s $(which git) /usr/lib/git-core/git
+    git config --global core.pager cat
     
 Set up global and user profiles
 
-    * vim /etc/profile _(for all users)_
-    * alias ls='ls -al' (or your desired customization)
-    * alias cc='/root/color_command.py'
+_for all users:_
 
-    * vim /root/.profile (for root user)
-    * add export KEY={THE KEY}
+    vim /etc/profile
+    alias ls='ls -al'
+    alias cc='/root/color_command.py'
+
+_for root user:_
+
+    vim /root/.profile
+    export KEY={CircirCI Key}
 
 Prepare to sync files between the SD card and the root directory
 
-    * opkg update
-    * opkg install rsync
+    opkg update
+    opkg install rsync
 
 Prepare to run Python programs that call out to the Internet
 
-    * pip install requests
+    pip install requests
 
 Get the Python code to run locally
 
-    * cd ~/dev
-    * git clone git@github.com:jhogsett/linkit.git
-    * cd linkit/python
-    * ./scripts/refresh
+    cd ~/dev
+    git clone git@github.com:jhogsett/linkit.git
+    cd linkit/python
+    ./scripts/refresh
 
 Add the http_command start-up
 
-    * cd /etc/init.d
-    * vim http_command
+    cd /etc/init.d
+    vim http_command
     
 ```bash
 #!/bin/sh /etc/rc.common
@@ -412,9 +416,9 @@ stop() {
 }
 ```
 
-    * chmod +x http_command
-    * ./http_command enable
-    * ./http_command start
+    chmod +x http_command
+    ./http_command enable
+    ./http_command start
 
 ----
 
@@ -435,3 +439,8 @@ https://labs.mediatek.com/fileMedia/download/4ef033b8-80ca-4cdb-9ad6-1c23836c63d
 * MediaTek Software and Tools
    
 https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688/sdt_intro/index.gsp
+
+#### utilities
+
+    opkg update && opkg install e2fsprogs
+

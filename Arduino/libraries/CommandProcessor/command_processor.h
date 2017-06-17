@@ -38,6 +38,7 @@ class CommandProcessor
   char * get_input_buffer();
   void get_sub_args(char * str);
   char * borrow_char_buffer();
+  void send_int(int value);
 
   private:
   bool str_equal_P(char *str1, const char *str2);
@@ -50,6 +51,10 @@ void CommandProcessor::begin(HardwareSerial *serial, const char* const *commands
   this->commands = commands;
   this->num_commands = num_commands;
   this->serial = serial;
+
+  // force a command acknowledgement to wake up any script that may be halted
+  // waiting for a character to be sent due to a new Arduino sketch being uploaded
+  acknowledge_command(true);
 }
 
 bool CommandProcessor::input_available(){
@@ -61,7 +66,7 @@ bool CommandProcessor::input_available(){
 // the effective buffer size may be this buffer width + 64-char serial buffer input size
 bool CommandProcessor::received_command(){
   if(input_available()){
-    int c = serial->readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH-1);
+    byte c = serial->readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH-1);
     this->str[c] = 0;
     return true;
   } else {
@@ -80,13 +85,17 @@ void CommandProcessor::send_ack(){
   serial->write("k");
 }
 
+void CommandProcessor::send_int(int value){
+  serial->print(value);
+}
+
 void CommandProcessor::save_args(char * args = NULL){
   get_sub_args(args);
 }
 
 // str2 is a pointer to a string in PROGMEM
 bool CommandProcessor::str_equal_P(char *str1, const char *str2){
-  for(int i = 0; i < MAX_STRING_LENGTH; i++){
+  for(byte i = 0; i < MAX_STRING_LENGTH; i++){
     char c1 = *(str1 + i);
     char c2 = (char)pgm_read_byte(str2 + i);
     if(c1 == 0 && c2 == 0) return true;

@@ -57,14 +57,14 @@ template<byte pin> void AutoBrightness<pin>::begin(byte min_brightness, byte max
 
 template<byte pin> int AutoBrightness<pin>::get_average_light_level(){
   int result;
-  for(int i = 0; i < LIGHT_SAMPLE_COUNT; i++){
-    result = get_next_light_sample();  
+  for(byte i = 0; i < LIGHT_SAMPLE_COUNT; i++){
+    result = get_next_light_sample();
   }
 }
 
 template<byte pin> int AutoBrightness<pin>::get_next_light_sample(){
   int accum = 0;
-  for(int i = LIGHT_SAMPLE_COUNT-1; i > 0; i--){
+  for(byte i = LIGHT_SAMPLE_COUNT-1; i > 0; i--){
     light_samples[i] = light_samples[i-1];
     accum += light_samples[i];
   }
@@ -76,7 +76,7 @@ template<byte pin> int AutoBrightness<pin>::get_next_light_sample(){
 
 template<byte pin> int AutoBrightness<pin>::get_one_light_sample() {
   delay(LIGHT_SAMPLE_DELAY);
-  return analogRead(pin);  
+  return analogRead(pin);
 }
 
 // 1023 = complete darkness, 0 = infinite brightness

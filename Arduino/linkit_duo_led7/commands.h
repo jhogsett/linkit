@@ -1,12 +1,18 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#include <macros.h>
+#include <scheduler.h>
+
 #include "config.h"
 #include "zone_defs.h"
+#include "sequencer.h"
 
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
+
+#define DEFAULT_MACRO 10
 
 #if defined(MINI_DISC_19)
 #define CROSSFADE_DELAY 50
@@ -14,17 +20,27 @@
 #define CROSSFADE_DELAY 1
 #endif
 
-#ifdef USE_LOW_POWER_MODE
-#define LOW_POWER_TIME 50
-#endif
 
 class Commands
 {
   public:
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness);
+  
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, Sequencer *sequencer);
+  void process_events();
+  void process_commands(char * buffer);
+  void process_commands(const __FlashStringHelper * commands);
+  void reset();
+  void set_brightness_level(byte level = 0);
+  bool dispatch_command(int cmd, byte *dispatch_data = NULL);
+  bool is_paused();
+  void flush_all(bool force_display = false);
+  void run_default_macro();
+  static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
+  static Scheduler scheduler;
+
+  private:
   void pause();
   void resume();
-  bool is_paused();
   void do_blend(byte strength);
   void do_max();
   void do_dim();
@@ -35,52 +51,94 @@ class Commands
   void do_flood();
   void do_random(byte type);
   void do_mirror();
-  void do_copy(int size, int times, int zoom);
+  void do_copy(byte size, int times, byte zoom);
   void do_repeat(byte times);
   void do_elastic_shift(byte count, byte max);
   void do_power_shift(byte count, byte max, bool fast_render);
   void do_power_shift_object(byte width, byte shift, bool fast_render);
   void do_demo();
   void flush(bool force_display);
-  void flush_all(bool force_display = false);
-  void reset();
   void low_power();
   void high_power();
   void set_display(byte display);
   void set_buffer(byte nbuffer);
   void set_pin(byte pin, bool on);
-  void set_brightness_level(byte level = 0);
   void clear();
-  void do_rotate(byte times, byte steps, byte flush);
+  void do_rotate(byte times, byte steps, bool flush);
   void do_delay(int milliseconds);
-  int random_num(int max, int min);
-  int set_position(int position);
-  int random_position();
+  int random_num(int max, int min = 0);
+  void set_position(int position);
+  void random_position(int type);
+  int do_sequence(byte type, int arg0, int arg1, int arg2);
+  int do_set_sequence(byte type, int arg0, int arg1, int arg2);
+  int do_next_sequence(int arg0, int arg1, int arg2);
 
-  private:
   Buffer *buffer;
   Render *renderer;  
   EffectsProcessor *effects_processor;
+  CommandProcessor *command_processor;
+  BlinkEffects *blink_effects;
+  BreatheEffects *breathe_effects;
   bool paused = false;
   byte default_brightness;
   byte visible_led_count;
-#ifdef USE_LOW_POWER_MODE
-  bool low_power_mode = false;
-  byte low_power_position = 0;
-  int low_power_timer = 0;
-#endif
   AutoBrightnessBase *auto_brightness;
-  void advance_low_power_position();
-
+  static Macros macros;
+  static Commands * me;
+  Sequencer *sequencer;
 };
 
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness){
+Macros Commands::macros;
+Scheduler Commands::scheduler;
+Commands * Commands::me;
+
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, Sequencer *sequencer){
+  this->me = this;
   this->buffer = buffer;
   this->renderer = renderer;
   this->effects_processor = effects_processor;
   this->default_brightness = default_brightness;
   this->visible_led_count = visible_led_count;
   this->auto_brightness = auto_brightness;
+  this->command_processor = command_processor;
+  this->blink_effects = blink_effects;
+  this->breathe_effects = breathe_effects;
+  this->sequencer = sequencer;
+
+  macros.begin(command_processor, &Commands::dispatch_function);
+  scheduler.begin(&macros);
+}
+
+/////////////////////////////////
+// THIS IS THE MAIN EVENT LOOP
+/////////////////////////////////
+void Commands::process_events(){
+  if(command_processor->received_command())
+  {
+    dispatch_command(command_processor->get_command());
+    command_processor->acknowledge_command();
+
+    // resync the effects to a blank state to minimize visual artifacts 
+    // of pausing and restarting if there are display changes
+    effects_processor->reset_effects();
+  }
+  else 
+  {
+    // do schedule processing
+    if(!is_paused()){
+      scheduler.process_schedules();
+    }
+    
+    // process the effects and update the display if needed
+    if(effects_processor->process_effects())
+      flush_all();
+  }
+}
+/////////////////////////////////
+/////////////////////////////////
+
+bool Commands::dispatch_function(int cmd, byte *dispatch_data){
+  return me->dispatch_command(cmd, dispatch_data);  
 }
 
 void Commands::pause(){
@@ -93,22 +151,6 @@ void Commands::resume(){
 
 bool Commands::is_paused(){
   return paused;
-}
-
-void Commands::low_power(){
-#ifdef USE_LOW_POWER_MODE
-  low_power_mode = true;
-
-  // it's too jarring to reset these
-  // low_power_position = 0;
-  // low_power_timer = 0;
-#endif
-}
-
-void Commands::high_power(){
-#ifdef USE_LOW_POWER_MODE
-  low_power_mode = false;
-#endif
 }
 
 void Commands::set_display(byte display){
@@ -141,33 +183,37 @@ void Commands::do_blend(byte strength){
   if(strength < 1){
     strength = 50;
   }
+  rgb_color * buf = buffer->get_buffer();
   byte offset = buffer->get_offset();
-  buffer->get_buffer()[offset] = ColorMath::blend_colors(buffer->get_buffer()[offset], buffer->get_buffer()[offset + 1], strength / 100.0);
-  buffer->get_buffer()[offset + 1] = buffer->get_buffer()[offset];
+  buf[offset] = ColorMath::blend_colors(buf[offset], buf[offset + 1], strength / 100.0);
+  buf[offset + 1] = buf[offset];
 }
 
 // only works properly when used immediately after placing a standard color
 void Commands::do_max(){
   byte offset = buffer->get_offset();
-  buffer->get_buffer()[offset] = ColorMath::scale_color(buffer->get_buffer()[offset], MAX_BRIGHTNESS_PERCENT / 100.0);
+  rgb_color * buf = buffer->get_buffer();
+  buf[offset] = ColorMath::scale_color(buf[offset], MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
 void Commands::do_dim(){
   byte offset = buffer->get_offset();
-  buffer->get_buffer()[offset].red = buffer->get_buffer()[offset].red >> 1;
-  buffer->get_buffer()[offset].green = buffer->get_buffer()[offset].green >> 1;
-  buffer->get_buffer()[offset].blue = buffer->get_buffer()[offset].blue >> 1;
+  rgb_color * buf = buffer->get_buffer();
+  buf[offset].red = buf[offset].red >> 1;
+  buf[offset].green = buf[offset].green >> 1;
+  buf[offset].blue = buf[offset].blue >> 1;
 }
 
 void Commands::do_bright(){
   byte offset = buffer->get_offset();
-  buffer->get_buffer()[offset].red = buffer->get_buffer()[offset].red << 1;
-  buffer->get_buffer()[offset].green = buffer->get_buffer()[offset].green << 1;
-  buffer->get_buffer()[offset].blue = buffer->get_buffer()[offset].blue << 1;
+  rgb_color * buf = buffer->get_buffer();
+  buf[offset].red = buf[offset].red << 1;
+  buf[offset].green = buf[offset].green << 1;
+  buf[offset].blue = buf[offset].blue << 1;
 }
 
 void Commands::do_fade(){
-  for(int i = buffer->get_offset(); i < buffer->get_window(); i++){
+  for(byte i = buffer->get_offset(); i < buffer->get_window(); i++){
     buffer->get_buffer()[i] = buffer->black;
     buffer->get_effects_buffer()[i] = NO_EFFECT;
   }
@@ -175,27 +221,31 @@ void Commands::do_fade(){
 }
 
 void Commands::do_crossfade(){
-  for(int i = 0; i <= ColorMath::crossfade_steps(); i++){
+  rgb_color * render_buffer = buffer->get_render_buffer();
+  for(byte i = 0; i <= ColorMath::crossfade_steps(); i++){
     buffer->cross_fade(i);
-    buffer->display_buffer(buffer->get_render_buffer());
+    buffer->display_buffer(render_buffer);
     delay(CROSSFADE_DELAY);
   }
 }
 
 void Commands::do_flood(){
-  int offset = buffer->get_offset();
-  rgb_color color = buffer->get_buffer()[offset];
-  byte effect = buffer->get_effects_buffer()[offset];
-  for(byte i = (offset + 1); i < buffer->get_window(); i++){
+  byte offset = buffer->get_offset();
+  byte window = buffer->get_window();
+  rgb_color * buf = buffer->get_buffer();
+  byte * effects = buffer->get_effects_buffer();
+  rgb_color color = buf[offset];
+  byte effect = effects[offset];
+  for(byte i = offset + 1; i < window; i++){
     if(effect == RANDOM1){
-      buffer->get_buffer()[i] = ColorMath::random_color();
-      buffer->get_effects_buffer()[i] = NO_EFFECT;
+      buf[i] = ColorMath::random_color();
+      effects[i] = NO_EFFECT;
     } else if(effect == RANDOM2){
-      buffer->get_buffer()[i] = ColorMath::random_color();
-      buffer->get_effects_buffer()[i] = EffectsProcessor::random_effect();
+      buf[i] = ColorMath::random_color();
+      effects[i] = EffectsProcessor::random_effect();
     } else {
-      buffer->get_buffer()[i] = color;
-      buffer->get_effects_buffer()[i] = effect;    
+      buf[i] = color;
+      effects[i] = effect;    
     }
   }
 }
@@ -208,24 +258,31 @@ void Commands::do_flood(){
 void Commands::do_random(byte type){
   type = (type < 0) ? 0 : type;
   buffer->push_color(ColorMath::random_color());
+  byte * effect = &buffer->get_effects_buffer()[buffer->get_offset()];
   if(type == 0){
-    buffer->get_effects_buffer()[buffer->get_offset()] = RANDOM0;
+    *effect = RANDOM0;
   } else if(type == 1){
-    buffer->get_effects_buffer()[buffer->get_offset()] = RANDOM1;
+    *effect = RANDOM1;
   } else if(type == 2){
-    buffer->get_effects_buffer()[buffer->get_offset()] = RANDOM2;
+    *effect = RANDOM2;
   }
 }
 
-// to do: fix re: reverse
 void Commands::do_mirror(){
   byte front = buffer->get_offset();
   byte back = buffer->get_window() - 1;
   byte width = buffer->get_width() / 2;
-
+  rgb_color * buf = buffer->get_buffer();
+  byte * effects = buffer->get_effects_buffer();
+  bool reverse = buffer->get_reverse();
   for(byte i = 0; i < width; i++){
-    buffer->get_buffer()[back - i] = buffer->get_buffer()[front + i];
-    buffer->get_effects_buffer()[back - i] = buffer->get_effects_buffer()[front + i];
+    if(reverse){
+      buf[front + i] = buf[back - i];
+      effects[front + i] = effects[back - i];
+    } else {
+      buf[back - i] = buf[front + i];
+      effects[back - i] = effects[front + i];
+    }
   }
 }
 
@@ -236,12 +293,13 @@ void Commands::do_mirror(){
 // size - how many pixels to copy
 // times - how many times to duplicate it, 
 //         0 = repeat and fill the current window
-//        -1 = repeat and fill the current window
-void Commands::do_copy(int size, int times, int zoom){
+//        -1 = copy the pattern to the palette buffer but don't duplicate
+//        -2 = duplicate the pattern in the palette buffer but don't copy first
+void Commands::do_copy(byte size, int times, byte zoom){
   size = max(1, size);
   zoom = max(1, zoom);
 
-  int effective_size = size * zoom;
+  byte effective_size = size * zoom;
 
   bool use_palette_buffer = false;
   if(size <= NUM_PALETTE_COLORS)
@@ -261,78 +319,89 @@ void Commands::do_copy(int size, int times, int zoom){
     // 1 is better than fill because it's less restrictive
     times = 1;
   } else if(times < 1){
-    times = (buffer->get_width() / effective_size) - 0; // repeat and fill
+    times = (buffer->get_width() / effective_size) + 1; // repeat and fill
   }
+
+  byte offset = buffer->get_offset();
+  byte window = buffer->get_window();
+  byte * effects = buffer->get_effects_buffer();
+  rgb_color * buf = buffer->get_buffer();
+  rgb_color * render_buffer = buffer->get_render_buffer();
+
+  rgb_color * palette;
+  if(use_palette_buffer)
+    palette = Colors::get_palette();
 
   if(!copy_only && !dupe_only){
     // copy the effects pattern to the buffer temporarily
-    for(int i = 0; i < size; i++){
-      byte dest = i;
-      byte source = buffer->get_offset() + i;
+    for(byte i = 0; i < size; i++){
+      byte source = offset + i;
       if(use_palette_buffer)
-        ::palette[dest].red = buffer->get_effects_buffer()[source];
+        palette[i].red = effects[source];
       else
-        buffer->get_render_buffer()[dest].red = buffer->get_effects_buffer()[source]; 
+        render_buffer[i].red = effects[source]; 
     }
   
     // copy the effects
-    for(int i = 0; i < times; i++){
-      for(int j = 0; j < size; j++){
-        for(int k = 0; k < zoom; k++){
+    for(byte i = 0; i < times; i++){
+      for(byte j = 0; j < size; j++){
+        for(byte k = 0; k < zoom; k++){
           byte source = j;
-          byte dest = buffer->get_offset() + (i * effective_size) + (j * zoom) + k;
+          byte dest = offset + (i * effective_size) + (j * zoom) + k;
   
-          if(dest < buffer->get_window()){ // prevent buffer overrun
+          if(dest < window){ // prevent buffer overrun
             if(use_palette_buffer)
-              buffer->get_effects_buffer()[dest] = ::palette[source].red;
+              effects[dest] = palette[source].red;
             else
-              buffer->get_effects_buffer()[dest] = buffer->get_render_buffer()[source].red;
+              effects[dest] = render_buffer[source].red;
           }
         }
       }
     }
   }
-  
+
   // copy the color pattern to the buffer temporarily
   if(!dupe_only){
-    for(int i = 0; i < size; i++){
-      byte dest = i;
-      byte source = buffer->get_offset() + i;
+    for(byte i = 0; i < size; i++){
+      byte source = offset + i;
       if(use_palette_buffer)
-        ::palette[dest] = buffer->get_buffer()[source];
+        // uncorrect corrected color so it works in the palette for push_color()
+        palette[i] = ColorMath::correct_color(buf[source]);
       else
-        buffer->get_render_buffer()[dest] = buffer->get_buffer()[source]; 
+        render_buffer[i] = buf[source]; 
     }
   }
   
   if(!copy_only){
     // copy the colors
-    for(int i = 0; i < times; i++){
-      for(int j = 0; j < size; j++){
-        for(int k = 0; k < zoom; k++){
+    for(byte i = 0; i < times; i++){
+      for(byte j = 0; j < size; j++){
+        for(byte k = 0; k < zoom; k++){
           byte source = j;
-          byte dest = buffer->get_offset() + (i * effective_size) + (j * zoom) + k;
+          byte dest = offset + (i * effective_size) + (j * zoom) + k;
     
-          if(dest < buffer->get_window()){ // prevent buffer overrun
+          if(dest < window){ // prevent buffer overrun
             if(use_palette_buffer)
-              buffer->get_buffer()[dest] = ::palette[source];
+              // correct the uncorrected color in the palette
+              buf[dest] = ColorMath::correct_color(palette[source]);
             else
-              buffer->get_buffer()[dest] = buffer->get_render_buffer()[source];
+              buf[dest] = render_buffer[source];
           }
         }
       }
     }
   }
-      
+
+  // is this necessary?
   // erase the render buffer
-  if(!use_palette_buffer){
-    for(int i = 0; i < visible_led_count; i++){
-      buffer->get_render_buffer()[i] = buffer->black;  
-    }
-  }
+//  if(!use_palette_buffer){
+//    for(byte i = 0; i < visible_led_count; i++){
+//      render_buffer[i] = buffer->black;  
+//    }
+//  }
 }
 
-// to do fix re: reverse
+// to do fix re: reverse (fixed?)
 // consider support a repeat of zero times (doing nothing)
 void Commands::do_repeat(byte times = 1){
   times = max(1, times);
@@ -346,37 +415,33 @@ void Commands::do_repeat(byte times = 1){
   for(byte i = 0; i < times; i++){
     if(effect == RANDOM0){
       // repeat the same color, no effect
-      buffer->push_color(color);
-      buffer->get_effects_buffer()[offset] = NO_EFFECT;
+      buffer->push_color(color, 1, NO_EFFECT);
     } else if(effect == RANDOM1){
       // changing random color only, no random effect
-      buffer->push_color(ColorMath::random_color());
-      buffer->get_effects_buffer()[offset] = effect;
+      buffer->push_color(ColorMath::random_color(), 1, effect);
     } else if(effect == RANDOM2){
       // changing random color and random effect
-      buffer->push_color(ColorMath::random_color());
-      buffer->get_effects_buffer()[offset] = EffectsProcessor::random_effect();
+      buffer->push_color(ColorMath::random_color(), 1, EffectsProcessor::random_effect());
     } else {
-      buffer->push_color(color);
-      buffer->get_effects_buffer()[offset] = effect;
+      buffer->push_color(color, 1, effect);
     }
   }
 }
 
-void Commands::do_elastic_shift(byte count, byte max = 0){
-#ifdef USE_ELASTIC_EASE  
-  max = (max == 0) ? visible_led_count : max;
-  count = count == 0 ? 1 : count;
-  if(count >= 1){
-    for(byte i = 0; i < ElasticEase::ease_count(); i++){
-      byte pos = ElasticEase::ease[i] * count;
-      delay(ElasticEase::ease_delay());
-      buffer->shift(pos+1, max);
-    }
-    buffer->finalize_shift(count, max);
-  }
-#endif
-}
+//void Commands::do_elastic_shift(byte count, byte max = 0){
+//#ifdef USE_ELASTIC_EASE  
+//  max = (max == 0) ? visible_led_count : max;
+//  count = count == 0 ? 1 : count;
+//  if(count >= 1){
+//    for(byte i = 0; i < ElasticEase::ease_count(); i++){
+//      byte pos = ElasticEase::ease[i] * count;
+//      delay(ElasticEase::ease_delay());
+//      buffer->shift(pos+1, max);
+//    }
+//    buffer->finalize_shift(count, max);
+//  }
+//#endif
+//}
 
 void Commands::do_power_shift(byte count, byte max = 0, bool fast_render = true){
   max = (max == 0) ? visible_led_count : max;
@@ -402,41 +467,22 @@ void Commands::do_wipe(){
   do_power_shift_object(0, visible_led_count, false);
 }
 
-// default to animated rotation to simplify macros
-void Commands::do_rotate(byte times, byte steps, byte flush){
+void Commands::do_rotate(byte times, byte steps, bool flush){
   times = max(1, times);
   steps = max(1, steps);
-  flush = max(0, min(1, flush));
-  for(int i = 0; i < times; i++){
-    for(int j = 0; j < steps; j++){
+  for(byte i = 0; i < times; i++){
+    for(byte j = 0; j < steps; j++){
       buffer->rotate(); 
     }
-    if(flush == 0){
+    if(flush){
       this->flush(true);  
     }    
   }
 }
 
-#ifdef USE_LOWER_POWER_MODE
-void Commands::advance_low_power_position(){
-  if(low_power_timer++ % LOW_POWER_TIME == 0){
-    low_power_position = ++low_power_position % visible_led_count; 
-  }
-}
-#endif
-
 void Commands::flush(bool force_display = false){
   if(force_display || !paused){
-#ifdef USE_LOWER_POWER_MODE
-    if(low_power_mode){
-      renderer->render_buffer_low_power(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer(), low_power_position);
-      advance_low_power_position();
-    } else {
-#endif
-      renderer->render_buffer(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
-#ifdef USE_LOWER_POWER_MODE
-    }
-#endif
+    renderer->render_buffer(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
     buffer->display_buffer(buffer->get_render_buffer());
   }
 }
@@ -446,7 +492,7 @@ void Commands::flush(bool force_display = false){
 void Commands::flush_all(bool force_display){
   byte orig_display = buffer->get_current_display();
   
-  for(int i = 0; i < NUM_BUFFERS; i++){
+  for(byte i = 0; i < NUM_BUFFERS; i++){
     buffer->set_display(i);
     flush(force_display);
   }
@@ -458,10 +504,6 @@ void Commands::flush_all(bool force_display){
 void Commands::reset(){
   // paused = false;
   
-#ifdef USE_LOWER_POWER_MODE
-  low_power_mode = false;
-#endif
-
   buffer->reset();
 
   // the effects shouldn't be reset
@@ -483,7 +525,7 @@ void Commands::clear(){
   paused = false;
 
   byte orig_display = buffer->get_current_display();
-  for(int i = 0; i < NUM_BUFFERS; i++){
+  for(byte i = 0; i < NUM_BUFFERS; i++){
     buffer->set_display(i);
     buffer->reset_black_level();
     buffer->erase(true);                                                          
@@ -496,71 +538,95 @@ void Commands::do_delay(int milliseconds){
   ::delay(milliseconds);
 }
 
-// special case positions:
-// -1 = start of zone
-// -2 = end of zone
-// -3 = center of zone
-int Commands::set_position(int position){
-  int current_offset = buffer->get_offset();
-  int current_window = buffer->get_window();
+#define SET_POSITION_ZONE_START  -1
+#define SET_POSITION_ZONE_END    -2
+#define SET_POSITION_ZONE_CENTER -3
+#define SET_POSITION_NEXT        -4
+#define SET_POSITION_PREV        -5
 
-  if(position == -1){
-    position = current_offset;
-  } else if(position == -2){
-    position = current_window;
-  } else if(position == -3){
-    position = (current_offset + current_window) / 2;
-  } else {
-    // offset into zone space
-    position = position + current_offset;
+void Commands::set_position(int position){
+  byte current_offset = buffer->get_offset();
+  byte current_window = buffer->get_window();
+
+  switch(position){
+    case SET_POSITION_ZONE_CENTER:
+      position = (current_offset + current_window) / 2;
+      break;
+
+    case SET_POSITION_ZONE_END:
+      position = current_window;
+      break;
+
+    case SET_POSITION_ZONE_START:
+      position = current_offset;
+      break;
+
+    default:
+      // offset into zone space
+      position = position + current_offset;
   
-    // don't go below zone
-    position = max(current_offset, position);
-  
-    // don't go above zone
-    position = min(current_window, position);
+      // don't go outside of zone
+      position = min(current_window, max(current_offset, position));
+      break;
   }
     
   buffer->set_offset_override(position); 
   buffer->set_window_override(position); 
 }
 
-// todo: position should be in relation to the current zone
-// todo: a position of zero here when a zone is selected means zero in zone #0
-int Commands::random_position(){
-  set_position(random(buffer->get_width()));
-}
-
-#define RANDOM_NUM_ACCUM           -8
-#define RANDOM_NUM_ZONES           -7
-#define RANDOM_NUM_LEDS            -6
-#define RANDOM_NUM_DISPLAYS        -5
-#define RANDOM_NUM_PALCOLORS       -4
-#define RANDOM_NUM_FINE_ZONES      -3
 #define RANDOM_NUM_WIDTH_NOT_EMPTY -2
 #define RANDOM_NUM_WIDTH_EMPTY     -1
 #define RANDOM_NUM_WIDTH            0
+
+// todo: position should be in relation to the current zone
+// todo: a position of zero here when a zone is selected means zero in zone #0
+void Commands::random_position(int type){
+  byte position;
+  switch(type){
+    case RANDOM_NUM_WIDTH_NOT_EMPTY:
+      position = random_num(RANDOM_NUM_WIDTH_NOT_EMPTY);
+      break;
+    
+    case RANDOM_NUM_WIDTH_EMPTY:
+      position = random_num(RANDOM_NUM_WIDTH_EMPTY);
+      break;
+    
+    case RANDOM_NUM_WIDTH:
+      position = random_num(RANDOM_NUM_WIDTH);
+      break; 
+  }
+  
+  set_position(position);
+}
+
+//#define RANDOM_NUM_ACCUM           -8
+//#define RANDOM_NUM_ZONES           -7
+//#define RANDOM_NUM_LEDS            -6
+//#define RANDOM_NUM_DISPLAYS        -5
+
+#define RANDOM_NUM_PALCOLORS       -4
+#define RANDOM_NUM_FINE_ZONES      -3
 
 int Commands::random_num(int max, int min){
   // handle special cases
   bool non_empty_only = false;
   bool empty_only = false;
   switch(max){ 
-    case RANDOM_NUM_ACCUM:
-      // need to add dependency on command processor
-      break;
-
-    case RANDOM_NUM_ZONES: 
-      max = NUM_ZONES; 
-      break;
-
-    case RANDOM_NUM_LEDS: 
-      max = this->visible_led_count; 
-      break;
-    
-    case RANDOM_NUM_DISPLAYS: 
-      max = NUM_DISPLAYS; 
-      break;
+//    case RANDOM_NUM_ACCUM:
+//      // need to add dependency on command processor
+//      break;
+//
+//    case RANDOM_NUM_ZONES: 
+//      max = NUM_ZONES; 
+//      break;
+//
+//    case RANDOM_NUM_LEDS: 
+//      max = this->visible_led_count; 
+//      break;
+//    
+//    case RANDOM_NUM_DISPLAYS: 
+//      max = NUM_DISPLAYS; 
+//      break;
     
     case RANDOM_NUM_PALCOLORS: 
       max = NUM_PALETTE_COLORS; 
@@ -572,13 +638,11 @@ int Commands::random_num(int max, int min){
       break;
     
     case RANDOM_NUM_WIDTH_NOT_EMPTY: 
-      // this could get a script stuck if there are no non-black positions
       non_empty_only = true;
       max = buffer->get_width(); 
       break;
 
     case RANDOM_NUM_WIDTH_EMPTY:
-      // this could get a script stuck if there are no black positions
       empty_only = true;
       max = buffer->get_width(); 
       break;
@@ -615,57 +679,104 @@ int Commands::random_num(int max, int min){
   }
 }
 
-void Commands::do_demo(){
-  int count;  
-  int window;
-  int size_;
-  int gap_;
-  int delay_;
-  
-#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93)
-  if(buffer->get_display() == 1){
-    count = 8; 
-    window = 8;
-    size_ = 1;
-    gap_ = 0;
-    delay_ = 125;
+// 1:10:0:seq - set sequence #1 to 0 - 9, reset to 0
+// 1:10:2:seq - set sequence #1 to 2 - 9, reset to 2
+// seq - get next number from sequence #0
+// 1:seq - get next number from #1
+// 1:-1:seq - get current number from #1
+// 1:-2:seq - get opposite of current number from #1 (for range 0-9 and current number 4, this would be 5)
+// 1:-3:seq - reset #1 to low and return it
+// 1:0:2:seq - get next number from #1, stepping by 2
+// 1:0:-1:seq - get next number from #1, stepping by -1
+
+int Commands::do_sequence(byte type, int arg0, int arg1, int arg2){
+  if(arg1 > 0){
+    //                           num   high  low
+    return do_set_sequence(type, arg0, arg1, arg2);
   } else {
-#endif
-    
-  size_ = DEMO_TOTAL_SIZE;
-  gap_ = DEMO_GAP_SIZE;
-  delay_ = DEMO_DELAY;
-  count = visible_led_count / DEMO_TOTAL_SIZE;  
-  window = visible_led_count;
-    
-#if defined(WEARABLE) || defined(WEARABLE_AND_STRIP) || defined(WEARABLE_AND_GLASSES) || defined(WEARABLE_AND_DISC93)
+    //                      num   adv   step
+    return do_next_sequence(arg0, arg1, arg2);
   }
-#endif
-  
-  for(byte i = 0; i < count; i++){
-//#ifdef APOLLO_LIGHTS2
-//    rgb_color color = WHITE;
-//#else
-    rgb_color color = ColorMath::random_color();
-//#endif
-    do_power_shift_object(size_, window);
-    window -= size_;
-#ifdef APOLLO_LIGHTS2
-    byte effect = NO_EFFECT;
-#else
-    byte effect = EffectsProcessor::random_effect();
-  #endif
-    for(byte j = gap_; j < size_; j++){
-      buffer->set_color(j, color, false, effect);
-    }
-    delay(delay_);
+}
+
+int Commands::do_set_sequence(byte type, int arg0, int arg1, int arg2){
+  // values are entered in high,low order, so low can be skipped if zero
+  // note the reverse argument order compared to do_next_sequence()
+  //                         low   high
+  sequencer->set(arg0, type, arg2, arg1);
+  return 0;
+}
+
+int Commands::do_next_sequence(int arg0, int arg1, int arg2){
+  //                    adv   step
+  return sequencer->next(arg0, arg1, arg2);
+}
+
+// process the series of unpacked commands and arguments in the passed memory buffer
+// the string must be tokenizable by strtok (get's corrupted)
+void Commands::process_commands(char * buffer){
+  if(buffer == NULL || *buffer == '\0'){
+    return;
   }
 
-#ifdef APOLLO_LIGHTS2
-  buffer->push_color(TUNGSTEN);
-  do_flood();
-#endif
+  // point to the end of the buffer for overrun protection
+  // this points at the terminator
+  char *last_char = buffer + strlen(buffer);
+
+  // begin_get_commands() and get_next_command() need an external pointer
+  // to hold onto the strtok_r state
+  // this allows this function to be reentrant
+  char *saveptr;
+
+  // get the first command or set of arguments
+  char *command = command_processor->begin_get_commands(buffer, &saveptr);
+
+  // point to the remaining string after this command + terminator
+  // this is needed for copying strings when setting macros
+  // if this is the last command in the string, the location 
+  //   1 past the string + terminator overruns the end of the buffer
+  byte * rest_of_buffer = (byte*)min(command + strlen(command) + 1, last_char);
+
+  // process the command or arguments
+  int cmd = command_processor->process_command(command);
+
+  if(cmd == CMD_NULL){
+    // there was no command or arguments
+    return;
+  }
+
+  do{
+    // CMD_NONE is returned when there are arguments instead of a command
+    // arguments are not dispatched they're captured in CommandProcessor::process_command()
+    if(cmd != CMD_NONE){
+      // send the command to the dispatcher to be run
+      // pass the pointer to the rest of the buffer 
+      //   in case it's needed to set a macro
+      if(!dispatch_command(cmd, rest_of_buffer)){
+        // false means the rest of the buffer has been copied 
+        // so there are no more commands to process 
+        return;
+      }
+    }
+
+    // get the next set command or argumemts
+    command = command_processor->get_next_command(&saveptr);
+    rest_of_buffer = (byte*)min(command + strlen(command) + 1, last_char);
+    cmd = command_processor->process_command(command);
+    
+  }while(cmd != CMD_NULL);
 }
+
+// process commands stored in PROGMEM 
+void Commands::process_commands(const __FlashStringHelper * commands){
+  char * buffer = command_processor->borrow_char_buffer();
+  strcpy_P(buffer, (const char *)commands);
+  process_commands(buffer);
+}
+
+#include "dispatch_command.h"
+
+#include "default_macros.h"
 
 #endif
 
