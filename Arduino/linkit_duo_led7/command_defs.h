@@ -77,11 +77,11 @@
 #define CMD_PSHIFT       69
 #define CMD_PSHIFTO      70
 #define CMD_CFADE        71
-#define CMD_LOPOWER_OPEN      72
+#define CMD_TEST         72
 #define CMD_HIPOWER_OPEN      73
 #define CMD_PINON        74
 #define CMD_PINOFF       75
-#define CMD_DEMO_OPEN         76
+#define CMD_SETFADERATE  76
 #define CMD_SETBLINKC    77
 #define CMD_SETBLINKP    78
 #define CMD_SCHEDULE     79
@@ -173,11 +173,11 @@ const char cmd_068[] PROGMEM = "art";
 const char cmd_069[] PROGMEM = "psh";
 const char cmd_070[] PROGMEM = "pso";
 const char cmd_071[] PROGMEM = "cfa";
-const char cmd_072[] PROGMEM = "lop";
+const char cmd_072[] PROGMEM = "tst";
 const char cmd_073[] PROGMEM = "hip";
 const char cmd_074[] PROGMEM = "pon";
 const char cmd_075[] PROGMEM = "pof";
-const char cmd_076[] PROGMEM = "dem";
+const char cmd_076[] PROGMEM = "sfr";
 const char cmd_077[] PROGMEM = "sbc";
 const char cmd_078[] PROGMEM = "sbp";
 const char cmd_079[] PROGMEM = "sch";

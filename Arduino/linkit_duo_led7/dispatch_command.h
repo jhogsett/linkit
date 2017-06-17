@@ -228,10 +228,12 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       effects_processor->start_effect_r();                                                     
       break;
     case CMD_PAUSE:     
-      pause();
+      pause(command_processor->sub_args[0]);
+      reset_args = true;
       break;
     case CMD_CONTINUE:  
-      resume();
+      resume(command_processor->sub_args[0]);
+      reset_args = true;
       break;
     case CMD_RESET:     
       reset();                                                              
@@ -266,8 +268,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_CFADE:      
       do_crossfade();                                                            
       break;
-    case CMD_LOPOWER_OPEN:
-      //low_power();                                               
+    case CMD_TEST:
+      do_test(command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      reset_args = true;
       break;
     case CMD_HIPOWER_OPEN:
       //high_power();                                               
@@ -280,8 +283,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       set_pin(command_processor->sub_args[0], false); 
       reset_args = true;
       break;
-    case CMD_DEMO_OPEN:      
-      //do_demo();                                                                                                                                    
+    case CMD_SETFADERATE:      
+      set_fade_rate(command_processor->sub_args[0]);                                                                                                                                    
+      reset_args = true;
       break;
     case CMD_SETBLINKC:
       blink_effects->set_custom_blink(command_processor->sub_args[0]);

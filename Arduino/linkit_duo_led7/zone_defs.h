@@ -37,6 +37,19 @@ const byte PROGMEM zone_windows[NUM_ZONES] = { 200,   6, 14, 26, 38, 52, 68, 84,
 const byte PROGMEM zone_offsets[NUM_ZONES] = { 0,    0, 1,  9, 21, 37, 61,         0,           21,             1,          0 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 93,   1, 9, 21, 37, 61, 93,        21,           93,            61,         61 };
 
+#elif defined(ZONES_HARDHAT) 
+#define NUM_ZONES 6 
+#define FINE_ZONES 4 //                              fine, bottom up                              
+const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,   0,  17, 31, 41 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 44,   17, 31, 41, 44 };
+
+#elif defined(ZONES_GLASSES)
+#define NUM_ZONES 12 
+#define FINE_ZONES 4 // from the wearer perspective: right strip, right circle, left circle, left strip
+                     //                              fine             circles only   L/R halves                                                
+const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,   0,  8, 32, 56,    8,            0, 32,      };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 64,   8, 32, 56, 64,   56,            32, 64,     };
+
 
 #endif
 

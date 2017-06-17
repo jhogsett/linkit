@@ -9,10 +9,10 @@
 // #define LED_STRIP_72
 
 // single 90-LED strip
-#define LED_STRIP_90
+// #define LED_STRIP_90
 
 // single 90-LED strip in Apollo
-// #define APOLLO_DISPLAY
+#define APOLLO_DISPLAY
 
 // 100-LED sphere
 // #define SPHERE
@@ -25,6 +25,9 @@
 
 // 44-LED Wearable and Hard Hat
 // #define WEARABLE_AND_HARDHAT
+
+// 64-LED Glasses (on wearable, one buffer)
+// #define WEARABLE_AND_GLASSES
 
 //////////////////////////////
 // devices profile definitions
@@ -74,8 +77,8 @@
 #define AUTO_BRIGHTNESS_MIN 5
 #define AUTO_BRIGHTNESS_MAX 100
 #define DEFAULT_BRIGHTNESS_PERCENT 15
-#define BLINK_PERIOD 1500
-#define BREATHE_PERIOD 100
+#define BLINK_PERIOD 1000
+#define BREATHE_PERIOD 50
 #define APOLLO_MACROS
 #endif
 
@@ -110,7 +113,21 @@
 #endif
 
 #ifdef WEARABLE_AND_HARDHAT
+#define WEARABLE
+#define ANIM_LED_COUNT 93
+#define ZONES_HARDHAT
+#define DEFAULT_BRIGHTNESS_PERCENT 15
+#define THREE_WAY_MACROS
+#endif
 
+#ifdef WEARABLE_AND_GLASSES
+#define WEARABLE_TYPE2
+#define ANIM_LED_COUNT 64
+#define ZONES_GLASSES
+#define DEFAULT_BRIGHTNESS_PERCENT 10
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
+#define ONE_WAY_MACROS
 #endif
 
 #ifdef WEARABLE
@@ -119,6 +136,14 @@
 #define DISPLAY_PIN2 12
 #define DISPLAY_PIN3 10
 #endif
+
+#ifdef WEARABLE_TYPE2
+#define USE_1_DISPLAYS
+#define DISPLAY_PIN1 12
+#define DISPLAY_PIN2 11
+#define DISPLAY_PIN3 10
+#endif
+
 
 //// IoT Devices
 //

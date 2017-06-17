@@ -25,22 +25,30 @@ class Commands
 {
   public:
   
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, Sequencer *sequencer);
+#ifdef USE_AUTO_BRIGHTNESS
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects, Sequencer *sequencer);
+#else
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects, Sequencer *sequencer);
+#endif
+
   void process_events();
   void process_commands(char * buffer);
   void process_commands(const __FlashStringHelper * commands);
   void reset();
   void set_brightness_level(byte level = 0);
   bool dispatch_command(int cmd, byte *dispatch_data = NULL);
-  bool is_paused();
   void flush_all(bool force_display = false);
   void run_default_macro();
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
   static Scheduler scheduler;
 
   private:
-  void pause();
-  void resume();
+  void pause(byte type);
+  void resume(byte type);
+  void pause_effects();
+  void pause_schedules();
+  void resume_effects();
+  void resume_schedules();
   void do_blend(byte strength);
   void do_max();
   void do_dim();
@@ -72,6 +80,12 @@ class Commands
   int do_sequence(byte type, int arg0, int arg1, int arg2);
   int do_set_sequence(byte type, int arg0, int arg1, int arg2);
   int do_next_sequence(int arg0, int arg1, int arg2);
+  void set_fade_rate(int arg0);
+  void do_test(int type, int arg1, int arg2);
+  void do_test_inquiry(byte type, int arg2);
+  void do_test_macro(byte macro_number);
+  void do_test_buffer(byte start, byte count);
+  void do_test_render(byte start, byte count);
 
   Buffer *buffer;
   Render *renderer;  
@@ -79,31 +93,43 @@ class Commands
   CommandProcessor *command_processor;
   BlinkEffects *blink_effects;
   BreatheEffects *breathe_effects;
-  bool paused = false;
+  bool effects_paused = false;
+  bool schedules_paused = false;
   byte default_brightness;
   byte visible_led_count;
-  AutoBrightnessBase *auto_brightness;
   static Macros macros;
   static Commands * me;
   Sequencer *sequencer;
+  FadeEffects *fade_effects;
+  
+#ifdef USE_AUTO_BRIGHTNESS
+  AutoBrightnessBase *auto_brightness;
+#endif
 };
 
 Macros Commands::macros;
 Scheduler Commands::scheduler;
 Commands * Commands::me;
 
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, Sequencer *sequencer){
+#ifdef USE_AUTO_BRIGHTNESS
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects, Sequencer *sequencer){
+#else
+void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects, Sequencer *sequencer){
+#endif
   this->me = this;
   this->buffer = buffer;
   this->renderer = renderer;
   this->effects_processor = effects_processor;
   this->default_brightness = default_brightness;
   this->visible_led_count = visible_led_count;
-  this->auto_brightness = auto_brightness;
   this->command_processor = command_processor;
   this->blink_effects = blink_effects;
   this->breathe_effects = breathe_effects;
   this->sequencer = sequencer;
+  this->fade_effects = fade_effects;
+#ifdef USE_AUTO_BRIGHTNESS
+  this->auto_brightness = auto_brightness;
+#endif
 
   macros.begin(command_processor, &Commands::dispatch_function);
   scheduler.begin(&macros);
@@ -125,13 +151,15 @@ void Commands::process_events(){
   else 
   {
     // do schedule processing
-    if(!is_paused()){
+    if(!schedules_paused){
       scheduler.process_schedules();
     }
-    
+
     // process the effects and update the display if needed
-    if(effects_processor->process_effects())
-      flush_all();
+    if(!effects_paused){
+      if(effects_processor->process_effects())
+        flush_all();
+    }
   }
 }
 /////////////////////////////////
@@ -141,16 +169,57 @@ bool Commands::dispatch_function(int cmd, byte *dispatch_data){
   return me->dispatch_command(cmd, dispatch_data);  
 }
 
-void Commands::pause(){
-  paused = true;
+#define PAUSE_ALL        0
+#define PAUSE_EFFECTS    1
+#define PAUSE_SCHEDULES  2
+#define RESUME_ALL       0
+#define RESUME_EFFECTS   1
+#define RESUME_SCHEDULES 2
+
+void Commands::pause(byte type = PAUSE_ALL){
+  switch(type){
+    case PAUSE_ALL:
+      pause_effects();
+      pause_schedules();
+      break;
+    case PAUSE_EFFECTS:
+      pause_effects();
+      break;
+    case PAUSE_SCHEDULES:
+      pause_schedules();
+      break;
+  }
 }
 
-void Commands::resume(){
-  paused = false;
+void Commands::pause_effects(){
+  effects_paused = true;
 }
 
-bool Commands::is_paused(){
-  return paused;
+void Commands::pause_schedules(){
+  schedules_paused = true;
+}
+
+void Commands::resume(byte type = RESUME_ALL){
+  switch(type){
+    case RESUME_ALL:
+      resume_effects();
+      resume_schedules();
+      break;
+    case RESUME_EFFECTS:
+      resume_effects();
+      break;
+    case RESUME_SCHEDULES:
+      resume_schedules();
+      break;
+  }
+}
+
+void Commands::resume_effects(){
+  effects_paused = false;
+}
+
+void Commands::resume_schedules(){
+  schedules_paused = false;
 }
 
 void Commands::set_display(byte display){
@@ -481,7 +550,7 @@ void Commands::do_rotate(byte times, byte steps, bool flush){
 }
 
 void Commands::flush(bool force_display = false){
-  if(force_display || !paused){
+  if(force_display || !effects_paused){
     renderer->render_buffer(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
     buffer->display_buffer(buffer->get_render_buffer());
   }
@@ -522,7 +591,7 @@ void Commands::clear(){
   
   // pausing on clear causes a problem for programs starting up,
   // that have to pause again afterwards; moved to reset
-  paused = false;
+  resume();
 
   byte orig_display = buffer->get_current_display();
   for(byte i = 0; i < NUM_BUFFERS; i++){
@@ -536,6 +605,11 @@ void Commands::clear(){
 
 void Commands::do_delay(int milliseconds){
   ::delay(milliseconds);
+}
+
+// arg0 - 10000 = 1.0, 9999 = 0.9999
+void Commands::set_fade_rate(int arg0){
+  fade_effects->set_fade_rate(arg0/ 10000.0);
 }
 
 #define SET_POSITION_ZONE_START  -1
@@ -774,9 +848,86 @@ void Commands::process_commands(const __FlashStringHelper * commands){
   process_commands(buffer);
 }
 
+#define TEST_TYPE_INQUIRY      0
+#define TEST_TYPE_DUMP_MACRO   1
+#define TEST_TYPE_DUMP_BUFFER  2
+#define TEST_TYPE_DUMP_RENDER  3
+#define TEST_TYPE_DUMP_PALETTE 4
+
+void Commands::do_test(int type, int arg1, int arg2){
+  switch(type){
+    case TEST_TYPE_INQUIRY:
+      // arg1 - inquiry type
+      // arg2 - (depends on inquiry)
+      do_test_inquiry(arg1, arg2);
+      break;
+    case TEST_TYPE_DUMP_MACRO:
+      // arg1 - macro number
+      do_test_macro(arg1);
+      break;
+    case TEST_TYPE_DUMP_BUFFER:
+      // arg1 - start
+      // arg2 - count
+      do_test_buffer(arg1, arg2);
+      break;
+    case TEST_TYPE_DUMP_RENDER:
+      // arg1 - start
+      // arg2 - count
+      do_test_render(arg1, arg2);
+      break;
+//    case TEST_TYPE_DUMP_PALETTE:
+//      do_test_palette(arg1, arg2);
+//      break;
+  }
+}
+
+#define TEST_INQUIRY_NUM_LEDS     0
+//#define TEST_INQUIRY_NUM_ZONES    1
+//#define TEST_INQUIRY_NUM_PALETTES 2
+//#define TEST_INQUIRY_NUM_LEDS     3
+// current offset, window, buffer
+
+void Commands::do_test_inquiry(byte type, int arg2){
+  switch(type){
+    case TEST_INQUIRY_NUM_LEDS:
+      command_processor->send_ints(visible_led_count);
+      break;
+  }
+}
+
+void Commands::do_test_macro(byte macro_number){
+  byte *position;
+  byte b = macros.begin_dump_macro(macro_number, &position);
+  command_processor->send_ints(b);
+  for(byte i = 0; i < NUM_MACRO_CHARS - 1; i++){
+    b = macros.continue_dump_macro(macro_number, &position);            
+    command_processor->send_ints(b);
+  }
+}
+
+void Commands::do_test_buffer(byte start, byte count){
+  rgb_color * buf = buffer->get_buffer();
+  for(int i = 0; i < count; i++){
+    command_processor->send_ints(buf[start + i].red);
+    command_processor->send_ints(buf[start + i].green);
+    command_processor->send_ints(buf[start + i].blue);
+  }
+}
+
+void Commands::do_test_render(byte start, byte count){
+  rgb_color * buf = buffer->get_render_buffer();
+  for(int i = 0; i < count; i++){
+    command_processor->send_ints(buf[start + i].red);
+    command_processor->send_ints(buf[start + i].green);
+    command_processor->send_ints(buf[start + i].blue);
+  }
+}
+
 #include "dispatch_command.h"
 
+#ifdef USE_DEFAULT_MACROS
 #include "default_macros.h"
+#endif
 
 #endif
 
