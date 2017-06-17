@@ -4,32 +4,71 @@ import serial
 import time
 import sys
 
+response_wait = 0.1
+s = None                                                     
+debug_mode = False  
+
 def flush_input():                        
   s.flushInput()
                                         
 def wait_for_ack():                       
   while s.inWaiting() <= 0:               
     pass
+  time.sleep(response_wait);
   while s.inWaiting() > 0:
     print s.read(s.inWaiting()),
   print                   
 
+def wait_for_int():
+  while s.inWaiting() <= 0:
+    pass
+  time.sleep(response_wait);
+  intstr = ""
+  while s.inWaiting() > 0:
+    intstr = intstr + s.read(s.inWaiting())
+  try:
+    return int(intstr[:-1])
+  except ValueError:
+    print "whoops " + intstr
+    return 0
+
+def wait_for_str():
+  while s.inWaiting() <= 0:
+    pass
+  time.sleep(response_wait);
+  str = ""
+  while s.inWaiting() > 0:
+    str = str + s.read(s.inWaiting())
+  return str[:-1]
+
 def command(cmd_text):
-#  s.write((':::' + cmd_text + ':').encode())   
   s.write((cmd_text + ':').encode())
   wait_for_ack()
 
+def command_int(cmd_text):
+  s.write((cmd_text + ':').encode())
+  return wait_for_int()
+
+def command_str(cmd_text):       
+  s.write((cmd_text + ':').encode()) 
+  return wait_for_str()                     
+
 def set_macro(macro, macro_text):
   print "macro " + str(macro) + ": ",
-  command(str(macro) + ":set:" + macro_text)
-#  command("1," + str(macro) + ":tst")
+  bytes = command_int(str(macro) + ":set:" + macro_text)
+  print str(bytes) + " bytes"
+  if debug_mode:                                             
+    print command_str("1," + str(macro) + ":tst")
 
-s = None                                                       
 def setup(): 
-  global s 
+  global s, debug_mode 
   s = serial.Serial("/dev/ttyS0", 115200) 
   command(":::stp:stp")
 
+  if len(sys.argv) > 3:                                       
+    if(sys.argv[3] == "debug"):
+      debug_mode = True
+  
 def apollo_macros(): 
   print "apollo macros:"
 
@@ -120,6 +159,10 @@ def loop():
       oneway_macros()
   else:
     default_macros()
+
+  if len(sys.argv) > 2:                                      
+    command(sys.argv[2])
+
 
 if __name__ == '__main__': 
   setup() 
