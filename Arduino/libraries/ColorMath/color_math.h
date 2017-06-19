@@ -7,7 +7,9 @@
 #include <colors.h>
 #include <power_ease.h>
 
-#define CROSSFADE_STEPS 20
+#define CROSSFADE_STEPS   20
+#define NUM_COSINES       13
+#define COSINE_RANGE    12.0
 
 class ColorMath
 {
@@ -27,13 +29,18 @@ class ColorMath
   static rgb_color simple_unscale_color(rgb_color color, float scale);
   static rgb_color complimentary_color(rgb_color color);
   static bool equal(rgb_color color1, rgb_color color2);
+  static float get_cosine(byte step);
+  static float get_sine(byte step);
 
   private:
   static bool swap_r_and_g;
   static const float PROGMEM crossfade[];
+  static const float PROGMEM cosines[NUM_COSINES];
 
   static byte blend_component(byte component1, byte component2, float strength);
   static byte crossfade_component(byte step, byte component1, byte component2);
+
+  static float read_cosine_array(byte step);
 };
 
 bool ColorMath::swap_r_and_g;
@@ -68,6 +75,27 @@ const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
     0.972369920397677,
     0.987688340595138,
     0.996917333733128,
+    1.0
+};
+
+// ruby code
+// steps = 24
+// cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+// only elements 0-12 are needed of cosines array to compute both sine and cosine values
+const float PROGMEM ColorMath::cosines[NUM_COSINES]
+= {
+    0.0,
+    0.017037086855466,
+    0.066987298107781,
+    0.146446609406726,
+    0.25,
+    0.37059047744874,
+    0.5,
+    0.62940952255126,
+    0.75,
+    0.853553390593274,
+    0.933012701892219,
+    0.982962913144534,
     1.0
 };
 
@@ -230,6 +258,31 @@ bool ColorMath::equal(rgb_color color1, rgb_color color2){
     return true;
   }
   return false;
+}
+
+// steps 0-12
+float ColorMath::read_cosine_array(byte step){
+  return pgm_read_float(&cosines[step]);
+}
+
+// steps 0-24
+float ColorMath::get_cosine(byte step){
+  if(step >= 0 && step <= 12){
+    return read_cosine_array(step);
+  } else {
+    return read_cosine_array(25 - step);
+  }
+}
+
+// steps 0-24
+float ColorMath::get_sine(byte step){
+  if(step >= 0 && step <= 6){
+    return read_cosine_array(step + 6);
+  } else if(step >= 7 && step <= 18){
+    return read_cosine_array(11 - (step - 7));
+  } else {
+    return read_cosine_array(step - 18);
+  }
 }
 
 #endif
