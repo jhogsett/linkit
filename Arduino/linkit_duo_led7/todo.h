@@ -1,3 +1,9 @@
+// specs need to account for swapped colors on strands
+
+// may be able to save space by storing crossfade and ease fractions as an 8-bit values n/255
+// -- may allow using integer math instead of floating point math
+
+
 // divide blink wheel by blink period, for instnace 5999 / 1000 to get 0 through 5, 
 //   store that figure and only display blink if it matches effect blink number
 

@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS     95
+#define NUM_COMMANDS     97
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
@@ -101,6 +101,8 @@
 #define CMD_SEQ_SWING    93
 #define CMD_SEQ_DRIVE    94
 #define CMD_SEQ_BOUND    95
+#define CMD_SEQ_WHLSN    96
+#define CMD_SEQ_SWGSN    97
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "era";
@@ -197,6 +199,8 @@ const char cmd_092[] PROGMEM = "seq";
 const char cmd_093[] PROGMEM = "sqs";
 const char cmd_094[] PROGMEM = "sqd";
 const char cmd_095[] PROGMEM = "sqb";
+const char cmd_096[] PROGMEM = "sws";
+const char cmd_097[] PROGMEM = "sss";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
@@ -208,7 +212,7 @@ const char* const command_strings[] PROGMEM = {
    cmd_061, cmd_062, cmd_063, cmd_064, cmd_065, cmd_066, cmd_067, cmd_068, cmd_069, cmd_070,
    cmd_071, cmd_072, cmd_073, cmd_074, cmd_075, cmd_076, cmd_077, cmd_078, cmd_079, cmd_080,
    cmd_081, cmd_082, cmd_083, cmd_084, cmd_085, cmd_086, cmd_087, cmd_088, cmd_089, cmd_090,
-   cmd_091, cmd_092, cmd_093, cmd_094, cmd_095
+   cmd_091, cmd_092, cmd_093, cmd_094, cmd_095, cmd_096, cmd_097
 };
 
 #endif
