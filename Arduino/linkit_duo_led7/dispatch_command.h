@@ -451,6 +451,19 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       command_processor->sub_args[2] = 0;
       // don't reset args
       break;
+    case CMD_SEQ_WHLSN:
+      command_processor->sub_args[0] = do_sequence(SEQUENCE_WHEEL_SINE, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      command_processor->sub_args[1] = 0;
+      command_processor->sub_args[2] = 0;
+      // don't reset args
+      break;
+      
+    case CMD_SEQ_SWGSN:
+      command_processor->sub_args[0] = do_sequence(SEQUENCE_SWING_SINE, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      command_processor->sub_args[1] = 0;
+      command_processor->sub_args[2] = 0;
+      // don't reset args
+      break;
   }
 
   if(reset_args)

@@ -753,6 +753,7 @@ int Commands::random_num(int max, int min){
   }
 }
 
+// shortcut: once a special command is set to establish type, 'seq' can be used to read the values regardless of type
 // 1:10:0:seq - set sequence #1 to 0 - 9, reset to 0
 // 1:10:2:seq - set sequence #1 to 2 - 9, reset to 2
 // seq - get next number from sequence #0
@@ -885,12 +886,12 @@ void Commands::do_test(int type, int arg1, int arg2){
 //#define TEST_INQUIRY_NUM_ZONES    1
 //#define TEST_INQUIRY_NUM_PALETTES 2
 //#define TEST_INQUIRY_NUM_LEDS     3
-// current offset, window, buffer
+// current offset, window, buffer, effects buffer
 
 void Commands::do_test_inquiry(byte type, int arg2){
   switch(type){
     case TEST_INQUIRY_NUM_LEDS:
-      command_processor->send_ints(visible_led_count);
+      command_processor->send_int(visible_led_count);
       break;
   }
 }

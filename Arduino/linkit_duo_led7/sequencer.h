@@ -3,14 +3,14 @@
 
 #define NUM_SEQUENCES 6
 
-#define SEQUENCE_WHEEL       0
-#define SEQUENCE_SWING       1
-#define SEQUENCE_DRIVE       2
-#define SEQUENCE_BOUND       3
-#define SEQUENCE_WHEEL_POWER 4
-#define SEQUENCE_SWING_POWER 5
-#define SEQUENCE_DRIVE_POWER 4
-#define SEQUENCE_BOUND_POWER 5
+#define SEQUENCE_WHEEL      0
+#define SEQUENCE_SWING      1
+#define SEQUENCE_DRIVE      2
+#define SEQUENCE_BOUND      3
+#define SEQUENCE_WHEEL_SINE 4
+#define SEQUENCE_SWING_SINE 5
+#define SEQUENCE_DRIVE_SINE 6
+#define SEQUENCE_BOUND_SINE 7
 
 #define STATE_NORMAL   0
 #define STATE_REVERSE  1
@@ -41,13 +41,15 @@ class Sequence
   int increment_bound(int step);
   int increment_bound_normal(int step);
   int increment_bound_reverse(int step);
+  int increment_wheel_sine(int step);
+  int increment_swing_sine(int step);
 
   byte type;
   int low;
   int max;
-  
   int current;
   byte state;
+  float factor;
 };
 
 void Sequence::begin(){
@@ -59,6 +61,7 @@ void Sequence::set(byte type, int low, int high){
   this->type = type;
   this->low = low;
   this->max = high - 1;
+  this->factor = COSINE_RANGE / (high - low);
   this->reset();
 }
 
@@ -100,6 +103,10 @@ int Sequence::increment(int step){
       return this->increment_drive(step);
     case SEQUENCE_BOUND:
       return this->increment_bound(step);
+    case SEQUENCE_WHEEL_SINE:
+      return this->increment_wheel_sine(step);
+    case SEQUENCE_SWING_SINE:
+      return this->increment_swing_sine(step);
   }
 }
 
@@ -184,23 +191,38 @@ int Sequence::increment_bound_reverse(int step){
     return this->low;
   } else {
     this->current -= step;
-    }
+  }
 
   return this->current;
 }
+
+int Sequence::increment_wheel_sine(int step){
+  increment_wheel(step);
+  byte spread_position = this->current * this->factor;
+  return max * ColorMath::get_cosine(spread_position);
+}
+
+int Sequence::increment_swing_sine(int step){
+  increment_swing(step);
+  byte spread_position = this->current * this->factor;
+  return max * ColorMath::get_cosine(spread_position);
+}
+
+
+
 
 
 class Sequencer
 {
   public:
+  
   void begin();
-    
   void set(int sequencer, byte type, int low, int high);
   void reset(int sequencer);
   int next(int sequencer, int advancement, int step);
-  
+
   private:
-  
+
   static Sequence sequences[NUM_SEQUENCES];  
 };
 
