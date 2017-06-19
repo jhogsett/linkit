@@ -53,13 +53,16 @@ def command_str(cmd_text):
   s.write((cmd_text + ':').encode()) 
   return wait_for_str()                     
 
-def set_macro(macro, macro_text):
+def set_macro(macro, macro_text, expected_bytes):
   print "macro " + str(macro) + ": ",
   bytes = command_int(str(macro) + ":set:" + macro_text)
   print str(bytes) + " bytes"
   if debug_mode:                                             
     print command_str("1," + str(macro) + ":tst")
-
+  if expected_bytes > 0 and expected_bytes != bytes:
+    print "Oops! wrong number of bytes received - retrying"
+    set_macro(macro, macro_text, expected_bytes)
+    
 def setup(): 
   global s, debug_mode 
   s = serial.Serial("/dev/ttyS0", 115200) 
@@ -68,50 +71,49 @@ def setup():
   if len(sys.argv) > 3:                                       
     if(sys.argv[3] == "debug"):
       debug_mode = True
-  
+
 def apollo_macros(): 
   print "apollo macros:"
 
   # tunsten lamp                                 
-  set_macro(10, "clr:-1:sch:1:pau:21:run");     
-  set_macro(10, "clr:-1:sch:1:pau:21:run");
+  set_macro(10, "clr:-1:sch:1:pau:21:run", 11);
                                                  
   # sparking colors with drain                   
-  set_macro(11, "clr:100,13:sch:10000,14:sch"); 
+  set_macro(11, "clr:100,13:sch:10000,14:sch", 13); 
   
   # swinging random colors                                               
-  set_macro(12, "clr:30:run");                  
+  set_macro(12, "clr:30:run", 4);                  
                                                  
-  set_macro(13, "-1:rps:1:rnd:sfd:flu:rst");    
-  set_macro(14, "15,15:run:500:del");           
-  set_macro(15, "16:run:17:run:18:run:flu"); 
-  set_macro(16, "1:zon:1:blk:2:zon:1:rev:1:blk:rst");
-  set_macro(17, "3:zon:1:blk:4:zon:1:rev:1:blk:rst");
-  set_macro(18, "5:zon:1:blk:6:zon:1:rev:1:blk:rst");
+  set_macro(13, "-1:rps:1:rnd:sfd:flu:rst", 10);    
+  set_macro(14, "15,15:run:500:del", 10);           
+  set_macro(15, "16:run:17:run:18:run:flu", 10); 
+  set_macro(16, "1:zon:1:blk:2:zon:1:rev:1:blk:rst", 16);
+  set_macro(17, "3:zon:1:blk:4:zon:1:rev:1:blk:rst", 16);
+  set_macro(18, "5:zon:1:blk:6:zon:1:rev:1:blk:rst", 16);
                                                       
-  set_macro(21, "era:50:lev:13,120:run:tun:flo:cfa:100:lev");
+  set_macro(21, "era:50:lev:13,120:run:tun:flo:cfa:100:lev", 19);
                                                               
-  set_macro(30, "1:pau:40:run:44:run:46:run");              
+  set_macro(30, "1:pau:40:run:44:run:46:run", 12);              
                                                       
-  set_macro(31, "0:ssc:pos:0:pal:sfd:rst:flu");             
-  set_macro(32, "1:ssc:pos:1:pal:sfd:rst");                 
-  set_macro(33, "2:ssc:pos:2:pal:sfd:rst");                 
-  set_macro(34, "3:ssc:pos:3:pal:sfd:rst");                 
-  set_macro(35, "4:ssc:pos:4:pal:sfd:rst");         
-  set_macro(36, "5:ssc:pos:5:pal:sfd:rst");                
+  set_macro(31, "0:ssc:pos:0:pal:sfd:rst:flu", 10);             
+  set_macro(32, "1:ssc:pos:1:pal:sfd:rst", 9);                 
+  set_macro(33, "2:ssc:pos:2:pal:sfd:rst", 9);                 
+  set_macro(34, "3:ssc:pos:3:pal:sfd:rst", 9);                 
+  set_macro(35, "4:ssc:pos:4:pal:sfd:rst", 9);         
+  set_macro(36, "5:ssc:pos:5:pal:sfd:rst", 9);                
                                                               
-  set_macro(37, "0,16,0:ssc:1,31,15:ssc");                  
-  set_macro(38, "2,44,30:ssc:3,60,44:ssc");         
-  set_macro(39, "4,75,59:ssc:5,90,74:ssc");                 
-  set_macro(40, "37:run:38:run:39:run");            
+  set_macro(37, "0,16,0:ssc:1,31,15:ssc", 14);                  
+  set_macro(38, "2,44,30:ssc:3,60,44:ssc", 16);         
+  set_macro(39, "4,75,59:ssc:5,90,74:ssc", 16);                 
+  set_macro(40, "37:run:38:run:39:run", 9);            
                                                               
-  set_macro(41, "21,31:sch:22,32:sch");             
-  set_macro(42, "23,33:sch:24,34:sch");                     
-  set_macro(43, "25,35:sch:26,36:sch");                     
-  set_macro(44, "41:run:42:run:43:run");                    
+  set_macro(41, "21,31:sch:22,32:sch", 12);             
+  set_macro(42, "23,33:sch:24,34:sch", 12);                     
+  set_macro(43, "25,35:sch:26,36:sch", 12);                     
+  set_macro(44, "41:run:42:run:43:run", 9);                    
                                                               
-  set_macro(45, "shf");                                   
-  set_macro(46, "700,45:sch");   
+  set_macro(45, "shf", 1);                                   
+  set_macro(46, "700,45:sch", 6);   
 
 def default_macros():
   apollo_macros()
