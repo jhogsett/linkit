@@ -276,13 +276,14 @@ float ColorMath::get_cosine(byte step){
 
 // steps 0-24
 float ColorMath::get_sine(byte step){
-  if(step >= 0 && step <= 6){
-    return read_cosine_array(step + 6);
-  } else if(step >= 7 && step <= 18){
-    return read_cosine_array(11 - (step - 7));
-  } else {
-    return read_cosine_array(step - 18);
-  }
+//  if(step >= 0 && step <= 6){
+//    return read_cosine_array(step + 6);
+//  } else if(step >= 7 && step <= 18){
+//    return read_cosine_array(11 - (step - 7));
+//  } else {
+//    return read_cosine_array(step - 18);
+//  }
+  return get_cosine((step + 6) % 25);
 }
 
 #endif
