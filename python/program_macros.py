@@ -54,11 +54,15 @@ def command_str(cmd_text):
   return wait_for_str()                     
 
 def set_macro(macro, macro_text, expected_bytes):
-  print "macro " + str(macro) + ": ",
+  if debug_mode:
+    print "macro " + str(macro) + ": ",
   bytes = command_int(str(macro) + ":set:" + macro_text)
-  print str(bytes) + " bytes"
   if debug_mode:                                             
+    print str(bytes) + " bytes"                                    
     print command_str("1," + str(macro) + ":tst")
+  else:
+    sys.stdout.write('.')
+    sys.stdout.flush()
   if expected_bytes > 0 and expected_bytes != bytes:
     print "Oops! wrong number of bytes received - retrying"
     set_macro(macro, macro_text, expected_bytes)
@@ -165,6 +169,7 @@ def loop():
   if len(sys.argv) > 2:                                      
     command(sys.argv[2])
 
+  print "done"
 
 if __name__ == '__main__': 
   setup() 
