@@ -61,7 +61,7 @@ void Sequence::set(byte type, int low, int high){
   this->type = type;
   this->low = low;
   this->max = high - 1;
-  this->factor = COSINE_RANGE / (high - low);
+  this->factor = COSINE_RANGE / (this->max - this->low);
   this->reset();
 }
 
@@ -204,7 +204,7 @@ int Sequence::increment_wheel_sine(int step){
 
 int Sequence::increment_swing_sine(int step){
   increment_swing(step);
-  byte spread_position = this->current * this->factor;
+  byte spread_position = 0.5 + (this->current * this->factor);
   return max * ColorMath::get_cosine(spread_position);
 }
 
