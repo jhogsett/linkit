@@ -93,16 +93,16 @@ def apollo_macros():
                                                               
   set_macro(30, "1:pau:40:run:44:run:46:run");              
                                                       
-  set_macro(31, "0:sqs:pos:0:pal:sfd:rst:flu");             
-  set_macro(32, "1:sqs:pos:1:pal:sfd:rst");                 
-  set_macro(33, "2:sqs:pos:2:pal:sfd:rst");                 
-  set_macro(34, "3:sqs:pos:3:pal:sfd:rst");                 
-  set_macro(35, "4:sqs:pos:4:pal:sfd:rst");         
-  set_macro(36, "5,:sqs:pos:5:pal:sfd:rst");                
+  set_macro(31, "0:ssc:pos:0:pal:sfd:rst:flu");             
+  set_macro(32, "1:ssc:pos:1:pal:sfd:rst");                 
+  set_macro(33, "2:ssc:pos:2:pal:sfd:rst");                 
+  set_macro(34, "3:ssc:pos:3:pal:sfd:rst");                 
+  set_macro(35, "4:ssc:pos:4:pal:sfd:rst");         
+  set_macro(36, "5:ssc:pos:5:pal:sfd:rst");                
                                                               
-  set_macro(37, "0,15,0:sqs:1,30,15:sqs");                  
-  set_macro(38, "2,45,30:sqs:3,60,45:sqs");         
-  set_macro(39, "4,75,60:sqs:5,90,75:sqs");                 
+  set_macro(37, "0,16,0:ssc:1,31,15:ssc");                  
+  set_macro(38, "2,44,30:ssc:3,60,44:ssc");         
+  set_macro(39, "4,75,59:ssc:5,90,74:ssc");                 
   set_macro(40, "37:run:38:run:39:run");            
                                                               
   set_macro(41, "21,31:sch:22,32:sch");             
