@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# ideas: flash green or red depending on tests when done
+#        arg to run a single test
+
 import serial 
 import time
 import sys
@@ -76,21 +79,21 @@ test_description = None
 def normal():                                              
   return "\x1b[39m" 
 
+def write(text):
+  sys.stdout.write(text)
+  sys.stdout.flush()                                                
+
 def red(text):
-  print "\x1b[31m" + text + normal(),
-  sys.stdout.flush()
+  write("\x1b[31m" + text + normal())
 
 def green(text):                                              
-  print "\x1b[32m" + text + normal(),
-  sys.stdout.flush()                                              
+  write("\x1b[32m" + text + normal())
 
 def cyan(text):
-  print "\x1b[36m" + text + normal(),
-  sys.stdout.flush()                                              
+  write("\x1b[36m" + text + normal())
 
 def blue(text):                                                   
-  print "\x1b[34m" + text + normal(),                             
-  sys.stdout.flush()   
+  write("\x1b[34m" + text + normal())                             
 
 num_leds = 0
 
@@ -121,62 +124,61 @@ def expect_buffer(command_, start, count, expected):
   str_ = command_str("2," + str(start) + "," + str(count) + ":tst")                                 
   expect_equal(str_[:-1], expected)
 
+def expect_render(command_, start, count, expected):               
+  command(command_)                                                
+  str_ = command_str("3," + str(start) + "," + str(count) + ":tst")
+  expect_equal(str_[:-1], expected)                                
+                                                                   
+def expect_effect(command_, start, count, expected):               
+  command(command_)                                                
+  str_ = command_str("4," + str(start) + "," + str(count) + ":tst")
+  expect_equal(str_[:-1], expected)                                
+                                                                   
+def expect_palette(command_, start, count, expected):               
+  #command(command_)                                                
+  #str_ = command_str("5," + str(start) + "," + str(count) + ":tst")
+  #expect_equal(str_[:-1], expected)                                
+  pass                                                                
+
 def spec_1():
   test(1, "it sets a pre-rendered red value in the buffer")
-#  command("red")
-#  str = command_str("2,0,1:tst")
-#  expect_equal(str, "20,0,0,")
-
   expect_buffer("red", 0, 1, "20,0,0")
 
 def spec_2():
   test(2, "it doesn't render while paused")
-  command("red")
-  str = command_str("3,0,1:tst")                           
-  expect_equal(str, "0,0,0,")                             
+  expect_render("red", 0, 1, "0,0,0")
 
 def spec_3():
   test(3, "it renders a rendered red value in the render buffer")
-  command("red:flu")
-  str = command_str("3,0,1:tst")
-  expect_equal(str, "51,0,0,")              
+  expect_render("red:flu", 0, 1, "51,0,0")
 
 def spec_4():
   test(4, "it erases the rendered value")
-  command("red:flu")
-  str = command_str("3,0,1:tst")                                 
-  expect_equal(str, "51,0,0,")                                    
-  command("era:flu")
-  str = command_str("3,0,1:tst")                                 
-  expect_equal(str, "0,0,0,")  
+  expect_render("red:flu", 0, 1, "51,0,0")
+  expect_render("era:flu", 0, 1, "0,0,0")
 
 def spec_5():
   test(5, "it repeats the color value only once")
-  command("grn:rep:flu")
-  str = command_str("2,0,3:tst") 
-  expect_equal(str, "0,20,0,0,20,0,0,0,0,")
+  expect_buffer("grn:rep:flu", 0, 3, "0,20,0,0,20,0,0,0,0")
 
 def spec_6():
   test(6, "it floods all leds")
-  command("pur:flo:flu")
   num_leds = command_int("0,0:tst")
   for i in range(num_leds):
-    str_ = command_str("2," + str(i) + ",1:tst")                                  
-    expect_equal(str_, "10,0,20,")                                    
+    expect_buffer("pur:flo:flu", i, 1, "10,0,20")
    
 def spec_7():
   test(7, "it mirrors the pattern accurately")
-  command("cyn:yel:mag:mir:flu")
-  str_ = command_str("2,0,3:tst")
-  expect_equal(str_, "20,0,20,20,20,0,0,20,20,")
-  str_ = command_str("2," + str(num_leds - 3) + ",3:tst")                 
-  expect_equal(str_, "0,20,20,20,20,0,20,0,20,")
+  expect_buffer("cyn:yel:mag:mir:flu", 0, 3, "20,0,20,20,20,0,0,20,20")
+  expect_buffer("", num_leds - 3, 3, "0,20,20,20,20,0,20,0,20")
 
 def spec_8():
   test(8, "it places two colors (only)")
-  command("2:yel:flu")
-  str = command_str("2,0,3:tst")
-  expect_equal(str, "20,20,0,20,20,0,0,0,0,")
+  expect_buffer("2:yel:flu", 0, 3, "20,20,0,20,20,0,0,0,0")
+
+def spec_9():
+  test(9, "it places an effect in the effects buffer")
+  expect_effect("bli", 0, 1, "10")
   
 def loop():                                  
   spec_1()
@@ -187,16 +189,13 @@ def loop():
   spec_6()
   spec_7()
   spec_8()
-
-
-
-
+  spec_9()
 
 #  if len(sys.argv) > 2:                                      
 #    command(sys.argv[2])
 
-
 if __name__ == '__main__': 
   setup() 
   loop()
+  print
 
