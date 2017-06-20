@@ -55,16 +55,16 @@
 #define CMD_BLINK4       47
 #define CMD_BLINK5       48
 #define CMD_BLINK6       49
-#define CMD_BLINKR       50
-#define CMD_BLINKA       51
-#define CMD_BLINKB       52
-#define CMD_BLINKC       53
-#define CMD_BREATHE      54
-#define CMD_SLOW_FADE    55
-#define CMD_FAST_FADE    56
-#define CMD_TWINKLE      57
-#define CMD_RAW          58 
-#define CMD_STATIC       59
+#define CMD_BLINKA       50
+#define CMD_BLINKB       51
+#define CMD_BLINKC       52
+#define CMD_BREATHE      53
+#define CMD_SLOW_FADE    54
+#define CMD_FAST_FADE    55
+#define CMD_TWINKLE      56
+#define CMD_RAW          57 
+#define CMD_STATIC       58
+#define CMD_BLINKR       59
 #define CMD_EFFECTR      60
 #define CMD_PAUSE        61
 #define CMD_CONTINUE     62
@@ -155,16 +155,16 @@ const char cmd_046[] PROGMEM = "bl3";
 const char cmd_047[] PROGMEM = "bl4";
 const char cmd_048[] PROGMEM = "bl5";
 const char cmd_049[] PROGMEM = "bl6";
-const char cmd_050[] PROGMEM = "blr";
-const char cmd_051[] PROGMEM = "bla";
-const char cmd_052[] PROGMEM = "blb";
-const char cmd_053[] PROGMEM = "blc";
-const char cmd_054[] PROGMEM = "bre";
-const char cmd_055[] PROGMEM = "sfd";
-const char cmd_056[] PROGMEM = "ffd";
-const char cmd_057[] PROGMEM = "twi";
-const char cmd_058[] PROGMEM = "raw";
-const char cmd_059[] PROGMEM = "sta";
+const char cmd_050[] PROGMEM = "bla";
+const char cmd_051[] PROGMEM = "blb";
+const char cmd_052[] PROGMEM = "blc";
+const char cmd_053[] PROGMEM = "bre";
+const char cmd_054[] PROGMEM = "sfd";
+const char cmd_055[] PROGMEM = "ffd";
+const char cmd_056[] PROGMEM = "twi";
+const char cmd_057[] PROGMEM = "raw";
+const char cmd_058[] PROGMEM = "sta";
+const char cmd_059[] PROGMEM = "blr";
 const char cmd_060[] PROGMEM = "efr";
 const char cmd_061[] PROGMEM = "pau";
 const char cmd_062[] PROGMEM = "cnt";

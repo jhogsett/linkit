@@ -1,3 +1,40 @@
+// triggers:
+// run a macro each time a sequence has an event (events: start (wheel), start, mid-way (swing))
+// how would this work?
+//   one trigger per sequencer (so, 6)
+//   triggers are built into sequencers, not separate (though a different command is used to set them up)
+//   set a trigger: t,s,m:trg 
+//     t=trigger number
+//     s=sequence number, if s is -1, the trigger is cleared
+//     m=macro number, for two-event sequences (swing) it calls this macro and m+1 
+//   each sequence incrementer will fire the trigger at bounding events
+//   the trigger will then call the macro(s)
+
+// the color commands could be a shortcut to colors in the initial palette instead of fixed values
+
+// hardware triggers, such as button presses, will be called something else, like Actions
+
+// other sequencers:
+// brownian motion
+// power ease
+// seeded random
+// gravity bounce
+// ones useful in 2D such as triangle wave, spirograph, Lissajous curves
+
+// when using sine sequencer, have a way to fill in missing pixels (missing due to skipping over them in order to speed up)
+// -- would need a sequencer that knew how to draw pixels and fill them in
+//      have a way for sequencer to accept a macro to run to do the drawing, this is like a trigger
+//      it could call the same memory macro as its sequence number, to avoid passing the macro #
+//
+
+// maybe alternate between blink, breathe and fade processing to allow scheduling more often
+
+// upon sequencing, leave in arg0 a count of the number of skipped (black) pixels, so a macro could use 'rpt' to fill in  
+
+// maybe rst should clear the arguments
+// this is for cases where arg0 is optionally left with a value other than zero after some operation
+
+
 // specs need to account for swapped colors on strands
 
 // may be able to save space by storing crossfade and ease fractions as an 8-bit values n/255

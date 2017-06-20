@@ -50,9 +50,10 @@ class Sequence
   int low;
   int max;
   int current;
+  int previous;
   byte state;
   float factor;
-};
+ };
 
 void Sequence::begin(){
   set(DEFAULT_TYPE, DEFAULT_LOW, DEFAULT_HIGH);
@@ -76,8 +77,10 @@ void Sequence::reset(){
 #define ADVANCE_CURRENT  -1
 #define ADVANCE_OPPOSITE -2
 #define ADVANCE_RESET    -3
+#define ADVANCE_MACRO    -3
 
-int Sequence::next(int advancement, int step){
+int Sequence::next(int advancement, int step){ // step or macro
+  
   if(step == 0)
     step = 1;
 
@@ -96,6 +99,8 @@ int Sequence::next(int advancement, int step){
 }
 
 int Sequence::increment(int step){
+  this->previous = this->current;
+
   switch(this->type){
     case SEQUENCE_WHEEL:
       return this->increment_wheel(step);

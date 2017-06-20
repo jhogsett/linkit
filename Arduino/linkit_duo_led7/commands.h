@@ -37,6 +37,9 @@ class Commands
   void reset();
   void set_brightness_level(byte level = 0);
   bool dispatch_command(int cmd, byte *dispatch_data = NULL);
+  void dispatch_color(int cmd);
+  void dispatch_effect(int cmd);
+  void dispatch_sequence(int cmd);
   void flush_all(bool force_display = false);
   void run_default_macro();
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
@@ -85,6 +88,7 @@ class Commands
   void do_test_inquiry(byte type, int arg2);
   void do_test_macro(byte macro_number);
   void do_test_buffer(byte start, byte count);
+  void do_test_effects(byte start, byte count);
   void do_test_render(byte start, byte count);
 
   Buffer *buffer;
@@ -410,6 +414,8 @@ void Commands::do_copy(byte size, int times, byte zoom){
       else
         render_buffer[i].red = effects[source]; 
     }
+
+    // TODO DRY
   
     // copy the effects
     for(byte i = 0; i < times; i++){
@@ -583,6 +589,8 @@ void Commands::reset(){
   // the brightness shouldn't be set on reset, because the device could be set
   // to an appropriate brightness level already
   //set_brightness_level(default_brightness);
+
+  // TODO maybe clear command processor arguments here too, to help with passing args into macros
 }
 
 // full reset and clear of displays with un-pausing
@@ -726,6 +734,8 @@ int Commands::random_num(int max, int min){
       break;
   }
 
+  // TODO DRY
+
   if(empty_only){
     byte protection = 0;
     rgb_color * buf = buffer->get_buffer();
@@ -754,10 +764,26 @@ int Commands::random_num(int max, int min){
 }
 
 // shortcut: once a special command is set to establish type, 'seq' can be used to read the values regardless of type
+//
+// setting
+// arg0 - sequence number, 0-5, default = 0
+// arg1 - high limit, default = 10 for 0-9, must be >0 for 'setting' mode
+// arg2 - low limit, default = 0 for 0-9
 // 1:10:0:seq - set sequence #1 to 0 - 9, reset to 0
 // 1:10:2:seq - set sequence #1 to 2 - 9, reset to 2
-// seq - get next number from sequence #0
+//
+// getting
+// arg0 - sequence number, 0-5, default = 0
+// arg1 - advancement, must be <= 0 for 'getting' mode 
+// arg1 -1 = get current number without advancing
+// arg1 -2 = get opposite of current number without advancing (for range 0-9 and current number 4, this would be 5)
+// arg1 -3 = set current number to low limit and return it without advancing
+// arg1 -4 = step (arg2) instead is a macro # to run for each position, filling gaps
+// 1:0:0:seq - get next number from #1
 // 1:seq - get next number from #1
+// seq - get next number from #0
+// 
+// seq - get next number from sequence #0
 // 1:-1:seq - get current number from #1
 // 1:-2:seq - get opposite of current number from #1 (for range 0-9 and current number 4, this would be 5)
 // 1:-3:seq - reset #1 to low and return it
@@ -849,86 +875,13 @@ void Commands::process_commands(const __FlashStringHelper * commands){
   process_commands(buffer);
 }
 
-#define TEST_TYPE_INQUIRY      0
-#define TEST_TYPE_DUMP_MACRO   1
-#define TEST_TYPE_DUMP_BUFFER  2
-#define TEST_TYPE_DUMP_RENDER  3
-#define TEST_TYPE_DUMP_PALETTE 4
-
-void Commands::do_test(int type, int arg1, int arg2){
-  switch(type){
-    case TEST_TYPE_INQUIRY:
-      // arg1 - inquiry type
-      // arg2 - (depends on inquiry)
-      do_test_inquiry(arg1, arg2);
-      break;
-    case TEST_TYPE_DUMP_MACRO:
-      // arg1 - macro number
-      do_test_macro(arg1);
-      break;
-    case TEST_TYPE_DUMP_BUFFER:
-      // arg1 - start
-      // arg2 - count
-      do_test_buffer(arg1, arg2);
-      break;
-    case TEST_TYPE_DUMP_RENDER:
-      // arg1 - start
-      // arg2 - count
-      do_test_render(arg1, arg2);
-      break;
-//    case TEST_TYPE_DUMP_PALETTE:
-//      do_test_palette(arg1, arg2);
-//      break;
-  }
-}
-
-#define TEST_INQUIRY_NUM_LEDS     0
-//#define TEST_INQUIRY_NUM_ZONES    1
-//#define TEST_INQUIRY_NUM_PALETTES 2
-//#define TEST_INQUIRY_NUM_LEDS     3
-// current offset, window, buffer, effects buffer
-
-void Commands::do_test_inquiry(byte type, int arg2){
-  switch(type){
-    case TEST_INQUIRY_NUM_LEDS:
-      command_processor->send_int(visible_led_count);
-      break;
-  }
-}
-
-void Commands::do_test_macro(byte macro_number){
-  byte *position;
-  byte b = macros.begin_dump_macro(macro_number, &position);
-  command_processor->send_ints(b);
-  for(byte i = 0; i < NUM_MACRO_CHARS - 1; i++){
-    b = macros.continue_dump_macro(macro_number, &position);            
-    command_processor->send_ints(b);
-  }
-}
-
-void Commands::do_test_buffer(byte start, byte count){
-  rgb_color * buf = buffer->get_buffer();
-  for(int i = 0; i < count; i++){
-    command_processor->send_ints(buf[start + i].red);
-    command_processor->send_ints(buf[start + i].green);
-    command_processor->send_ints(buf[start + i].blue);
-  }
-}
-
-void Commands::do_test_render(byte start, byte count){
-  rgb_color * buf = buffer->get_render_buffer();
-  for(int i = 0; i < count; i++){
-    command_processor->send_ints(buf[start + i].red);
-    command_processor->send_ints(buf[start + i].green);
-    command_processor->send_ints(buf[start + i].blue);
-  }
-}
-
 #include "dispatch_command.h"
 
-#ifdef USE_DEFAULT_MACROS
-#include "default_macros.h"
-#endif
+//#ifdef USE_DEFAULT_MACROS
+//#include "default_macros.h"
+//#endif
+
+#include "testing.h"
 
 #endif
 
