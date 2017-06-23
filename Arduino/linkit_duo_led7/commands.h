@@ -78,13 +78,13 @@ class Commands
   void do_rotate(byte times, byte steps, bool flush);
   void do_delay(int milliseconds);
   int random_num(int max, int min = 0);
-  void set_position(int position, int width = 0);
+  void set_position(int position); //, int width = 0);
   void random_position(int type);
   void set_fade_rate(int arg0);
   int do_sequence(byte type, int arg0, int arg1, int arg2);
   int do_set_sequence(byte type, int arg0, int arg1, int arg2);
   int do_next_sequence(int arg0, int arg1, int arg2);
-  int do_next_window(int arg0, int *arg1, int arg2);
+//  int do_next_window(int arg0, int *arg1, int arg2);
 //  int do_next_macro(int arg1, int arg2);
 
 #ifdef TEST_FRAMEWORK
@@ -626,7 +626,7 @@ void Commands::set_fade_rate(int arg0){
   fade_effects->set_fade_rate(arg0/ 10000.0);
 }
 
-void Commands::set_position(int position, int width){
+void Commands::set_position(int position){ //, int width){
   byte current_offset = buffer->get_offset();
   byte current_window = buffer->get_window();
 
@@ -644,10 +644,10 @@ void Commands::set_position(int position, int width){
 //  
 //  buffer->set_window_override(window); 
 
-    position = position + current_offset;
+  position = position + current_offset;
   
-    // don't go outside of zone
-    position = min(current_window, max(current_offset, position));
+  // don't go outside of zone
+  position = min(current_window, max(current_offset, position));
     
   buffer->set_offset_override(position); 
   buffer->set_window_override(position); 
@@ -788,6 +788,7 @@ int Commands::random_num(int max, int min){
 // 1:0:-1:seq - get next number from #1, stepping by -1
 
 int Commands::do_sequence(byte type, int arg0, int arg1, int arg2){
+  
   if(arg1 > 0){
     //                           num   high  low
     return do_set_sequence(type, arg0, arg1, arg2);
@@ -810,53 +811,53 @@ int Commands::do_next_sequence(int arg0, int arg1, int arg2){
   return sequencer->next(arg0, arg1, arg2);
 }
 
-// 10,10:pos works; 1,5:pos does not
-// advance the sequencer, then leave arg0 = position, arg1 = width
-// for the position command to allow filling gaps
-int Commands::do_next_window(int arg0, int *arg1, int arg2){
-  byte position = sequencer->next(arg0, *arg1, arg2);
-
-  byte offset;
-  byte width;
-
-  if(position > sequencer->previous(arg0)){
-    // going up
-    // width needing drawing
-    width = position - sequencer->previous(arg0);
-    if(width > 1){
-      // there's a gap, start right after the last position
-      offset = sequencer->previous(arg0) + 1;
-      // fill in the difference; this might need a - 1
-      width = position - offset;
-    } 
-    else {
-      // there's no gap
-      offset = position;
-      width = 1;
-    }
-  } else if(position < sequencer->previous(arg0)) {
-    // going down
-    // width needing drawing
-    width = sequencer->previous(arg0) - position;
-    if(width > 1){
-      // there's a gap, new position is beginning of range
-      // and width is already computed, though it might need a - 1
-      offset = position;
-    }
-    else {
-      // there's no gap
-      offset = position;
-      width = 1;
-    }
-  } else {
-    // no change in position
-    offset = position;
-    width = 1;
-  }
-
-  *arg1 = width;
-  return offset;
-}
+//// 10,10:pos works; 1,5:pos does not
+//// advance the sequencer, then leave arg0 = position, arg1 = width
+//// for the position command to allow filling gaps
+//int Commands::do_next_window(int arg0, int *arg1, int arg2){
+//  byte position = sequencer->next(arg0, *arg1, arg2);
+//
+//  byte offset;
+//  byte width;
+//
+//  if(position > sequencer->previous(arg0)){
+//    // going up
+//    // width needing drawing
+//    width = position - sequencer->previous(arg0);
+//    if(width > 1){
+//      // there's a gap, start right after the last position
+//      offset = sequencer->previous(arg0) + 1;
+//      // fill in the difference; this might need a - 1
+//      width = position - offset;
+//    } 
+//    else {
+//      // there's no gap
+//      offset = position;
+//      width = 1;
+//    }
+//  } else if(position < sequencer->previous(arg0)) {
+//    // going down
+//    // width needing drawing
+//    width = sequencer->previous(arg0) - position;
+//    if(width > 1){
+//      // there's a gap, new position is beginning of range
+//      // and width is already computed, though it might need a - 1
+//      offset = position;
+//    }
+//    else {
+//      // there's no gap
+//      offset = position;
+//      width = 1;
+//    }
+//  } else {
+//    // no change in position
+//    offset = position;
+//    width = 1;
+//  }
+//
+//  *arg1 = width;
+//  return offset;
+//}
 
 //int Commands::do_next_macro(int arg1, int arg2){
 //  

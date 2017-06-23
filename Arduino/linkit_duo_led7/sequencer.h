@@ -38,7 +38,7 @@ class Sequence
   int next_window(int *advancement, int step);  // sets arg1 to the window distance to fill without gaps
 //  int next_macro(int macro, int step);          // runs the macro for each position (needs the ability to pass args into macros)
 
-  int current_position();
+//  int current_position();
   int prev_position();
 
   private:
@@ -235,9 +235,9 @@ int Sequence::increment_swing_power(int step){
   return this->low + (this->width * PowerEase::get_ease(spread_position));
 }
 
-int Sequence::current_position(){
-  return this->current;
-}
+//int Sequence::current_position(){
+//  return this->current;
+//}
 
 int Sequence::prev_position(){
   return this->previous;
@@ -283,9 +283,9 @@ int Sequencer::next(int sequencer, int advancement, int step){
   return sequences[sequencer].next(advancement, step);  
 }
 
-int Sequencer::current(int sequencer){
-  return sequences[sequencer].current_position();  
-}
+//int Sequencer::current(int sequencer){
+//  return sequences[sequencer].current_position();  
+//}
 
 int Sequencer::previous(int sequencer){
   return sequences[sequencer].prev_position();  

@@ -1,3 +1,19 @@
+// this is odd
+
+//command: 0:set:50:seq:pos:blu:flu:rst
+//10k
+//command: 0:run
+//k
+//command: 1,0:tst
+//252,50,0,2,0,92,87,17,1,63,255,0,0,0,0,0,0,0,0,0,k
+//
+
+
+
+
+
+
+
 // need to save previous args for:
 // - passing arguments to macros (calling macro destroys arguments)
 // - direct testing of arguments

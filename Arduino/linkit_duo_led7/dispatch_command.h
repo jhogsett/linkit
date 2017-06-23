@@ -75,18 +75,19 @@ void Commands::dispatch_sequence(int cmd){
     case CMD_SEQ_SWGSN: type = SEQUENCE_SWING_SINE;   break;
     case CMD_SEQ_WHLPW: type = SEQUENCE_WHEEL_POWER;  break;
     case CMD_SEQ_SWGPW: type = SEQUENCE_SWING_POWER;  break;
-      command_processor->sub_args[0] = do_sequence(type, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[1] = 0;
-      command_processor->sub_args[2] = 0;
-    case CMD_SEQ_NEXTW:
-      command_processor->sub_args[0] = do_next_window(command_processor->sub_args[0], &command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[2] = 0;
-      break;
+  }
+    command_processor->sub_args[0] = do_sequence(type, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+    command_processor->sub_args[1] = 0;
+    command_processor->sub_args[2] = 0;
+//      break;
+//    case CMD_SEQ_NEXTW:
+//      command_processor->sub_args[0] = do_next_window(command_processor->sub_args[0], &command_processor->sub_args[1], command_processor->sub_args[2]);
+//      command_processor->sub_args[2] = 0;
+//      break;
 //    case CMD_SEQ_NEXTM:
 //      do_next_macro(&command_processor->sub_args[1], command_processor->sub_args[2]);
 //      command_processor->reset_args();   
 //      break;
-  }
 }
 
 bool Commands::dispatch_command(int cmd, byte *dispatch_data){
@@ -349,7 +350,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_POSITION:
       // arg[0] index of insertion pointer
       // arg[1] 
-      set_position(command_processor->sub_args[0], command_processor->sub_args[1]);
+      set_position(command_processor->sub_args[0]); //, command_processor->sub_args[1]);
       reset_args = true;
       break;
 
@@ -413,10 +414,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
         break;
       }
     case CMD_SETBLACK:
-    {
-      rgb_color black_level = {command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]};
-      buffer->set_black_level(black_level);
-    }
+      {
+        rgb_color black_level = {command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]};
+        buffer->set_black_level(black_level);
+        break;
+      }
     case CMD_SEQ_WHEEL:
     case CMD_SEQ_SWING:
     case CMD_SEQ_WHLCO:
@@ -425,8 +427,8 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_SEQ_SWGSN:
     case CMD_SEQ_WHLPW:
     case CMD_SEQ_SWGPW:
-    case CMD_SEQ_NEXTW:
-    case CMD_SEQ_NEXTM:
+//    case CMD_SEQ_NEXTW:
+//    case CMD_SEQ_NEXTM:
       dispatch_sequence(cmd);
       // don't reset args
       break;
