@@ -98,18 +98,31 @@ def apollo_macros():
   set_macro(21, "era:50:lev:13,120:run:tun:flo:cfa:100:lev", 19);
                                                               
   set_macro(30, "1:pau:40:run:44:run:46:run", 12);              
+
+                                                           
+  set_macro(31, "0:ssc:pos:0:pal:sfd:rst:flu", 10);      
+  set_macro(32, "1:ssc:pos:1:pal:sfd:rst", 9);           
+  set_macro(33, "2:ssc:pos:2:pal:sfd:rst", 9);           
+  set_macro(34, "3:ssc:pos:3:pal:sfd:rst", 9);           
+  set_macro(35, "4:ssc:pos:4:pal:sfd:rst", 9);                   
+  set_macro(36, "5:ssc:pos:5:pal:sfd:rst", 9);           
+                                                                 
+  set_macro(37, "0,16,0:ssc:1,31,15:ssc", 14);           
+  set_macro(38, "2,44,30:ssc:3,60,44:ssc", 16);                  
+  set_macro(39, "4,75,59:ssc:5,90,74:ssc", 16);          
+  set_macro(40, "37:run:38:run:39:run", 9);    
                                                       
-  set_macro(31, "0:ssc:pos:0:pal:sfd:rst:flu", 10);             
-  set_macro(32, "1:ssc:pos:1:pal:sfd:rst", 9);                 
-  set_macro(33, "2:ssc:pos:2:pal:sfd:rst", 9);                 
-  set_macro(34, "3:ssc:pos:3:pal:sfd:rst", 9);                 
-  set_macro(35, "4:ssc:pos:4:pal:sfd:rst", 9);         
-  set_macro(36, "5:ssc:pos:5:pal:sfd:rst", 9);                
+#  set_macro(31, "0:ssp:pos:0:pal:sfd:rst:flu", 10);             
+#  set_macro(32, "1:ssp:pos:1:pal:sfd:rst", 9);                 
+#  set_macro(33, "2:ssp:pos:2:pal:sfd:rst", 9);                 
+#  set_macro(34, "3:ssp:pos:3:pal:sfd:rst", 9);                 
+#  set_macro(35, "4:ssp:pos:4:pal:sfd:rst", 9);         
+#  set_macro(36, "5:ssp:pos:5:pal:sfd:rst", 9);                
                                                               
-  set_macro(37, "0,16,0:ssc:1,31,15:ssc", 14);                  
-  set_macro(38, "2,44,30:ssc:3,60,44:ssc", 16);         
-  set_macro(39, "4,75,59:ssc:5,90,74:ssc", 16);                 
-  set_macro(40, "37:run:38:run:39:run", 9);            
+#  set_macro(37, "0,16,0:ssp:1,31,15:ssp", 14);                  
+#  set_macro(38, "2,44,30:ssp:3,60,44:ssp", 16);         
+#  set_macro(39, "4,75,59:ssp:5,90,74:ssp", 16);                 
+#  set_macro(40, "37:run:38:run:39:run", 9);            
                                                               
   set_macro(41, "21,31:sch:22,32:sch", 12);             
   set_macro(42, "23,33:sch:24,34:sch", 12);                     
