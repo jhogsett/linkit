@@ -631,18 +631,26 @@ void Commands::set_position(int position, int width){
   byte current_window = buffer->get_window();
 
   // offset into zone space
-  position = current_offset + position;
+  ///position = current_offset + position;
 
   // don't go outside of zone
-  position = min(current_window, max(current_offset, position));
+  ///position = min(current_window, max(current_offset, position));
+    
+//  buffer->set_offset_override(position); 
+//
+//  // set the window at the specified width
+//  byte window = position + width;
+//  window = min(current_window, window);
+//  
+//  buffer->set_window_override(window); 
+
+    position = position + current_offset;
+  
+    // don't go outside of zone
+    position = min(current_window, max(current_offset, position));
     
   buffer->set_offset_override(position); 
-
-  // set the window at the specified width
-  byte window = position + width;
-  window = min(current_window, window);
-  
-  buffer->set_window_override(window); 
+  buffer->set_window_override(position); 
 }
 
 #define RANDOM_NUM_WIDTH_NOT_EMPTY -2
@@ -758,17 +766,17 @@ int Commands::random_num(int max, int min){
 // arg0 - sequence number, 0-5, default = 0
 // arg1 - high limit, default = 10 for 0-9, must be >0 for 'setting' mode
 // arg2 - low limit, default = 0 for 0-9
-// 1:10:0:seq - set sequence #1 to 0 - 9, reset to 0
-// 1:10:2:seq - set sequence #1 to 2 - 9, reset to 2
+// 1,10,0:seq - set sequence #1 to 0 - 9, reset to 0
+// 1,10,2:seq - set sequence #1 to 2 - 9, reset to 2
 //
 // getting
 // arg0 - sequence number, 0-5, default = 0
 // arg1 - advancement, must be <= 0 for 'getting' mode 
 // arg1 -1 = get current number without advancing
 // arg1 -2 = get opposite of current number without advancing (for range 0-9 and current number 4, this would be 5)
-// arg1 -3 = set current number to low limit and return it without advancing
+// arg1 -3 = reset current number to low limit and return it without advancing
 // arg1 -4 = step (arg2) instead is a macro # to run for each position, filling gaps
-// 1:0:0:seq - get next number from #1
+// 1,0,0:seq - get next number from #1
 // 1:seq - get next number from #1
 // seq - get next number from #0
 // 
@@ -840,6 +848,10 @@ int Commands::do_next_window(int arg0, int *arg1, int arg2){
       offset = position;
       width = 1;
     }
+  } else {
+    // no change in position
+    offset = position;
+    width = 1;
   }
 
   *arg1 = width;

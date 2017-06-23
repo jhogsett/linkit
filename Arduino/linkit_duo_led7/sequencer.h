@@ -75,6 +75,7 @@ void Sequence::set(byte type, int low, int high){
   this->low = low;
   this->max = high - 1;
   this->width = this->max - this->low;
+  this->previous = this->low;
 
   switch(this->type){
     case SEQUENCE_WHEEL_COSINE:
