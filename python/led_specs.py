@@ -164,8 +164,8 @@ def spec_5():
 def spec_6():
   test(6, "it floods all leds")
   num_leds = command_int("0,0:tst")
-  for i in range(num_leds):
-    expect_buffer("pur:flo:flu", i, 1, "10,0,20")
+  expected_buffer = ("10,0,20," * num_leds)[:-1]
+  expect_buffer("pur:flo:flu", 0, num_leds, expected_buffer)
    
 def spec_7():
   test(7, "it mirrors the pattern accurately")
@@ -178,18 +178,22 @@ def spec_8():
 
 def spec_9():
   test(9, "it places an effect in the effects buffer")
-  expect_effect("bli", 0, 1, "10")
-  
+  expect_effect("org:bli:flu", 0, 1, "10")
+
+def spec_10():
+  test(10, "pos sets the next insertion postion and default 0 width")
+  expect_buffer("1:pos:red:flu", 0, 3, "0,0,0,20,0,0,0,0,0")
+
+def spec_11():
+  test(11, "pos sets the offset + width")
+  expect_buffer("1,2:pos:wht:flo:flu", 0, 4, "0,0,0,20,20,20,20,20,20,0,0,0")
+# offset into zone
+
 def loop():                                  
-  spec_1()
-  spec_2()
-  spec_3()
-  spec_4()
-  spec_5()
-  spec_6()
-  spec_7()
-  spec_8()
-  spec_9()
+  num_specs = 11;
+
+  for spec_number in range(1, num_specs + 1):
+    getattr(sys.modules[__name__], "spec_%s" % str(spec_number))()
 
 #  if len(sys.argv) > 2:                                      
 #    command(sys.argv[2])
