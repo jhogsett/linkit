@@ -1,3 +1,21 @@
+// need to save previous args for:
+// - passing arguments to macros (calling macro destroys arguments)
+// - direct testing of arguments
+
+// the step argument for sine sequencers could be the sine frequency (default = 1 cycle)
+
+// palette sweep
+// goes from 0-359 automatically filling 18 palette slots (20º apart)
+//   specify saturation and lightness
+//   idea: first arg could be a number specifying anything from 18 colors 1º apart to 18 colors with any angle of sweep
+//   arg0: step angle, default=20 (18 evenly spaced colors)
+//   arg1: saturation, default=255
+//   arg2: lightness, default=255
+
+// shf: need to rotate and transform palette in various ways
+
+// what if arg1 was the # of steps taken, or the number skipped, and that could be transformed to allow filling gaps
+
 // triggers:
 // run a macro each time a sequence has an event (events: start (wheel), start, mid-way (swing))
 // how would this work?

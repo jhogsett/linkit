@@ -69,17 +69,24 @@ void Commands::dispatch_sequence(int cmd){
   switch(cmd){
     case CMD_SEQ_WHEEL: type = SEQUENCE_WHEEL;        break;
     case CMD_SEQ_SWING: type = SEQUENCE_SWING;        break;
-    case CMD_SEQ_DRIVE: type = SEQUENCE_DRIVE;        break;
-    case CMD_SEQ_BOUND: type = SEQUENCE_BOUND;        break;
     case CMD_SEQ_WHLCO: type = SEQUENCE_WHEEL_COSINE; break;
     case CMD_SEQ_SWGCO: type = SEQUENCE_SWING_COSINE; break;
     case CMD_SEQ_WHLSN: type = SEQUENCE_WHEEL_SINE;   break;
     case CMD_SEQ_SWGSN: type = SEQUENCE_SWING_SINE;   break;
+    case CMD_SEQ_WHLPW: type = SEQUENCE_WHEEL_POWER;  break;
+    case CMD_SEQ_SWGPW: type = SEQUENCE_SWING_POWER;  break;
+      command_processor->sub_args[0] = do_sequence(type, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+      command_processor->sub_args[1] = 0;
+      command_processor->sub_args[2] = 0;
+    case CMD_SEQ_NEXTW:
+      command_processor->sub_args[0] = do_next_window(command_processor->sub_args[0], &command_processor->sub_args[1], command_processor->sub_args[2]);
+      command_processor->sub_args[2] = 0;
+      break;
+//    case CMD_SEQ_NEXTM:
+//      do_next_macro(&command_processor->sub_args[1], command_processor->sub_args[2]);
+//      command_processor->reset_args();   
+//      break;
   }
-
-  command_processor->sub_args[0] = do_sequence(type, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-  command_processor->sub_args[1] = 0;
-  command_processor->sub_args[2] = 0;
 }
 
 bool Commands::dispatch_command(int cmd, byte *dispatch_data){
@@ -341,10 +348,8 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     case CMD_POSITION:
       // arg[0] index of insertion pointer
-      //        if -1, start of current zone
-      //        if -2, end of current zone
-      //        if -3, center of current zone
-      set_position(command_processor->sub_args[0]);
+      // arg[1] 
+      set_position(command_processor->sub_args[0], command_processor->sub_args[1]);
       reset_args = true;
       break;
 
@@ -414,12 +419,14 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     }
     case CMD_SEQ_WHEEL:
     case CMD_SEQ_SWING:
-    case CMD_SEQ_DRIVE:
-    case CMD_SEQ_BOUND:
     case CMD_SEQ_WHLCO:
     case CMD_SEQ_SWGCO:
     case CMD_SEQ_WHLSN:
     case CMD_SEQ_SWGSN:
+    case CMD_SEQ_WHLPW:
+    case CMD_SEQ_SWGPW:
+    case CMD_SEQ_NEXTW:
+    case CMD_SEQ_NEXTM:
       dispatch_sequence(cmd);
       // don't reset args
       break;
