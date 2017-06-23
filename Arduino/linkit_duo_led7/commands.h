@@ -78,18 +78,23 @@ class Commands
   void do_rotate(byte times, byte steps, bool flush);
   void do_delay(int milliseconds);
   int random_num(int max, int min = 0);
-  void set_position(int position);
+  void set_position(int position); //, int width = 0);
   void random_position(int type);
+  void set_fade_rate(int arg0);
   int do_sequence(byte type, int arg0, int arg1, int arg2);
   int do_set_sequence(byte type, int arg0, int arg1, int arg2);
   int do_next_sequence(int arg0, int arg1, int arg2);
-  void set_fade_rate(int arg0);
+//  int do_next_window(int arg0, int *arg1, int arg2);
+//  int do_next_macro(int arg1, int arg2);
+
+#ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
   void do_test_inquiry(byte type, int arg2);
   void do_test_macro(byte macro_number);
   void do_test_buffer(byte start, byte count);
   void do_test_effects(byte start, byte count);
   void do_test_render(byte start, byte count);
+#endif
 
   Buffer *buffer;
   Render *renderer;  
@@ -557,8 +562,9 @@ void Commands::do_rotate(byte times, byte steps, bool flush){
 
 void Commands::flush(bool force_display = false){
   if(force_display || !effects_paused){
-    renderer->render_buffer(buffer->get_render_buffer(), buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
-    buffer->display_buffer(buffer->get_render_buffer());
+    rgb_color * render_buffer = buffer->get_render_buffer();
+    renderer->render_buffer(render_buffer, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
+    buffer->display_buffer(render_buffer);
   }
 }
 
@@ -620,37 +626,28 @@ void Commands::set_fade_rate(int arg0){
   fade_effects->set_fade_rate(arg0/ 10000.0);
 }
 
-#define SET_POSITION_ZONE_START  -1
-#define SET_POSITION_ZONE_END    -2
-#define SET_POSITION_ZONE_CENTER -3
-#define SET_POSITION_NEXT        -4
-#define SET_POSITION_PREV        -5
-
-void Commands::set_position(int position){
+void Commands::set_position(int position){ //, int width){
   byte current_offset = buffer->get_offset();
   byte current_window = buffer->get_window();
 
-  switch(position){
-    case SET_POSITION_ZONE_CENTER:
-      position = (current_offset + current_window) / 2;
-      break;
+  // offset into zone space
+  ///position = current_offset + position;
 
-    case SET_POSITION_ZONE_END:
-      position = current_window;
-      break;
+  // don't go outside of zone
+  ///position = min(current_window, max(current_offset, position));
+    
+//  buffer->set_offset_override(position); 
+//
+//  // set the window at the specified width
+//  byte window = position + width;
+//  window = min(current_window, window);
+//  
+//  buffer->set_window_override(window); 
 
-    case SET_POSITION_ZONE_START:
-      position = current_offset;
-      break;
-
-    default:
-      // offset into zone space
-      position = position + current_offset;
+  position = position + current_offset;
   
-      // don't go outside of zone
-      position = min(current_window, max(current_offset, position));
-      break;
-  }
+  // don't go outside of zone
+  position = min(current_window, max(current_offset, position));
     
   buffer->set_offset_override(position); 
   buffer->set_window_override(position); 
@@ -769,17 +766,17 @@ int Commands::random_num(int max, int min){
 // arg0 - sequence number, 0-5, default = 0
 // arg1 - high limit, default = 10 for 0-9, must be >0 for 'setting' mode
 // arg2 - low limit, default = 0 for 0-9
-// 1:10:0:seq - set sequence #1 to 0 - 9, reset to 0
-// 1:10:2:seq - set sequence #1 to 2 - 9, reset to 2
+// 1,10,0:seq - set sequence #1 to 0 - 9, reset to 0
+// 1,10,2:seq - set sequence #1 to 2 - 9, reset to 2
 //
 // getting
 // arg0 - sequence number, 0-5, default = 0
 // arg1 - advancement, must be <= 0 for 'getting' mode 
 // arg1 -1 = get current number without advancing
 // arg1 -2 = get opposite of current number without advancing (for range 0-9 and current number 4, this would be 5)
-// arg1 -3 = set current number to low limit and return it without advancing
+// arg1 -3 = reset current number to low limit and return it without advancing
 // arg1 -4 = step (arg2) instead is a macro # to run for each position, filling gaps
-// 1:0:0:seq - get next number from #1
+// 1,0,0:seq - get next number from #1
 // 1:seq - get next number from #1
 // seq - get next number from #0
 // 
@@ -791,6 +788,7 @@ int Commands::random_num(int max, int min){
 // 1:0:-1:seq - get next number from #1, stepping by -1
 
 int Commands::do_sequence(byte type, int arg0, int arg1, int arg2){
+  
   if(arg1 > 0){
     //                           num   high  low
     return do_set_sequence(type, arg0, arg1, arg2);
@@ -809,9 +807,61 @@ int Commands::do_set_sequence(byte type, int arg0, int arg1, int arg2){
 }
 
 int Commands::do_next_sequence(int arg0, int arg1, int arg2){
-  //                    adv   step
+  //                     num   adv   step
   return sequencer->next(arg0, arg1, arg2);
 }
+
+//// 10,10:pos works; 1,5:pos does not
+//// advance the sequencer, then leave arg0 = position, arg1 = width
+//// for the position command to allow filling gaps
+//int Commands::do_next_window(int arg0, int *arg1, int arg2){
+//  byte position = sequencer->next(arg0, *arg1, arg2);
+//
+//  byte offset;
+//  byte width;
+//
+//  if(position > sequencer->previous(arg0)){
+//    // going up
+//    // width needing drawing
+//    width = position - sequencer->previous(arg0);
+//    if(width > 1){
+//      // there's a gap, start right after the last position
+//      offset = sequencer->previous(arg0) + 1;
+//      // fill in the difference; this might need a - 1
+//      width = position - offset;
+//    } 
+//    else {
+//      // there's no gap
+//      offset = position;
+//      width = 1;
+//    }
+//  } else if(position < sequencer->previous(arg0)) {
+//    // going down
+//    // width needing drawing
+//    width = sequencer->previous(arg0) - position;
+//    if(width > 1){
+//      // there's a gap, new position is beginning of range
+//      // and width is already computed, though it might need a - 1
+//      offset = position;
+//    }
+//    else {
+//      // there's no gap
+//      offset = position;
+//      width = 1;
+//    }
+//  } else {
+//    // no change in position
+//    offset = position;
+//    width = 1;
+//  }
+//
+//  *arg1 = width;
+//  return offset;
+//}
+
+//int Commands::do_next_macro(int arg1, int arg2){
+//  
+//}
 
 // process the series of unpacked commands and arguments in the passed memory buffer
 // the string must be tokenizable by strtok (get's corrupted)
