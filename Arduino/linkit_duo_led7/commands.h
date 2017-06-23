@@ -310,10 +310,17 @@ void Commands::do_crossfade(){
 void Commands::do_flood(){
   byte offset = buffer->get_offset();
   byte window = buffer->get_window();
+
+  // no flooding necessary unless there are two or more pixels
+  if((window - offset) < 2)
+    return;
+  
   rgb_color * buf = buffer->get_buffer();
   byte * effects = buffer->get_effects_buffer();
+
   rgb_color color = buf[offset];
   byte effect = effects[offset];
+
   for(byte i = offset + 1; i < window; i++){
     if(effect == RANDOM1){
       buf[i] = ColorMath::random_color();
