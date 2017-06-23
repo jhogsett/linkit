@@ -75,6 +75,9 @@ def setup():
 
 test_number = None
 test_description = None
+test_failures = []
+success_count = 0
+failure_count = 0
 
 def normal():                                              
   return "\x1b[39m" 
@@ -84,34 +87,37 @@ def write(text):
   sys.stdout.flush()                                                
 
 def red(text):
-  write("\x1b[31m" + text + normal())
+  return "\x1b[31m" + text + normal()
 
 def green(text):                                              
-  write("\x1b[32m" + text + normal())
+  return "\x1b[32m" + text + normal()
 
 def cyan(text):
-  write("\x1b[36m" + text + normal())
+  return "\x1b[36m" + text + normal()
 
 def blue(text):                                                   
-  write("\x1b[34m" + text + normal())                             
+  return "\x1b[34m" + text + normal()                             
 
 num_leds = 0
 
 def test(number, description):
-  global test_number, test_description, num_leds
-  print
+  global test_number, test_description, test_failures, num_leds
   test_number = number
   test_description = description 
   num_leds = command_int("0,0:tst")              
-  cyan("test #" + str(test_number) + " " + test_description + " ")
   command(":::stp:stp:20:lev")
 
 def fail(got, expected):
-  red("failed! expected: " + expected + " got: " + got)
-  print
+  global test_failures, failure_count
+  test_failures.append(cyan("test #" + str(test_number) + " " + test_description)) 
+  test_failures.append(red("  " + "failed! expected: " + expected + " got: " + got + "\n"))
+  write(red("F"))
+  failure_count += 1
 
 def succeed():
-  green(".")
+  global success_count
+  write(green("."))
+  success_count += 1
 
 def expect_equal(got, expected):
   if got != expected:
@@ -192,8 +198,17 @@ def spec_11():
 def loop():                                  
   num_specs = 11;
 
+  print "Running " + str(num_specs) + " specs"
+
   for spec_number in range(1, num_specs + 1):
     getattr(sys.modules[__name__], "spec_%s" % str(spec_number))()
+
+  print "\n" 
+
+  for error in test_failures:
+    print error
+
+  print str(success_count) + " met expectations, " + str(failure_count) + " failed expectations"
 
 #  if len(sys.argv) > 2:                                      
 #    command(sys.argv[2])
