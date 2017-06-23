@@ -1,6 +1,87 @@
 #ifndef DISPATCH_COMMAND_H
 #define DISPATCH_COMMAND_H
 
+void Commands::dispatch_color(int cmd){
+  rgb_color color = BLACK;
+
+  switch(cmd){
+    case CMD_RED:       color = RED;       break;
+    case CMD_GREEN:     color = GREEN;     break;
+    case CMD_BLUE:      color = BLUE;      break;     
+    case CMD_BLACK:     color = buffer->black; break;
+    case CMD_YELLOW:    color = YELLOW;    break;
+    case CMD_ORANGE:    color = ORANGE;    break;
+    case CMD_PURPLE:    color = PURPLE;    break;    
+    case CMD_CYAN:      color = CYAN;      break; 
+    case CMD_MAGENTA:   color = MAGENTA;   break;  
+    case CMD_PINK:      color = PINK;      break;
+    case CMD_WHITE:     color = WHITE;     break;
+    case CMD_GRAY:      color = GRAY;      break;      
+    case CMD_LTGREEN:   color = LTGREEN;   break;
+    case CMD_SEAFOAM:   color = SEAFOAM;   break;
+    case CMD_LTBLUE:    color = LTBLUE;    break;   
+    case CMD_DKGRAY:    color = DKGRAY;    break;
+    case CMD_TUNGSTEN:  color = TUNGSTEN;  break;   
+    case CMD_AMBER:     color = AMBER;     break;
+    case CMD_OLIVE:     color = OLIVE;     break;
+    case CMD_SKYBLUE:   color = SKYBLUE;   break;
+    case CMD_TURQUOISE: color = TURQUOISE; break;
+    case CMD_LAVENDER:  color = LAVENDER;  break;
+    case CMD_ROSE:      color = ROSE;      break;
+  }
+  
+  buffer->push_color(color, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+}
+
+void Commands::dispatch_effect(int cmd){
+//  effects_map[] = { BLINK_ON,   BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4,    
+//                    BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B, BLINK_ON_C,
+//                    BREATHE_ON, SLOW_FADE,  FAST_FADE,  TWINKLE_ON, RAW_ON,
+//                    STATIC_ON };
+//  effects_processor->start_effect(effects_map[cmd - CMD_BLINK]);
+
+  byte effect = NO_EFFECT;
+  switch(cmd){
+    case CMD_BLINK:     effect = BLINK_ON;   break;
+    case CMD_BLINK1:    effect = BLINK_ON_1; break;
+    case CMD_BLINK2:    effect = BLINK_ON_2; break;    
+    case CMD_BLINK3:    effect = BLINK_ON_3; break;    
+    case CMD_BLINK4:    effect = BLINK_ON_4; break;    
+    case CMD_BLINK5:    effect = BLINK_ON_5; break;   
+    case CMD_BLINK6:    effect = BLINK_ON_6; break;   
+    case CMD_BLINKA:    effect = BLINK_ON_A; break;   
+    case CMD_BLINKB:    effect = BLINK_ON_B; break;   
+    case CMD_BLINKC:    effect = BLINK_ON_C; break;
+    case CMD_BREATHE:   effect = BREATHE_ON; break;
+    case CMD_SLOW_FADE: effect = SLOW_FADE;  break;
+    case CMD_FAST_FADE: effect = FAST_FADE;  break;
+    case CMD_TWINKLE:   effect = TWINKLE_ON; break;
+    case CMD_RAW:       effect = RAW_ON;     break;
+    case CMD_STATIC:    effect = STATIC_ON;  break;
+  }
+   
+  effects_processor->start_effect(effect);
+}
+
+void Commands::dispatch_sequence(int cmd){
+  byte type = SEQUENCE_WHEEL;
+
+  switch(cmd){
+    case CMD_SEQ_WHEEL: type = SEQUENCE_WHEEL;        break;
+    case CMD_SEQ_SWING: type = SEQUENCE_SWING;        break;
+    case CMD_SEQ_DRIVE: type = SEQUENCE_DRIVE;        break;
+    case CMD_SEQ_BOUND: type = SEQUENCE_BOUND;        break;
+    case CMD_SEQ_WHLCO: type = SEQUENCE_WHEEL_COSINE; break;
+    case CMD_SEQ_SWGCO: type = SEQUENCE_SWING_COSINE; break;
+    case CMD_SEQ_WHLSN: type = SEQUENCE_WHEEL_SINE;   break;
+    case CMD_SEQ_SWGSN: type = SEQUENCE_SWING_SINE;   break;
+  }
+
+  command_processor->sub_args[0] = do_sequence(type, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
+  command_processor->sub_args[1] = 0;
+  command_processor->sub_args[2] = 0;
+}
+
 bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   bool continue_dispatching = true;
   bool reset_args = false;
@@ -65,95 +146,29 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       reset_args = true;
       break;
     case CMD_RED:       
-      buffer->push_color(RED, command_processor->sub_args[0], command_processor->sub_args[1]);                                                      
-      reset_args = true;
-      break;
     case CMD_GREEN:     
-      buffer->push_color(GREEN, command_processor->sub_args[0], command_processor->sub_args[1]);                                                    
-      reset_args = true;
-      break;
     case CMD_BLUE:      
-      buffer->push_color(BLUE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                     
-      reset_args = true;
-      break;
     case CMD_BLACK:     
-      buffer->push_color(buffer->black, command_processor->sub_args[0], command_processor->sub_args[1]);                                                    
-      reset_args = true;
-      break;
     case CMD_YELLOW:    
-      buffer->push_color(YELLOW, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_ORANGE:    
-      buffer->push_color(ORANGE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_PURPLE:    
-      buffer->push_color(PURPLE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_CYAN:      
-      buffer->push_color(CYAN, command_processor->sub_args[0], command_processor->sub_args[1]);                                                     
-      reset_args = true;
-      break;
     case CMD_MAGENTA:   
-      buffer->push_color(MAGENTA, command_processor->sub_args[0], command_processor->sub_args[1]);                                                  
-      reset_args = true;
-      break; 
     case CMD_PINK:      
-      buffer->push_color(PINK, command_processor->sub_args[0], command_processor->sub_args[1]);                                                     
-      reset_args = true;
-      break; 
     case CMD_WHITE:     
-      buffer->push_color(WHITE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                    
-      reset_args = true;
-      break; 
     case CMD_GRAY:      
-      buffer->push_color(GRAY, command_processor->sub_args[0], command_processor->sub_args[1]);                                                     
-      reset_args = true;
-      break;
     case CMD_LTGREEN:   
-      buffer->push_color(LTGREEN, command_processor->sub_args[0], command_processor->sub_args[1]);                                                  
-      reset_args = true;
-      break;
     case CMD_SEAFOAM:   
-      buffer->push_color(SEAFOAM, command_processor->sub_args[0], command_processor->sub_args[1]);                                                  
-      reset_args = true;
-      break;
     case CMD_LTBLUE:    
-      buffer->push_color(LTBLUE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_DKGRAY:    
-      buffer->push_color(DKGRAY, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_TUNGSTEN:    
-      buffer->push_color(TUNGSTEN, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_AMBER:
-      buffer->push_color(AMBER, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_OLIVE:
-      buffer->push_color(OLIVE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_SKYBLUE:
-      buffer->push_color(SKYBLUE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_TURQUOISE:
-      buffer->push_color(TURQUOISE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_LAVENDER:
-      buffer->push_color(LAVENDER, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
-      reset_args = true;
-      break;
     case CMD_ROSE:
-      buffer->push_color(ROSE, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
+      dispatch_color(cmd);
       reset_args = true;
       break;
     case CMD_RANDOM:    
@@ -174,55 +189,25 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       do_bright();                                                          
       break;
     case CMD_BLINK:     
-      effects_processor->start_effect(BLINK_ON);                                               
-      break;
     case CMD_BLINK1:    
-      effects_processor->start_effect(BLINK_ON_1);                                             
-      break;
     case CMD_BLINK2:    
-      effects_processor->start_effect(BLINK_ON_2);                                             
-      break;
     case CMD_BLINK3:    
-      effects_processor->start_effect(BLINK_ON_3);                                             
-      break;
     case CMD_BLINK4:    
-      effects_processor->start_effect(BLINK_ON_4);                                             
-      break;
     case CMD_BLINK5:    
-      effects_processor->start_effect(BLINK_ON_5);                                            
-      break;
     case CMD_BLINK6:    
-      effects_processor->start_effect(BLINK_ON_6);                                             
+    case CMD_BLINKA:    
+    case CMD_BLINKB:    
+    case CMD_BLINKC:
+    case CMD_BREATHE:   
+    case CMD_SLOW_FADE:
+    case CMD_FAST_FADE:
+    case CMD_TWINKLE:
+    case CMD_RAW:
+    case CMD_STATIC:    
+      dispatch_effect(cmd);
       break;
     case CMD_BLINKR:    
       effects_processor->start_blinking_r();                                                   
-      break;
-    case CMD_BLINKA:    
-      effects_processor->start_effect(BLINK_ON_A);                                             
-      break;
-    case CMD_BLINKB:    
-      effects_processor->start_effect(BLINK_ON_B);                                             
-      break;
-    case CMD_BLINKC:
-      effects_processor->start_effect(BLINK_ON_C);                                               
-      break;
-    case CMD_BREATHE:   
-      effects_processor->start_effect(BREATHE_ON);                                             
-      break;
-    case CMD_SLOW_FADE:
-      effects_processor->start_effect(SLOW_FADE);                                             
-      break;
-    case CMD_FAST_FADE:
-      effects_processor->start_effect(FAST_FADE);                                             
-      break;
-    case CMD_TWINKLE:
-      effects_processor->start_effect(TWINKLE_ON);                                             
-      break;
-    case CMD_RAW:
-      effects_processor->start_effect(RAW_ON);                                             
-      break;
-    case CMD_STATIC:    
-      effects_processor->start_effect(STATIC_ON);                                                                                                                      
       break;
     case CMD_EFFECTR:   
       effects_processor->start_effect_r();                                                     
@@ -428,53 +413,14 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       buffer->set_black_level(black_level);
     }
     case CMD_SEQ_WHEEL:
-      command_processor->sub_args[0] = do_sequence(SEQUENCE_WHEEL, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[1] = 0;
-      command_processor->sub_args[2] = 0;
-      // don't reset args
-      break;
     case CMD_SEQ_SWING:
-      command_processor->sub_args[0] = do_sequence(SEQUENCE_SWING, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[1] = 0;
-      command_processor->sub_args[2] = 0;
-      // don't reset args
-      break;
     case CMD_SEQ_DRIVE:
-      command_processor->sub_args[0] = do_sequence(SEQUENCE_DRIVE, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[1] = 0;
-      command_processor->sub_args[2] = 0;
-      // don't reset args
-      break;
     case CMD_SEQ_BOUND:
-      command_processor->sub_args[0] = do_sequence(SEQUENCE_BOUND, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[1] = 0;
-      command_processor->sub_args[2] = 0;
-      // don't reset args
-      break;
     case CMD_SEQ_WHLCO:
-      command_processor->sub_args[0] = do_sequence(SEQUENCE_WHEEL_COSINE, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[1] = 0;
-      command_processor->sub_args[2] = 0;
-      // don't reset args
-      break;
-      
     case CMD_SEQ_SWGCO:
-      command_processor->sub_args[0] = do_sequence(SEQUENCE_SWING_COSINE, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[1] = 0;
-      command_processor->sub_args[2] = 0;
-      // don't reset args
-      break;
     case CMD_SEQ_WHLSN:
-      command_processor->sub_args[0] = do_sequence(SEQUENCE_WHEEL_SINE, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[1] = 0;
-      command_processor->sub_args[2] = 0;
-      // don't reset args
-      break;
-      
     case CMD_SEQ_SWGSN:
-      command_processor->sub_args[0] = do_sequence(SEQUENCE_SWING_SINE, command_processor->sub_args[0], command_processor->sub_args[1], command_processor->sub_args[2]);
-      command_processor->sub_args[1] = 0;
-      command_processor->sub_args[2] = 0;
+      dispatch_sequence(cmd);
       // don't reset args
       break;
   }
