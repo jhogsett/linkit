@@ -348,9 +348,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       }
       break;
     case CMD_POSITION:
-      // arg[0] index of insertion pointer
-      // arg[1] 
-      set_position(command_processor->sub_args[0]); //, command_processor->sub_args[1]);
+      // arg[0] index of insertion pointer, default = 0
+      // arg[1] width of window, default = 1
+      set_position(command_processor->sub_args[0], command_processor->sub_args[1]);
       reset_args = true;
       break;
 
@@ -427,9 +427,12 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_SEQ_SWGSN:
     case CMD_SEQ_WHLPW:
     case CMD_SEQ_SWGPW:
-//    case CMD_SEQ_NEXTW:
-//    case CMD_SEQ_NEXTM:
       dispatch_sequence(cmd);
+      // don't reset args
+      break;
+    case CMD_SEQ_NEXTW:
+      command_processor->sub_args[0] = do_next_window(command_processor->sub_args[0], &command_processor->sub_args[1], command_processor->sub_args[2]);
+      command_processor->sub_args[2] = 0;
       // don't reset args
       break;
   }
