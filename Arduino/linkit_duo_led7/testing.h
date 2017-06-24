@@ -11,6 +11,7 @@
 #define TEST_TYPE_DUMP_RENDER  3
 #define TEST_TYPE_DUMP_EFFECTS 4
 #define TEST_TYPE_DUMP_PALETTE 5
+#define TEST_TYPE_FUNCTION     6
 
 void Commands::do_test(int type, int arg1, int arg2){
   switch(type){
@@ -38,9 +39,14 @@ void Commands::do_test(int type, int arg1, int arg2){
       // arg2 - count
       do_test_effects(arg1, arg2);
       break;
-//    case TEST_TYPE_DUMP_PALETTE:
+    case TEST_TYPE_DUMP_PALETTE:
 //      do_test_palette(arg1, arg2);
-//      break;
+      break;
+    case TEST_TYPE_FUNCTION:
+      // arg1 - function type
+      // arg2 - (depends on function)
+      do_test_function(arg1, arg2);
+      break;
   }
 }
 
@@ -67,6 +73,20 @@ void Commands::do_test_inquiry(byte type, int arg2){
       command_processor->send_int(buffer->get_window());
       break;
   }
+}
+
+#define TEST_FUNCTION_PROCESS_EFFECTS   0
+#define TEST_FUNCTION_PROCESS_SCHEDULES 1
+
+void Commands::do_test_function(byte type, int arg2){
+  switch(type){
+    case TEST_FUNCTION_PROCESS_EFFECTS:
+      effects_processor->process_effects();
+      break;
+    case TEST_FUNCTION_PROCESS_SCHEDULES:
+      scheduler.process_schedules();
+      break;
+  }  
 }
 
 void Commands::do_test_macro(byte macro_number){
