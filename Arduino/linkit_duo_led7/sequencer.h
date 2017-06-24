@@ -34,12 +34,14 @@ class Sequence
   void reset();
   int next(int advancement, int step);
 
-  int next_position(int advancement, int step);
-  int next_window(int *advancement, int step);  // sets arg1 to the window distance to fill without gaps
+//  int next_position(int advancement, int step);
+//  int next_window(int *advancement, int step);  // sets arg1 to the window distance to fill without gaps
 //  int next_macro(int macro, int step);          // runs the macro for each position (needs the ability to pass args into macros)
 
-//  int current_position();
-  int prev_position();
+  int current_position();
+  int previous_position();
+  int previous_computed();
+  void set_previous_computed(int position);
 
   private:
 
@@ -63,6 +65,7 @@ class Sequence
   int previous;
   byte state;
   float factor;
+  int prev_computed;
  };
 
 void Sequence::begin(){
@@ -94,8 +97,9 @@ void Sequence::set(byte type, int low, int high){
 }
 
 void Sequence::reset(){
-  this->previous = this->low;
   this->current = this->low;
+  this->previous = this->low;
+  this->prev_computed = this->low;
   this->state = STATE_NORMAL;
 }
 
@@ -235,13 +239,23 @@ int Sequence::increment_swing_power(int step){
   return this->low + (this->width * PowerEase::get_ease(spread_position));
 }
 
-//int Sequence::current_position(){
-//  return this->current;
-//}
+int Sequence::current_position(){
+  return this->current;
+}
 
-int Sequence::prev_position(){
+int Sequence::previous_position(){
   return this->previous;
 }
+
+int Sequence::previous_computed(){
+  return this->prev_computed;
+}
+
+void Sequence::set_previous_computed(int position){
+  this->prev_computed = position;  
+}
+
+
 
 
 
@@ -256,6 +270,8 @@ class Sequencer
   int next(int sequencer, int advancement, int step);
   int current(int sequencer);
   int previous(int sequencer);
+  int previous_computed(int sequencer);
+  void set_previous_computed(int sequencer, int position);
 
   private:
 
@@ -283,12 +299,20 @@ int Sequencer::next(int sequencer, int advancement, int step){
   return sequences[sequencer].next(advancement, step);  
 }
 
-//int Sequencer::current(int sequencer){
-//  return sequences[sequencer].current_position();  
-//}
+int Sequencer::current(int sequencer){
+  return sequences[sequencer].current_position();  
+}
 
 int Sequencer::previous(int sequencer){
-  return sequences[sequencer].prev_position();  
+  return sequences[sequencer].previous_position();  
+}
+
+int Sequencer::previous_computed(int sequencer){
+  return sequences[sequencer].previous_computed();
+}
+
+void Sequencer::set_previous_computed(int sequencer, int position){
+  sequences[sequencer].set_previous_computed(position);  
 }
 
 #endif
