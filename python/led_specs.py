@@ -38,6 +38,8 @@ group_number = 0
 group_description = None  
 test_line_num = 0
 num_pending = 0
+last_group_number = 0                                                  
+last_test_number = 0 
 
 def flush_input():                        
   s.flushInput()
@@ -190,27 +192,28 @@ def normalbg():
 num_leds = 0
 
 def group(description):                                                                    
-  global group_number, group_description
+  global group_number, group_description, last_group_number
   group_number = group_number + 1
   group_description = description
 
 def test(description):
-  global test_number, test_description, test_failures
+  global test_number, test_description, test_failures, last_test_number
   test_number = test_number + 1
   test_description = description 
   command(":::stp:stp:20:lev")
 
-last_group_number = 0
-last_test_number = 0
-
 def report_group():
+  global last_group_number
   if group_number != last_group_number:                                                                                                                                                                    
-    test_failures.append(cyan("Group #" + str(group_number) + " " + group_description))                                                                                                                    
+    test_failures.append(cyan("\nGroup #" + str(group_number) + " " + group_description))                                                                                                                    
+    last_group_number = group_number                                                       
 
 def report_test():
+  global last_test_number
   report_group()
   if test_number != last_test_number:                                                                                                                                                                      
     test_failures.append(blue("  Test #" + str(test_number) + " " + test_description))                                                                                                                     
+    last_test_number = test_number                                                      
 
 def report_failure():
   report_test()
@@ -303,6 +306,9 @@ def specs():
   expect_buffer("2:yel:flu", 0, 3, "20,20,0,20,20,0,0,0,0")                          
 
   # it works in reverse mode
+
+  test("it places multiple colors in reverse mode")
+  expect_buffer("1:rev:2:sea:flu", 87, 3, "0,0,0,0,20,10,0,20,10")
                                                                                                                        
   # --------------------------------------------------------------------                                               
   group("pause and continue")
@@ -330,6 +336,8 @@ def specs():
   expect_render("6:pnk:flu", 0, 1, "51,0,25")
   expect_render("2:off:4:win:era:flu", 0, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25")
 
+  pending_test("it erases within the set window in reverse mode")
+
   # --------------------------------------------------------------------                                               
   group("repeating")
 
@@ -342,7 +350,7 @@ def specs():
 
   # repeating works in reverse mode
   pending_test("it repeats properly in reverse mode")
-  #expect_buffer("1:rev:gry:rpt:flu", 88, 2, "10,10,10,10,10,10")
+  # expect_buffer("1:rev:gry:rpt:flu", 88, 2, "10,10,10,10,10,10")
 
   # --------------------------------------------------------------------                                               
   group("flooding")
@@ -356,9 +364,9 @@ def specs():
   expect_buffer("2:off:4:win:ros:flo:flu", 0, 6, "0,0,0,0,0,0,20,0,15,20,0,15,0,0,0,0,0,0")
 
   # not sure how to test this
-  test("it does no flooding if there's no room")
+  pending_test("it does no flooding if there's no room")
 
-  test("it floods properly in reverse mode")
+  pending_test("it floods properly in reverse mode")
 
   # --------------------------------------------------------------------                                               
   group("mirroring")
@@ -367,9 +375,9 @@ def specs():
   expect_buffer("cyn:yel:mag:mir:flu", 0, 3, "20,0,20,20,20,0,0,20,20")
   expect_buffer("", num_leds - 3, 3, "0,20,20,20,20,0,20,0,20")
 
-  test("it mirrors only within the set window")
+  pending_test("it mirrors only within the set window")
 
-  test("it mirrors properly in reverse mode") 
+  pending_test("it mirrors properly in reverse mode") 
 
   # --------------------------------------------------------------------                                               
   group("pushing effects to the effects buffer")
@@ -377,9 +385,9 @@ def specs():
   test("it places an effect in the effects buffer")
   expect_effect("org:bli:flu", 0, 1, "10")
 
-  test("it places an alternate effect in the effects buffer")
+  pending_test("it places an alternate effect in the effects buffer")
 
-  test("it places multiple effects in the effects buffer")
+  pending_test("it places multiple effects in the effects buffer")
  
   # --------------------------------------------------------------------                                               
   group("positioning")
@@ -390,11 +398,11 @@ def specs():
   test("pos sets the offset + width")
   expect_buffer("1,2:pos:wht:flo:flu", 0, 4, "0,0,0,20,20,20,20,20,20,0,0,0")
 
-  test("positioning offets into the current window")
+  pending_test("positioning offets into the current window")
 
-  test("positioning works in reverse mode")
+  pending_test("positioning works in reverse mode")
 
-  test("positioning with width works in reverse mode")
+  pending_test("positioning with width works in reverse mode")
 
   # --------------------------------------------------------------------                                               
   group("copying")
