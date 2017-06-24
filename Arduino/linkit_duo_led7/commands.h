@@ -94,6 +94,7 @@ class Commands
   void do_test_buffer(byte start, byte count);
   void do_test_effects(byte start, byte count);
   void do_test_render(byte start, byte count);
+  void do_test_function(byte type, int arg2);
 #endif
 
   Buffer *buffer;
