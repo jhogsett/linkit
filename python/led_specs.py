@@ -142,13 +142,21 @@ def test(description):
   num_leds = command_int("0,0:tst")              
   command(":::stp:stp:20:lev")
 
+last_group_number = 0
+last_test_number = 0
+
 def fail(got, expected):
-  global test_failures, failure_count
-  test_failures.append(blue("Group #" + str(group_number) + " " + group_description))
-  test_failures.append(cyan("  Test #" + str(test_number) + " " + test_description)) 
+  global test_failures, failure_count, last_group_number, last_test_number
+
+  if group_number != last_group_number:
+    test_failures.append(cyan("Group #" + str(group_number) + " " + group_description))
+  if test_number != last_test_number:
+    test_failures.append(blue("  Test #" + str(test_number) + " " + test_description)) 
   test_failures.append(red("    Command '" + test_command + "' failed! expected: " + expected + " got: " + got + "\n"))
   write(red("F"))
   failure_count += 1
+  last_group_number = group_number
+  last_test_number = test_number
 
 def succeed():
   global success_count
@@ -186,6 +194,7 @@ def expect_palette(command_, start, count, expected):
 ########################################################################
 
 def specs():
+  # --------------------------------------------------------------------
   group("pushing colors to display buffer")
 
   test("it sets a pre-rendered value in the buffer")
@@ -194,30 +203,49 @@ def specs():
   test("it sets an alternate cyan value in the buffer")
   expect_buffer("cyn", 0, 1, "0,20,20") 
 
+  test("it accurately sets all standard colors")
   for color in colors:
     expect_buffer(color[0] + ":flu", 0, 1, color[1])
 
+  # --------------------------------------------------------------------             
+  group("pushing multiple colors")                                                                                     
+                                                                                                                       
+  test("it places two colors (only)")                                                                                  
+  expect_buffer("2:yel:flu", 0, 3, "20,20,0,20,20,0,0,0,0")                          
+                                                                                                                       
+  # --------------------------------------------------------------------                                               
   group("pause and continue")
 
   test("it doesn't render while paused")
   expect_render("red", 0, 1, "0,0,0")
 
+  # --------------------------------------------------------------------                                               
   group("rendering colors to the render buffer")
 
-  test("it renders a rendered red value in the render buffer")
-  expect_render("red:flu", 0, 1, "51,0,0")
+  test("it renders a rendered blue value in the render buffer")
+  expect_render("blu:flu", 0, 1, "0,0,51")
 
+  test("it renders an alternate value in the render buffer")
+  expect_render("org:flu", 0, 1, "51,25,0")
+
+  # --------------------------------------------------------------------                                               
   group("erasure")
 
   test("it erases the rendered value")
   expect_render("red:flu", 0, 1, "51,0,0")
   expect_render("era:flu", 0, 1, "0,0,0")
 
+  test("it erases only within the set window")
+  expect_render("6:pnk:flu", 0, 1, "51,0,25")
+  expect_render("2:off:4:win:era:flu", 0, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25")
+
+  # --------------------------------------------------------------------                                               
   group("repeating")
 
   test("it repeats the color value only once")
   expect_buffer("grn:rep:flu", 0, 3, "0,20,0,0,20,0,0,0,0")
 
+  # --------------------------------------------------------------------                                               
   group("flooding")
 
   test("it floods all leds")
@@ -225,22 +253,20 @@ def specs():
   expected_buffer = ("10,0,20," * num_leds)[:-1]
   expect_buffer("pur:flo:flu", 0, num_leds, expected_buffer)
 
+  # --------------------------------------------------------------------                                               
   group("mirroring")
    
   test("it mirrors the pattern accurately")
   expect_buffer("cyn:yel:mag:mir:flu", 0, 3, "20,0,20,20,20,0,0,20,20")
   expect_buffer("", num_leds - 3, 3, "0,20,20,20,20,0,20,0,20")
 
-  group("pushing multiple colors")
-
-  test("it places two colors (only)")
-  expect_buffer("2:yel:flu", 0, 3, "20,20,0,20,20,0,0,0,0")
-
+  # --------------------------------------------------------------------                                               
   group("pushing effects to the effects buffer")
 
   test("it places an effect in the effects buffer")
   expect_effect("org:bli:flu", 0, 1, "10")
 
+  # --------------------------------------------------------------------                                               
   group("positioning")
 
   test("pos sets the next insertion postion and default 0 width")
@@ -250,6 +276,7 @@ def specs():
   expect_buffer("1,2:pos:wht:flo:flu", 0, 4, "0,0,0,20,20,20,20,20,20,0,0,0")
   # offset into zone
 
+  # --------------------------------------------------------------------                                               
   group("copying")
   group("palette manipulation")                                                            
   group("zones")                                                                          
