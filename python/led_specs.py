@@ -37,6 +37,7 @@ failure_count = 0
 group_number = 0                                                                                                  
 group_description = None  
 test_line_num = 0
+num_pending = 0
 
 def flush_input():                        
   s.flushInput()
@@ -202,6 +203,23 @@ def test(description):
 last_group_number = 0
 last_test_number = 0
 
+def report_group():
+  if group_number != last_group_number:                                                                                                                                                                    
+    test_failures.append(cyan("Group #" + str(group_number) + " " + group_description))                                                                                                                    
+
+def report_test():
+  report_group()
+  if test_number != last_test_number:                                                                                                                                                                      
+    test_failures.append(blue("  Test #" + str(test_number) + " " + test_description))                                                                                                                     
+
+def report_failure():
+  report_test()
+  test_failures.append("    " + red("Expectation: ") + cyan("[" + test_command + "]") + cyan(" @" + str(test_line_number)) + red(" Failed! ") + red("expected: ") + cyan("[" + expected + "]") + red(" got: ") + white("[" + got + "]") + "\n")
+
+def report_pending():
+  report_test()
+  test_failures.append("    " + yellow("Pending expectation: ") + yellow("[" + test_command + "]") + yellow(" @" + str(test_line_number))) 
+
 def fail(got, expected):
   global test_failures, failure_count, last_group_number, last_test_number
 
@@ -211,12 +229,21 @@ def fail(got, expected):
   if test_number != last_test_number:
     test_failures.append(blue("  Test #" + str(test_number) + " " + test_description)) 
 
-  test_failures.append("    " + red("Expectation: ") + yellow("[" + test_command + "]") + white(" @" + str(test_line_number)) + red(" Failed! ") + red("expected: ") + yellow("[" + expected + "]") + red(" got: ") + yellow("[" + got + "]") + "\n")
+  test_failures.append("    " + red("Expectation: ") + white("[" + test_command + "]") + white(" @" + str(test_line_number)) + red(" Failed! ") + red("expected: ") + white("[" + expected + "]") + red(" got: ") + white("[" + got + "]") + "\n")
 
   write(red("F"))
   failure_count += 1
   last_group_number = group_number
   last_test_number = test_number
+
+def pending_test(description):
+  global test_number, test_description, test_line_number, num_pending                                                                                                                                                                                  
+  test_line_number = get_line_number(2)                                                                                                                                                                    
+  test_number = test_number + 1                                                                                                                                                                            
+  test_description = description    
+  report_pending()
+  num_pending += 1
+  write(yellow("P"))
 
 def succeed():
   global success_count
@@ -314,6 +341,8 @@ def specs():
   # expect_buffer("olv:0:rep:flu", 0, 2, "15,20,0,0,0,0")
 
   # repeating works in reverse mode
+  pending_test("it repeats properly in reverse mode")
+  #expect_buffer("1:rev:gry:rpt:flu", 88, 2, "10,10,10,10,10,10")
 
   # --------------------------------------------------------------------                                               
   group("flooding")
@@ -408,23 +437,16 @@ def specs():
 ########################################################################                     
  
 def loop():                                  
-#  num_specs = 11;
-#  print "Running " + str(num_specs) + " specs"
-#  for spec_number in range(1, num_specs + 1):
-#    getattr(sys.modules[__name__], "spec_%s" % str(spec_number))()
-
   print
   specs()
   test("")
-  print "\n" 
+  print 
 
   for error in test_failures:
     print error
 
-  print cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed")
-
-#  if len(sys.argv) > 2:                                      
-#    command(sys.argv[2])
+  print
+  print cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed ") + yellow(str(num_pending) + " pending") 
 
 if __name__ == '__main__': 
   setup() 
