@@ -6,6 +6,22 @@
 import serial 
 import time
 import sys
+import inspect
+
+def get_line_number(back):
+  callerframerecord = inspect.stack()[back]    # 0 represents this line, 1 represents line at caller                                                                                                                       
+  frame = callerframerecord[0]                                                                                                                                                                  
+  info = inspect.getframeinfo(frame)                                                                                                                                                            
+  return info.lineno  
+
+#def print_frame():
+#  callerframerecord = inspect.stack()[1]    # 0 represents this line
+#                                            # 1 represents line at caller
+#  frame = callerframerecord[0]
+#  info = inspect.getframeinfo(frame)
+#  print info.filename                       # __FILE__     -> Test.py
+#  print info.function                       # __FUNCTION__ -> Main
+#  print info.lineno                         # __LINE__     -> 13
 
 response_wait = 0.1
 s = None                                                     
@@ -20,6 +36,7 @@ success_count = 0
 failure_count = 0                                                                                                 
 group_number = 0                                                                                                  
 group_description = None  
+test_line_num = 0
 
 def flush_input():                        
   s.flushInput()
@@ -75,9 +92,11 @@ def set_macro(macro, macro_text):
     print command_str("1," + str(macro) + ":tst")
 
 def setup(): 
-  global s, debug_mode 
+  global s, debug_mode, num_leds 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command(":::stp:stp")
+  command(":::stp:stp:20:lev")
+  num_leds = command_int("0,0:tst")                                                                                                                                                        
+  print cyan("Device: ") + white(str(num_leds) + " LEDs")
 
 #  if len(sys.argv) > 3:                                       
 #    if(sys.argv[3] == "debug"):
@@ -109,12 +128,12 @@ colors = [
   ("tun", "20,11,2")                                             
 ]
 
-def normal():                                              
-  return "\x1b[39m" 
-
 def write(text):
   sys.stdout.write(text)
   sys.stdout.flush()                                                
+
+def black(text):
+  return "\x1b[30m" + text + normal()
 
 def red(text):
   return "\x1b[31m" + text + normal()
@@ -122,11 +141,50 @@ def red(text):
 def green(text):                                              
   return "\x1b[32m" + text + normal()
 
+def yellow(text):
+  return "\x1b[33m" + text + normal()            
+
+def blue(text):                            
+  return "\x1b[34m" + text + normal()  
+
+def magenta(text):                            
+  return "\x1b[35m" + text + normal()  
+
 def cyan(text):
   return "\x1b[36m" + text + normal()
 
-def blue(text):                                                   
-  return "\x1b[34m" + text + normal()                             
+def white(text):                                                   
+  return "\x1b[37m" + text + normal()                             
+
+def normal():                             
+  return "\x1b[39m"                                     
+
+def black(text):                                                                                                                           
+  return "\x1b[40m" + text + normal()                                                                                                                
+
+def redbg(text):                                   
+  return "\x1b[41m" + text + normalbg()                   
+                                                        
+def greenbg(text):                                        
+  return "\x1b[42m" + text + normalbg()                   
+                                                 
+def yellowbg(text):                                       
+  return "\x1b[43m" + text + normalbg()            
+                                                        
+def bluebg(text):                                         
+  return "\x1b[44m" + text + normalbg()                   
+                                                        
+def magentabg(text):                               
+  return "\x1b[45m" + text + normalbg()                   
+                                                        
+def cyanbg(text):                            
+  return "\x1b[46m" + text + normalbg()                   
+                                                        
+def whitebg(text):                         
+  return "\x1b[47m" + text + normalbg()                   
+                                                        
+def normalbg():                                          
+  return "\x1b[49m"  
 
 num_leds = 0
 
@@ -136,10 +194,9 @@ def group(description):
   group_description = description
 
 def test(description):
-  global test_number, test_description, test_failures, num_leds
+  global test_number, test_description, test_failures
   test_number = test_number + 1
   test_description = description 
-  num_leds = command_int("0,0:tst")              
   command(":::stp:stp:20:lev")
 
 last_group_number = 0
@@ -150,9 +207,12 @@ def fail(got, expected):
 
   if group_number != last_group_number:
     test_failures.append(cyan("Group #" + str(group_number) + " " + group_description))
+
   if test_number != last_test_number:
     test_failures.append(blue("  Test #" + str(test_number) + " " + test_description)) 
-  test_failures.append(red("    Command '" + test_command + "' failed! expected: " + expected + " got: " + got + "\n"))
+
+  test_failures.append("    " + red("Expectation: ") + yellow("[" + test_command + "]") + white(" @" + str(test_line_number)) + red(" Failed! ") + red("expected: ") + yellow("[" + expected + "]") + red(" got: ") + yellow("[" + got + "]") + "\n")
+
   write(red("F"))
   failure_count += 1
   last_group_number = group_number
@@ -164,6 +224,8 @@ def succeed():
   success_count += 1
 
 def expect_equal(got, expected):
+  global test_line_number
+  test_line_number = get_line_number(3)
   if got != expected:
     fail(got, expected)
   else:
@@ -212,6 +274,8 @@ def specs():
                                                                                                                        
   test("it places two colors (only)")                                                                                  
   expect_buffer("2:yel:flu", 0, 3, "20,20,0,20,20,0,0,0,0")                          
+
+  # it works in reverse mode
                                                                                                                        
   # --------------------------------------------------------------------                                               
   group("pause and continue")
@@ -245,6 +309,12 @@ def specs():
   test("it repeats the color value only once")
   expect_buffer("grn:rep:flu", 0, 3, "0,20,0,0,20,0,0,0,0")
 
+  # this will break many existing scripts
+  # test("it doesn't repeat if arg0 is zero")
+  # expect_buffer("olv:0:rep:flu", 0, 2, "15,20,0,0,0,0")
+
+  # repeating works in reverse mode
+
   # --------------------------------------------------------------------                                               
   group("flooding")
 
@@ -253,6 +323,14 @@ def specs():
   expected_buffer = ("10,0,20," * num_leds)[:-1]
   expect_buffer("pur:flo:flu", 0, num_leds, expected_buffer)
 
+  test("it floods only within the set window")
+  expect_buffer("2:off:4:win:ros:flo:flu", 0, 6, "0,0,0,0,0,0,20,0,15,20,0,15,0,0,0,0,0,0")
+
+  # not sure how to test this
+  test("it does no flooding if there's no room")
+
+  test("it floods properly in reverse mode")
+
   # --------------------------------------------------------------------                                               
   group("mirroring")
    
@@ -260,12 +338,20 @@ def specs():
   expect_buffer("cyn:yel:mag:mir:flu", 0, 3, "20,0,20,20,20,0,0,20,20")
   expect_buffer("", num_leds - 3, 3, "0,20,20,20,20,0,20,0,20")
 
+  test("it mirrors only within the set window")
+
+  test("it mirrors properly in reverse mode") 
+
   # --------------------------------------------------------------------                                               
   group("pushing effects to the effects buffer")
 
   test("it places an effect in the effects buffer")
   expect_effect("org:bli:flu", 0, 1, "10")
 
+  test("it places an alternate effect in the effects buffer")
+
+  test("it places multiple effects in the effects buffer")
+ 
   # --------------------------------------------------------------------                                               
   group("positioning")
 
@@ -274,7 +360,12 @@ def specs():
 
   test("pos sets the offset + width")
   expect_buffer("1,2:pos:wht:flo:flu", 0, 4, "0,0,0,20,20,20,20,20,20,0,0,0")
-  # offset into zone
+
+  test("positioning offets into the current window")
+
+  test("positioning works in reverse mode")
+
+  test("positioning with width works in reverse mode")
 
   # --------------------------------------------------------------------                                               
   group("copying")
