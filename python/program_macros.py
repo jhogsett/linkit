@@ -7,6 +7,7 @@ import sys
 response_wait = 0.1
 s = None                                                     
 debug_mode = False  
+macro_count = 0
 
 def flush_input():                        
   s.flushInput()
@@ -53,16 +54,37 @@ def command_str(cmd_text):
   s.write((cmd_text + ':').encode()) 
   return wait_for_str()                     
 
+def write(text):                                        
+  sys.stdout.write(text)                                
+  sys.stdout.flush() 
+
+def normal():                                           
+  return "\x1b[39m"                                     
+                                                        
+def red(text):                                          
+  return "\x1b[31m" + text + normal()            
+                                                        
+def green(text):                                        
+  return "\x1b[32m" + text + normal()                   
+                                                 
+def cyan(text):                                         
+  return "\x1b[36m" + text + normal()                   
+                                                        
+def blue(text):                                  
+  return "\x1b[34m" + text + normal()                   
+
 def set_macro(macro, macro_text, expected_bytes):
+  global macro_count
   if debug_mode:
     print "macro " + str(macro) + ": ",
   bytes = command_int(str(macro) + ":set:" + macro_text)
+  command_str("grn:flu")                                 
+  macro_count += 1
   if debug_mode:                                             
     print str(bytes) + " bytes"                                    
     print command_str("1," + str(macro) + ":tst")
   else:
-    sys.stdout.write('.')
-    sys.stdout.flush()
+    write(green('.'))
   if expected_bytes > 0 and expected_bytes != bytes:
     print "Oops! wrong number of bytes received - retrying"
     set_macro(macro, macro_text, expected_bytes)
@@ -70,14 +92,14 @@ def set_macro(macro, macro_text, expected_bytes):
 def setup(): 
   global s, debug_mode 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command(":::stp:stp")
+  command_str(":::stp:stp")
 
   if len(sys.argv) > 3:                                       
     if(sys.argv[3] == "debug"):
       debug_mode = True
 
 def apollo_macros(): 
-  print "apollo macros:"
+  print cyan("apollo macros:\n")
 
   # tunsten lamp                                 
   set_macro(10, "clr:-1:sch:1:pau:21:run", 11);
@@ -136,7 +158,7 @@ def default_macros():
   apollo_macros()
 
 def threeway_macros():
-  print "three way macros"
+  print cyan("three way macros\n")
 
   set_macro(10, "19:run");
 
@@ -158,7 +180,7 @@ def threeway_macros():
   set_macro(23, "fad:2:rnd:flo:flu:50,22:sch");
 
 def oneway_macros():
-  print "one way macros"
+  print cyan("one way macros\n")
 
   set_macro(10, "era:50,11:sch:15,12:sch:200,16:sch");
   set_macro(11, "rng:pos:rnd:twi:flu:rst");
@@ -169,6 +191,7 @@ def oneway_macros():
   set_macro(16, "13:run:14:run:15:run:rst");
 
 def loop():                                  
+  print
   if len(sys.argv) > 1:
     if sys.argv[1] == "apollo":
       apollo_macros()
@@ -180,9 +203,10 @@ def loop():
     default_macros()
 
   if len(sys.argv) > 2:                                      
-    command(sys.argv[2])
+    command_str(sys.argv[2])
 
-  print "done"
+  print 
+  print green(str(macro_count) + " macros successfully programmed\n")
 
 if __name__ == '__main__': 
   setup() 
