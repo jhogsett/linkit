@@ -12,6 +12,14 @@ s = None
 debug_mode = False  
 num_tests = 0
 num_failures = 0
+test_number = 0                                                                                                   
+test_description = None                                                                                           
+test_failures = []                                                                                                
+test_command = None                                                                                               
+success_count = 0                                                                                                 
+failure_count = 0                                                                                                 
+group_number = 0                                                                                                  
+group_description = None  
 
 def flush_input():                        
   s.flushInput()
@@ -46,6 +54,8 @@ def wait_for_str():
   return str[:-1]
 
 def command(cmd_text):
+  global test_command
+  test_command = cmd_text
   s.write((cmd_text + ':').encode())
   wait_for_ack()
 
@@ -73,11 +83,31 @@ def setup():
 #    if(sys.argv[3] == "debug"):
 #      debug_mode = True
 
-test_number = None
-test_description = None
-test_failures = []
-success_count = 0
-failure_count = 0
+colors = [
+  ("red", "20,0,0"),
+  ("org", "20,10,0"),
+  ("yel", "20,20,0"),
+  ("grn", "0,20,0"),
+  ("blu", "0,0,20"),                                             
+  ("pur", "10,0,20"),                                             
+  ("cyn", "0,20,20"),                                             
+  ("mag", "20,0,20"),                                             
+  ("lbl", "0,10,20"),                                             
+  ("lgr", "10,20,0"),                                             
+  ("sea", "0,20,10"),                                             
+  ("pnk", "20,0,10"),                                             
+  ("amb", "20,15,0"),                                             
+  ("olv", "15,20,0"),                                             
+  ("sky", "0,15,20"),                                             
+  ("tur", "0,20,15"),                                             
+  ("lav", "15,0,20"),                                             
+  ("ros", "20,0,15"),                                             
+  ("blk", "0,0,0"),                                             
+  ("dgr", "5,5,5"),                                             
+  ("gry", "10,10,10"),                                             
+  ("wht", "20,20,20"),                                             
+  ("tun", "20,11,2")                                             
+]
 
 def normal():                                              
   return "\x1b[39m" 
@@ -100,17 +130,23 @@ def blue(text):
 
 num_leds = 0
 
-def test(number, description):
+def group(description):                                                                    
+  global group_number, group_description
+  group_number = group_number + 1
+  group_description = description
+
+def test(description):
   global test_number, test_description, test_failures, num_leds
-  test_number = number
+  test_number = test_number + 1
   test_description = description 
   num_leds = command_int("0,0:tst")              
   command(":::stp:stp:20:lev")
 
 def fail(got, expected):
   global test_failures, failure_count
-  test_failures.append(cyan("test #" + str(test_number) + " " + test_description)) 
-  test_failures.append(red("  " + "failed! expected: " + expected + " got: " + got + "\n"))
+  test_failures.append(blue("Group #" + str(group_number) + " " + group_description))
+  test_failures.append(cyan("  Test #" + str(test_number) + " " + test_description)) 
+  test_failures.append(red("    Command '" + test_command + "' failed! expected: " + expected + " got: " + got + "\n"))
   write(red("F"))
   failure_count += 1
 
@@ -146,69 +182,102 @@ def expect_palette(command_, start, count, expected):
   #expect_equal(str_[:-1], expected)                                
   pass                                                                
 
-def spec_1():
-  test(1, "it sets a pre-rendered red value in the buffer")
+########################################################################
+########################################################################
+
+def specs():
+  group("pushing colors to display buffer")
+
+  test("it sets a pre-rendered value in the buffer")
   expect_buffer("red", 0, 1, "20,0,0")
 
-def spec_2():
-  test(2, "it doesn't render while paused")
+  test("it sets an alternate cyan value in the buffer")
+  expect_buffer("cyn", 0, 1, "0,20,20") 
+
+  for color in colors:
+    expect_buffer(color[0] + ":flu", 0, 1, color[1])
+
+  group("pause and continue")
+
+  test("it doesn't render while paused")
   expect_render("red", 0, 1, "0,0,0")
 
-def spec_3():
-  test(3, "it renders a rendered red value in the render buffer")
+  group("rendering colors to the render buffer")
+
+  test("it renders a rendered red value in the render buffer")
   expect_render("red:flu", 0, 1, "51,0,0")
 
-def spec_4():
-  test(4, "it erases the rendered value")
+  group("erasure")
+
+  test("it erases the rendered value")
   expect_render("red:flu", 0, 1, "51,0,0")
   expect_render("era:flu", 0, 1, "0,0,0")
 
-def spec_5():
-  test(5, "it repeats the color value only once")
+  group("repeating")
+
+  test("it repeats the color value only once")
   expect_buffer("grn:rep:flu", 0, 3, "0,20,0,0,20,0,0,0,0")
 
-def spec_6():
-  test(6, "it floods all leds")
+  group("flooding")
+
+  test("it floods all leds")
   num_leds = command_int("0,0:tst")
   expected_buffer = ("10,0,20," * num_leds)[:-1]
   expect_buffer("pur:flo:flu", 0, num_leds, expected_buffer)
+
+  group("mirroring")
    
-def spec_7():
-  test(7, "it mirrors the pattern accurately")
+  test("it mirrors the pattern accurately")
   expect_buffer("cyn:yel:mag:mir:flu", 0, 3, "20,0,20,20,20,0,0,20,20")
   expect_buffer("", num_leds - 3, 3, "0,20,20,20,20,0,20,0,20")
 
-def spec_8():
-  test(8, "it places two colors (only)")
+  group("pushing multiple colors")
+
+  test("it places two colors (only)")
   expect_buffer("2:yel:flu", 0, 3, "20,20,0,20,20,0,0,0,0")
 
-def spec_9():
-  test(9, "it places an effect in the effects buffer")
+  group("pushing effects to the effects buffer")
+
+  test("it places an effect in the effects buffer")
   expect_effect("org:bli:flu", 0, 1, "10")
 
-def spec_10():
-  test(10, "pos sets the next insertion postion and default 0 width")
+  group("positioning")
+
+  test("pos sets the next insertion postion and default 0 width")
   expect_buffer("1:pos:red:flu", 0, 3, "0,0,0,20,0,0,0,0,0")
 
-def spec_11():
-  test(11, "pos sets the offset + width")
+  test("pos sets the offset + width")
   expect_buffer("1,2:pos:wht:flo:flu", 0, 4, "0,0,0,20,20,20,20,20,20,0,0,0")
-# offset into zone
+  # offset into zone
 
+  group("copying")
+  group("palette manipulation")                                                            
+  group("zones")                                                                          
+  group("setting offset and window")                                                                          
+  group("reverse and forward")                                                                          
+  group("rgb color")                                                                          
+  group("hsl color")                                                                          
+  group("custom black level")                                                                          
+  group("")                                                                          
+  group("")                                                                          
+  group("")                                                                          
+
+########################################################################                     
+########################################################################                     
+ 
 def loop():                                  
-  num_specs = 11;
+#  num_specs = 11;
+#  print "Running " + str(num_specs) + " specs"
+#  for spec_number in range(1, num_specs + 1):
+#    getattr(sys.modules[__name__], "spec_%s" % str(spec_number))()
 
-  print "Running " + str(num_specs) + " specs"
-
-  for spec_number in range(1, num_specs + 1):
-    getattr(sys.modules[__name__], "spec_%s" % str(spec_number))()
-
+  specs()
   print "\n" 
 
   for error in test_failures:
     print error
 
-  print str(success_count) + " met expectations, " + str(failure_count) + " failed expectations"
+  print str(success_count + failure_count) + " expectations, " + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed")
 
 #  if len(sys.argv) > 2:                                      
 #    command(sys.argv[2])
