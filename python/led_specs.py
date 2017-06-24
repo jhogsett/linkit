@@ -271,13 +271,15 @@ def loop():
 #  for spec_number in range(1, num_specs + 1):
 #    getattr(sys.modules[__name__], "spec_%s" % str(spec_number))()
 
+  print
   specs()
+  test("")
   print "\n" 
 
   for error in test_failures:
     print error
 
-  print str(success_count + failure_count) + " expectations, " + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed")
+  print cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed")
 
 #  if len(sys.argv) > 2:                                      
 #    command(sys.argv[2])
