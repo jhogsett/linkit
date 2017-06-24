@@ -205,7 +205,7 @@ def loop():
   if len(sys.argv) > 2:                                      
     command_str(sys.argv[2])
 
-  print 
+  print "\n" 
   print green(str(macro_count) + " macros successfully programmed\n")
 
 if __name__ == '__main__': 
