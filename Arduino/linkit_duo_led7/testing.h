@@ -52,10 +52,11 @@ void Commands::do_test(int type, int arg1, int arg2){
 
 // TODO only enable test code when testing
 
-#define TEST_INQUIRY_NUM_LEDS     0
-#define TEST_INQUIRY_WIDTH        1
-#define TEST_INQUIRY_OFFSET       2
-#define TEST_INQUIRY_WINDOW       3
+#define TEST_INQUIRY_NUM_LEDS           0
+#define TEST_INQUIRY_WIDTH              1
+#define TEST_INQUIRY_OFFSET             2
+#define TEST_INQUIRY_WINDOW             3
+#define TEST_INQUIRY_DEFAULT_BRIGHTNESS 4
 //#define TEST_INQUIRY_DEVICENAME   4
 //#define TEST_INQUIRY_NUM_ZONES    1
 //#define TEST_INQUIRY_NUM_PALETTES 2
@@ -73,6 +74,9 @@ void Commands::do_test_inquiry(byte type, int arg2){
     case TEST_INQUIRY_WINDOW:
       command_processor->send_int(buffer->get_window());
       break;
+    case TEST_INQUIRY_DEFAULT_BRIGHTNESS:
+      command_processor->send_int(buffer->get_default_brightness());
+      break;
 //    case TEST_INQUIRY_DEVICENAME:
 //      break;
   }
@@ -81,7 +85,7 @@ void Commands::do_test_inquiry(byte type, int arg2){
 #define TEST_FUNCTION_PROCESS_EFFECTS   0
 #define TEST_FUNCTION_PROCESS_SCHEDULES 1
 #define TEST_FUNCTION_TIME_MACRO        2 // arg2 = macro to run and return the time in milliseconds
-#define TEST_FUNCTION_RANDOM_SEED       3 // arg2 = a specific random seed for testing random features
+#define TEST_FUNCTION_RANDOM_SEED       3 // arg2 > 0 = a specific random seed for testing random features (0 = random seed)
 
 void Commands::do_test_function(byte type, int arg2){
   switch(type){

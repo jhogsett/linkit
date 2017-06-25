@@ -1,3 +1,13 @@
+// HSL sweep
+// number of steps (always 18, size of pretty palette)
+// starting angle 0-359
+// step angle 0-359
+
+
+
+
+
+
 // this is odd
 
 //command: 0:set:50:seq:pos:blu:flu:rst
