@@ -40,6 +40,7 @@ test_line_num = 0
 num_pending = 0
 last_group_number = 0                                                  
 last_test_number = 0 
+num_skipped = 0
 
 def flush_input():                        
   s.flushInput()
@@ -215,24 +216,21 @@ def report_test():
     test_failures.append(blue("  Test #" + str(test_number) + " " + test_description))                                                                                                                     
     last_test_number = test_number                                                      
 
-def report_failure():
+def report_failure(got, expected):
   report_test()
-  test_failures.append("    " + red("Expectation: ") + cyan("[" + test_command + "]") + cyan(" @" + str(test_line_number)) + red(" Failed! ") + red("expected: ") + cyan("[" + expected + "]") + red(" got: ") + white("[" + got + "]") + "\n")
+  test_failures.append("    " + red("Expectation: ") + cyan("[" + test_command + "]") + cyan(" @ " + str(test_line_number)) + red(" Failed!\n") + red("\texpected:\n") + yellow("\t\t[" + expected + "]\n") + red("\tgot:\n") + yellow("\t\t[" + got + "]") + "\n")
 
 def report_pending():
   report_test()
-  test_failures.append("    " + yellow("Pending expectation: ") + yellow("[" + test_command + "]") + yellow(" @" + str(test_line_number))) 
+  test_failures.append("    " + yellow("Pending expectation: ") + yellow("[" + test_description + "]") + cyan(" @ " + str(test_line_number))) 
 
+def report_skipped():                                                                                                                                                                                      
+  report_test()                                                                                                                                                                                            
+  test_failures.append("    " + red("Skipped expectation: ") + red("[" + test_command + "] ") + red("[" + test_description + "]") + cyan(" @ " + str(test_line_number)))                                                             
+                                                                                      
 def fail(got, expected):
   global test_failures, failure_count, last_group_number, last_test_number
-
-  if group_number != last_group_number:
-    test_failures.append(cyan("Group #" + str(group_number) + " " + group_description))
-
-  if test_number != last_test_number:
-    test_failures.append(blue("  Test #" + str(test_number) + " " + test_description)) 
-
-  test_failures.append("    " + red("Expectation: ") + white("[" + test_command + "]") + white(" @" + str(test_line_number)) + red(" Failed! ") + red("expected: ") + white("[" + expected + "]") + red(" got: ") + white("[" + got + "]") + "\n")
+  report_failure(got, expected)
 
   write(red("F"))
   failure_count += 1
@@ -247,6 +245,15 @@ def pending_test(description):
   report_pending()
   num_pending += 1
   write(yellow("P"))
+
+def skip_test(command, description):
+  global test_number, test_description, test_line_number, num_skipped
+  test_line_number = get_line_number(2)                                                                                                       
+  test_number = test_number + 1                                                                                                                                                                            
+  test_description = description                                                                                                                                                                           
+  report_skipped()                                                                                                                                                                                         
+  num_skipped += 1                                                                                                                                                                                         
+  write(red("S"))                                                                                                                          
 
 def succeed():
   global success_count
@@ -333,10 +340,13 @@ def specs():
   expect_render("era:flu", 0, 1, "0,0,0")
 
   test("it erases only within the set window")
-  expect_render("6:pnk:flu", 0, 1, "51,0,25")
+  expect_render("6:pnk:flu", 0, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")
   expect_render("2:off:4:win:era:flu", 0, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25")
 
-  pending_test("it erases within the set window in reverse mode")
+  test("it erases within the set window in reverse mode")
+  expect_render("1:rev:6:pnk:flu", 84, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")                                                                                                                                                              
+  # offset and window are always in reference to pixel 0 regardless of reversal
+  expect_render("86:off:88:win:era:flu", 84, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25") 
 
   # --------------------------------------------------------------------                                               
   group("repeating")
@@ -356,7 +366,6 @@ def specs():
   group("flooding")
 
   test("it floods all leds")
-  num_leds = command_int("0,0:tst")
   expected_buffer = ("10,0,20," * num_leds)[:-1]
   expect_buffer("pur:flo:flu", 0, num_leds, expected_buffer)
 
@@ -364,9 +373,11 @@ def specs():
   expect_buffer("2:off:4:win:ros:flo:flu", 0, 6, "0,0,0,0,0,0,20,0,15,20,0,15,0,0,0,0,0,0")
 
   # not sure how to test this
-  pending_test("it does no flooding if there's no room")
+  # pending_test("it does no flooding if there's no room")
 
-  pending_test("it floods properly in reverse mode")
+  skip_test("1:rev:amb:flo:flu", "it floods properly in reverse mode")
+  # expected_buffer = ("20,15,0," * num_leds)[:-1]                                                                                                                                                           
+  # expect_buffer("1:rev:amb:flo:flu", 0, num_leds, expected_buffer)  
 
   # --------------------------------------------------------------------                                               
   group("mirroring")
@@ -406,41 +417,152 @@ def specs():
 
   # --------------------------------------------------------------------                                               
   group("copying")
-  group("palette manipulation")                                                            
-  group("zones")                                                                          
-  group("setting offset and window")                                                                          
-  group("reverse and forward")                                                                          
-  group("rgb color")                                                                          
-  group("hsl color")                                                                          
-  group("custom black level")                                                                          
-  group("random color")                                                                          
-  group("blending colors")                                                                          
-  group("max, dim and bright")                                                                          
-  group("blink effects")                                                             
-  group("breathe effect")                                                             
-  group("fade and twinkle effects")                                                             
-  group("raw effect")                                                             
-  group("reset, clear and stop")                                                             
-  group("brightness level")                                                             
-  group("fade animation")                                                             
-  group("wipe animation")                                                             
-  group("animated rotation")                                                             
-  group("rotation")                                                             
-  group("power shift")                                                             
-  group("crossfade")                                                             
-  group("setting fade rate")                                                             
-  group("setting custom blink period")                                                             
-  group("setting blink period")                                                             
-  group("carry color")                                                                                                            
-  group("setting custom breathe time")                                                                                                            
-  group("setting and running macros")                                                                                                            
-  group("delay")                                                                                                            
-  group("random number")                                                                                                            
-  group("position")                                                                                                            
-  group("random postion")                                                                                                            
-  group("sequencing")                                                                                                            
-  group("testing")                                                                                                            
 
+  pending_test("it copies the right number of pixels")
+  pending_test("it copies the right number of times")
+  pending_test("it fills the current width if times is zero")
+  pending_test("it copies to the palette buffer if 18 or fewer pixels are being copied")
+  pending_test("it copies to the render buffer if more than 18 pixels are being copied")
+  pending_test("it overwrites the original position when duplicating")
+  pending_test("it copies the right number of zoomed pixels")
+  pending_test("it copies a pattern to the palette")
+  pending_test("it pastes a pattern to the buffer")
+  pending_test("it pastes the pattern at the current offset")
+ 
+  # --------------------------------------------------------------------                                                                                                                                   
+  group("palette manipulation")                                                            
+
+  pending_test("the palette defaults to a fixed set of colors")
+  pending_test("the palette can be shuffled")
+  pending_test("the shuffler creates alternating complimentary colors")
+  pending_test("the shuffler creates complimentary colors for the current palette")
+  pending_test("the shuffler creates random complimentary colors")
+  pending_test("the shuffler resets to the original fixed set of colors")
+
+  # --------------------------------------------------------------------                                                                  
+  group("zones")                                                                          
+
+  pending_test("choosing a zone sets the offset and window")
+  pending_test("choosing the main zone resets to 0, num_leds")
+                                                                                                                                                                                                            
+  # --------------------------------------------------------------------                                                                  
+  group("setting offset and window")                                                                          
+                                                              
+  pending_test("an offset can be set")
+  pending_test("the next pushed color is inserted at the offset")
+  pending_test("a window can be set")
+  pending_test("pushed-off-the-end colors don't exceed the window boundary")
+  pending_test("setting an offset if relative to the current offset")
+  pending_test("an offset outside the current window cannot be set")
+                                                                                                                                             
+  # --------------------------------------------------------------------                                                                  
+  group("reverse and forward")                                                                          
+          
+  pending_test("the insertion mode can be set to reverse")
+  pending_test("the insertion mode can be set to normal")
+
+  # --------------------------------------------------------------------                                                                  
+  group("rgb color")                                                                          
+  
+  pending_test("it sets the expected RGB value in the display buffer")
+  pending_test("it renders the expected RGB value in the render buffer")
+                                                                                                                                                                                                         
+  # --------------------------------------------------------------------                                                                  
+  group("hsl color")                                                                          
+                                                         
+  pending_test("it sets the expected HSL value in the display buffer")                                                                                                                                     
+  pending_test("it renders the expected HSL value in the render buffer")                                                                                                                                   
+                                                                                                                                                    
+  # --------------------------------------------------------------------                                                                  
+  group("custom black level")                                                                          
+  
+  pending_test("a custom black level can be set")
+  pending_test("erases uses the custom black level")
+  pending_test("placing 'black' uses the custom black level")
+                                                                                                                                                                                                         
+  # --------------------------------------------------------------------                                                                  
+  group("random color")                                                                          
+                                                             
+  pending_test("it chooses a random color")
+                                                                                                                                              
+  # --------------------------------------------------------------------                                                                  
+  group("blending colors")                                                                          
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("max, dim and bright")                                                                          
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("blink effects")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("breathe effect")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("fade and twinkle effects")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("raw effect")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("reset, clear and stop")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("brightness level")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("fade animation")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("wipe animation")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("animated rotation")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("rotation")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("power shift")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("crossfade")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("setting fade rate")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("setting custom blink period")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("setting blink period")                                                             
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("carry color")                                                                                                            
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("setting custom breathe time")                                                                                                            
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("setting and running macros")                                                                                                            
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("delay")                                                                                                            
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("random number")                                                                                                            
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("position")                                                                                                            
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("random postion")                                                                                                            
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("sequencing")                                                                                                            
+                                                                                                                                                                                                           
+  # --------------------------------------------------------------------                                                                  
+  group("testing")                                                                                                            
+                                                                                                                                                                                                           
 ########################################################################                     
 ########################################################################                     
  
@@ -454,7 +576,7 @@ def loop():
     print error
 
   print
-  print cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed ") + yellow(str(num_pending) + " pending") 
+  print cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed ") + yellow(str(num_pending) + " pending ") + red(str(num_skipped) + " skipped") 
 
 if __name__ == '__main__': 
   setup() 
