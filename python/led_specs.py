@@ -44,6 +44,7 @@ num_skipped = 0
 default_brightness = None                                                                                                                                                              
 default_brightness_percent = None                                                                                                                                                  
 color_divisor = 20.0                                                                                                                                                                                     
+standard_seed = 1
 
 def flush_input():                        
   s.flushInput()
@@ -202,6 +203,7 @@ def group(description):
   global group_number, group_description, last_group_number
   group_number = group_number + 1
   group_description = description
+  set_standard_seed()                                                                                                                                                                                      
 
 def test(description):
   global test_number, test_description, test_failures, last_test_number
@@ -306,6 +308,8 @@ def unscaled_color_value(rgb_color_value):
 def rendered_color_value(buffer_color_value):
   return int(((buffer_color_value / color_divisor) * 255) * default_brightness_percent) 
 
+def set_standard_seed():
+  command_str("6,3," + str(standard_seed) + ":tst")
 
 ########################################################################
 ########################################################################
@@ -510,17 +514,22 @@ def specs():
                                                                   
   # --------------------------------------------------------------------                                                                  
   group("hsl color")                                                                          
+
+  color_value = 255                                                                         
+  unscaled_color_value_ = unscaled_color_value(color_value)                                                                                                                                                
+  rendered_color_value_ = rendered_color_value(unscaled_color_value_)                                                                                                                                      
                                                          
   test("it sets the expected HSL value in the display buffer")                                                                                                                                     
-
-  expected_buffer_value = int(((color_value / default_brightness_percent) / 255) * color_divisor)                                            
-  expected_rgb_color = str(expected_buffer_value) + ",0,0"
-
+  expected_rgb_color = str(unscaled_color_value_) + ",0,0"
   expect_buffer("0,255,255:hsl:flu", 0, 1, expected_rgb_color)
 
-
-  pending_test("it renders the expected HSL value in the render buffer")                                                                                                                                   
-                                                                                                                                                    
+  test("it renders the expected HSL value in the render buffer")                                                                                                                                   
+  expected_rgb_color = str(rendered_color_value_) + ",0,0"                                                                                                                                                 
+  expect_render(str(default_brightness) + ":lev:0,255,255:hsl:flu", 0, 1, expected_rgb_color)                                                                                                          
+                
+  test("current brightness level doesn't affect unscaling calculation")                                                                                                                                    
+  expect_render("1:lev:0,255,255:hsl:" + str(default_brightness) + ":lev:flu", 0, 1, expected_rgb_color)
+                                                                                                                                    
   # --------------------------------------------------------------------                                                                  
   group("custom black level")                                                                          
   
@@ -531,8 +540,42 @@ def specs():
   # --------------------------------------------------------------------                                                                  
   group("random color")                                                                          
                                                              
-  pending_test("it chooses a random color")
-                                                                                                                                              
+  test("it chooses a random color")
+  expect_buffer("rnd:flu", 0, 1, "15,20,0")  
+
+  test("it chooses another random color")
+  expect_buffer("rnd:flu", 0, 1, "20,0,20")                                                                                                                                 
+
+  test("it sets no effect")
+  expect_effect("rnd:flu", 0, 1, "0")
+
+  test("it repeats using the same color not another random color")               
+  expect_buffer("rnd:rep:flu", 0, 2, "20,20,0,20,20,0")  
+
+  test("it floods using the same color not another random color")
+  expect_buffer("rnd:flo:flu", 0, 2, "0,0,20,0,0,20")
+
+  test("it sets a random color and sets the effect to repeat with random colors")
+  expect_effect("1:rnd:flu", 0, 1, "1")  
+
+  test("it repeats using a different color")
+  expect_buffer("1:rnd:rep:flu", 0, 2, "0,10,20,0,20,20")
+
+  test("it floods using a different color each time")                                                                                                                                                      
+  expect_buffer("1:rnd:flo:flu", 0, 3, "20,0,15,20,10,0,20,0,0") 
+
+  test("the repeated colors get no effect set")
+  expect_effect("1:rnd:rep:rep:flu", 0, 3, "0,0,1") 
+
+  test("the flooded colors get no effect set")                          
+  expect_effect("1:rnd:flo:flu", 0, 3, "1,0,0")    
+
+#// 2: like #1 but will also set random effects
+
+
+
+  # rnd+flood, rnd+rpt
+                                                                                                                                            
   # --------------------------------------------------------------------                                                                  
   group("blending colors")                                                                          
                                                                                                                                                                                                            
