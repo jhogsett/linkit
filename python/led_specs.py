@@ -687,12 +687,12 @@ def loop():
       print summary,
 
   print
-  print blue(str(num_groups) + " groups ") + cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed ") + yellow(str(num_pending) + " pending ") + red(str(num_skipped) + " skipped")                                                                      
+  print cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed - ") + yellow(str(num_pending) + " pending ") + red(str(num_skipped) + " skipped ") + blue(str(num_groups) + " groups")                                                                     
   print                                                                                                                                                                                            
 
 
 if __name__ == '__main__': 
-  print magenta("\nApollo Lighting System Test Framework v0.0\n")
+  print magenta("\nApollo Lighting System - Test Framework v0.0\n")
   setup() 
   loop()
   print
