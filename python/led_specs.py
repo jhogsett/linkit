@@ -556,13 +556,14 @@ def specs():
   expect_buffer("rnd:flo:flu", 0, 2, "0,0,20,0,0,20")
 
   test("it sets a random color and sets the effect to repeat with random colors")
+  expect_buffer("1:rnd:flu", 0, 1, "0,10,20")                                                                                        
   expect_effect("1:rnd:flu", 0, 1, "1")  
 
   test("it repeats using a different color")
-  expect_buffer("1:rnd:rep:flu", 0, 2, "0,10,20,0,20,20")
+  expect_buffer("1:rnd:rep:flu", 0, 2, "20,0,15,0,10,20")
 
   test("it floods using a different color each time")                                                                                                                                                      
-  expect_buffer("1:rnd:flo:flu", 0, 3, "20,0,15,20,10,0,20,0,0") 
+  expect_buffer("1:rnd:flo:flu", 0, 3, "20,10,0,20,0,0,20,0,15") 
 
   test("the repeated colors get no effect set")
   expect_effect("1:rnd:rep:rep:flu", 0, 3, "0,0,1") 
@@ -570,12 +571,22 @@ def specs():
   test("the flooded colors get no effect set")                          
   expect_effect("1:rnd:flo:flu", 0, 3, "1,0,0")    
 
-#// 2: like #1 but will also set random effects
+  test("it sets a random color and sets the effect to repeat with random colors+effects")                                                                                                                          
+  expect_buffer("2:rnd:flu", 0, 1, "20,20,0")                                                                                                                                                                    
+  expect_effect("2:rnd:flu", 0, 1, "2") 
 
+  test("it repeats using a different color")                                                                                                                                                               
+  expect_buffer("2:rnd:rep:flu", 0, 2, "20,20,0,0,20,0")                                                                                                              
+                                                                                                                                                                                                           
+  test("it floods using a different color each time")                                                 
+  expect_buffer("2:rnd:flo:flu", 0, 3, "15,0,20,10,0,20,20,15,0")                                                                                                                                          
 
+  test("the flooded colors get random effects set")                                     
+  expect_effect("2:rnd:flo:flu", 0, 3, "2,14,21") 
 
-  # rnd+flood, rnd+rpt
-                                                                                                                                            
+  test("the repeated colors get random effects set")                                                                                                                                                            
+  expect_effect("2:rnd:rep:rep:flu", 0, 3, "0,0,2")                                                                                                                                                        
+
   # --------------------------------------------------------------------                                                                  
   group("blending colors")                                                                          
                                                                                                                                                                                                            
@@ -670,6 +681,7 @@ def loop():
   print cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed ") + yellow(str(num_pending) + " pending ") + red(str(num_skipped) + " skipped") 
 
 if __name__ == '__main__': 
+  print magenta("\nApollo Lighting System Test Framework v0.0\n")
   setup() 
   loop()
   print
