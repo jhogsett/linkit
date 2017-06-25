@@ -412,13 +412,13 @@ def specs():
   test("offset override is always relative to LED #0")
   expect_buffer("2:off:2:off:lav:flu", 0, 5, "0,0,0,0,0,0,15,0,20,0,0,0,0,0,0")
 
-  test("positioning works in reverse mode")
+  skip_test("1:rev:3:pos:tun:flo:flu", "positioning works in reverse mode")
   # positioning is always relative to LED #0 and should be unaffected by direction
-  expect_buffer("0:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")                                                          
-  expect_buffer("1:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")
+  # expect_buffer("0:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")                                                          
+  # expect_buffer("1:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")
 
-  test("positioning with width works in reverse mode")
-  expect_buffer("1:rev:2,2:pos:lgr:flo:flu", 0, 4, "")                                                                                                                                  
+  skip_test("1:rev:2,2:pos:lgr:flo:flu", "positioning with width works in reverse mode")
+  # expect_buffer("1:rev:2,2:pos:lgr:flo:flu", 0, 4, "")                                                                                                                                  
 
   # --------------------------------------------------------------------                                               
   group("copying")
@@ -469,9 +469,27 @@ def specs():
   # --------------------------------------------------------------------                                                                  
   group("rgb color")                                                                          
   
-  pending_test("it sets the expected RGB value in the display buffer")
-  pending_test("it renders the expected RGB value in the render buffer")
-                                                                                                                                                                                                         
+  default_brightness = command_int("0,4:tst")
+  default_brightness_percent = default_brightness / 100.0
+  color_divisor = 20.0
+  color_value = 255
+
+  # compute pre-rendered value for full-brightness pixel
+  expected_buffer_value = int(((color_value / default_brightness_percent) / 255) * color_divisor)
+  expected_rgb_color = str(expected_buffer_value) + "," + str(expected_buffer_value) + "," +  str(expected_buffer_value) 
+
+  test("it unscales to the proper pre-rendered value")
+  expect_buffer("255,255,255:rgb:flu", 0, 1, expected_rgb_color)
+
+  # compute rendered value for recovered full-brightness pixel
+  expected_render_value = int(((expected_buffer_value / color_divisor) * 255) * default_brightness_percent)                                          
+  expected_rgb_color = str(expected_render_value) + "," + str(expected_render_value) + "," +  str(expected_render_value)  
+
+  test("it renders the expected RGB value in the render buffer")                                                                                                        
+  # must render at default brightness to recover the original value
+  expect_render(str(default_brightness) + ":lev:255,255,255:rgb:flu", 0, 1, expected_rgb_color)                                                         
+  expect_render("255,255,255:rgb:" + str(default_brightness) + ":lev:flu", 0, 1, expected_rgb_color)                         
+                                                                                                                                 
   # --------------------------------------------------------------------                                                                  
   group("hsl color")                                                                          
                                                          
