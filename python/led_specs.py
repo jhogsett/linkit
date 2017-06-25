@@ -41,6 +41,9 @@ num_pending = 0
 last_group_number = 0                                                  
 last_test_number = 0 
 num_skipped = 0
+default_brightness = None                                                                                                                                                              
+default_brightness_percent = None                                                                                                                                                  
+color_divisor = 20.0                                                                                                                                                                                     
 
 def flush_input():                        
   s.flushInput()
@@ -96,11 +99,14 @@ def set_macro(macro, macro_text):
     print command_str("1," + str(macro) + ":tst")
 
 def setup(): 
-  global s, debug_mode, num_leds 
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent 
   s = serial.Serial("/dev/ttyS0", 115200) 
   command(":::stp:stp:20:lev")
   num_leds = command_int("0,0:tst")                                                                                                                                                        
-  print cyan("Device: ") + white(str(num_leds) + " LEDs")
+  default_brightness = command_int("0,4:tst")                                                                                                
+  default_brightness_percent = default_brightness / 100.0                                                                                                               
+
+  print cyan("Device: ") + white(str(num_leds) + " LEDs, default brightness: " + str(default_brightness) + "%")                                                                                                                                                  
 
 #  if len(sys.argv) > 3:                                       
 #    if(sys.argv[3] == "debug"):
@@ -231,7 +237,6 @@ def report_skipped():
 def fail(got, expected):
   global test_failures, failure_count, last_group_number, last_test_number
   report_failure(got, expected)
-
   write(red("F"))
   failure_count += 1
   last_group_number = group_number
@@ -288,6 +293,19 @@ def expect_palette(command_, start, count, expected):
   #str_ = command_str("5," + str(start) + "," + str(count) + ":tst")
   #expect_equal(str_[:-1], expected)                                
   pass                                                                
+
+def rgb_string(red, green, blue):
+  return str(red) + "," + str(green) + "," + str(blue)
+
+def rgb_strings(red, green, blue):
+  return str(red) + "," + str(green) + "," + str(blue) + ","
+
+def unscaled_color_value(rgb_color_value):
+  return int(((rgb_color_value / default_brightness_percent) / 255) * color_divisor)
+
+def rendered_color_value(buffer_color_value):
+  return int(((buffer_color_value / color_divisor) * 255) * default_brightness_percent) 
+
 
 ########################################################################
 ########################################################################
@@ -468,32 +486,39 @@ def specs():
 
   # --------------------------------------------------------------------                                                                  
   group("rgb color")                                                                          
-  
-  default_brightness = command_int("0,4:tst")
-  default_brightness_percent = default_brightness / 100.0
-  color_divisor = 20.0
+
   color_value = 255
+  unscaled_color_value_ = unscaled_color_value(color_value)
+  rendered_color_value_ = rendered_color_value(unscaled_color_value_)
 
   # compute pre-rendered value for full-brightness pixel
-  expected_buffer_value = int(((color_value / default_brightness_percent) / 255) * color_divisor)
-  expected_rgb_color = str(expected_buffer_value) + "," + str(expected_buffer_value) + "," +  str(expected_buffer_value) 
+  expected_rgb_color = rgb_string(unscaled_color_value_, unscaled_color_value_, unscaled_color_value_)
 
   test("it unscales to the proper pre-rendered value")
   expect_buffer("255,255,255:rgb:flu", 0, 1, expected_rgb_color)
 
   # compute rendered value for recovered full-brightness pixel
-  expected_render_value = int(((expected_buffer_value / color_divisor) * 255) * default_brightness_percent)                                          
-  expected_rgb_color = str(expected_render_value) + "," + str(expected_render_value) + "," +  str(expected_render_value)  
+  expected_render_value = rendered_color_value_
+  expected_rgb_color = rgb_string(expected_render_value, expected_render_value, expected_render_value)
 
   test("it renders the expected RGB value in the render buffer")                                                                                                        
   # must render at default brightness to recover the original value
   expect_render(str(default_brightness) + ":lev:255,255,255:rgb:flu", 0, 1, expected_rgb_color)                                                         
-  expect_render("255,255,255:rgb:" + str(default_brightness) + ":lev:flu", 0, 1, expected_rgb_color)                         
-                                                                                                                                 
+
+  test("current brightness level doesn't affect unscaling calculation")
+  expect_render("1:lev:255,255,255:rgb:" + str(default_brightness) + ":lev:flu", 0, 1, expected_rgb_color)                         
+                                                                  
   # --------------------------------------------------------------------                                                                  
   group("hsl color")                                                                          
                                                          
-  pending_test("it sets the expected HSL value in the display buffer")                                                                                                                                     
+  test("it sets the expected HSL value in the display buffer")                                                                                                                                     
+
+  expected_buffer_value = int(((color_value / default_brightness_percent) / 255) * color_divisor)                                            
+  expected_rgb_color = str(expected_buffer_value) + ",0,0"
+
+  expect_buffer("0,255,255:hsl:flu", 0, 1, expected_rgb_color)
+
+
   pending_test("it renders the expected HSL value in the render buffer")                                                                                                                                   
                                                                                                                                                     
   # --------------------------------------------------------------------                                                                  
