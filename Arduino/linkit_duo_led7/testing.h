@@ -56,6 +56,7 @@ void Commands::do_test(int type, int arg1, int arg2){
 #define TEST_INQUIRY_WIDTH        1
 #define TEST_INQUIRY_OFFSET       2
 #define TEST_INQUIRY_WINDOW       3
+//#define TEST_INQUIRY_DEVICENAME   4
 //#define TEST_INQUIRY_NUM_ZONES    1
 //#define TEST_INQUIRY_NUM_PALETTES 2
 //#define TEST_INQUIRY_NUM_LEDS     3
@@ -72,11 +73,15 @@ void Commands::do_test_inquiry(byte type, int arg2){
     case TEST_INQUIRY_WINDOW:
       command_processor->send_int(buffer->get_window());
       break;
+//    case TEST_INQUIRY_DEVICENAME:
+//      break;
   }
 }
 
 #define TEST_FUNCTION_PROCESS_EFFECTS   0
 #define TEST_FUNCTION_PROCESS_SCHEDULES 1
+#define TEST_FUNCTION_TIME_MACRO        2 // arg2 = macro to run and return the time in milliseconds
+#define TEST_FUNCTION_RANDOM_SEED       3 // arg2 = a specific random seed for testing random features
 
 void Commands::do_test_function(byte type, int arg2){
   switch(type){
@@ -85,6 +90,17 @@ void Commands::do_test_function(byte type, int arg2){
       break;
     case TEST_FUNCTION_PROCESS_SCHEDULES:
       scheduler.process_schedules();
+      break;
+    case TEST_FUNCTION_TIME_MACRO:
+      {
+        unsigned long start = millis();
+        macros.run_macro(arg2);
+        unsigned long now = millis();
+        command_processor->send_int(now - start);        
+      }
+      break;
+    case TEST_FUNCTION_RANDOM_SEED:
+      randomSeed(arg2);
       break;
   }  
 }
