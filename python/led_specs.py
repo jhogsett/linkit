@@ -409,11 +409,16 @@ def specs():
   test("pos sets the offset + width")
   expect_buffer("1,2:pos:wht:flo:flu", 0, 4, "0,0,0,20,20,20,20,20,20,0,0,0")
 
-  pending_test("positioning offets into the current window")
+  test("offset override is always relative to LED #0")
+  expect_buffer("2:off:2:off:lav:flu", 0, 5, "0,0,0,0,0,0,15,0,20,0,0,0,0,0,0")
 
-  pending_test("positioning works in reverse mode")
+  test("positioning works in reverse mode")
+  # positioning is always relative to LED #0 and should be unaffected by direction
+  expect_buffer("0:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")                                                          
+  expect_buffer("1:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")
 
-  pending_test("positioning with width works in reverse mode")
+  test("positioning with width works in reverse mode")
+  expect_buffer("1:rev:2,2:pos:lgr:flo:flu", 0, 4, "")                                                                                                                                  
 
   # --------------------------------------------------------------------                                               
   group("copying")
