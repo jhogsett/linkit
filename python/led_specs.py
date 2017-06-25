@@ -45,6 +45,8 @@ default_brightness = None
 default_brightness_percent = None                                                                                                                                                  
 color_divisor = 20.0                                                                                                                                                                                     
 standard_seed = 1
+num_groups = 0
+test_failure_summaries = []
 
 def flush_input():                        
   s.flushInput()
@@ -200,8 +202,9 @@ def normalbg():
 num_leds = 0
 
 def group(description):                                                                    
-  global group_number, group_description, last_group_number
+  global group_number, group_description, last_group_number, num_groups
   group_number = group_number + 1
+  num_groups += 1
   group_description = description
   set_standard_seed()                                                                                                                                                                                      
 
@@ -227,6 +230,7 @@ def report_test():
 def report_failure(got, expected):
   report_test()
   test_failures.append("    " + red("Expectation: ") + cyan("[" + test_command + "]") + cyan(" @ " + str(test_line_number)) + red(" Failed!\n") + red("\texpected:\n") + yellow("\t\t[" + expected + "]\n") + red("\tgot:\n") + yellow("\t\t[" + got + "]") + "\n")
+  test_failure_summaries.append(cyan("\t@ " + str(test_line_number) + " ") + yellow(test_command) + red(" -" + expected) + green(" +" + got + "\n")) 
 
 def report_pending():
   report_test()
@@ -677,8 +681,15 @@ def loop():
   for error in test_failures:
     print error
 
+  if(failure_count > 0):
+    print red("Failures:")
+    for summary in test_failure_summaries:                                                                                                                                                                              
+      print summary,
+
   print
-  print cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed ") + yellow(str(num_pending) + " pending ") + red(str(num_skipped) + " skipped") 
+  print blue(str(num_groups) + " groups ") + cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed ") + yellow(str(num_pending) + " pending ") + red(str(num_skipped) + " skipped")                                                                      
+  print                                                                                                                                                                                            
+
 
 if __name__ == '__main__': 
   print magenta("\nApollo Lighting System Test Framework v0.0\n")
