@@ -251,7 +251,7 @@ def pending_test(description):
   test_description = description    
   report_pending()
   num_pending += 1
-  write(yellow("P"))
+  write(yellow("."))
 
 def skip_test(command, description):
   global test_number, test_description, test_line_number, num_skipped
@@ -260,7 +260,7 @@ def skip_test(command, description):
   test_description = description                                                                                                                                                                           
   report_skipped()                                                                                                                                                                                         
   num_skipped += 1                                                                                                                                                                                         
-  write(red("S"))                                                                                                                          
+  write(red("s"))                                                                                                                          
 
 def succeed():
   global success_count
