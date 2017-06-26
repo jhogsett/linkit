@@ -46,7 +46,8 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_SKYBLUE:
     case CMD_TURQUOISE:
     case CMD_LAVENDER:
-    case CMD_ROSE:        dispatch_color(cmd);                         reset_args = true; break;
+    case CMD_ROSE:
+    case CMD_NEON:        dispatch_color(cmd);                         reset_args = true; break;
     case CMD_RANDOM:      do_random(arg0);                             reset_args = true; break;   
     case CMD_BLEND:       do_blend(arg0);                              reset_args = true; break;
     case CMD_MAX:         do_max();                                    break;
@@ -66,7 +67,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_SLOW_FADE:
     case CMD_FAST_FADE:
     case CMD_TWINKLE:
-    case CMD_RAW:
+//    case CMD_RAW:
     case CMD_STATIC:      dispatch_effect(cmd);                        break;
     case CMD_BLINKR:      effects_processor->start_blinking_r();       break;
     case CMD_EFFECTR:     effects_processor->start_effect_r();         break;
@@ -258,6 +259,7 @@ void Commands::dispatch_color(int cmd){
     case CMD_TURQUOISE: color = TURQUOISE; break;
     case CMD_LAVENDER:  color = LAVENDER;  break;
     case CMD_ROSE:      color = ROSE;      break;
+    case CMD_NEON:      color = NEON;      break;
   }
   
   buffer->push_color(color, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
@@ -286,7 +288,7 @@ void Commands::dispatch_effect(int cmd){
     case CMD_SLOW_FADE: effect = SLOW_FADE;  break;
     case CMD_FAST_FADE: effect = FAST_FADE;  break;
     case CMD_TWINKLE:   effect = TWINKLE_ON; break;
-    case CMD_RAW:       effect = RAW_ON;     break;
+//    case CMD_RAW:       effect = RAW_ON;     break;
     case CMD_STATIC:    effect = STATIC_ON;  break;
   }
    
