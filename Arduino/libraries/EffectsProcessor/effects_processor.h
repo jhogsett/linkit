@@ -3,7 +3,7 @@
 
 // built-in simple effects
 #define STATIC_ON  101
-#define RAW_ON     102
+// #define RAW_ON     102
 #define TWINKLE_ON 103
 
 #include <buffer.h>
@@ -71,13 +71,13 @@ void EffectsProcessor::reset_effects() {
 }
 
 bool EffectsProcessor::process_effects() {
-//  bool should_flush = false;
-//  should_flush = blink_effects->process() ? true : should_flush;
-//  should_flush = breathe_effects->process() ? true : should_flush;
-//  should_flush = fade_effects->process() ? true : should_flush;
-//  return should_flush;
+  bool should_flush = false;
+  should_flush = blink_effects->process() ? true : should_flush;
+  should_flush = breathe_effects->process() ? true : should_flush;
+  should_flush = fade_effects->process() ? true : should_flush;
+  return should_flush;
 
-  return blink_effects->process() || breathe_effects->process() || fade_effects->process();
+//  return blink_effects->process() || breathe_effects->process() || fade_effects->process();
 
   // twinkle is left out of deciding to flush
   // otherwise it would be rendering constantly

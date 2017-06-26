@@ -14,9 +14,9 @@ class Render
   rgb_color render(rgb_color * color, byte effect);
   rgb_color fast_render(rgb_color color, byte _effect);
   void render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, byte count, byte *effects);
-  void render_buffer_low_power(rgb_color *dest_buffer, rgb_color *src_buffer, byte count, byte *effects, byte position);
   void set_default_brightness(byte brightness);
   void set_minimum_brightness(byte brightness);
+  byte get_minimum_brightness();
 
   private:
   static rgb_color black;
@@ -97,7 +97,7 @@ rgb_color Render::get_default(rgb_color color){
 rgb_color Render::render(rgb_color *color, byte effect){
   rgb_color render_color;
 
-                           if(effect ==  RAW_ON) { render_color = *color;                    } else
+                           //if(effect ==  RAW_ON) { render_color = *color;                    } else
                          if(effect == STATIC_ON) { render_color = get_default(get_static()); } else
                         if(effect == TWINKLE_ON) { render_color = get_twinkle(*color);       } else
     if(blink_effects->is_handled_effect(effect)) { render_color = get_blink(*color, effect); } else
@@ -116,16 +116,6 @@ void Render::render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, byte c
     dest_buffer[i] = render(&src_buffer[i], effects[i]);
 }
 
-void Render::render_buffer_low_power(rgb_color *dest_buffer, rgb_color *src_buffer, byte count, byte *effects, byte position){
-  for(byte i = 0; i < count; i++){
-    if(i == position){
-      dest_buffer[i] = render(&src_buffer[i], effects[i]);
-    } else {
-      dest_buffer[i] = black;
-    }
-  }
-}
-
 #define RESTRICT_TO_0_100(n) (max(0, min(100, n)))
 
 void Render::set_default_brightness(byte brightness){
@@ -135,6 +125,10 @@ void Render::set_default_brightness(byte brightness){
 
 void Render::set_minimum_brightness(byte brightness){
   this->minimum_brightness_scale = RESTRICT_TO_0_100(brightness) / 100.0;
+}
+
+byte Render::get_minimum_brightness(){
+  return int(this->minimum_brightness_scale * 100.0);
 }
 
 #endif

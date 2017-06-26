@@ -3,7 +3,7 @@
 
 #include <PololuLedStrip.h>
 
-#define NUM_COLORS 23
+#define NUM_COLORS 24
 #define NPRETTY_COLORS 18
 
 #define NUM_PALETTE_COLORS NPRETTY_COLORS
@@ -35,72 +35,81 @@
 #define GRAY      (*Colors::get_color(Colors::gray))
 #define WHITE     (*Colors::get_color(Colors::white))
 #define TUNGSTEN  (*Colors::get_color(Colors::tungsten))
+#define NEON      (*Colors::get_color(Colors::neon))
 
 // tungsten based on 20% brightness, 29,230,255:hsl became 133,70,12
 // when unscaled, full strength is 255,135,23, downscaled to 0..20
 // is 20,11,2
 
+// neon looked right at 11,255,255:hsl, buffer 133,26,0, render 254,45,0
+// scaled to 0..20 = 20,5,0
+
 // to do: consider higher divisor
 // consider: specifying colors with full RGB values as full brightness color
 
-const rgb_color color_0 PROGMEM = {20,  0,  0}; // red
-const rgb_color color_1 PROGMEM = {20, 10,  0}; // orange    0,10,20=ltblue
-const rgb_color color_2 PROGMEM = {20, 20,  0}; // yellow
-const rgb_color color_3 PROGMEM = { 0, 20,  0}; // green
-const rgb_color color_4 PROGMEM = { 0,  0, 20}; // blue
-const rgb_color color_5 PROGMEM = {10,  0, 20}; // purple  10,20,0=ltgreen
-const rgb_color color_6 PROGMEM = { 0, 20, 20}; // cyan
-const rgb_color color_7 PROGMEM = {20,  0, 20}; // magenta
-const rgb_color color_8 PROGMEM = { 0, 10, 20}; // ltblue
-const rgb_color color_9 PROGMEM = {10, 20,  0}; // ltgreen
-const rgb_color color_10 PROGMEM = { 0, 20, 10}; // seafoam  20,0,10=pink
+const rgb_color color_0 PROGMEM  = {20,  0,  0}; // red
+const rgb_color color_1 PROGMEM  = {20, 10,  0}; // orange
+const rgb_color color_2 PROGMEM  = {20, 20,  0}; // yellow
+const rgb_color color_3 PROGMEM  = { 0, 20,  0}; // green
+const rgb_color color_4 PROGMEM  = { 0,  0, 20}; // blue
+const rgb_color color_5 PROGMEM  = {10,  0, 20}; // purple
+const rgb_color color_6 PROGMEM  = { 0, 20, 20}; // cyan
+const rgb_color color_7 PROGMEM  = {20,  0, 20}; // magenta
+const rgb_color color_8 PROGMEM  = { 0, 10, 20}; // ltblue
+const rgb_color color_9 PROGMEM  = {10, 20,  0}; // ltgreen
+const rgb_color color_10 PROGMEM = { 0, 20, 10}; // seafoam
 const rgb_color color_11 PROGMEM = {20,  0, 10}; // pink
-const rgb_color color_12 PROGMEM = {20, 15, 0}; // amber amb    = 0,5,20 ? close=ltblue
-const rgb_color color_13 PROGMEM = {15, 20, 0}; // olive olv    = 5,0,20 ? close=purple
-const rgb_color color_14 PROGMEM = {0, 15, 20}; // sky blue sky = 20,5,0 ? close=orange
-const rgb_color color_15 PROGMEM = {0, 20, 15}; // turquoise tur = 20,0,5 ? close=pink
-const rgb_color color_16 PROGMEM = {15, 0, 20}; // lavender lav = 5,20,0 ? close=ltgreen
-const rgb_color color_17 PROGMEM = {20, 0, 15}; // rose ros = 0,20,5 ? close=seafoam
+const rgb_color color_12 PROGMEM = {20, 15, 0};  // amber
+const rgb_color color_13 PROGMEM = {15, 20, 0};  // olive
+const rgb_color color_14 PROGMEM = {0, 15, 20};  // sky blue
+const rgb_color color_15 PROGMEM = {0, 20, 15};  // turquoise
+const rgb_color color_16 PROGMEM = {15, 0, 20};  // lavender
+const rgb_color color_17 PROGMEM = {20, 0, 15};  // rose ros
 
 const rgb_color color_18 PROGMEM = { 0,  0,  0}; // black
 const rgb_color color_19 PROGMEM = { 5,  5,  5}; // dkgray
 const rgb_color color_20 PROGMEM = {10, 10, 10}; // gray
 const rgb_color color_21 PROGMEM = {20, 20, 20}; // white
-const rgb_color color_22 PROGMEM = {20, 11, 2}; // tungsten
+const rgb_color color_22 PROGMEM = {20, 11, 2};  // tungsten
+const rgb_color color_23 PROGMEM = {20, 5,  0};  // neon
 
 const rgb_color* const color_array[] PROGMEM = {
   &color_0,  &color_1,  &color_2,  &color_3,  &color_4,  &color_5,  &color_6,  &color_7,
   &color_8,  &color_9,  &color_10, &color_11, &color_12, &color_13, &color_14, &color_15,
-  &color_16, &color_17, &color_18, &color_19, &color_20, &color_21, &color_22
+  &color_16, &color_17, &color_18, &color_19, &color_20, &color_21, &color_22, &color_23
 };
 
 class Colors
 {
   public:
   enum color{
-    red,
+    red,         // pretty palette includes these
     orange,
     yellow,
     green,
     blue,
     purple,
+
     cyan,
     magenta,
     ltblue,
     ltgreen,
     seafoam,
     pink,
+
     amber,
     olive,
     skyblue,
     turquoise,
     lavender,
     rose,
-    black,
+
+    black,       // full palette includes these too
     dkgray,
     gray,
     white,
-    tungsten
+    tungsten,
+    neon
   };
 
   static const rgb_color * const get_color(color c);
@@ -111,6 +120,7 @@ class Colors
   static void compliment_palette();
   static void complimentary_palette();
   static rgb_color * get_palette();
+  static byte get_num_palette_colors();
 
   private:
   // this is pointed-to as the return value for get_color()
@@ -181,6 +191,9 @@ void Colors::complimentary_palette()
 
 rgb_color * Colors::get_palette(){
   return palette;
+}
+
+byte Colors::get_num_palette_colors(){
 }
 
 #endif
