@@ -1,10 +1,14 @@
+// move the setting of things like blink rate to a "cfg" command
+
+
+
 // HSL sweep
 // number of steps (always 18, size of pretty palette)
 // starting angle 0-359
 // step angle 0-359
 
 
-
+// add a 15,15,15 gray
 
 
 
@@ -18,7 +22,7 @@
 //252,50,0,2,0,92,87,17,1,63,255,0,0,0,0,0,0,0,0,0,k
 //
 
-
+// palette: shift, rotate, sweeps that modify existing palette
 
 
 

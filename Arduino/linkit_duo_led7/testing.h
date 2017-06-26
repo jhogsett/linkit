@@ -144,6 +144,15 @@ void Commands::do_test_render(byte start, byte count){
   }
 }
 
+void Commands::do_test_palette(){
+  rgb_color * palette = Colors::get_palette();
+  for(byte i = 0; i < NUM_PALETTE_COLORS; i++){
+    command_processor->send_ints(palette[i].red);
+    command_processor->send_ints(palette[i].green);
+    command_processor->send_ints(palette[i].blue);
+  }
+}
+
 #endif
 
 #endif

@@ -86,6 +86,22 @@ class Commands
   int do_next_sequence(int arg0, int arg1, int arg2);
   int do_next_window(int arg0, int *arg1, int arg2);
 //  int do_next_macro(int arg1, int arg2);
+  void do_configure(int arg0, int arg1, int arg2);
+  bool do_set_macro(byte macro, byte * dispatch_data);
+
+//      {
+//        if(dispatch_data != NULL){
+//          // being used internally
+//          macros.set_macro(arg0, (char*)dispatch_data);          
+//
+//          // signal that no more commands should be processed (rest of buffer copied to macro)
+//          continue_dispatching = false;
+//        } else {
+//          // being used over serial
+//          byte num_bytes = macros.set_macro_from_serial(arg0);
+//          command_processor->send_int(num_bytes);
+//        }
+//      }
 
 #ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
@@ -94,6 +110,7 @@ class Commands
   void do_test_buffer(byte start, byte count);
   void do_test_effects(byte start, byte count);
   void do_test_render(byte start, byte count);
+  void do_test_palette();
   void do_test_function(byte type, int arg2);
 #endif
 
@@ -555,6 +572,9 @@ void Commands::do_wipe(){
   do_power_shift_object(0, visible_led_count, false);
 }
 
+// arg[0] # times to rotate, default = 1
+// arg[1] # rotation steps each time, default = 1
+// arg[2] 0=flush each time, 1=don't flush, default = 0
 void Commands::do_rotate(byte times, byte steps, bool flush){
   times = max(1, times);
   steps = max(1, steps);
@@ -634,6 +654,8 @@ void Commands::set_fade_rate(int arg0){
   fade_effects->set_fade_rate(arg0/ 10000.0);
 }
 
+// arg[0] index of insertion pointer, default = 0
+// arg[1] width of window, default = 1
 void Commands::set_position(int position, int width){
   byte current_offset = buffer->get_offset();
   byte current_window = buffer->get_window();
@@ -826,57 +848,35 @@ int Commands::do_next_window(int arg0, int *arg1, int arg2){
   byte previous_position = sequencer->previous_computed(arg0);
   sequencer->set_previous_computed(arg0, position);
 
-  if(position == previous_position){
+  if(position == previous_position){      // short-circuit - no change in position
     *arg1 = 0;
     return position;
   }
 
-  byte offset;
-  byte width;
-
-  if(position > previous_position){
-    // going up by at least one
-
-    // width needing drawing
-    width = position - previous_position;
-
+  byte offset, width;
+  if(position > previous_position){       // going up by at least one
+    width = position - previous_position; // width needing drawing
     if(width > 0){
-
-      // there's a gap, start right after the last position
-      offset = previous_position; // + 1;
-    
-      // fill in the difference; this might need a - 1
-      //width = position - offset;
-    } 
-    else {
-      // there's no movement
-      offset = position;
+      offset = previous_position;         // there's a gap, start right after the last position
+    } else {
+      offset = position;                  // there's no movement
       width = 0;
     }
   } 
-  else if(position < previous_position) {
-    // going down
-    
-    // width needing drawing
-    width = previous_position - position;
-
-    if(width > 0){
-      // there's a gap, new position is beginning of range
-      // and width is already computed, though it might need a - 1
-      offset = position;
+  else if(position < previous_position){  // going down
+    width = previous_position - position; // width needing drawing
+    if(width > 0){                        // there's a gap, new position is beginning of range
+      offset = position;                  // and width is already computed, though it might need a - 1
     }
     else {
-      // there's no movement
-      offset = position;
+      offset = position;                  // there's no movement
       width = 0;
     }
   } 
-  else {
-    // no change in position
-    offset = position;
-    width = 0;
-  }
-
+//  else {
+//    offset = position;                    // no change in position
+//    width = 0;
+//  }
 
   *arg1 = width;
   return offset;
@@ -885,6 +885,30 @@ int Commands::do_next_window(int arg0, int *arg1, int arg2){
 //int Commands::do_next_macro(int arg1, int arg2){
 //  
 //}
+
+#define CONFIG_SETBLINKC   0
+#define CONFIG_SETBLINKP   1
+#define CONFIG_SETBREATHET 2
+#define CONFIG_SETFADERATE 3
+
+// arg0 setting to configure
+// arg1 value to set
+void Commands::do_configure(int arg0, int arg1, int arg2){
+  switch(arg0){
+    case CONFIG_SETBLINKC:
+      blink_effects->set_custom_blink(arg1);
+      break;
+    case CONFIG_SETBLINKP:
+      blink_effects->set_blink_period(arg1);
+      break;
+    case CONFIG_SETBREATHET:
+      breathe_effects->set_breathe_time(arg1);
+      break;
+    case CONFIG_SETFADERATE:
+      set_fade_rate(arg1);
+      break;
+  }
+}
 
 // process the series of unpacked commands and arguments in the passed memory buffer
 // the string must be tokenizable by strtok (get's corrupted)
@@ -948,11 +972,24 @@ void Commands::process_commands(const __FlashStringHelper * commands){
   process_commands(buffer);
 }
 
-#include "dispatch_command.h"
+bool Commands::do_set_macro(byte macro, byte * dispatch_data){
+  bool continue_dispatching = true;
+  if(dispatch_data != NULL){
+    // being used internally
+    macros.set_macro(macro, (char*)dispatch_data);          
 
-//#ifdef USE_DEFAULT_MACROS
-//#include "default_macros.h"
-//#endif
+    // signal that no more commands should be processed (rest of buffer copied to macro)
+    continue_dispatching = false;
+  } else {
+    // being used over serial
+    byte num_bytes = macros.set_macro_from_serial(macro);
+    command_processor->send_int(num_bytes);
+  }
+  return continue_dispatching;
+}
+
+
+#include "dispatch_command.h"
 
 #include "testing.h"
 
