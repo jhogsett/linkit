@@ -49,6 +49,7 @@ class Buffer
   void set_black_level(rgb_color black_level);
   void reset_black_level();
   rgb_color black;
+  int get_default_brightness();
 
   // todo: is there an alternative to storing all these pointers?
   private:
@@ -202,7 +203,8 @@ void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, b
 
   max = (max == 0) ? get_window() : max;
   start = (start == 0) ? get_offset() : start;
-  times = max(1, times);
+
+  times = max(1, times); // TODO might want to support zero times by doing nothing
 
   for(byte i = 0; i < times; i++){
     shift_buffer(buffer, effects, max, start, this->reverse);
@@ -332,6 +334,10 @@ void Buffer::set_black_level(rgb_color black_level){
 
 void Buffer::reset_black_level(){
   this->black = BLACK;
+}
+
+int Buffer::get_default_brightness(){
+  return (int)(this->default_brightness_scale * 100.0);
 }
 
 // to do: support either orientation

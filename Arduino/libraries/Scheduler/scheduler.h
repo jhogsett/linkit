@@ -45,7 +45,9 @@ void Scheduler::process_schedules(){
   }
 }
 
-// if schedule period is -1, it clears all schedules
+// arg[0] schedule period 0-65534, -1 clears all schedules
+// arg[1] schedule number, default schedule #0
+// arg[2] macro number, default same as schedule #
 void Scheduler::set_schedule(unsigned int schedule_period_, byte schedule_number, byte macro_number_){
   if((int)schedule_period_ == -1){
     reset_all_schedules();

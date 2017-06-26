@@ -162,7 +162,7 @@ void Macros::set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom){
 
 void Macros::reset_macro(byte macro){
   if(is_memory_macro(macro))
-    get_memory_macro(macro)[0] = '\0';
+    get_memory_macro(macro)[0] = '\0';   // TODO should this be the macro end marker
   else if(is_eeprom_macro(macro))
     eeprom_write_byte(get_eeprom_macro(macro), MACRO_END_MARKER);
 }
@@ -217,7 +217,6 @@ byte Macros::set_macro(byte macro, char * commands){
 
   if(commands == NULL || *commands == '\0'){
     // no commands; empty the macro
-    //*macro_buffer = MACRO_END_MARKER;
     write_byte(macro_buffer, to_eeprom, MACRO_END_MARKER);
     return 0;
   }
@@ -232,7 +231,6 @@ byte Macros::set_macro(byte macro, char * commands){
 
   if(cmd == CMD_NULL){
     // no commands; empty buffer
-    //*macro_buffer = MACRO_END_MARKER;
     write_byte(macro_buffer, to_eeprom, MACRO_END_MARKER);
     return 0;
   }
@@ -249,29 +247,23 @@ byte Macros::set_macro(byte macro, char * commands){
       determine_arg_marker(arg_marker, num_args);
 
       // write arguments marker
-//      *macro_buffer = arg_marker;
-//      if(num_args > 0){
-        write_byte(macro_buffer, to_eeprom, arg_marker);
+      write_byte(macro_buffer, to_eeprom, arg_marker);
+      macro_buffer++;
+      byte_count++;
+
+      if(arg_marker == MACRO_ARG1_MARKER){
+        write_byte(macro_buffer, to_eeprom, (byte)command_processor->sub_args[0]);
         macro_buffer++;
         byte_count++;
-
-        if(arg_marker == MACRO_ARG1_MARKER){
-//        *macro_buffer = (byte)command_processor->sub_args[0];
-          write_byte(macro_buffer, to_eeprom, (byte)command_processor->sub_args[0]);
-          macro_buffer++;
-          byte_count++;
-        } else {
-          for(byte i = 0; i < num_args; i++){
-            //*((int *)macro_buffer) = command_processor->sub_args[i];
-            write_word((word*)macro_buffer, to_eeprom, (word)command_processor->sub_args[i]);
-            macro_buffer += 2;
-            byte_count += 2;
-          }
+      } else {
+        for(byte i = 0; i < num_args; i++){
+          write_word((word*)macro_buffer, to_eeprom, (word)command_processor->sub_args[i]);
+          macro_buffer += 2;
+          byte_count += 2;
         }
-//      }
+      }
     } else {
       // write the command byte to the macro buffer
-      //*macro_buffer = (byte)cmd;
       write_byte(macro_buffer, to_eeprom, (byte)cmd);
       macro_buffer++;
       byte_count++;
@@ -284,7 +276,6 @@ byte Macros::set_macro(byte macro, char * commands){
   }while(cmd != CMD_NULL);
 
   // write end of macro marker
-  //*macro_buffer = MACRO_END_MARKER;
   write_byte(macro_buffer, to_eeprom, MACRO_END_MARKER);
 
   return byte_count;
@@ -295,6 +286,9 @@ byte Macros::set_macro_from_serial(byte macro){
   return set_macro(macro, command_processor->get_input_buffer());
 }
 
+// arg[0] macro number to run, default = 0
+// arg[1] number of times to run, default = 1
+// arg[3] milliseconds delay between runs, default = no delay
 void Macros::run_macro(byte macro, int times, int delay_){
   times = max(1, times);
 
