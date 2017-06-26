@@ -264,7 +264,7 @@ def skip_test(command, description):
   test_description = description                                                                                                                                                                           
   report_skipped()                                                                                                                                                                                         
   num_skipped += 1                                                                                                                                                                                         
-  write(red("s"))                                                                                                                          
+  write(red("."))                                                                                                                          
 
 def succeed():
   global success_count
@@ -593,19 +593,42 @@ def specs():
 
   # --------------------------------------------------------------------                                                                  
   group("blending colors")                                                                          
+
+  pending_test("it blends two colors @ 50%")
+  pending_test("it blends two colors @ 90%")
+  pending_test("it blends two colors @ 10%")
                                                                                                                                                                                                            
   # --------------------------------------------------------------------                                                                  
   group("max, dim and bright")                                                                          
+
+  pending_test("it boosts the brightness level")
+  pending_test("it reduces the brightness level")
+  pending_test("it maxxes out the brightness level")
                                                                                                                                                                                                            
   # --------------------------------------------------------------------                                                                  
   group("blink effects")                                                             
-                                                                                                                                                                                                           
+
+  pending_test("it renders at the minimum brightness level when blink is off")
+  pending_test("it renders at the current brightness level when blink is on")
+
+  pending_test("the standard blink alternates correctly")
+  pending_test("the a/b blinks alternate correctly")
+  pending_test("the 6-blink chase chases correctly")
+  pending_test("the custom blink alternates correctly")
+        
+  # alternate custom rates
+                                                                                                                                                                                                   
   # --------------------------------------------------------------------                                                                  
   group("breathe effect")                                                             
-                                                                                                                                                                                                           
+                 
+  pending_test("the right breathe brightness levels are used for rendering")
+                                                                                                                                                                                          
   # --------------------------------------------------------------------                                                                  
   group("fade and twinkle effects")                                                             
-                                                                                                                                                                                                           
+        
+  pending_test("it fades correctly")
+  pending_test("a custom fade rate can be set")
+                                                                                                                                                                                                   
   # --------------------------------------------------------------------                                                                  
   group("raw effect")                                                             
                                                                                                                                                                                                            
@@ -668,6 +691,9 @@ def specs():
                                                                                                                                                                                                            
   # --------------------------------------------------------------------                                                                  
   group("testing")                                                                                                            
+
+  # --------------------------------------------------------------------                                                                                                                                   
+  group("palette color sweeping")     
                                                                                                                                                                                                            
 ########################################################################                     
 ########################################################################                     
