@@ -341,8 +341,8 @@ def specs():
   # it works in reverse mode
 
   test("it places multiple colors in reverse mode")
-  expect_buffer("1:rev:2:sea:flu", 87, 3, "0,0,0,0,20,10,0,20,10")
-                                                                                                                       
+  expect_buffer("1:rev:2:sea:flu", num_leds - 3, 3, "0,0,0,0,20,10,0,20,10")
+                                                                           
   # --------------------------------------------------------------------                                               
   group("pause and continue")
 
@@ -370,9 +370,9 @@ def specs():
   expect_render("2:off:4:win:era:flu", 0, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25")
 
   test("it erases within the set window in reverse mode")
-  expect_render("1:rev:6:pnk:flu", 84, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")                                                                                                                                                              
+  expect_render("1:rev:6:pnk:flu", num_leds - 6, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")                                                                                                                                                              
   # offset and window are always in reference to pixel 0 regardless of reversal
-  expect_render("86:off:88:win:era:flu", 84, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25") 
+  expect_render(str(num_leds - 4) + ":off:" + str(num_leds - 2) + ":win:era:flu", 84, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25") 
 
   # --------------------------------------------------------------------                                               
   group("repeating")
