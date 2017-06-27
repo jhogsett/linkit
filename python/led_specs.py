@@ -7,6 +7,8 @@ import serial
 import time
 import sys
 import inspect
+import terminal_colors as tc
+import test_colors
 
 def get_line_number(back):
   callerframerecord = inspect.stack()[back]    # 0 represents this line, 1 represents line at caller                                                                                                                       
@@ -47,6 +49,8 @@ color_divisor = 20.0
 standard_seed = 1
 num_groups = 0
 test_failure_summaries = []
+num_leds = 0                                                                                                                                                                                               
+palette_size = 0
 
 def flush_input():                        
   s.flushInput()
@@ -94,112 +98,34 @@ def command_str(cmd_text):
   s.write((cmd_text + ':').encode()) 
   return wait_for_str()                     
 
-def set_macro(macro, macro_text):
-  print "macro " + str(macro) + ": ",
-  bytes = command_int(str(macro) + ":set:" + macro_text)
-  print str(bytes) + " bytes"
-  if debug_mode:                                             
-    print command_str("1," + str(macro) + ":tst")
-
 def setup(): 
-  global s, debug_mode, num_leds, default_brightness, default_brightness_percent 
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size 
   s = serial.Serial("/dev/ttyS0", 115200) 
   command(":::stp:stp:20:lev")
   num_leds = command_int("0,0:tst")                                                                                                                                                        
+  palette_size = command_int("0,1:tst")
   default_brightness = command_int("0,4:tst")                                                                                                
   default_brightness_percent = default_brightness / 100.0                                                                                                               
 
-  print cyan("Device: ") + white(str(num_leds) + " LEDs, default brightness: " + str(default_brightness) + "%")                                                                                                                                                  
-
-#  if len(sys.argv) > 3:                                       
-#    if(sys.argv[3] == "debug"):
-#      debug_mode = True
-
-colors = [
-  ("red", "20,0,0"),
-  ("org", "20,10,0"),
-  ("yel", "20,20,0"),
-  ("grn", "0,20,0"),
-  ("blu", "0,0,20"),                                             
-  ("pur", "10,0,20"),                                             
-  ("cyn", "0,20,20"),                                             
-  ("mag", "20,0,20"),                                             
-  ("lbl", "0,10,20"),                                             
-  ("lgr", "10,20,0"),                                             
-  ("sea", "0,20,10"),                                             
-  ("pnk", "20,0,10"),                                             
-  ("amb", "20,15,0"),                                             
-  ("olv", "15,20,0"),                                             
-  ("sky", "0,15,20"),                                             
-  ("tur", "0,20,15"),                                             
-  ("lav", "15,0,20"),                                             
-  ("ros", "20,0,15"),                                             
-  ("blk", "0,0,0"),                                             
-  ("dgr", "5,5,5"),                                             
-  ("gry", "10,10,10"),                                             
-  ("wht", "20,20,20"),                                             
-  ("tun", "20,11,2")                                             
-]
+  print (
+          tc.cyan("Device: ") + 
+          tc.white(str(num_leds) + 
+          " LEDs, default brightness: " + 
+          str(default_brightness) + "%")
+	)                                                                                                                                                  
 
 def write(text):
   sys.stdout.write(text)
   sys.stdout.flush()                                                
 
-def black(text):
-  return "\x1b[30m" + text + normal()
 
-def red(text):
-  return "\x1b[31m" + text + normal()
+# --- device handling ---
 
-def green(text):                                              
-  return "\x1b[32m" + text + normal()
+def reset_device():
+  command(":::stp:stp:20:lev")                                                                                                                                                                             
 
-def yellow(text):
-  return "\x1b[33m" + text + normal()            
 
-def blue(text):                            
-  return "\x1b[34m" + text + normal()  
-
-def magenta(text):                            
-  return "\x1b[35m" + text + normal()  
-
-def cyan(text):
-  return "\x1b[36m" + text + normal()
-
-def white(text):                                                   
-  return "\x1b[37m" + text + normal()                             
-
-def normal():                             
-  return "\x1b[39m"                                     
-
-def black(text):                                                                                                                           
-  return "\x1b[40m" + text + normal()                                                                                                                
-
-def redbg(text):                                   
-  return "\x1b[41m" + text + normalbg()                   
-                                                        
-def greenbg(text):                                        
-  return "\x1b[42m" + text + normalbg()                   
-                                                 
-def yellowbg(text):                                       
-  return "\x1b[43m" + text + normalbg()            
-                                                        
-def bluebg(text):                                         
-  return "\x1b[44m" + text + normalbg()                   
-                                                        
-def magentabg(text):                               
-  return "\x1b[45m" + text + normalbg()                   
-                                                        
-def cyanbg(text):                            
-  return "\x1b[46m" + text + normalbg()                   
-                                                        
-def whitebg(text):                         
-  return "\x1b[47m" + text + normalbg()                   
-                                                        
-def normalbg():                                          
-  return "\x1b[49m"  
-
-num_leds = 0
+# --- test definition ---
 
 def group(description):                                                                    
   global group_number, group_description, last_group_number, num_groups
@@ -214,62 +140,96 @@ def test(description):
   test_description = description 
   command(":::stp:stp:20:lev")
 
+def pending_test(description):                                                                                                                                                                             
+  global test_number, test_description, test_line_number, num_pending                                                                                                                                      
+  test_line_number = get_line_number(2)                                                                                                                                                                    
+  test_number = test_number + 1                                                                                                                                                                            
+  test_description = description                                                                                                                                                                           
+  report_pending()                                                                                                                                                                                         
+  num_pending += 1                                                                                                                                                                                         
+  write(tc.yellow("."))                                                                                                                                                                       
+                                                                                                                                                                                                           
+def skip_test(command, description):                                                                                                                                                                       
+  global test_number, test_description, test_line_number, num_skipped                                                                                                                                      
+  test_line_number = get_line_number(2)                                                                                                                                                                    
+  test_number = test_number + 1                                                                                                                                                                            
+  test_description = description                                                                                                                                                                           
+  report_skipped()                                                                                                                                                                                         
+  num_skipped += 1                                                                                                                                                                                         
+  write(tc.red("."))                                                                                                                                                                          
+
+
+# --- reporting results ---
+                                                                                                                                                                                                           
 def report_group():
   global last_group_number
   if group_number != last_group_number:                                                                                                                                                                    
-    test_failures.append(cyan("\nGroup #" + str(group_number) + " " + group_description))                                                                                                                    
+    test_failures.append(tc.cyan("\nGroup #" + str(group_number) + " " + group_description))                                                                                                                    
     last_group_number = group_number                                                       
 
 def report_test():
   global last_test_number
   report_group()
   if test_number != last_test_number:                                                                                                                                                                      
-    test_failures.append(blue("  Test #" + str(test_number) + " " + test_description))                                                                                                                     
+    test_failures.append(tc.blue("  Test #" + str(test_number) + " " + test_description))                                                                                                                     
     last_test_number = test_number                                                      
 
 def report_failure(got, expected):
   report_test()
-  test_failures.append("    " + red("Expectation: ") + cyan("[" + test_command + "]") + cyan(" @ " + str(test_line_number)) + red(" Failed!\n") + red("\texpected:\n") + yellow("\t\t[" + expected + "]\n") + red("\tgot:\n") + yellow("\t\t[" + got + "]") + "\n")
-  test_failure_summaries.append(cyan("\t@ " + str(test_line_number) + " ") + yellow(test_command) + red(" -" + expected) + green(" +" + got + "\n")) 
+  test_failures.append(
+    "    " + 
+    tc.red("Expectation: ") + 
+    tc.cyan("[" + test_command + "]") + 
+    tc.cyan(" @ " + str(test_line_number)) + 
+    tc.red(" Failed!\n") + 
+    tc.red("\texpected:\n") + 
+    tc.yellow("\t\t[" + expected + "]\n") + 
+    tc.red("\tgot:\n") + 
+    tc.yellow("\t\t[" + got + "]") + 
+    "\n")
+
+  test_failure_summaries.append(
+    tc.cyan("\t@ " + str(test_line_number) + " ") + 
+    tc.yellow(test_command) + 
+    tc.red(" -" + expected) + 
+    tc.green(" +" + got) + 
+    "\n") 
 
 def report_pending():
   report_test()
-  test_failures.append("    " + yellow("Pending expectation: ") + yellow("[" + test_description + "]") + cyan(" @ " + str(test_line_number))) 
+  test_failures.append(
+    "    " + 
+    tc.yellow("Pending expectation: ") + 
+    tc.yellow("[" + test_description + "]") + 
+    tc.cyan(" @ " + str(test_line_number))) 
 
 def report_skipped():                                                                                                                                                                                      
   report_test()                                                                                                                                                                                            
-  test_failures.append("    " + red("Skipped expectation: ") + red("[" + test_command + "] ") + red("[" + test_description + "]") + cyan(" @ " + str(test_line_number)))                                                             
+  test_failures.append(
+    "    " + 
+    tc.red("Skipped expectation: ") + 
+    tc.red("[" + test_command + "] ") + 
+    tc.red("[" + test_description + "]") + 
+    tc.cyan(" @ " + str(test_line_number)))                                                             
+
+
+# --- failing/succeeding tests ---
                                                                                       
 def fail(got, expected):
   global test_failures, failure_count, last_group_number, last_test_number
   report_failure(got, expected)
-  write(red("F"))
+  write(tc.red("F"))
   failure_count += 1
   last_group_number = group_number
   last_test_number = test_number
 
-def pending_test(description):
-  global test_number, test_description, test_line_number, num_pending                                                                                                                                                                                  
-  test_line_number = get_line_number(2)                                                                                                                                                                    
-  test_number = test_number + 1                                                                                                                                                                            
-  test_description = description    
-  report_pending()
-  num_pending += 1
-  write(yellow("."))
-
-def skip_test(command, description):
-  global test_number, test_description, test_line_number, num_skipped
-  test_line_number = get_line_number(2)                                                                                                       
-  test_number = test_number + 1                                                                                                                                                                            
-  test_description = description                                                                                                                                                                           
-  report_skipped()                                                                                                                                                                                         
-  num_skipped += 1                                                                                                                                                                                         
-  write(red("."))                                                                                                                          
-
 def succeed():
   global success_count
-  write(green("."))
+  write(tc.green("."))
   success_count += 1
+
+
+# --- expectations ---
 
 def expect_equal(got, expected):
   global test_line_number
@@ -295,10 +255,12 @@ def expect_effect(command_, start, count, expected):
   expect_equal(str_[:-1], expected)                                
                                                                    
 def expect_palette(command_, start, count, expected):               
-  #command(command_)                                                
-  #str_ = command_str("5," + str(start) + "," + str(count) + ":tst")
-  #expect_equal(str_[:-1], expected)                                
-  pass                                                                
+  command(command_)                                                
+  str_ = command_str("5," + str(start) + "," + str(count) + ":tst")
+  expect_equal(str_[:-1], expected)                                
+                                                                  
+
+# --- helper functions ---
 
 def rgb_string(red, green, blue):
   return str(red) + "," + str(green) + "," + str(blue)
@@ -329,7 +291,7 @@ def specs():
   expect_buffer("cyn", 0, 1, "0,20,20") 
 
   test("it accurately sets all standard colors")
-  for color in colors:
+  for color in test_colors.colors:
     expect_buffer(color[0] + ":flu", 0, 1, color[1])
 
   # --------------------------------------------------------------------             
@@ -463,7 +425,12 @@ def specs():
   # --------------------------------------------------------------------                                                                                                                                   
   group("palette manipulation")                                                            
 
-  pending_test("the palette defaults to a fixed set of colors")
+  test("the palette defaults to the right fixed set of colors")
+  expected_colors = ""  
+  for i in range(0, palette_size):
+    expected_colors += test_colors.colors[i][1] + ","
+  expect_palette("", 0, palette_size, expected_colors[:-1])
+
   pending_test("the palette can be shuffled")
   pending_test("the shuffler creates alternating complimentary colors")
   pending_test("the shuffler creates complimentary colors for the current palette")
@@ -589,7 +556,7 @@ def specs():
   expect_effect("2:rnd:flo:flu", 0, 3, "2,14,21") 
 
   test("the repeated colors get random effects set")                                                                                                                                                            
-  expect_effect("2:rnd:rep:rep:flu", 0, 3, "0,0,2")                                                                                                                                                        
+  expect_effect("2:rnd:rep:rep:flu", 0, 3, "x0,0,2")                                                                                                                                                        
 
   # --------------------------------------------------------------------                                                                  
   group("blending colors")                                                                          
@@ -630,11 +597,10 @@ def specs():
   pending_test("a custom fade rate can be set")
                                                                                                                                                                                                    
   # --------------------------------------------------------------------                                                                  
-  group("raw effect")                                                             
-                                                                                                                                                                                                           
-  # --------------------------------------------------------------------                                                                  
   group("reset, clear and stop")                                                             
-                                                                                                                                                                                                           
+  
+
+                                                                                                                                                                                                         
   # --------------------------------------------------------------------                                                                  
   group("brightness level")                                                             
                                                                                                                                                                                                            
@@ -694,6 +660,8 @@ def specs():
 
   # --------------------------------------------------------------------                                                                                                                                   
   group("palette color sweeping")     
+
+  # test that all three args are 0 after the test runs, saw arg2 being 1 as green success leds were pushed out 
                                                                                                                                                                                                            
 ########################################################################                     
 ########################################################################                     
@@ -708,17 +676,33 @@ def loop():
     print error
 
   if(failure_count > 0):
-    print red("Failures:")
+    print tc.red("\nFailures:")
     for summary in test_failure_summaries:                                                                                                                                                                              
       print summary,
 
   print
-  print cyan(str(success_count + failure_count) + " expectations ") + green(str(success_count) + " succeeded ") + red(str(failure_count) + " failed - ") + yellow(str(num_pending) + " pending ") + red(str(num_skipped) + " skipped ") + blue(str(num_groups) + " groups")                                                                     
+  print (
+    tc.cyan(str(success_count + failure_count) + " expectations ") + 
+    tc.green(str(success_count) + " succeeded ") + 
+    tc.red(str(failure_count) + " failed - ") + 
+    tc.yellow(str(num_pending) + " pending ") + 
+    tc.red(str(num_skipped) + " skipped ") + 
+    tc.blue(str(num_groups) + " groups")
+  )                                                                     
   print                                                                                                                                                                                            
 
+  total = success_count + failure_count + num_pending + num_skipped
+  show_success = 0.5 + (success_count * num_leds / total)
+  show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
+  show_pending = 0.5 + (num_pending * num_leds / total)
+  command_str("rst:era")
+  command_str(str(show_success) + ",1:grn") 
+  command_str(str(show_failure) + ",1:red")                                                                                                                                                                  
+  command_str(str(show_pending) + ",1:yel")                                                                                                                                                                  
+  command_str("flu:cnt")
 
 if __name__ == '__main__': 
-  print magenta("\nApollo Lighting System - Test Framework v0.0\n")
+  print tc.magenta("\nApollo Lighting System - Test Framework v0.0\n")
   setup() 
   loop()
   print
