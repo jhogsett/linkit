@@ -53,14 +53,14 @@ void Commands::do_test(int type, int arg1, int arg2){
 // TODO only enable test code when testing
 
 #define TEST_INQUIRY_NUM_LEDS           0
-#define TEST_INQUIRY_WIDTH              1
+#define TEST_INQUIRY_PALETTE_SIZE       1
 #define TEST_INQUIRY_OFFSET             2
 #define TEST_INQUIRY_WINDOW             3
 #define TEST_INQUIRY_DEFAULT_BRIGHTNESS 4
 #define TEST_INQUIRY_MINIMUM_BRIGHTNESS 5 
 #define TEST_INQUIRY_REVERSE            6
-#define TEST_INQUIRY_PALETTE_SIZE       7
 
+// #define TEST_INQUIRY_WIDTH              1
 //#define TEST_INQUIRY_DEVICENAME   4
 //#define TEST_INQUIRY_NUM_ZONES    1
 //#define TEST_INQUIRY_NUM_PALETTES 2
@@ -71,6 +71,9 @@ void Commands::do_test_inquiry(byte type, int arg2){
   switch(type){
     case TEST_INQUIRY_NUM_LEDS:
       command_processor->send_int(visible_led_count);
+      break;
+    case TEST_INQUIRY_PALETTE_SIZE:
+      command_processor->send_int(NUM_PALETTE_COLORS);
       break;
     case TEST_INQUIRY_OFFSET:
       command_processor->send_int(buffer->get_offset());
@@ -87,10 +90,6 @@ void Commands::do_test_inquiry(byte type, int arg2){
     case TEST_INQUIRY_REVERSE:
       command_processor->send_int(buffer->get_reverse() ? 1 : 0);
       break;
-    case TEST_INQUIRY_PALETTE_SIZE:
-      break;
-//    case TEST_INQUIRY_DEVICENAME:
-//      break;
   }
 }
 

@@ -1,3 +1,16 @@
+// could build upon macros to form the concept of apps
+// apps:
+// - have a way to start up
+// - have a way to shut down
+// - perhaps other common behaviors
+
+// could have an effect that runs a macro at render time to do whatever it wants, with the rendering pixel as the current window
+// - this could be very slow
+// - perhaps call the macro one time per scan line rather than per incidence of effect in buffer
+//
+// - example of use: 
+//   - could have a dynamic display without needing to have a macro running all the time
+
 // move the setting of things like blink rate to a "cfg" command
 
 
