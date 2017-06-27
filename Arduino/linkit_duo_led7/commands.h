@@ -112,6 +112,7 @@ class Commands
   void do_test_render(byte start, byte count);
   void do_test_palette(byte start, byte count);
   void do_test_function(byte type, int arg2);
+  void dump_buffer_colors(rgb_color * buffer, byte start, byte count);
 #endif
 
   Buffer *buffer;
