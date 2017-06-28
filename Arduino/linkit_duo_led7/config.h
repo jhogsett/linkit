@@ -11,13 +11,13 @@
 // #define LED_STRIP_72
 
 // single 90-LED strip
-// #define LED_STRIP_90
+#define LED_STRIP_90
 
 // single 90-LED strip in Apollo
 // #define APOLLO_DISPLAY
 
 // 100-LED sphere
-#define SPHERE
+// #define SPHERE
 
 // 200-LED overhead
 // #define RADIUS8

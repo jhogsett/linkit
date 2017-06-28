@@ -63,7 +63,7 @@
 #define CMD_BREATHE      54
 #define CMD_SLOW_FADE    55
 #define CMD_FAST_FADE    56
-#define CMD_TWINKLE      57
+#define CMD_TWINKLE_OPEN      57
 #define CMD_RAW_OPEN          58 
 #define CMD_STATIC       59
 #define CMD_BLINKR       60
@@ -109,8 +109,8 @@
 #define CMD_SEQ_NEXTW    97
 #define CMD_SEQ_NEXTM    98
 #define CMD_CLR_SEQ_HUE  99
-#define CMD_CLR_SEQ_LIT 100
-#define CMD_CLR_SEQ_SAT 101
+#define CMD_CLR_SEQ_SAT 100
+#define CMD_CLR_SEQ_LIT 101
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "era";
@@ -212,8 +212,8 @@ const char cmd_096[] PROGMEM = "ssp";
 const char cmd_097[] PROGMEM = "snw";
 const char cmd_098[] PROGMEM = "snm";
 const char cmd_099[] PROGMEM = "csh";
-const char cmd_100[] PROGMEM = "csl";
-const char cmd_101[] PROGMEM = "css";
+const char cmd_100[] PROGMEM = "css";
+const char cmd_101[] PROGMEM = "csl";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
