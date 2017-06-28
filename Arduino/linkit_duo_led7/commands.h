@@ -994,6 +994,8 @@ bool Commands::do_set_macro(byte macro, byte * dispatch_data){
 #define COLOR_SEQUENCE_LIT 1
 #define COLOR_SEQUENCE_SAT 2
 
+// to do need to add some limiting to not go over 255, etc.
+
 void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
   switch(type){
     case COLOR_SEQUENCE_HUE:
@@ -1012,7 +1014,7 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
         int angle = arg1;
         rgb_color *palette = Colors::get_palette();
         for(int i = 0; i < NUM_PALETTE_COLORS; i++){
-          palette[i] = ColorMath::hsl_to_rgb(angle, 255, arg2);
+          palette[i] = ColorMath::hsl_to_rgb(angle % 360, 255, arg2);
           angle += arg0;
         }
       }
@@ -1036,11 +1038,11 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
         rgb_color *palette = Colors::get_palette();
         int lightness = 0;
         for(int i = 0; i < NUM_PALETTE_COLORS; i++){
-          palette[i] = ColorMath::hsl_to_rgb(arg0, 255  , lightness / 100);
+          palette[i] = ColorMath::hsl_to_rgb(arg0, 255, lightness / 100);
           palette[i].red = palette[i].red * arg2 / 256;
           palette[i].green = palette[i].green * arg2 / 256;
           palette[i].blue = palette[i].blue * arg2 / 256;
-          lightness += arg1;
+          lightness = (lightness + arg1) % 25600;
         }
       }
       break;
@@ -1062,7 +1064,7 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
         for(int i = 0; i < NUM_PALETTE_COLORS; i++){         
           // the saturation goes from richest to whitest
           palette[i] = ColorMath::hsl_to_rgb(arg0, 255 - (saturation / 100), arg2);
-          saturation += arg1;
+          saturation = (saturation + arg1) % 25600;
         }
       }
       break;
