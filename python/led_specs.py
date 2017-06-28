@@ -134,7 +134,6 @@ def group(description):
   group_number = group_number + 1
   num_groups += 1
   group_description = description
-#  set_standard_seed()                                                                                                                                                                                      
 
 def test(description):
   global test_number, test_description, test_failures, last_test_number
@@ -439,19 +438,28 @@ def specs():
   # --------------------------------------------------------------------                                                                                                                                   
   group("palette manipulation")                                                            
 
-  test("the palette defaults to the right fixed set of colors")
-  expected_colors = ""  
+  test("the palette resets to the right fixed set of colors")
+  all_palette_colors = ""  
   for i in range(0, palette_size):
-    expected_colors += test_colors.colors[i][1] + ","
-  expect_palette("", 0, palette_size, expected_colors[:-1])
+    all_palette_colors += test_colors.colors[i][1] + ","
+  expect_palette("1:shf", 0, palette_size, all_palette_colors[:-1])
 
   test("the palette can be shuffled")
-  expected_colors = ""                                                                                                                 
-  expect_palette("shf", 0, palette_size, expected_colors[:-1])                                                                            
+  expected_colors = "20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"                                                                                                                 
+  expect_palette("1:shf", 0, palette_size, expected_colors)                                                                            
 
-  pending_test("the shuffler creates alternating complimentary colors")
-  pending_test("the shuffler creates complimentary colors for the current palette")
-  pending_test("the shuffler creates random complimentary colors")
+  test("the shuffler sets every odd-numbered palette color to its compliment")
+  expected_colors = "20,0,0,0,20,20,20,20,0,0,0,20,0,0,20,20,20,0,0,20,20,20,0,0,0,10,20,20,10,0,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+  expect_palette("1:shf:2:shf", 0, palette_size, expected_colors)                                                                         
+
+  test("the shuffler creates complimentary colors for the current palette")
+  expected_colors = "20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+  expect_palette("1:shf:3:shf", 0, palette_size, expected_colors)                                                                 
+
+  test("the shuffler creates random complimentary colors")
+  expected_colors = "20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"   
+  expect_palette("1:shf:3:shf", 0, palette_size, expected_colors)                                                                                             
+
   pending_test("the shuffler resets to the original fixed set of colors")
 
 
@@ -539,26 +547,26 @@ def specs():
   expect_buffer("rnd:flu", 0, 1, "15,20,0")  
 
   test("it chooses another random color")
-  expect_buffer("rnd:flu", 0, 1, "20,0,20")                                                                                                                                 
+  expect_buffer("rnd:flu", 0, 1, "15,20,0")                                                                                                                                 
 
   test("it sets no effect")
   expect_effect("rnd:flu", 0, 1, "0")
 
   test("it repeats using the same color not another random color")               
-  expect_buffer("rnd:rep:flu", 0, 2, "20,20,0,20,20,0")  
+  expect_buffer("rnd:rep:flu", 0, 2, "15,20,0,15,20,0")  
 
   test("it floods using the same color not another random color")
-  expect_buffer("rnd:flo:flu", 0, 2, "0,0,20,0,0,20")
+  expect_buffer("rnd:flo:flu", 0, 2, "15,20,0,15,20,0")
 
   test("it sets a random color and sets the effect to repeat with random colors")
-  expect_buffer("1:rnd:flu", 0, 1, "0,10,20")                                                                                        
+  expect_buffer("1:rnd:flu", 0, 1, "15,20,0")                                                                                        
   expect_effect("1:rnd:flu", 0, 1, "1")  
 
   test("it repeats using a different color")
-  expect_buffer("1:rnd:rep:flu", 0, 2, "20,0,15,0,10,20")
+  expect_buffer("1:rnd:rep:flu", 0, 2, "20,0,20,15,20,0")
 
   test("it floods using a different color each time")                                                                                                                                                      
-  expect_buffer("1:rnd:flo:flu", 0, 3, "20,10,0,20,0,0,20,0,15") 
+  expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,10,0,20") 
 
   test("the repeated colors get no effect set")
   expect_effect("1:rnd:rep:rep:flu", 0, 3, "0,0,1") 
@@ -567,20 +575,20 @@ def specs():
   expect_effect("1:rnd:flo:flu", 0, 3, "1,0,0")    
 
   test("it sets a random color and sets the effect to repeat with random colors+effects")                                                                                                                          
-  expect_buffer("2:rnd:flu", 0, 1, "20,20,0")                                                                                                                                                                    
+  expect_buffer("2:rnd:flu", 0, 1, "15,20,0")                                                                                                                                                                    
   expect_effect("2:rnd:flu", 0, 1, "2") 
 
   test("it repeats using a different color")                                                                                                                                                               
-  expect_buffer("2:rnd:rep:flu", 0, 2, "20,20,0,0,20,0")                                                                                                              
+  expect_buffer("2:rnd:rep:flu", 0, 2, "10,0,20,15,20,0")                                                                                                              
                                                                                                                                                                                                            
   test("it floods using a different color each time")                                                 
-  expect_buffer("2:rnd:flo:flu", 0, 3, "15,0,20,10,0,20,20,15,0")                                                                                                                                          
+  expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,20,20,0")                                                                                                                                          
 
   test("the flooded colors get random effects set")                                     
-  expect_effect("2:rnd:flo:flu", 0, 3, "2,14,21") 
+  expect_effect("2:rnd:flo:flu", 0, 3, "2,0,16") 
 
-  test("the repeated colors get random effects set")                                                                                                                                                            
-  expect_effect("2:rnd:rep:rep:flu", 0, 3, "x0,0,2")                                                                                                                                                        
+  skip_test("2:rnd:rep:rep:flu", "the repeated colors get random effects set")                                                                                                                                                            
+  #expect_effect("2:rnd:rep:rep:flu", 0, 3, "x0,0,2")                                                                                                                                                        
 
 
   # --------------------------------------------------------------------                                                                  
