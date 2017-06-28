@@ -720,15 +720,54 @@ def specs():
   test("it sweeps the right default hues")                                                                                  
   expected_colors = "20,0,0,20,6,0,20,13,0,20,20,0,13,20,0,6,20,0,0,20,0,0,20,6,0,20,13,0,20,20,0,13,20,0,6,20,0,0,20,6,0,20,13,0,20,20,0,20,20,0,13,20,0,6"    
   expect_palette("csh", 0, palette_size, expected_colors)                                                                                                 
+
+  test("it sweeps hues with a custom step angle")                                                                                                                  
+  expected_colors = "20,0,0,20,13,0,13,20,0,0,20,0,0,20,13,0,13,20,0,0,20,13,0,20,20,0,13,20,0,0,20,13,0,13,20,0,0,20,0,0,20,13,0,13,20,0,0,20,13,0,20,20,0,13"       
+  expect_palette("40:csh", 0, palette_size, expected_colors) 
         
+  test("it sweeps hues with a custom starting angle")                                                                                                                  
+  expected_colors = "20,20,0,13,20,0,6,20,0,0,20,0,0,20,6,0,20,13,0,20,20,0,13,20,0,6,20,0,0,20,6,0,20,13,0,20,20,0,20,20,0,13,20,0,6,20,0,0,20,6,0,20,13,0"                                                                                                                                             
+  expect_palette("0,60:csh", 0, palette_size, expected_colors)                                                                                                       
+                                                                                                                                                            
+  test("it sweeps hues with a custom lightness")                                                                                                                  
+  expected_colors = "10,0,0,10,3,0,10,6,0,10,10,0,6,10,0,3,10,0,0,10,0,0,10,3,0,10,6,0,10,10,0,6,10,0,3,10,0,0,10,3,0,10,6,0,10,10,0,10,10,0,6,10,0,3"                                                                                                                                             
+  expect_palette("0,0,10:csh", 0, palette_size, expected_colors)                                                                                                       
+                                                                                                                                                            
+
   test("it sweeps the right default saturations")                                                                                                                        
   expected_colors = "20,0,0,20,1,1,20,2,2,20,3,3,20,4,4,20,5,5,20,6,6,20,7,7,20,8,8,20,9,9,20,11,11,20,12,12,20,13,13,20,14,14,20,15,15,20,16,16,20,17,17,20,18,18"                                                                                                                                                    
   expect_palette("css", 0, palette_size, expected_colors)                                                                                                         
                                                                                                                                                               
+  test("it sweeps saturations with a custom hue")                                                                                                                  
+  expected_colors = "0,20,0,1,20,1,2,20,2,3,20,3,4,20,4,5,20,5,6,20,6,7,20,7,8,20,8,9,20,9,11,20,11,12,20,12,13,20,13,14,20,14,15,20,15,16,20,16,17,20,17,18,20,18"
+  expect_palette("120:css", 0, palette_size, expected_colors)                                                                                                          
+                                                                                                                                          
+  test("it sweeps saturations with a custom step")                                                                                                                  
+  expected_colors = "20,0,0,20,2,2,20,4,4,20,6,6,20,8,8,20,10,10,20,13,13,20,15,15,20,17,17,20,19,19,20,1,1,20,4,4,20,6,6,20,8,8,20,10,10,20,12,12,20,15,15,20,17,17"
+  expect_palette("0,28:css", 0, palette_size, expected_colors)                                                                                                          
+                                                                                                                                          
+  test("it sweeps saturations with a custom lightness")                                                                                                                  
+  expected_colors = "10,0,0,10,0,0,10,1,1,10,1,1,10,2,2,10,2,2,10,3,3,10,3,3,10,4,4,10,4,4,10,5,5,10,6,6,10,6,6,10,7,7,10,7,7,10,8,8,10,8,8,10,9,9"
+  expect_palette("0,0,10:css", 0, palette_size, expected_colors)                                                                                                          
+                                                                                                                                          
+  
   test("it sweeps the right default lightnesses")                                                                                                                        
-  expected_colors = "0,0,0,1,0,0,2,0,0,3,0,0,4,0,0,5,0,0,6,0,0,7,0,0,8,0,0,9,0,0,11,0,0,12,0,0,13,0,0,14,0,0,15,0,0,16,0,0,17,0,0,18,0,0"                                                                                                                                                    
+  expected_colors = "1,0,0,2,0,0,3,0,0,4,0,0,5,0,0,6,0,0,7,0,0,8,0,0,9,0,0,11,0,0,12,0,0,13,0,0,14,0,0,15,0,0,16,0,0,17,0,0,18,0,0,19,0,0"                                                                                                                                                    
   expect_palette("csl", 0, palette_size, expected_colors)                                                                                                         
                                                                                                                                                               
+  test("it sweeps lightnesses with a custom hue")                                                                                                                  
+  expected_colors = "0,0,1,0,0,2,0,0,3,0,0,4,0,0,5,0,0,6,0,0,7,0,0,8,0,0,9,0,0,11,0,0,12,0,0,13,0,0,14,0,0,15,0,0,16,0,0,17,0,0,18,0,0,19"                         
+  expect_palette("240:csl", 0, palette_size, expected_colors)                                                                                                          
+
+  test("it sweeps lightnesses with a custom step")                                                                                         
+  expected_colors = "2,0,0,4,0,0,6,0,0,8,0,0,10,0,0,13,0,0,15,0,0,17,0,0,19,0,0,1,0,0,4,0,0,6,0,0,8,0,0,10,0,0,12,0,0,15,0,0,17,0,0,19,0,0"                                                                                                                                             
+  expect_palette("0,28:csl", 0, palette_size, expected_colors)                                                                                                          
+                                                                                                                                                                   
+  test("it sweeps lightnesses with a custom lightness scale factor")                                                                                         
+  expected_colors = "0,0,0,1,0,0,1,0,0,2,0,0,2,0,0,3,0,0,3,0,0,4,0,0,4,0,0,5,0,0,6,0,0,6,0,0,7,0,0,7,0,0,8,0,0,8,0,0,9,0,0,9,0,0"                                                                                                                                             
+  expect_palette("0,0,10:csl", 0, palette_size, expected_colors)                                                                                                          
+                                                                                                                                                                   
+                                                                                                                     
         
 
   # test that all three args are 0 after the test runs, saw arg2 being 1 as green success leds were pushed out 
