@@ -257,7 +257,9 @@ def expect_effect(command_, start, count, expected):
   expect_equal(str_[:-1], expected)                                
                                                                    
 def expect_palette(command_, start, count, expected):               
-  command(command_)                                                
+  display_width = num_leds / palette_size                                                                                                                         
+  display_command = ":" + str(palette_size) + ",-2," + str(display_width) + ":cpy:flu"  
+  command(command_ + display_command)                                                
   str_ = command_str("5," + str(start) + "," + str(count) + ":tst")
   expect_equal(str_[:-1], expected)                                
                                                                   
@@ -459,8 +461,6 @@ def specs():
   test("the shuffler creates random complimentary colors")
   expected_colors = "20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"   
   expect_palette("1:shf:3:shf", 0, palette_size, expected_colors)                                                                                             
-
-  pending_test("the shuffler resets to the original fixed set of colors")
 
 
   # --------------------------------------------------------------------                                                                  
@@ -716,6 +716,20 @@ def specs():
 
   # --------------------------------------------------------------------                                                                                                                                   
   group("palette color sweeping")     
+
+  test("it sweeps the right default hues")                                                                                  
+  expected_colors = "20,0,0,20,6,0,20,13,0,20,20,0,13,20,0,6,20,0,0,20,0,0,20,6,0,20,13,0,20,20,0,13,20,0,6,20,0,0,20,6,0,20,13,0,20,20,0,20,20,0,13,20,0,6"    
+  expect_palette("csh", 0, palette_size, expected_colors)                                                                                                 
+        
+  test("it sweeps the right default saturations")                                                                                                                        
+  expected_colors = "20,0,0,20,1,1,20,2,2,20,3,3,20,4,4,20,5,5,20,6,6,20,7,7,20,8,8,20,9,9,20,11,11,20,12,12,20,13,13,20,14,14,20,15,15,20,16,16,20,17,17,20,18,18"                                                                                                                                                    
+  expect_palette("css", 0, palette_size, expected_colors)                                                                                                         
+                                                                                                                                                              
+  test("it sweeps the right default lightnesses")                                                                                                                        
+  expected_colors = "0,0,0,1,0,0,2,0,0,3,0,0,4,0,0,5,0,0,6,0,0,7,0,0,8,0,0,9,0,0,11,0,0,12,0,0,13,0,0,14,0,0,15,0,0,16,0,0,17,0,0,18,0,0"                                                                                                                                                    
+  expect_palette("csl", 0, palette_size, expected_colors)                                                                                                         
+                                                                                                                                                              
+        
 
   # test that all three args are 0 after the test runs, saw arg2 being 1 as green success leds were pushed out 
                                                                                                                                                                                                            
