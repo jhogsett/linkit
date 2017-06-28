@@ -66,7 +66,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_BREATHE:   
     case CMD_SLOW_FADE:
     case CMD_FAST_FADE:
-    case CMD_TWINKLE:
+    case CMD_TWINKLE_OPEN:
 //    case CMD_RAW:
     case CMD_STATIC:      dispatch_effect(cmd);                        break;
     case CMD_BLINKR:      effects_processor->start_blinking_r();       break;
@@ -206,7 +206,16 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       // arg1 - starting hue angle 0-359, default = 0 (red)
       // arg2 - lightness, default = 255
       // (saturation = 255)
-      // do_color_sequence(COLOR_SEQUENCE_HUE, arg0, arg1, arg2)
+      do_color_sequence(COLOR_SEQUENCE_HUE, arg0, arg1, arg2);
+      reset_args = true;
+      break;
+    case CMD_CLR_SEQ_SAT:
+      // arg0 - step, default = 256 / 18 = 14.22222222 (magic value, others must be integers)
+      //   if arg0 if < 0, the order is reversed
+      // arg1 - hue angle 0-359, default = 0 (red)
+      // arg2 - lightness 0-255, default = 255
+      do_color_sequence(COLOR_SEQUENCE_SAT, arg0, arg1, arg2);
+      reset_args = true;
       break;
     case CMD_CLR_SEQ_LIT:
       // arg0 - step, default = 256 / 18 = 14.22222222 (magic value, others must be integers)
@@ -214,15 +223,8 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       // arg1 - hue angle 0-359, default = 0 (red)
       // arg2 - saturation 0-255, default = 255
       // (starting percent = 0)
-      // do_color_sequence(COLOR_SEQUENCE_LIGHTNESS, arg0, arg1, arg2)
-      
-      break;
-    case CMD_CLR_SEQ_SAT:
-      // arg0 - step, default = 256 / 18 = 14.22222222 (magic value, others must be integers)
-      //   if arg0 if < 0, the order is reversed
-      // arg1 - hue angle 0-359, default = 0 (red)
-      // arg2 - lightness 0-255, default = 255
-      // do_color_sequence(COLOR_SEQUENCE_SATURATION, arg0, arg1, arg2)
+      do_color_sequence(COLOR_SEQUENCE_LIT, arg0, arg1, arg2);
+      reset_args = true;
       break;
   }
 
@@ -287,7 +289,7 @@ void Commands::dispatch_effect(int cmd){
     case CMD_BREATHE:   effect = BREATHE_ON; break;
     case CMD_SLOW_FADE: effect = SLOW_FADE;  break;
     case CMD_FAST_FADE: effect = FAST_FADE;  break;
-    case CMD_TWINKLE:   effect = TWINKLE_ON; break;
+    case CMD_TWINKLE_OPEN:   effect = NO_EFFECT; break;
 //    case CMD_RAW:       effect = RAW_ON;     break;
     case CMD_STATIC:    effect = STATIC_ON;  break;
   }

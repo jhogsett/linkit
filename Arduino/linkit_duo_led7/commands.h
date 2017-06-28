@@ -88,6 +88,7 @@ class Commands
 //  int do_next_macro(int arg1, int arg2);
   void do_configure(int arg0, int arg1, int arg2);
   bool do_set_macro(byte macro, byte * dispatch_data);
+  void do_color_sequence(byte type, int arg0, int arg1, int arg2);
 
 //      {
 //        if(dispatch_data != NULL){
@@ -989,6 +990,84 @@ bool Commands::do_set_macro(byte macro, byte * dispatch_data){
   return continue_dispatching;
 }
 
+#define COLOR_SEQUENCE_HUE 0
+#define COLOR_SEQUENCE_LIT 1
+#define COLOR_SEQUENCE_SAT 2
+
+void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
+  switch(type){
+    case COLOR_SEQUENCE_HUE:
+      // arg0 - step angle, default = 20
+      //   if arg0 < 0, the order is reverse
+      // arg1 - starting hue angle 0-359, default = 0 (red)
+      // arg2 - lightness, default = 20
+      // (saturation = 255)
+      {
+        if(arg0 == 0)
+          arg0 = 20;
+
+        if(arg2 < 1)
+          arg2 = 20;
+
+        int angle = arg1;
+        rgb_color *palette = Colors::get_palette();
+        for(int i = 0; i < NUM_PALETTE_COLORS; i++){
+          palette[i] = ColorMath::hsl_to_rgb(angle, 255, arg2);
+          angle += arg0;
+        }
+      }
+      break;
+
+    case COLOR_SEQUENCE_LIT:
+      // arg0 - hue angle 0-359, default = 0 (red)
+      // arg1 - step, default = 256 / 18 = 14.22222222 (magic value, others must be integers)
+      //   (future) if arg0 if < 0, the order is reversed
+      // arg2 - lightness scaling, default = 20 (brightness divisor)
+      // (starting percent = 0)
+      {
+        if(arg1 == 0)
+          arg1 = 1422;
+        else
+          arg1 *= 100;
+
+        if(arg2 < 1)
+          arg2 = 20;
+
+        rgb_color *palette = Colors::get_palette();
+        int lightness = 0;
+        for(int i = 0; i < NUM_PALETTE_COLORS; i++){
+          palette[i] = ColorMath::hsl_to_rgb(arg0, 255  , lightness / 100);
+          palette[i].red = palette[i].red * arg2 / 256;
+          palette[i].green = palette[i].green * arg2 / 256;
+          palette[i].blue = palette[i].blue * arg2 / 256;
+          lightness += arg1;
+        }
+      }
+      break;
+    case COLOR_SEQUENCE_SAT:
+      // arg0 - hue angle 0-359, default = 0 (red)
+      // arg1 - step, default = 256 / 18 = 14.22222222 (magic value, others must be integers)
+      // arg2 - lightness 0-255, default = 20
+      {
+        if(arg1 == 0)
+          arg1 = 1422;
+        else
+          arg1 *= 100;
+
+        if(arg2 < 1)
+          arg2 = 20;
+
+        rgb_color *palette = Colors::get_palette();
+        int saturation = 0;
+        for(int i = 0; i < NUM_PALETTE_COLORS; i++){         
+          // the saturation goes from richest to whitest
+          palette[i] = ColorMath::hsl_to_rgb(arg0, 255 - (saturation / 100), arg2);
+          saturation += arg1;
+        }
+      }
+      break;
+  }
+}
 
 #include "dispatch_command.h"
 
