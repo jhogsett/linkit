@@ -149,13 +149,6 @@ void Commands::dump_buffer_colors(rgb_color * buffer, byte start, byte count){
 
 void Commands::do_test_buffer(byte start, byte count){
   dump_buffer_colors(buffer->get_buffer(), start, count);
-//  rgb_color * buf = ;
-//  for(int i = 0; i < count; i++){
-//    rgb_color color = ColorMath::correct_color(buf[start + i]);
-//    command_processor->send_ints(color.red);
-//    command_processor->send_ints(color.green);
-//    command_processor->send_ints(color.blue);
-//  }
 }
 
 void Commands::do_test_effects(byte start, byte count){
@@ -167,27 +160,12 @@ void Commands::do_test_effects(byte start, byte count){
 
 void Commands::do_test_render(byte start, byte count){
   dump_buffer_colors(buffer->get_render_buffer(), start, count);
-//  rgb_color * buf = buffer->get_render_buffer();
-//  for(int i = 0; i < count; i++){
-//    rgb_color color = ColorMath::correct_color(buf[start + i]);
-//    command_processor->send_ints(color.red);
-//    command_processor->send_ints(color.green);
-//    command_processor->send_ints(color.blue);
-//  }
 }
 
 void Commands::do_test_palette(byte start, byte count){
   dump_buffer_colors(Colors::get_palette(), start, count);
-//  rgb_color * palette = Colors::get_palette();
-//  for(byte i = 0; i < count; i++){
-//    rgb_color color = ColorMath::correct_color(buf[start + i]);
-//    command_processor->send_ints(palette[start + i].red);
-//    command_processor->send_ints(palette[start + i].green);
-//    command_processor->send_ints(palette[start + i].blue);
-//  }
 }
 
 #endif
-
 #endif
 
