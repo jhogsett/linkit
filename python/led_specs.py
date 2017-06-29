@@ -262,7 +262,10 @@ def expect_palette(command_, start, count, expected):
   command(command_ + display_command)                                                
   str_ = command_str("5," + str(start) + "," + str(count) + ":tst")
   expect_equal(str_[:-1], expected)                                
-                                                                  
+
+def expect_int(command_, expected):
+  got = command_int(command_)
+  expect_equal(str(expected), str(got))                                                                  
 
 # --- helper functions ---
 
@@ -473,13 +476,25 @@ def specs():
   # --------------------------------------------------------------------                                                                  
   group("setting offset and window")                                                                          
                                                               
-  pending_test("an offset can be set")
-  pending_test("the next pushed color is inserted at the offset")
-  pending_test("a window can be set")
-  pending_test("pushed-off-the-end colors don't exceed the window boundary")
-  pending_test("setting an offset if relative to the current offset")
-  pending_test("an offset outside the current window cannot be set")
-                                                                                                                                             
+  test("an offset can be set")
+  expect_buffer("1:off:grn:flu", 0, 2, "0,0,0,0,20,0")
+
+  test("a window can be set")
+  expect_buffer("2:win:neo:flo:flu", 0, 2, "20,5,0,20,5,0")
+
+  test("pushed-off-the-end colors don't exceed the window boundary")
+  expect_buffer("2:win:lbl:flo:lbl:flu", 0, 2, "0,10,20,0,10,20")
+
+  test("setting an offset is not relative to the current offset")
+  expect_buffer("1:off:1:off:lgr:flu", 0, 2, "0,0,0,10,20,0")
+
+  skip_test("2:win:4:off:dgr", "the window is adjusted if the offset is set beyond the current window")
+  #command_str("2:win:4:off:dgr:flu")
+  #current_offset = command_str("0,2:tst")
+  #current_window = command_str("0,3:tst")
+  #expect_int("0,2:tst", 4)
+  #expect_int("0,3:tst", 4)
+                                                                                                                                           
 
   # --------------------------------------------------------------------                                                                  
   group("reverse and forward")                                                                          
