@@ -95,4 +95,3 @@ rgb_color FadeEffects::apply_fast_fade(rgb_color color){
 }
 
 #endif
-
