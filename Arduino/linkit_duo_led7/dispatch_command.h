@@ -171,6 +171,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
             // create a palette of random complimentary color pairs
             Colors::complimentary_palette();        
              break;
+
+          // others: rotate up, rotate down, reverse, sort, rotate r->g->b, remix, full compliment
+             
         }            
 
         reset_args = true;
