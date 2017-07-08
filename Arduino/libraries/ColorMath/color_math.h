@@ -283,7 +283,7 @@ float ColorMath::get_sine(byte step){
 //  } else {
 //    return read_cosine_array(step - 18);
 //  }
-  return get_cosine((step + 6) % 25);
+  return get_cosine((step + 6) % 24);
 }
 
 #endif

@@ -21,7 +21,7 @@
 // custom blink
 #define BLINK_ON_C 23
 
-#define BLINK_MIN BLINK_ON 
+#define BLINK_MIN BLINK_ON
 #define BLINK_MAX BLINK_ON_C
 
 #define MAX_BLINK_SEGMENTS 6
@@ -117,7 +117,7 @@ void BlinkEffects::set_custom_blink(int blink_period){
 
 bool BlinkEffects::process(){
   bool should_flush = false;
-  
+
   blink_counter = (blink_counter + 1) % blink_period;
   blinkc_counter = (blinkc_counter + 1) % blinkc_period;
 
@@ -185,15 +185,16 @@ bool BlinkEffects::is_handled_effect(byte effect){
   return effect >= BLINK_MIN && effect <= BLINK_MAX;
 }
 
+// TODO: refactor
 bool BlinkEffects::blink_on(byte effect){
-  if((effect == BLINK_ON && blink_state) || 
-      (effect == BLINK_ON_1 && blink_state_1) || 
-      (effect == BLINK_ON_2 && blink_state_2) || 
-      (effect == BLINK_ON_3 && blink_state_3) || 
-      (effect == BLINK_ON_4 && blink_state_4) || 
-      (effect == BLINK_ON_5 && blink_state_5) || 
-      (effect == BLINK_ON_6 && blink_state_6) || 
-      (effect == BLINK_ON_A && blink_state_a) || 
+  if((effect == BLINK_ON && blink_state) ||
+      (effect == BLINK_ON_1 && blink_state_1) ||
+      (effect == BLINK_ON_2 && blink_state_2) ||
+      (effect == BLINK_ON_3 && blink_state_3) ||
+      (effect == BLINK_ON_4 && blink_state_4) ||
+      (effect == BLINK_ON_5 && blink_state_5) ||
+      (effect == BLINK_ON_6 && blink_state_6) ||
+      (effect == BLINK_ON_A && blink_state_a) ||
       (effect == BLINK_ON_B && blink_state_b) ||
       (effect == BLINK_ON_C && blink_state_c)) {
     return true;

@@ -4,7 +4,7 @@
 // built-in simple effects
 #define STATIC_ON  101
 // #define RAW_ON     102
-#define TWINKLE_ON 103
+// #define TWINKLE_ON 103
 
 #include <buffer.h>
 #include <blink_effects.h>

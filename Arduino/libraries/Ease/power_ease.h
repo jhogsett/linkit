@@ -3,6 +3,7 @@
 
 #define EASE_COUNT 24
 #define EASE_DELAY 1
+#define EASE_RANGE 24.0
 
 class PowerEase
 {
@@ -11,6 +12,7 @@ class PowerEase
 
   static int ease_count();
   static int ease_delay();
+  static float ease_range();
   static float get_ease(int step);
 };
 
@@ -65,6 +67,10 @@ int PowerEase::ease_count(){
 
 int PowerEase::ease_delay(){
   return EASE_DELAY;
+}
+
+float PowerEase::ease_range(){
+  return EASE_RANGE;
 }
 
 float PowerEase::get_ease(int step){

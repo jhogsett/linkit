@@ -991,8 +991,8 @@ bool Commands::do_set_macro(byte macro, byte * dispatch_data){
 }
 
 #define COLOR_SEQUENCE_HUE 0
-#define COLOR_SEQUENCE_LIT 1
-#define COLOR_SEQUENCE_SAT 2
+#define COLOR_SEQUENCE_LIT 2
+#define COLOR_SEQUENCE_SAT 1
 
 // to do need to add some limiting to not go over 255, etc.
 
@@ -1020,32 +1020,6 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
       }
       break;
 
-    case COLOR_SEQUENCE_LIT:
-      // arg0 - hue angle 0-359, default = 0 (red)
-      // arg1 - step, default = 256 / 18 = 14.22222222 (magic value, others must be integers)
-      //   (future) if arg0 if < 0, the order is reversed
-      // arg2 - lightness scaling, default = 20 (brightness divisor)
-      // (starting percent = 0)
-      {
-        if(arg1 == 0)
-          arg1 = 1422;
-        else
-          arg1 *= 100;
-
-        if(arg2 < 1)
-          arg2 = 20;
-
-        rgb_color *palette = Colors::get_palette();
-        int lightness = 0;
-        for(int i = 0; i < NUM_PALETTE_COLORS; i++){
-          palette[i] = ColorMath::hsl_to_rgb(arg0, 255, lightness / 100);
-          palette[i].red = palette[i].red * arg2 / 256;
-          palette[i].green = palette[i].green * arg2 / 256;
-          palette[i].blue = palette[i].blue * arg2 / 256;
-          lightness = (lightness + arg1) % 25600;
-        }
-      }
-      break;
     case COLOR_SEQUENCE_SAT:
       // arg0 - hue angle 0-359, default = 0 (red)
       // arg1 - step, default = 256 / 18 = 14.22222222 (magic value, others must be integers)
@@ -1065,6 +1039,36 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
           // the saturation goes from richest to whitest
           palette[i] = ColorMath::hsl_to_rgb(arg0, 255 - (saturation / 100), arg2);
           saturation = (saturation + arg1) % 25600;
+        }
+      }
+      break;
+
+    case COLOR_SEQUENCE_LIT:
+      // arg0 - hue angle 0-359, default = 0 (red)
+      // arg1 - step, default = 256 / 18 = 14.22222222 (magic value, others must be integers)
+      //   (future) if arg0 if < 0, the order is reversed
+      // arg2 - lightness scaling, default = 20 (brightness divisor)
+      // (starting percent = 0)
+      {
+        if(arg1 == 0)
+          arg1 = 1422;
+        else
+          arg1 *= 100;
+
+        if(arg2 < 1)
+          arg2 = 20;
+
+        rgb_color *palette = Colors::get_palette();
+
+        // skip ahead past the black color
+        int lightness = arg1;
+        
+        for(int i = 0; i < NUM_PALETTE_COLORS; i++){
+          palette[i] = ColorMath::hsl_to_rgb(arg0, 255, lightness / 100);
+          palette[i].red = palette[i].red * arg2 / 256;
+          palette[i].green = palette[i].green * arg2 / 256;
+          palette[i].blue = palette[i].blue * arg2 / 256;
+          lightness = (lightness + arg1) % 25600;
         }
       }
       break;

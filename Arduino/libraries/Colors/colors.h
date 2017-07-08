@@ -3,6 +3,8 @@
 
 #include <PololuLedStrip.h>
 
+#define USE_BYTE_ARRAYS
+
 #define NUM_COLORS 24
 #define NPRETTY_COLORS 18
 
@@ -12,30 +14,30 @@
 // 20 * (255 / 20) to get 255
 #define BRIGHTNESS_DIVISOR 20.0
 
-#define RED       (*Colors::get_color(Colors::red))
-#define ORANGE    (*Colors::get_color(Colors::orange))
-#define YELLOW    (*Colors::get_color(Colors::yellow))
-#define GREEN     (*Colors::get_color(Colors::green))
-#define BLUE      (*Colors::get_color(Colors::blue))
-#define PURPLE    (*Colors::get_color(Colors::purple))
-#define CYAN      (*Colors::get_color(Colors::cyan))
-#define MAGENTA   (*Colors::get_color(Colors::magenta))
-#define LTBLUE    (*Colors::get_color(Colors::ltblue))
-#define LTGREEN   (*Colors::get_color(Colors::ltgreen))
-#define SEAFOAM   (*Colors::get_color(Colors::seafoam))
-#define PINK      (*Colors::get_color(Colors::pink))
-#define AMBER     (*Colors::get_color(Colors::amber))
-#define OLIVE     (*Colors::get_color(Colors::olive))
-#define SKYBLUE   (*Colors::get_color(Colors::skyblue))
-#define TURQUOISE (*Colors::get_color(Colors::turquoise))
-#define LAVENDER  (*Colors::get_color(Colors::lavender))
-#define ROSE      (*Colors::get_color(Colors::rose))
-#define BLACK     (*Colors::get_color(Colors::black))
-#define DKGRAY    (*Colors::get_color(Colors::dkgray))
-#define GRAY      (*Colors::get_color(Colors::gray))
-#define WHITE     (*Colors::get_color(Colors::white))
-#define TUNGSTEN  (*Colors::get_color(Colors::tungsten))
-#define NEON      (*Colors::get_color(Colors::neon))
+#define RED       (*Colors::get_color(0))
+#define ORANGE    (*Colors::get_color(1))
+#define YELLOW    (*Colors::get_color(2))
+#define GREEN     (*Colors::get_color(3))
+#define BLUE      (*Colors::get_color(4))
+#define PURPLE    (*Colors::get_color(5))
+#define CYAN      (*Colors::get_color(6))
+#define MAGENTA   (*Colors::get_color(7))
+#define LTBLUE    (*Colors::get_color(8))
+#define LTGREEN   (*Colors::get_color(9))
+#define SEAFOAM   (*Colors::get_color(10))
+#define PINK      (*Colors::get_color(11))
+#define AMBER     (*Colors::get_color(12))
+#define OLIVE     (*Colors::get_color(13))
+#define SKYBLUE   (*Colors::get_color(14))
+#define TURQUOISE (*Colors::get_color(15))
+#define LAVENDER  (*Colors::get_color(16))
+#define ROSE      (*Colors::get_color(17))
+#define BLACK     (*Colors::get_color(18))
+#define DKGRAY    (*Colors::get_color(19))
+#define GRAY      (*Colors::get_color(20))
+#define WHITE     (*Colors::get_color(21))
+#define TUNGSTEN  (*Colors::get_color(22))
+#define NEON      (*Colors::get_color(23))
 
 // tungsten based on 20% brightness, 29,230,255:hsl became 133,70,12
 // when unscaled, full strength is 255,135,23, downscaled to 0..20
@@ -46,6 +48,48 @@
 
 // to do: consider higher divisor
 // consider: specifying colors with full RGB values as full brightness color
+
+// const byte bytes_01[] PROGMEM = {40, 30, 20};
+//
+// const byte* const bytes_array[] PROGMEM = {
+//   bytes_01
+// };
+
+#ifdef USE_BYTE_ARRAYS
+const byte color_00[] PROGMEM = {20, 0, 0};
+const byte color_01[] PROGMEM = {20, 10, 0};
+const byte color_02[] PROGMEM = {20, 20, 0};
+const byte color_03[] PROGMEM = {0, 20, 0};
+const byte color_04[] PROGMEM = {0, 0, 20};
+const byte color_05[] PROGMEM = {10, 0, 20};
+const byte color_06[] PROGMEM = {0, 20, 20};
+const byte color_07[] PROGMEM = {20, 0, 20};
+const byte color_08[] PROGMEM = {0, 10, 20};
+const byte color_09[] PROGMEM = {10, 20, 0};
+const byte color_10[] PROGMEM = {0, 20, 10};
+const byte color_11[] PROGMEM = {20, 0, 10};
+const byte color_12[] PROGMEM = {20, 15, 0};
+const byte color_13[] PROGMEM = {15, 20, 0};
+const byte color_14[] PROGMEM = {0, 15, 20};
+const byte color_15[] PROGMEM = {0, 20, 15};
+const byte color_16[] PROGMEM = {15, 0, 20};
+const byte color_17[] PROGMEM = {20, 0, 15};
+
+const byte color_18[] PROGMEM = {0, 0, 0};
+const byte color_19[] PROGMEM = {5, 5, 5};
+const byte color_20[] PROGMEM = {10, 10, 10};
+const byte color_21[] PROGMEM = {20, 20, 20};
+const byte color_22[] PROGMEM = {20, 11, 2};
+const byte color_23[] PROGMEM = {20, 5, 0};
+
+const byte* const bytes_array[] PROGMEM = {
+  color_00, color_01, color_02, color_03, color_04, color_05,
+  color_06, color_07, color_08, color_09, color_10, color_11,
+  color_12, color_13, color_14, color_15, color_16, color_17,
+  color_18, color_19, color_20, color_21, color_22, color_23
+};
+
+#else
 
 const rgb_color color_0 PROGMEM  = {20,  0,  0}; // red
 const rgb_color color_1 PROGMEM  = {20, 10,  0}; // orange
@@ -78,6 +122,7 @@ const rgb_color* const color_array[] PROGMEM = {
   &color_8,  &color_9,  &color_10, &color_11, &color_12, &color_13, &color_14, &color_15,
   &color_16, &color_17, &color_18, &color_19, &color_20, &color_21, &color_22, &color_23
 };
+#endif
 
 class Colors
 {
@@ -112,7 +157,7 @@ class Colors
     neon
   };
 
-  static const rgb_color * const get_color(color c);
+  static const rgb_color * const get_color(byte c);
 
   static void reset_palette();
   static void shuffle_palette();
@@ -132,13 +177,25 @@ rgb_color Colors::return_color = {0,0,0};
 
 rgb_color Colors::palette[NUM_PALETTE_COLORS];
 
-const rgb_color * const Colors::get_color(color c){
+#ifdef USE_BYTE_ARRAYS
+const rgb_color * const Colors::get_color(byte c){
+  void *p = (void*)pgm_read_word(&(bytes_array[c]));
+  return_color.red =   pgm_read_byte(p + 0);
+  return_color.green = pgm_read_byte(p + 1);
+  return_color.blue =  pgm_read_byte(p + 2);
+  return &return_color;
+}
+
+#else
+
+const rgb_color * const Colors::get_color(byte c){
   void *p = (void*)pgm_read_word(&(color_array[c]));
   return_color.red =   pgm_read_byte(p + 0);
   return_color.green = pgm_read_byte(p + 1);
   return_color.blue =  pgm_read_byte(p + 2);
   return &return_color;
 }
+#endif
 
 void Colors::reset_palette(){
   for(byte i = 0; i < NPRETTY_COLORS; i++){
