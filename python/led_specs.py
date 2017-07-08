@@ -53,6 +53,9 @@ num_groups = 0
 test_failure_summaries = []
 num_leds = 0                                                                                                                                                                                               
 palette_size = 0
+group_number_only = -1
+
+# --- Serial I/O ---
 
 def flush_input():                        
   s.flushInput()
@@ -86,6 +89,8 @@ def wait_for_str():
     str = str + s.read(s.inWaiting())
   return str[:-1]
 
+# --- Sending Commands ---
+
 def command(cmd_text):
   global test_command
   test_command = cmd_text
@@ -100,14 +105,19 @@ def command_str(cmd_text):
   s.write((cmd_text + ':').encode()) 
   return wait_for_str()                     
 
+# --- Setup ---
+
 def setup(): 
-  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size 
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only 
   s = serial.Serial("/dev/ttyS0", 115200) 
   command(":::stp:stp:20:lev")
   num_leds = command_int("0,0:tst")                                                                                                                                                        
   palette_size = command_int("0,1:tst")
   default_brightness = command_int("0,4:tst")                                                                                                
   default_brightness_percent = default_brightness / 100.0                                                                                                               
+
+  if len(sys.argv) > 2:
+    group_number_only = int(sys.argv[2])
 
   print (
           tc.cyan("Device: ") + 
@@ -240,6 +250,12 @@ def expect_equal(got, expected):
     fail(got, expected)
   else:
     succeed()
+
+def expect_macro(command_, macro, expected):
+  command(command_)
+  str_ = command_str("1," + str(macro) + ":tst")
+  count = len(expected)
+  expect_equal(str_[:count], expected)
 
 def expect_buffer(command_, start, count, expected):
   command(command_)
@@ -703,7 +719,10 @@ def specs():
 
   # --------------------------------------------------------------------                                                                  
   group("setting and running macros")                                                                                                            
-                                                                                                                                                                                                           
+
+  test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
+  for x in range(49,61):
+    expect_macro("0:set:" + str(x), 0, "249," + str(x) + ",255")                                                                                                                                                                                                           
 
   # --------------------------------------------------------------------                                                                  
   group("delay")                                                                                                            
