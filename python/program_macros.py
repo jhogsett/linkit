@@ -124,9 +124,9 @@ def set_macro(macro, macro_text, expected_bytes):
     print command_str("1," + str(macro) + ":tst")
   else:
     write(green('.'))
-  if expected_bytes > 0 and expected_bytes != bytes:
-    print "Oops! wrong number of bytes received - retrying"
-    set_macro(macro, macro_text, expected_bytes)
+    if expected_bytes > 0 and expected_bytes != bytes:
+      print "Oops! wrong number of bytes received - retrying"
+      set_macro(macro, macro_text, expected_bytes)
     
 def setup(): 
   global s, debug_mode 
