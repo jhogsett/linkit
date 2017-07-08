@@ -4,6 +4,8 @@
 #include <avr/eeprom.h>
 #include <command_processor.h>
 
+#define SUB_ARGS_FIX
+
 #define MACRO_END_MARKER 0xff
 
 #define MACRO_ARG1_MARKER 0xf9
@@ -239,7 +241,23 @@ byte Macros::set_macro(byte macro, char * commands){
   do{
     if(cmd == CMD_NONE){
       // this is a set of arguments
+#ifdef SUB_ARGS_FIX
+//      char *delimiter = ",";
+//      char *saveptr;
+//      char *saveptr2;
+//      char *token = strtok_r(command, delimiter, &saveptr);
+//      command_processor->sub_args[0] = atoi(token);
+//      token = strtok_r(NULL, delimiter, &saveptr);
+//      command_processor->sub_args[1] = atoi(token);
+//      token = strtok_r(NULL, delimiter, &saveptr);
+//      command_processor->sub_args[2] = atoi(token);
+    strcpy(command_processor->borrow_char_buffer(), command);
+    strcat(command_processor->borrow_char_buffer(), ",");
+    command_processor->get_sub_args();
+#else
+      // if the string is "50" through "59" the second argument is "2" for some odd reason
       command_processor->get_sub_args(command);
+#endif
 
       // pack the arguments
       byte arg_marker;
