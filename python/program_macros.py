@@ -125,7 +125,7 @@ def set_macro(macro, macro_text, expected_bytes):
   else:
     write(green('.'))
     if expected_bytes > 0 and expected_bytes != bytes:
-      print "Oops! wrong number of bytes received - retrying"
+      print "Wrong number of bytes received for macro #" + str(macro) + "- retrying"
       set_macro(macro, macro_text, expected_bytes)
     
 def setup(): 
@@ -137,17 +137,19 @@ def setup():
     if(sys.argv[3] == "debug"):
       debug_mode = True
 
+######################################################################
+
 def apollo_macros(): 
   print cyan("apollo macros:\n")
 
   # tunsten lamp                                 
-  set_macro(10, "clr:-1:sch:1:pau:21:run", 11);
+  set_macro(12, "clr:-1:sch:1:pau:21:run", 11);
                                                  
   # sparking colors with drain                   
   set_macro(11, "clr:100,13:sch:10000,14:sch", 13); 
   
   # swinging random colors                                               
-  set_macro(12, "clr:30:run", 4);                  
+  set_macro(10, "clr:30:run", 4);                  
                                                  
   set_macro(13, "-1:rps:1:rnd:sfd:flu:rst", 10);    
   set_macro(14, "15,15:run:500:del", 10);           
@@ -156,7 +158,7 @@ def apollo_macros():
   set_macro(17, "3:zon:1:blk:4:zon:1:rev:1:blk:rst", 16);
   set_macro(18, "5:zon:1:blk:6:zon:1:rev:1:blk:rst", 16);
                                                       
-  set_macro(21, "era:50:lev:13,120:run:tun:flo:cfa:100:lev", 19);
+  set_macro(21, "era:50:lev:13,120:run:tun:flo:cfa:100:lev", 16);
                                                               
   set_macro(30, "1:pau:40:run:44:run:46:run", 12);              
 
