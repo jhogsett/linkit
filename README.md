@@ -444,3 +444,7 @@ https://labs.mediatek.com/site/global/developer_tools/mediatek_linkit_smart_7688
 
     opkg update && opkg install e2fsprogs
 
+#### Misc
+
+add `export GIT_MERGE_AUTOEDIT=no` to `~/.profile` to prevent vim opening when pulling changed files
+
