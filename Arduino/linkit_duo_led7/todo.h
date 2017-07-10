@@ -1,3 +1,7 @@
+
+
+
+// ----- IDEAS --------------------------------------------------------------
 // could build upon macros to form the concept of apps
 // apps:
 // - have a way to start up
@@ -10,17 +14,12 @@
 //
 // - example of use: 
 //   - could have a dynamic display without needing to have a macro running all the time
+// --> beginning of rendering could be a trigger
 
-// move the setting of things like blink rate to a "cfg" command
-
-
-
-// HSL sweep
-// number of steps (always 18, size of pretty palette)
-// starting angle 0-359
-// step angle 0-359
+// palette: shift, rotate, sweeps that modify existing palette
 
 
+// ------ COLORS --------------------------------------------------------------
 // add a 15,15,15 gray
 
 
@@ -35,7 +34,34 @@
 //252,50,0,2,0,92,87,17,1,63,255,0,0,0,0,0,0,0,0,0,k
 //
 
-// palette: shift, rotate, sweeps that modify existing palette
+//command: 0:set:50:seq:pos:blu:flu:rst
+//10k
+//command: 0:run
+//k
+//command: 1,0:tst
+//252,50,0,2,0,89,84,17,1,64,255,0,0,0,0,0,0,0,0,0,k
+//command:
+
+//--> why the extra 3 arg bytes? 
+//
+//3k
+//command: 0:set:0
+//2k
+//command: 0:set:1
+//2k
+//command: 0:set:5
+//2k
+//command: 0:set:50
+//5k
+//command: 0:set:500
+//3k
+//command: 0:set:5000
+//3k
+//command: 0:set:50000
+//3k
+//command: 0:set:500000
+//3k
+
 
 
 

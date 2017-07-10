@@ -24,7 +24,7 @@ class Buffer
   void push_carry_color();
   void shift(byte count, byte maxx, bool fast_render);
   void finalize_shift(byte count, byte max);
-  void set_color(byte pos, rgb_color color, bool display, byte effect);
+  // void set_color(byte pos, rgb_color color, bool display, byte effect);
   void fade(float rate);
   void fade_fast();
   void cross_fade(byte step);
@@ -155,24 +155,14 @@ void Buffer::rotate(){
   byte max = get_window();
   byte start = get_offset();
 
-  rgb_color carry_color;
-  byte carry_effect;
-  if(reverse){
-    carry_color = buffer[start];
-    carry_effect = effects[start];
-  } else {
-    carry_color = buffer[max - 1];
-    carry_effect = effects[max - 1];
-  }
-
   shift_buffer(buffer, effects, max, start, this->reverse);
 
   if(reverse){
-    buffer[max - 1] = carry_color;
-    effects[max - 1] = carry_effect;
+    buffer[max - 1] = this->carry_color;
+    effects[max - 1] = this->carry_effect;
   } else {
-    buffer[start] = carry_color;
-    effects[start] = carry_effect;
+    buffer[start] = this->carry_color;
+    effects[start] = this->carry_effect;
   }
 }
 
@@ -196,6 +186,8 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
   }
 }
 
+// todo: is the ability to set the effect here ever used?
+// yes with pushing carry color+effect
 void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
 {
   rgb_color * buffer = buffers[current_display];
@@ -204,7 +196,7 @@ void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, b
   max = (max == 0) ? get_window() : max;
   start = (start == 0) ? get_offset() : start;
 
-  times = max(1, times); // TODO might want to support zero times by doing nothing
+  times = max(1, times);
 
   for(byte i = 0; i < times; i++){
     shift_buffer(buffer, effects, max, start, this->reverse);
@@ -238,21 +230,22 @@ void Buffer::push_carry_color(){
   push_color(carry_color, 1, false, carry_effect);
 }
 
-void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT)
-{
-  rgb_color * buffer = buffers[current_display];
-  byte * effects = effects_buffers[current_display];
-
-  buffer[pos] = ColorMath::correct_color(color);
-
-  if(effect != LEAVE_EFFECT){
-    effects[pos] = effect;
-  }
-
-  if(display){
-    render_display();
-  }
-}
+// todo: is this used?
+//void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT)
+//{
+//  rgb_color * buffer = buffers[current_display];
+//  byte * effects = effects_buffers[current_display];
+//
+//  buffer[pos] = ColorMath::correct_color(color);
+//
+//  if(effect != LEAVE_EFFECT){
+//    effects[pos] = effect;
+//  }
+//
+//  if(display){
+//    render_display();
+//  }
+//}
 
 void Buffer::set_window_override(byte window){
   if(window < 0){
@@ -377,8 +370,6 @@ void Buffer::finalize_shift(byte count, byte max){
 //    push_color(black, 1, false, NO_EFFECT, max);
 //  }
   push_color(black, count, false, NO_EFFECT, max);
-
-
 }
 
 #endif

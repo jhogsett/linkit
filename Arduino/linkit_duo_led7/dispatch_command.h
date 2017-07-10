@@ -83,7 +83,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_PSHIFTO:     do_power_shift_object(arg0, arg1);           reset_args = true; break;
     case CMD_CFADE:       do_crossfade();                              break;
     case CMD_TEST:        do_test(arg0, arg1, arg2);                   reset_args = true; break;
-    case CMD_CONFIGURE:   do_configure(arg0, arg1, arg2);              break;
+    case CMD_CONFIGURE:   do_configure(arg0, arg1, arg2);              reset_args = true; break;
     case CMD_PINON:       set_pin(arg0, true);                         reset_args = true; break;
     case CMD_PINOFF:      set_pin(arg0, false);                        reset_args = true; break;
     case CMD_SCHEDULE:    scheduler.set_schedule(arg0, arg1, arg2);    reset_args = true; break;
@@ -171,9 +171,6 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
             // create a palette of random complimentary color pairs
             Colors::complimentary_palette();        
              break;
-
-          // others: rotate up, rotate down, reverse, sort, rotate r->g->b, remix, full compliment
-             
         }            
 
         reset_args = true;
