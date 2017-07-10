@@ -110,7 +110,8 @@ def command_str(cmd_text):
 def setup(): 
   global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  command(":::stp:stp:20:lev")
+  #command(":::stp:stp:20:lev")
+  reset_device()
   num_leds = command_int("0,0:tst")                                                                                                                                                        
   palette_size = command_int("0,1:tst")
   default_brightness = command_int("0,4:tst")                                                                                                
@@ -149,8 +150,10 @@ def test(description):
   global test_number, test_description, test_failures, last_test_number
   test_number = test_number + 1
   test_description = description 
-  command(":::stp:stp:20:lev")
+  #command(":::stp:stp:20:lev")
+  reset_device()
   set_standard_seed()                                                                                                                  
+  set_standard_fade_rate()
 
 def pending_test(description):                                                                                                                                                                             
   global test_number, test_description, test_line_number, num_pending                                                                                                                                      
@@ -299,6 +302,10 @@ def rendered_color_value(buffer_color_value):
 
 def set_standard_seed():
   command_str("6,3," + str(standard_seed) + ":tst")
+
+def set_standard_fade_rate():
+  command_str("3,9995:cfg")
+#  pass
 
 ########################################################################
 ########################################################################
@@ -661,9 +668,27 @@ def specs():
   # --------------------------------------------------------------------                                                                  
   group("fade and twinkle effects")                                                             
         
-  pending_test("it fades correctly")
-  pending_test("a custom fade rate can be set")
-                                                                                                                                                                                                   
+  test("it modifies the display color with slow fades on flushing")
+  expect_buffer("red:sfd:flu", 0, 1, "19,0,0")
+  expect_buffer("flu", 0, 1, "18,0,0")
+  expect_buffer("flu", 0, 1, "17,0,0")
+
+  test("it renders the fading color with slow fades on flushing")
+  expect_render("red:sfd:flu", 0, 1, "48,0,0")
+  expect_render("flu", 0, 1, "45,0,0")
+  expect_render("flu", 0, 1, "43,0,0")
+
+  test("a custom fade rate modifies the display buffer properly")
+  command_str("3,7500:cfg")
+  expect_buffer("red:sfd:flu", 0, 1, "15,0,0")
+  expect_buffer("flu", 0, 1, "11,0,0")
+  expect_buffer("flu", 0, 1, "8,0,0")
+
+  test("a custom fade rate renders properly")
+  command_str("3,7500:cfg")
+  expect_render("red:sfd:flu", 0, 1, "38,0,0")
+  expect_render("flu", 0, 1, "28,0,0")
+  expect_render("flu", 0, 1, "20,0,0")
 
   # --------------------------------------------------------------------                                                                  
   group("reset, clear and stop")                                                             
@@ -687,7 +712,18 @@ def specs():
 
   # --------------------------------------------------------------------                                                                  
   group("rotation")                                                             
-                                                                                                                                                                                                           
+
+  test("it rotates within the current window")
+  expect_buffer("0:off:5:win:red:rot:flu", 0, 5, "0,0,0,20,0,0,0,0,0,0,0,0,0,0,0")
+
+  test("it rotates in reverse in the current window")
+  expect_buffer("0:off:5:win:blu:1:rev:rot:flu", 0, 5, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,20")
+
+  test("it rotates multiple times within the current window")
+  expect_buffer("0:off:5:win:red:2:rot", 0, 5, "0,0,0,0,0,0,20,0,0,0,0,0,0,0,0")
+
+  test("it rotates multiple times in reverse in the current window")
+  expect_buffer("0:off:5:win:blu:1:rev:2:rot", 0, 5, "0,0,0,0,0,0,0,0,0,0,0,20,0,0,0")                                                                                                                                                                                                           
 
   # --------------------------------------------------------------------                                                                  
   group("power shift")                                                             
