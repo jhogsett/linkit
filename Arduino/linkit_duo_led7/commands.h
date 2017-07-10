@@ -40,6 +40,7 @@ class Commands
   void dispatch_color(int cmd);
   void dispatch_effect(int cmd);
   void dispatch_sequence(int cmd);
+  void dispatch_color_sequence(int cmd);
   void flush_all(bool force_display = false);
   void run_default_macro();
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
@@ -89,20 +90,12 @@ class Commands
   void do_configure(int arg0, int arg1, int arg2);
   bool do_set_macro(byte macro, byte * dispatch_data);
   void do_color_sequence(byte type, int arg0, int arg1, int arg2);
+  void do_random_number(int arg0, int arg1, int arg2);
+  void do_stop();
+  void do_palette(int arg0, int arg1);
+  void do_shuffle(int arg0);
+  void set_black_level(int arg0, int arg1, int arg2);
 
-//      {
-//        if(dispatch_data != NULL){
-//          // being used internally
-//          macros.set_macro(arg0, (char*)dispatch_data);          
-//
-//          // signal that no more commands should be processed (rest of buffer copied to macro)
-//          continue_dispatching = false;
-//        } else {
-//          // being used over serial
-//          byte num_bytes = macros.set_macro_from_serial(arg0);
-//          command_processor->send_int(num_bytes);
-//        }
-//      }
 
 #ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
@@ -287,6 +280,12 @@ void Commands::do_blend(byte strength){
   buf[offset + 1] = buf[offset];
 }
 
+// todo: change these to a single "adj" command
+// 0:adj - adjusts to maximum brightness
+// 1:adj - doubles brightness
+// 2:adj - quadruples brightness
+// -1:adj - halves the brightness
+// -2:adj - quarters the brightness
 // only works properly when used immediately after placing a standard color
 void Commands::do_max(){
   byte offset = buffer->get_offset();
@@ -311,10 +310,11 @@ void Commands::do_bright(){
 }
 
 void Commands::do_fade(){
-  for(byte i = buffer->get_offset(); i < buffer->get_window(); i++){
-    buffer->get_buffer()[i] = buffer->black;
-    buffer->get_effects_buffer()[i] = NO_EFFECT;
-  }
+//  for(byte i = buffer->get_offset(); i < buffer->get_window(); i++){
+//    buffer->get_buffer()[i] = buffer->black;
+//    buffer->get_effects_buffer()[i] = NO_EFFECT;
+//  }
+  buffer->erase();
   do_crossfade();
 }
 
@@ -341,17 +341,22 @@ void Commands::do_flood(){
   rgb_color color = buf[offset];
   byte effect = effects[offset];
 
+  buf += (offset + 1);
+  effects += (offset + 1);
+
   for(byte i = offset + 1; i < window; i++){
     if(effect == RANDOM1){
-      buf[i] = ColorMath::random_color();
-      effects[i] = NO_EFFECT;
+      *buf = ColorMath::random_color();
+      *effects = NO_EFFECT;
     } else if(effect == RANDOM2){
-      buf[i] = ColorMath::random_color();
-      effects[i] = EffectsProcessor::random_effect();
+      *buf = ColorMath::random_color();
+      *effects = EffectsProcessor::random_effect();
     } else {
-      buf[i] = color;
-      effects[i] = effect;    
+      *buf = color;
+      *effects = effect;    
     }
+    buf++;
+    effects++;
   }
 }
 
@@ -1013,7 +1018,7 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
 
         int angle = arg1;
         rgb_color *palette = Colors::get_palette();
-        for(int i = 0; i < NUM_PALETTE_COLORS; i++){
+        for(byte i = 0; i < NUM_PALETTE_COLORS; i++){
           palette[i] = ColorMath::hsl_to_rgb(angle % 360, 255, arg2);
           angle += arg0;
         }
@@ -1035,7 +1040,7 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
 
         rgb_color *palette = Colors::get_palette();
         int saturation = 0;
-        for(int i = 0; i < NUM_PALETTE_COLORS; i++){         
+        for(byte i = 0; i < NUM_PALETTE_COLORS; i++){         
           // the saturation goes from richest to whitest
           palette[i] = ColorMath::hsl_to_rgb(arg0, 255 - (saturation / 100), arg2);
           saturation = (saturation + arg1) % 25600;
@@ -1063,7 +1068,7 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
         // skip ahead past the black color
         int lightness = arg1;
         
-        for(int i = 0; i < NUM_PALETTE_COLORS; i++){
+        for(byte i = 0; i < NUM_PALETTE_COLORS; i++){
           palette[i] = ColorMath::hsl_to_rgb(arg0, 255, lightness / 100);
           palette[i].red = palette[i].red * arg2 / 256;
           palette[i].green = palette[i].green * arg2 / 256;
@@ -1074,6 +1079,73 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
       break;
   }
 }
+
+// arg[0] maximum random number (see Commands::random_num() for special constant values)
+// arg[1] minimum random number (default=0)
+// arg[2] copied into arg[1] to allow passing another argument
+void Commands::do_random_number(int arg0, int arg1, int arg2){
+  int ran = random_num(arg0, arg1);
+  command_processor->sub_args[0] = ran;
+  command_processor->sub_args[1] = arg2;
+  command_processor->sub_args[2] = 0;
+}
+
+void Commands::do_stop(){
+  scheduler.reset_all_schedules();
+  clear();                                                            
+  pause();                                                            
+ }
+
+// arg[0] the index into the palette of the color to insert, or where to stop rubberstamp insert
+// arg[1] if > 0, colors are inserted counting down from this position
+//                the counting down is done so the palette achieves a left-to-right order when inserted  
+//                in this case arg[0] is the stopping point when counting down
+// for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
+void Commands::do_palette(int arg0, int arg1){
+  if(arg1 > 0){
+    arg0 = max(0, arg0);
+    rgb_color * palette = Colors::get_palette();
+    for(byte i = arg1; i >= arg0; i--){
+      buffer->push_color(palette[i]);                      
+    }
+  } else {
+    buffer->push_color(Colors::get_palette()[arg0]);                                                      
+  }
+}
+
+void Commands::do_shuffle(int arg0){
+  switch(arg0)
+  {
+    case 0:
+      // create a palette of random colors
+      Colors::shuffle_palette();
+      break;
+
+    case 1:
+      // reset palette to original built-in colors
+      Colors::reset_palette();  
+      break;
+
+    case 2:
+      // make every odd color the complimentary color of the previous even color
+      Colors::compliment_palette();
+      break;
+
+    case 3:
+      // create a palette of random complimentary color pairs
+      Colors::complimentary_palette();        
+       break;
+  }            
+}
+
+void Commands::set_black_level(int arg0, int arg1, int arg2){
+  rgb_color black_level = {(byte)arg0, (byte)arg1, (byte)arg2};
+  buffer->set_black_level(black_level);
+}
+
+
+
+
 
 #include "dispatch_command.h"
 

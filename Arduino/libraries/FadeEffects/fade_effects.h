@@ -81,9 +81,9 @@ void FadeEffects::set_fade_rate(float fade_rate){
 }
 
 rgb_color FadeEffects::apply_slow_fade(rgb_color color){
-  color.red = int(color.red * fade_rate);
-  color.green = int(color.green * fade_rate);
-  color.blue = int(color.blue * fade_rate);
+  color.red = byte(color.red * fade_rate);
+  color.green = byte(color.green * fade_rate);
+  color.blue = byte(color.blue * fade_rate);
   return color;
 }
 

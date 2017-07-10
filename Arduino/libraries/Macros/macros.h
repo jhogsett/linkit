@@ -248,16 +248,8 @@ byte Macros::set_macro(byte macro, char * commands){
       // doesn't work for "50" through "59"
       // command_processor->get_sub_args(command);
 
-      // try copying to a buffer first - no help
-//      char buf[20];
-//      strcpy(buf, command);
-//      command_processor->get_sub_args(buf);
-
-      // try copying to a static uffer first - no help
-//      strcpy(static_buf, command);
-//      command_processor->get_sub_args(static_buf);
-
-      // try copying to a buffer and adding a comma
+      // no cause was identified for the odd strtok_r behavior
+      // however adding a trailing delimiter prevents the problem
       char buf[20];
       strcpy(buf, command);
       strcat(buf, ",");
