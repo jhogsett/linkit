@@ -219,7 +219,7 @@ void Dependencies::begin(){
 #ifdef REAL_ARDUINO
   Serial.begin(BAUD_RATE); 
 #else
-  Serial1.begin(BAUD_RATE); 
+    Serial1.begin(BAUD_RATE); 
 #endif
 
 #ifdef USE_AUTO_BRIGHTNESS

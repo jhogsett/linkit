@@ -3,6 +3,8 @@
 
 #define TEST_FRAMEWORK
 
+// #define REAL_ARDUINO
+
 ///////////////////////////
 // device profile selection
 ///////////////////////////
