@@ -9,6 +9,8 @@
 #define CMD_NONE 0
 #define CMD_FIRST 1
 
+#define SUB_ARGS_FIX
+
 class CommandProcessor
 {
   public:
@@ -131,12 +133,28 @@ void CommandProcessor::get_sub_args(char * args = NULL){
   }
 
   char *saveptr;
+
+//#ifdef SUB_ARGS_FIX
+//  // when the string being parsed is "50" through "59", something fouls up
+//  // and the second token gets a "2"; adding a comma fixes it
+//  char buf[20];
+//  strcpy(buf, args);
+//  strcat(buf, ",");
+//
+//  char *token = strtok_r(buf, ",", &saveptr);
+//  sub_args[0] = atoi(token);
+//  token = strtok_r(NULL, ",", &saveptr);
+//  sub_args[1] = atoi(token);
+//  token = strtok_r(NULL, ",", &saveptr);
+//  sub_args[2] = atoi(token);
+//#else
   char *token = strtok_r(args, ",", &saveptr);
   sub_args[0] = atoi(token);
   token = strtok_r(NULL, ",", &saveptr);
   sub_args[1] = atoi(token);
   token = strtok_r(NULL, ",", &saveptr);
   sub_args[2] = atoi(token);
+//#endif
 }
 
 void CommandProcessor::reset_args(){
