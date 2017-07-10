@@ -286,6 +286,18 @@ def expect_int(command_, expected):
   got = command_int(command_)
   expect_equal(str(expected), str(got))                                                                  
 
+def expect_empty_buffer(command_, start, count):
+  str_ = ""
+  for i in range(count):
+    str_ += "0,0,0,"
+  expect_buffer(command_, start, count, str_[:-1])
+
+def expect_empty_render(command_, start, count):
+  str_ = ""
+  for i in range(count):
+    str_ += "0,0,0,"
+  expect_render(command_, start, count, str_[:-1])
+
 # --- helper functions ---
 
 def rgb_string(red, green, blue):
@@ -670,6 +682,7 @@ def specs():
         
   test("it modifies the display color with slow fades on flushing")
   expect_buffer("red:sfd:flu", 0, 1, "19,0,0")
+
   expect_buffer("flu", 0, 1, "18,0,0")
   expect_buffer("flu", 0, 1, "17,0,0")
 
@@ -700,7 +713,12 @@ def specs():
 
   # --------------------------------------------------------------------                                                                  
   group("fade animation")                                                             
-                                                                                                                                                                                                           
+
+  test("it leaves the buffer empty (black) after done")
+  expect_empty_buffer("amb:flo:flu:fad", 0, num_leds)                                                                                                                                                                                                           
+
+  test("it leaves the display empty (black) after done")
+  expect_empty_render("olv:flo:flu:fad", 0, num_leds)
 
   # --------------------------------------------------------------------                                                                  
   group("wipe animation")                                                             
@@ -758,7 +776,7 @@ def specs():
 
   test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
   for x in range(49,61):
-    expect_macro("0:set:" + str(x), 0, "249," + str(x) + ",255")                                                                                                                                                                                                           
+    expect_macro("rnd:flu:0:set:" + str(x), 0, "249," + str(x) + ",255")                                                                                                                                                                                                           
 
   # --------------------------------------------------------------------                                                                  
   group("delay")                                                                                                            
