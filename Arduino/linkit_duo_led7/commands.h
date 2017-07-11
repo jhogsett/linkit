@@ -65,13 +65,15 @@ class Commands
   void do_mirror();
   void do_copy(byte size, int times, byte zoom);
   void do_repeat(byte times);
+#ifdef USE_ELASTIC_SHIFT
   void do_elastic_shift(byte count, byte max);
+#endif
+#ifdef USE_POWER_SHIFT
   void do_power_shift(byte count, byte max, bool fast_render);
   void do_power_shift_object(byte width, byte shift, bool fast_render);
+#endif
   void do_demo();
   void flush(bool force_display);
-//  void low_power();
-//  void high_power();
   void set_display(byte display);
   void set_buffer(byte nbuffer);
   void set_pin(byte pin, bool on);
@@ -105,7 +107,7 @@ class Commands
   void do_test_render(byte start, byte count);
   void do_test_palette(byte start, byte count);
   void do_test_function(byte type, int arg2);
-  void dump_buffer_colors(rgb_color * buffer, byte start, byte count);
+  void dump_buffer_colors(rgb_color * buffer, byte start, byte count, bool correct_color = true);
 #endif
 
   Buffer *buffer;
@@ -334,13 +336,28 @@ void Commands::do_flood(){
   rgb_color * buf = buffer->get_buffer();
   byte * effects = buffer->get_effects_buffer();
 
-  rgb_color color = buf[offset];
-  byte effect = effects[offset];
+  byte start;
+  byte end_;
+  byte source;
+  if(buffer->get_reverse()){
+    source = buffer->get_window() - 1;
+    start = offset;
+    end_ = window - 1;
+  } else {
+    source = buffer->get_offset();
+    start = offset + 1;
+    end_ = window;
+  }
 
-  buf += (offset + 1);
-  effects += (offset + 1);
+  rgb_color color = buf[source];
+  byte effect = effects[source];
 
-  for(byte i = offset + 1; i < window; i++){
+//  buf += (offset + 1);
+//  effects += (offset + 1);
+  buf += start;
+  effects += start;
+
+  for(byte i = start; i < end_; i++){
     if(effect == RANDOM1){
       *buf = ColorMath::random_color();
       *effects = NO_EFFECT;
@@ -568,6 +585,7 @@ void Commands::do_repeat(byte times = 1){
 //#endif
 //}
 
+#ifdef USE_POWER_EASE
 void Commands::do_power_shift(byte count, byte max = 0, bool fast_render = true){
   max = (max == 0) ? visible_led_count : max;
   count = count == 0 ? 1 : count;
@@ -587,9 +605,12 @@ void Commands::do_power_shift(byte count, byte max = 0, bool fast_render = true)
 void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = true){
   do_power_shift(shift, shift + width, fast_render);
 }
+#endif
 
 void Commands::do_wipe(){
+#ifdef USE_POWER_EASE
   do_power_shift_object(0, visible_led_count, false);
+#endif
 }
 
 // arg[0] # times to rotate, default = 1
@@ -676,6 +697,7 @@ void Commands::set_fade_rate(int arg0){
 
 // arg[0] index of insertion pointer, default = 0
 // arg[1] width of window, default = 1
+//        -- any magic widths?
 void Commands::set_position(int position, int width){
   byte current_offset = buffer->get_offset();
   byte current_window = buffer->get_window();
