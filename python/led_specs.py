@@ -27,7 +27,7 @@ def get_line_number(back):
 #  print info.function                       # __FUNCTION__ -> Main
 #  print info.lineno                         # __LINE__     -> 13
 
-response_wait = 0.1
+response_wait = 0.2
 s = None                                                     
 debug_mode = False  
 num_tests = 0
@@ -380,7 +380,7 @@ def specs():
   test("it erases within the set window in reverse mode")
   expect_render("1:rev:6:pnk:flu", num_leds - 6, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")                                                                                                                                                              
   # offset and window are always in reference to pixel 0 regardless of reversal
-  expect_render(str(num_leds - 4) + ":off:" + str(num_leds - 2) + ":win:era:flu", 84, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25") 
+  expect_render(str(num_leds - 4) + ":off:" + str(num_leds - 2) + ":win:era:flu", num_leds - 6, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25") 
 
 
   # --------------------------------------------------------------------                                               
@@ -394,10 +394,10 @@ def specs():
 
   # repeating works in reverse mode
   test("it repeats properly in reverse mode")
-  expect_buffer("1:rev:gry:rep:flu", 87, 3, "0,0,0,10,10,10,10,10,10")
+  expect_buffer("1:rev:gry:rep:flu", num_leds - 3, 3, "0,0,0,10,10,10,10,10,10")
 
   test("it repeats properly in reverse modei multiple times")
-  expect_buffer("1:rev:gry:2:rep:flu", 86, 4, "0,0,0,10,10,10,10,10,10,10,10,10")
+  expect_buffer("1:rev:gry:2:rep:flu", num_leds - 4, 4, "0,0,0,10,10,10,10,10,10,10,10,10")
 
 
   # --------------------------------------------------------------------                                               
@@ -618,7 +618,10 @@ def specs():
   expect_buffer("1:rnd:rep:flu", 0, 2, "20,0,20,15,20,0")
 
   test("it floods using a different color each time")                                                                                                                                                      
-  expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,10,0,20") 
+  if num_leds == 90:  
+    expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,10,0,20") 
+  elif num_leds == 100:
+    expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,0,20,20,0,10,20")
 
   test("the repeated colors get no effect set")
   expect_effect("1:rnd:rep:rep:flu", 0, 3, "0,0,1") 
@@ -634,7 +637,10 @@ def specs():
   expect_buffer("2:rnd:rep:flu", 0, 2, "10,0,20,15,20,0")                                                                                                              
                                                                                                                                                                                                            
   test("it floods using a different color each time")                                                 
-  expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,20,20,0")                                                                                                                                          
+  if num_leds == 90:
+    expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,20,20,0")                                                                                                                                          
+  elif num_leds == 100:
+    expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,0,20,20,20,20,0")
 
   test("the flooded colors get random effects set")                                     
   expect_effect("2:rnd:flo:flu", 0, 3, "2,0,16") 
