@@ -326,7 +326,7 @@ def specs():
   # --------------------------------------------------------------------
   group("pushing colors to display buffer")
 
-  test("it sets a pre-rendered value in the buffer")
+  test("it sets a pre-rendered red value in the buffer")
   expect_buffer("red", 0, 1, "20,0,0")
 
   test("it sets an alternate cyan value in the buffer")
@@ -343,8 +343,6 @@ def specs():
   test("it places two colors (only)")                                                                                  
   expect_buffer("2:yel:flu", 0, 3, "20,20,0,20,20,0,0,0,0")                          
 
-  # it works in reverse mode
-
   test("it places multiple colors in reverse mode")
   expect_buffer("1:rev:2:sea:flu", num_leds - 3, 3, "0,0,0,0,20,10,0,20,10")
                                                                            
@@ -355,6 +353,8 @@ def specs():
   test("it doesn't render while paused")
   expect_render("red", 0, 1, "0,0,0")
 
+  # test pausing and resuming schedules and effects
+
 
   # --------------------------------------------------------------------                                               
   group("rendering colors to the render buffer")
@@ -362,7 +362,7 @@ def specs():
   test("it renders a rendered blue value in the render buffer")
   expect_render("blu:flu", 0, 1, "0,0,51")
 
-  test("it renders an alternate value in the render buffer")
+  test("it renders an alternate orange value in the render buffer")
   expect_render("org:flu", 0, 1, "51,25,0")
 
 
@@ -381,6 +381,8 @@ def specs():
   expect_render("1:rev:6:pnk:flu", num_leds - 6, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")                                                                                                                                                              
   # offset and window are always in reference to pixel 0 regardless of reversal
   expect_render(str(num_leds - 4) + ":off:" + str(num_leds - 2) + ":win:era:flu", num_leds - 6, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25") 
+
+  # test erasing to custom black level
 
 
   # --------------------------------------------------------------------                                               
@@ -413,9 +415,9 @@ def specs():
   # not sure how to test this
   # pending_test("it does no flooding if there's no room")
 
-  skip_test("1:rev:amb:flo:flu", "it floods properly in reverse mode")
-  # expected_buffer = ("20,15,0," * num_leds)[:-1]                                                                                                                                                           
-  # expect_buffer("1:rev:amb:flo:flu", 0, num_leds, expected_buffer)  
+  test("it floods properly in reverse mode")
+  expected_buffer = ("20,15,0," * num_leds)[:-1]                                                                                                                                                           
+  expect_buffer("1:rev:amb:flo:flu", 0, num_leds, expected_buffer)  
 
 
   # --------------------------------------------------------------------                                               
