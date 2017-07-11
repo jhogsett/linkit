@@ -389,13 +389,15 @@ def specs():
   test("it repeats the color value only once")
   expect_buffer("grn:rep:flu", 0, 3, "0,20,0,0,20,0,0,0,0")
 
-  # this will break many existing scripts
-  # test("it doesn't repeat if arg0 is zero")
-  # expect_buffer("olv:0:rep:flu", 0, 2, "15,20,0,0,0,0")
+  test("it repeats the color value multiple times")
+  expect_buffer("grn:2:rep:flu", 0, 4, "0,20,0,0,20,0,0,20,0,0,0,0")
 
   # repeating works in reverse mode
-  pending_test("it repeats properly in reverse mode")
-  # expect_buffer("1:rev:gry:rpt:flu", 88, 2, "10,10,10,10,10,10")
+  test("it repeats properly in reverse mode")
+  expect_buffer("1:rev:gry:rep:flu", 87, 3, "0,0,0,10,10,10,10,10,10")
+
+  test("it repeats properly in reverse modei multiple times")
+  expect_buffer("1:rev:gry:2:rep:flu", 86, 4, "0,0,0,10,10,10,10,10,10,10,10,10")
 
 
   # --------------------------------------------------------------------                                               
