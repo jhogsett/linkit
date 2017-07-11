@@ -1,5 +1,4 @@
-
-
+// for sequencers, use simple byte versions of the range fits 0-255 for speed
 
 // ----- IDEAS --------------------------------------------------------------
 // could build upon macros to form the concept of apps

@@ -173,23 +173,35 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
     this->carry_color = buffer[start];
     this->carry_effect = effects[start];
 
-    for(byte i = start; i < (max - 1); i++){
-      buffer[i] = buffer[i+1];
-      effects[i] = effects[i+1];
+    rgb_color * buf = buffer + start;
+    byte * eff = effects + start;
+    max -= 1;
+
+    for(byte i = start; i < max; i++){
+      *buf = *(buf + 1);
+      *eff = *(eff + 1);
+      buf++;
+      eff++;
     }
   } else {
     this->carry_color = buffer[max - 1];
     this->carry_effect = effects[max - 1];
 
-    for(byte i = max - 1; i >= (start + 1); i--){
-      buffer[i] = buffer[i-1];
-      effects[i] = effects[i-1];
+    max -= 1;
+    start += 1;
+    rgb_color * buf = buffer + max;
+    byte * eff = effects + max;
+
+    for(byte i = max; i >= start; i--){
+      *buf = *(buf - 1);
+      *eff = *(eff - 1);
+      buf--;
+      eff--;
     }
   }
 }
 
-// todo: is the ability to set the effect here ever used?
-// yes with pushing carry color+effect
+// todo: only need to shift buffer multiple times if displaying (otherwise, shift the whole amount)
 void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
 {
   rgb_color * buffer = buffers[current_display];
@@ -197,20 +209,25 @@ void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, b
 
   max = (max == 0) ? get_window() : max;
   start = (start == 0) ? get_offset() : start;
-
   times = max(1, times);
+
+  color = ColorMath ::correct_color(color);
+
+  rgb_color * buf;
+  byte * eff;
+  if(this->reverse){
+    buf = &buffer[max-1];
+    eff = &effects[max-1];
+  } else {
+    buf = &buffer[start];
+    eff = &effects[start];
+  }
 
   for(byte i = 0; i < times; i++){
     shift_buffer(buffer, effects, max, start, this->reverse);
-
-    if(this->reverse){
-      buffer[max-1] = ColorMath ::correct_color(color);
-      effects[max-1] = effect;
-    } else {
-      buffer[start] = ColorMath::correct_color(color);
-      effects[start] = effect;
-    }
-
+    *buf = color;
+    *eff = effect;
+    
     if(display){
       render_display();
     }

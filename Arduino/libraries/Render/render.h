@@ -3,10 +3,6 @@
 
 #include <effects_processor.h>
 
-// twinkle usable up to 70% brightness
-//#define TWINKLE_PERCENT    30
-//#define TWINKLE_FREQUENCY  100
-
 class Render
 {
   public:
@@ -32,7 +28,6 @@ class Render
   rgb_color get_static();
   rgb_color get_default(rgb_color);
   rgb_color get_fade(rgb_color * color, byte effect);
-//  rgb_color get_twinkle(rgb_color color);
 };
 
 rgb_color Render::black = {0, 0, 0};
@@ -77,18 +72,6 @@ rgb_color Render::get_static(){
   return ColorMath::random_color();
 }
 
-//rgb_color Render::get_twinkle(rgb_color color){
-//  color = get_default(color);
-//
-//  if(random(TWINKLE_FREQUENCY) == 0){
-//    int amount = random((2 * TWINKLE_PERCENT) + 1) - TWINKLE_PERCENT;
-//    float ratio = (100.0 + amount) / 100.0;
-//    color = ColorMath::simple_scale_color(color, ratio);
-//    }
-//
-//  return color;
-//}
-
 // default_brightness_scale is 0.0 - 1.0
 rgb_color Render::get_default(rgb_color color){
   return ColorMath::scale_color(color, default_brightness_scale);
@@ -97,9 +80,7 @@ rgb_color Render::get_default(rgb_color color){
 rgb_color Render::render(rgb_color *color, byte effect){
   rgb_color render_color;
 
-//                           if(effect ==  RAW_ON) { render_color = *color;                    } else
                          if(effect == STATIC_ON) { render_color = get_default(get_static()); } else
-//                        if(effect == TWINKLE_ON) { render_color = get_twinkle(*color);       } else
     if(blink_effects->is_handled_effect(effect)) { render_color = get_blink(*color, effect); } else
   if(breathe_effects->is_handled_effect(effect)) { render_color = get_breathe(*color);       } else
      if(fade_effects->is_handled_effect(effect)) { render_color = get_fade(color, effect);   } else
