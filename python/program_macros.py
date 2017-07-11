@@ -222,13 +222,13 @@ def threeway_macros():
 def oneway_macros():
   print cyan("one way macros\n")
 
-  set_macro(10, "era:50,11:sch:15,12:sch:200,16:sch");
-  set_macro(11, "rng:pos:rnd:twi:flu:rst");
-  set_macro(12, "rng:pos:sfd:flu:rst");
-  set_macro(13, "-3:rng:zon");
-  set_macro(14, "2:rng:rev");
-  set_macro(15, "0,3:rng:art");
-  set_macro(16, "13:run:14:run:15:run:rst");
+  set_macro(10, "era:50,11:sch:15,12:sch:200,16:sch", 0);
+  set_macro(11, "rng:pos:rnd:twi:flu:rst", 0);
+  set_macro(12, "rng:pos:sfd:flu:rst", 0);
+  set_macro(13, "-3:rng:zon", 0);
+  set_macro(14, "2:rng:rev", 0);
+  set_macro(15, "0,3:rng:art", 0);
+  set_macro(16, "13:run:14:run:15:run:rst", 0);
 
 def loop():                                  
   print
