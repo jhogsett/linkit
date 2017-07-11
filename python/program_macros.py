@@ -160,8 +160,7 @@ def apollo_macros():
                                                       
   set_macro(21, "era:50:lev:13,120:run:tun:flo:cfa:100:lev", 16);
                                                               
-  set_macro(30, "1:pau:40:run:44:run:46:run", 12);              
-
+  set_macro(30, "1:pau:40:run:44:run:46:run:1:shf", 15);              
                                                            
   set_macro(31, "0:snw:pos:0:pal:sfd:flo:rst:flu", 11);      
   set_macro(32, "1:snw:pos:1:pal:sfd:flo:rst", 10);           
