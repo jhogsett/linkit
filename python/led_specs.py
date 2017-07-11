@@ -622,6 +622,8 @@ def specs():
     expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,10,0,20") 
   elif num_leds == 100:
     expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,0,20,20,0,10,20")
+  else:
+    expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,10,0,20")
 
   test("the repeated colors get no effect set")
   expect_effect("1:rnd:rep:rep:flu", 0, 3, "0,0,1") 
@@ -641,6 +643,8 @@ def specs():
     expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,20,20,0")                                                                                                                                          
   elif num_leds == 100:
     expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,0,20,20,20,20,0")
+  else:
+    expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,20,20,0")
 
   test("the flooded colors get random effects set")                                     
   expect_effect("2:rnd:flo:flu", 0, 3, "2,0,16") 
