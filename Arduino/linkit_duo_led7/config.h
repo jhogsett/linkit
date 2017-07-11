@@ -418,6 +418,7 @@ class Config
 #endif
     };
 
+    // todo: are these used?
     static const byte random_seed_pin = RANDOM_SEED_PIN;
     static const byte light_sensor_pin = LIGHT_SENSOR_PIN;
     static const byte default_brightness_percent = DEFAULT_BRIGHTNESS_PERCENT;

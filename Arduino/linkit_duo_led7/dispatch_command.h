@@ -9,14 +9,14 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   int arg2 = command_processor->sub_args[2];
   
   switch(cmd){
-    case CMD_NONE:        command_processor->save_args();                break;
-    case CMD_FLUSH:       flush(true);                                   break;
-    case CMD_ERASE:       buffer->erase(false);                          break;
+    case CMD_NONE:        command_processor->save_args();                                   break;
+    case CMD_FLUSH:       flush(true);                                                      break;
+    case CMD_ERASE:       buffer->erase(false);                                             break;
     case CMD_ROTATE:      do_rotate(arg0, arg1, false);                  reset_args = true; break;
-    case CMD_REPEAT:      do_repeat(arg0); reset_args = true;            break;
+    case CMD_REPEAT:      do_repeat(arg0);                               reset_args = true; break;
     case CMD_COPY:        do_copy(arg0, arg1, arg2);                     reset_args = true; break;
-    case CMD_FLOOD:       do_flood();                                    break;
-    case CMD_MIRROR:      do_mirror();                                   break;
+    case CMD_FLOOD:       do_flood();                                                       break;
+    case CMD_MIRROR:      do_mirror();                                                      break;
     case CMD_DISPLAY:     set_display(arg0);                             reset_args = true; break;
     case CMD_ZONE:        buffer->set_zone(arg0);                        reset_args = true; break;
     case CMD_WINDOW:      buffer->set_window_override(arg0);             reset_args = true; break;
@@ -24,182 +24,68 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_REVERSE:     buffer->set_reverse(arg0 == 1 ? true : false); reset_args = true; break;
     case CMD_RGBCOLOR:    buffer->push_rgb_color(arg0, arg1, arg2);      reset_args = true; break;
     case CMD_HSLCOLOR:    buffer->push_hsl_color(arg0, arg1, arg2);      reset_args = true; break;
-    case CMD_RED:       
-    case CMD_GREEN:     
-    case CMD_BLUE:      
-    case CMD_BLACK:     
-    case CMD_YELLOW:    
-    case CMD_ORANGE:    
-    case CMD_PURPLE:    
-    case CMD_CYAN:      
-    case CMD_MAGENTA:   
-    case CMD_PINK:      
-    case CMD_WHITE:     
-    case CMD_GRAY:      
-    case CMD_LTGREEN:   
-    case CMD_SEAFOAM:   
-    case CMD_LTBLUE:    
-    case CMD_DKGRAY:    
-    case CMD_TUNGSTEN:    
-    case CMD_AMBER:
-    case CMD_OLIVE:
-    case CMD_SKYBLUE:
-    case CMD_TURQUOISE:
-    case CMD_LAVENDER:
-    case CMD_ROSE:
-    case CMD_NEON:        dispatch_color(cmd);                         reset_args = true; break;
-    case CMD_RANDOM:      do_random(arg0);                             reset_args = true; break;   
-    case CMD_BLEND:       do_blend(arg0);                              reset_args = true; break;
-    case CMD_MAX:         do_max();                                    break;
-    case CMD_DIM:         do_dim();                                    break;
-    case CMD_BRIGHT:      do_bright();                                 break;
-    case CMD_BLINK:     
-    case CMD_BLINK1:    
-    case CMD_BLINK2:    
-    case CMD_BLINK3:    
-    case CMD_BLINK4:    
-    case CMD_BLINK5:    
-    case CMD_BLINK6:    
-    case CMD_BLINKA:    
-    case CMD_BLINKB:    
-    case CMD_BLINKC:
-    case CMD_BREATHE:   
-    case CMD_SLOW_FADE:
-    case CMD_FAST_FADE:
-    case CMD_TWINKLE_OPEN:
-//    case CMD_RAW:
-    case CMD_STATIC:      dispatch_effect(cmd);                        break;
-    case CMD_BLINKR:      effects_processor->start_blinking_r();       break;
-    case CMD_EFFECTR:     effects_processor->start_effect_r();         break;
-    case CMD_PAUSE:       pause(arg0);                                 reset_args = true; break;
-    case CMD_CONTINUE:    resume(arg0);                                reset_args = true; break;
-    case CMD_RESET:       reset();                                     break;
-    case CMD_CLEAR:       clear();                                     break;
-    case CMD_LEVEL:       set_brightness_level(arg0);                  reset_args = true; break;
-    case CMD_FADE:        do_fade();                                   break;
-    case CMD_WIPE:        do_wipe();                                   break;
-    case CMD_ANIM_ROTATE: do_rotate(arg0, arg1, true);                 reset_args = true; break;
-    case CMD_PSHIFT:      do_power_shift(arg0);                        reset_args = true; break;
-    case CMD_PSHIFTO:     do_power_shift_object(arg0, arg1);           reset_args = true; break;
-    case CMD_CFADE:       do_crossfade();                              break;
-    case CMD_TEST:        do_test(arg0, arg1, arg2);                   reset_args = true; break;
-    case CMD_CONFIGURE:   do_configure(arg0, arg1, arg2);              reset_args = true; break;
-    case CMD_PINON:       set_pin(arg0, true);                         reset_args = true; break;
-    case CMD_PINOFF:      set_pin(arg0, false);                        reset_args = true; break;
-    case CMD_SCHEDULE:    scheduler.set_schedule(arg0, arg1, arg2);    reset_args = true; break;
-    case CMD_CARRY:       buffer->push_carry_color();                  break;
-    case CMD_SET_MACRO:
-      continue_dispatching = do_set_macro(arg0, dispatch_data);
-      reset_args = true;
-      break;
-    case CMD_RUN_MACRO: macros.run_macro(arg0, arg1, arg2); reset_args = true; break;
-    case CMD_DELAY: do_delay(arg0); reset_args = true; break;
-    case CMD_STOP:
-//      scheduler.reset_all_schedules();
-//      clear();                                                            
-//      pause();                                                            
-      do_stop();
-      break;      
-    case CMD_RANDOM_NUM:
-      do_random_number(arg0, arg1, arg2); break;
-      // don't reset arguments
-//      {
-//        // arg[0] maximum random number (see Commands::random_num() for special constant values)
-//        // arg[1] minimum random number (default=0)
-//        // arg[2] copied into arg[1] to allow passing another argument
-//        int ran = random_num(arg0, arg1);
-//        command_processor->sub_args[0] = ran;
-//        command_processor->sub_args[1] = arg2;
-//        command_processor->sub_args[2] = 0;
-//        // don't reset arguments
-//      }
-      break;
-    case CMD_POSITION: set_position(arg0, arg1); reset_args = true; break;
-    case CMD_RPOSITION: random_position(arg0); reset_args = true; break;
-    case CMD_PALETTE:
-//      {
-//        // arg[0] the index into the palette of the color to insert, or where to stop rubberstamp insert
-//        // arg[1] if > 0, colors are inserted counting down from this position
-//        //                the counting down is done so the palette achieves a left-to-right order when inserted  
-//        //                in this case arg[0] is the stopping point when counting down
-//        // for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
-//        
-//        if(arg1 > 0){
-//          arg0 = max(0, arg0);
-//          rgb_color * palette = Colors::get_palette();
-//          for(byte i = arg1; i >= arg0; i--){
-//            buffer->push_color(palette[i]);                      
-//          }
-//        } else {
-//          buffer->push_color(Colors::get_palette()[arg0]);                                                      
-//        }
-// 
-        do_palette(arg0, arg1);       
-        reset_args = true;
-        break;
-//      }
-            
-    case CMD_SHUFFLE:
-//      {
-//        switch(arg0)
-//        {
-//          case 0:
-//            // create a palette of random colors
-//            Colors::shuffle_palette();
-//            break;
-//
-//          case 1:
-//            // reset palette to original built-in colors
-//            Colors::reset_palette();  
-//            break;
-//
-//          case 2:
-//            // make every odd color the complimentary color of the previous even color
-//            Colors::compliment_palette();
-//            break;
-//
-//          case 3:
-//            // create a palette of random complimentary color pairs
-//            Colors::complimentary_palette();        
-//             break;
-//        }            
+    case CMD_RED:         case CMD_GREEN:    case CMD_BLUE:    case CMD_BLACK:   case CMD_YELLOW: 
+    case CMD_ORANGE:      case CMD_PURPLE:   case CMD_CYAN:    case CMD_MAGENTA: case CMD_PINK:      
+    case CMD_WHITE:       case CMD_GRAY:     case CMD_LTGREEN: case CMD_SEAFOAM: case CMD_LTBLUE:  
+    case CMD_DKGRAY:      case CMD_TUNGSTEN: case CMD_AMBER:   case CMD_OLIVE:   case CMD_SKYBLUE: 
+    case CMD_TURQUOISE:   case CMD_LAVENDER: case CMD_ROSE:    
+    case CMD_NEON:        dispatch_color(cmd);                            reset_args = true; break;
+    case CMD_RANDOM:      do_random(arg0);                                reset_args = true; break;   
+    case CMD_BLEND:       do_blend(arg0);                                 reset_args = true; break;
+    case CMD_MAX:         do_max();                                                          break;
+    case CMD_DIM:         do_dim();                                                          break;
+    case CMD_BRIGHT:      do_bright();                                                       break;
+    case CMD_BLINK:       case CMD_BLINK1:    case CMD_BLINK2:    case CMD_BLINK3:       case CMD_BLINK4:    
+    case CMD_BLINK5:      case CMD_BLINK6:    case CMD_BLINKA:    case CMD_BLINKB:       case CMD_BLINKC:
+    case CMD_BREATHE:     case CMD_SLOW_FADE: case CMD_FAST_FADE: case CMD_TWINKLE_OPEN:
+    case CMD_RAW_OPEN: 
+    case CMD_STATIC:      dispatch_effect(cmd);                                              break;
+    case CMD_BLINKR:      effects_processor->start_blinking_r();                             break;
+    case CMD_EFFECTR:     effects_processor->start_effect_r();                               break;
+    case CMD_PAUSE:       pause(arg0);                                    reset_args = true; break;
+    case CMD_CONTINUE:    resume(arg0);                                   reset_args = true; break;
+    case CMD_RESET:       reset();                                                           break;
+    case CMD_CLEAR:       clear();                                                           break;
+    case CMD_LEVEL:       set_brightness_level(arg0);                     reset_args = true; break;
+    case CMD_FADE:        do_fade();                                                         break;
+    case CMD_WIPE:        do_wipe();                                                         break;
+    case CMD_ANIM_ROTATE: do_rotate(arg0, arg1, true);                    reset_args = true; break;
+    case CMD_PSHIFT:      do_power_shift(arg0);                           reset_args = true; break;
+    case CMD_PSHIFTO:     do_power_shift_object(arg0, arg1);              reset_args = true; break;
+    case CMD_CFADE:       do_crossfade();                                                    break;
+    case CMD_TEST:        do_test(arg0, arg1, arg2);                      reset_args = true; break;
+    case CMD_CONFIGURE:   do_configure(arg0, arg1, arg2);                 reset_args = true; break;
+    case CMD_PINON:       set_pin(arg0, true);                            reset_args = true; break;
+    case CMD_PINOFF:      set_pin(arg0, false);                           reset_args = true; break;
+    case CMD_SCHEDULE:    scheduler.set_schedule(arg0, arg1, arg2);       reset_args = true; break;
+    case CMD_CARRY:       buffer->push_carry_color();                                        break;
+    case CMD_SET_MACRO:   
+      continue_dispatching = do_set_macro(arg0, dispatch_data);           reset_args = true; break;
+    case CMD_RUN_MACRO:   macros.run_macro(arg0, arg1, arg2);             reset_args = true; break;
+    case CMD_DELAY:       do_delay(arg0);                                 reset_args = true; break;
+    case CMD_STOP:        do_stop();                                                         break;      
+    case CMD_RANDOM_NUM:  do_random_number(arg0, arg1, arg2);                                break;
+    case CMD_POSITION:    set_position(arg0, arg1);                       reset_args = true; break;
+    case CMD_RPOSITION:   random_position(arg0);                          reset_args = true; break;
+    case CMD_PALETTE:     do_palette(arg0, arg1);                         reset_args = true; break;
+    case CMD_SHUFFLE:     do_shuffle(arg0);                               reset_args = true; break;
+    case CMD_SETBLACK:    set_black_level(arg0, arg1, arg2);              reset_args = true; break;
+    case CMD_SEQ_WHEEL:   case CMD_SEQ_SWING: case CMD_SEQ_WHLCO: case CMD_SEQ_SWGCO:
+    case CMD_SEQ_WHLSN:   case CMD_SEQ_SWGSN: case CMD_SEQ_WHLPW:
+    case CMD_SEQ_SWGPW:   dispatch_sequence(cmd);                                            break;
 
-        do_shuffle(arg0);
-        reset_args = true;
-        break;
-//      }
-    case CMD_SETBLACK:
-//      {
-//        rgb_color black_level = {(byte)arg0, (byte)arg1, (byte)arg2};
-//        buffer->set_black_level(black_level);
-        set_black_level(arg0, arg1, arg2);
-        reset_args = true;
-        break;
-//      }
-    case CMD_SEQ_WHEEL:
-    case CMD_SEQ_SWING:
-    case CMD_SEQ_WHLCO:
-    case CMD_SEQ_SWGCO:
-    case CMD_SEQ_WHLSN:
-    case CMD_SEQ_SWGSN:
-    case CMD_SEQ_WHLPW:
-    case CMD_SEQ_SWGPW:
-      dispatch_sequence(cmd);
-      // don't reset args
-      break;
+//    case CMD_SEQ_NEXTW:
+//      command_processor->sub_args[0] = do_next_window(arg0, &command_processor->sub_args[1], arg2);
+//      command_processor->sub_args[2] = 0;
+//                                                                                             break;
+
     case CMD_SEQ_NEXTW:
-      command_processor->sub_args[0] = do_next_window(arg0, &command_processor->sub_args[1], arg2);
-      command_processor->sub_args[2] = 0;
-      // don't reset args
-      break;
-    case CMD_SEQ_NEXTM:
-      break;
+      do_next_window(arg0, arg1, arg2);                                                      break;
+
+    case CMD_SEQ_NEXTM:                                                                      break;
     case CMD_CLR_SEQ_HUE:
     case CMD_CLR_SEQ_SAT:
-    case CMD_CLR_SEQ_LIT:
-      dispatch_color_sequence(cmd);
-      reset_args = true;
-      break;
+    case CMD_CLR_SEQ_LIT: dispatch_color_sequence(cmd);                   reset_args = true; break;
   }
 
   if(reset_args)
@@ -242,12 +128,6 @@ void Commands::dispatch_color(int cmd){
 }
 
 void Commands::dispatch_effect(int cmd){
-//  effects_map[] = { BLINK_ON,   BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4,    
-//                    BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B, BLINK_ON_C,
-//                    BREATHE_ON, SLOW_FADE,  FAST_FADE,  TWINKLE_ON, RAW_ON,
-//                    STATIC_ON };
-//  effects_processor->start_effect(effects_map[cmd - CMD_BLINK]);
-
   byte effect = NO_EFFECT;
   switch(cmd){
     case CMD_BLINK:     effect = BLINK_ON;   break;
@@ -263,8 +143,8 @@ void Commands::dispatch_effect(int cmd){
     case CMD_BREATHE:   effect = BREATHE_ON; break;
     case CMD_SLOW_FADE: effect = SLOW_FADE;  break;
     case CMD_FAST_FADE: effect = FAST_FADE;  break;
-    case CMD_TWINKLE_OPEN:   effect = NO_EFFECT; break;
-//    case CMD_RAW:       effect = RAW_ON;     break;
+    case CMD_TWINKLE_OPEN: effect = NO_EFFECT; break;
+    case CMD_RAW_OPEN:  effect = NO_EFFECT;  break;
     case CMD_STATIC:    effect = STATIC_ON;  break;
   }
    

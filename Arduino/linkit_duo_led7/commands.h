@@ -70,8 +70,8 @@ class Commands
   void do_power_shift_object(byte width, byte shift, bool fast_render);
   void do_demo();
   void flush(bool force_display);
-  void low_power();
-  void high_power();
+//  void low_power();
+//  void high_power();
   void set_display(byte display);
   void set_buffer(byte nbuffer);
   void set_pin(byte pin, bool on);
@@ -85,7 +85,7 @@ class Commands
   int do_sequence(byte type, int arg0, int arg1, int arg2);
   int do_set_sequence(byte type, int arg0, int arg1, int arg2);
   int do_next_sequence(int arg0, int arg1, int arg2);
-  int do_next_window(int arg0, int *arg1, int arg2);
+  void do_next_window(int arg0, int arg1, int arg2);
 //  int do_next_macro(int arg1, int arg2);
   void do_configure(int arg0, int arg1, int arg2);
   bool do_set_macro(byte macro, byte * dispatch_data);
@@ -95,7 +95,6 @@ class Commands
   void do_palette(int arg0, int arg1);
   void do_shuffle(int arg0);
   void set_black_level(int arg0, int arg1, int arg2);
-
 
 #ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
@@ -310,17 +309,14 @@ void Commands::do_bright(){
 }
 
 void Commands::do_fade(){
-//  for(byte i = buffer->get_offset(); i < buffer->get_window(); i++){
-//    buffer->get_buffer()[i] = buffer->black;
-//    buffer->get_effects_buffer()[i] = NO_EFFECT;
-//  }
   buffer->erase();
   do_crossfade();
 }
 
 void Commands::do_crossfade(){
   rgb_color * render_buffer = buffer->get_render_buffer();
-  for(byte i = 0; i <= ColorMath::crossfade_steps(); i++){
+  byte steps = ColorMath::crossfade_steps();
+  for(byte i = 0; i <= steps; i++){
     buffer->cross_fade(i);
     buffer->display_buffer(render_buffer);
     delay(CROSSFADE_DELAY);
@@ -360,6 +356,10 @@ void Commands::do_flood(){
   }
 }
 
+#define RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT 0
+#define RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT 1
+#define RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS 2
+
 // types 
 // 0: random color with no effect
 // 1: like #0 but will flood and repeat with random colors 
@@ -368,14 +368,14 @@ void Commands::do_flood(){
 void Commands::do_random(byte type){
   type = (type < 0) ? 0 : type;
   buffer->push_color(ColorMath::random_color());
-  byte * effect = &buffer->get_effects_buffer()[buffer->get_offset()];
-  if(type == 0){
-    *effect = RANDOM0;
-  } else if(type == 1){
-    *effect = RANDOM1;
-  } else if(type == 2){
-    *effect = RANDOM2;
+
+  byte effect;
+  switch(type){
+    case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT: effect = RANDOM0; break;
+    case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT: effect = RANDOM1; break;
+    case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS: effect = RANDOM2; break;
   }
+  buffer->get_effects_buffer()[buffer->get_offset()] = effect;
 }
 
 void Commands::do_mirror(){
@@ -517,27 +517,40 @@ void Commands::do_copy(byte size, int times, byte zoom){
 // consider support a repeat of zero times (doing nothing)
 void Commands::do_repeat(byte times = 1){
   times = max(1, times);
-  byte offset = buffer->get_offset();
-  byte effect = buffer->get_effects_buffer()[offset];
 
-  // the stored color has been red/green corrected, so
-  // to repeat it, first uncorrect it by swapping
-  rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
- 
-  for(byte i = 0; i < times; i++){
-    if(effect == RANDOM0){
-      // repeat the same color, no effect
-      buffer->push_color(color, 1, NO_EFFECT);
-    } else if(effect == RANDOM1){
-      // changing random color only, no random effect
-      buffer->push_color(ColorMath::random_color(), 1, effect);
-    } else if(effect == RANDOM2){
-      // changing random color and random effect
-      buffer->push_color(ColorMath::random_color(), 1, EffectsProcessor::random_effect());
-    } else {
-      buffer->push_color(color, 1, effect);
-    }
+  byte offset;
+  if(buffer->get_reverse()){
+    offset = buffer->get_window() - 1;
+  } else {
+    offset = buffer->get_offset();
   }
+  
+  byte effect = buffer->get_effects_buffer()[offset];
+  for(byte i = 0; i < times; i++){
+    switch(effect){
+      case RANDOM0:
+        {
+          // repeat the same color, no effect
+          rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
+          buffer->push_color(color, 1, NO_EFFECT);
+        }
+        break;
+      case RANDOM1:
+        // changing random color only, no random effect
+        buffer->push_color(ColorMath::random_color(), 1, effect);
+        break;
+      case RANDOM2:
+        // changing random color and random effect
+        buffer->push_color(ColorMath::random_color(), 1, EffectsProcessor::random_effect());
+        break;
+      default:
+        {
+          rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
+          buffer->push_color(color, 1, effect);
+        }
+        break;
+    }
+  }    
 }
 
 //void Commands::do_elastic_shift(byte count, byte max = 0){
@@ -850,14 +863,16 @@ int Commands::do_next_sequence(int arg0, int arg1, int arg2){
 
 // advance the sequencer, then leave arg0 = position, arg1 = width
 // for the position command to allow filling gaps
-int Commands::do_next_window(int arg0, int *arg1, int arg2){
-  byte position = sequencer->next(arg0, *arg1, arg2);
+void Commands::do_next_window(int arg0, int arg1, int arg2){
+  byte position = sequencer->next(arg0, arg1, arg2);
   byte previous_position = sequencer->previous_computed(arg0);
   sequencer->set_previous_computed(arg0, position);
+  command_processor->sub_args[2] = 0;
 
   if(position == previous_position){      // short-circuit - no change in position
-    *arg1 = 0;
-    return position;
+    command_processor->sub_args[0] = position;
+    command_processor->sub_args[1] = 0;
+    return;
   }
 
   byte offset, width;
@@ -880,13 +895,10 @@ int Commands::do_next_window(int arg0, int *arg1, int arg2){
       width = 0;
     }
   } 
-//  else {
-//    offset = position;                    // no change in position
-//    width = 0;
-//  }
 
-  *arg1 = width;
-  return offset;
+  command_processor->sub_args[0] = offset;
+  command_processor->sub_args[1] = width;
+  return;
 }
 
 //int Commands::do_next_macro(int arg1, int arg2){
@@ -1010,11 +1022,8 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
       // arg2 - lightness, default = 20
       // (saturation = 255)
       {
-        if(arg0 == 0)
-          arg0 = 20;
-
-        if(arg2 < 1)
-          arg2 = 20;
+        if(arg0 == 0) arg0 = 20;
+        if(arg2 < 1) arg2 = 20;
 
         int angle = arg1;
         rgb_color *palette = Colors::get_palette();
@@ -1030,13 +1039,8 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
       // arg1 - step, default = 256 / 18 = 14.22222222 (magic value, others must be integers)
       // arg2 - lightness 0-255, default = 20
       {
-        if(arg1 == 0)
-          arg1 = 1422;
-        else
-          arg1 *= 100;
-
-        if(arg2 < 1)
-          arg2 = 20;
+        if(arg1 == 0) arg1 = 1422; else arg1 *= 100;
+        if(arg2 < 1) arg2 = 20;
 
         rgb_color *palette = Colors::get_palette();
         int saturation = 0;
@@ -1055,13 +1059,8 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
       // arg2 - lightness scaling, default = 20 (brightness divisor)
       // (starting percent = 0)
       {
-        if(arg1 == 0)
-          arg1 = 1422;
-        else
-          arg1 *= 100;
-
-        if(arg2 < 1)
-          arg2 = 20;
+        if(arg1 == 0) arg1 = 1422; else arg1 *= 100;
+        if(arg2 < 1) arg2 = 20;
 
         rgb_color *palette = Colors::get_palette();
 
