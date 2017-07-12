@@ -427,9 +427,15 @@ def specs():
   expect_buffer("cyn:yel:mag:mir:flu", 0, 3, "20,0,20,20,20,0,0,20,20")
   expect_buffer("", num_leds - 3, 3, "0,20,20,20,20,0,20,0,20")
 
-  pending_test("it mirrors only within the set window")
+  test("it mirrors only within the set window")
+  expect_buffer("10:win:grn:blu:mir:flu", 0, 10, "0,0,20,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,20")
 
-  pending_test("it mirrors properly in reverse mode") 
+  test("it mirrors only within the set offset and window")
+  expect_buffer("10:off:20:win:mag:lgr:mir:flu", 10, 10, "10,20,0,20,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,20,10,20,0")
+
+  test("it mirrors properly in reverse mode") 
+  expect_buffer("1:rev:lbl:pnk:mir:flu", num_leds - 10, 10, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,20,20,0,10")
+  expect_buffer("", 0, 10, "20,0,10,0,10,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
 
 
   # --------------------------------------------------------------------                                               
