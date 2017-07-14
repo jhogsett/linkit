@@ -110,8 +110,7 @@ def command_str(cmd_text):
 def setup(): 
   global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only 
   s = serial.Serial("/dev/ttyS0", 115200) 
-  #command(":::stp:stp:20:lev")
-  reset_device()
+  do_reset_device()
   num_leds = command_int("0,0:tst")                                                                                                                                                        
   palette_size = command_int("0,1:tst")
   default_brightness = command_int("0,4:tst")                                                                                                
@@ -135,8 +134,27 @@ def write(text):
 # --- device handling ---
 
 def reset_device():
-  command(":::stp:stp:20:lev")                                                                                                                                                                             
+  return ":::stp:stp:20:lev"
 
+def reset_standard_seed():
+  return "6,3," + str(standard_seed) + ":tst"
+
+def reset_standard_fade_rate():
+  return "3,9995:cfg"
+
+def reset_standard_palette():
+  return "1:shf"
+
+def pre_test_reset():
+  command = ""
+  command += reset_device() + ":"
+  command += reset_standard_seed() + ":"
+  command += reset_standard_fade_rate() + ":"
+  command += reset_standard_palette()
+  command_str(command)
+
+def do_reset_device():
+  command_str(reset_device())                                                                                                                                                                             
 
 # --- test definition ---
 
@@ -150,10 +168,10 @@ def test(description):
   global test_number, test_description, test_failures, last_test_number
   test_number = test_number + 1
   test_description = description 
-  #command(":::stp:stp:20:lev")
-  reset_device()
-  set_standard_seed()                                                                                                                  
-  set_standard_fade_rate()
+#  reset_device()
+#  set_standard_seed()                                                                                                                  
+#  set_standard_fade_rate()
+  pre_test_reset()
 
 def pending_test(description):                                                                                                                                                                             
   global test_number, test_description, test_line_number, num_pending                                                                                                                                      
@@ -312,12 +330,7 @@ def unscaled_color_value(rgb_color_value):
 def rendered_color_value(buffer_color_value):
   return int(((buffer_color_value / color_divisor) * 255) * default_brightness_percent) 
 
-def set_standard_seed():
-  command_str("6,3," + str(standard_seed) + ":tst")
 
-def set_standard_fade_rate():
-  command_str("3,9995:cfg")
-#  pass
 
 ########################################################################
 ########################################################################
@@ -437,6 +450,8 @@ def specs():
   expect_buffer("1:rev:lbl:pnk:mir:flu", num_leds - 10, 10, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,20,20,0,10")
   expect_buffer("", 0, 10, "20,0,10,0,10,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
 
+  test("it mirrors properly in reverse mode within an offset and window")
+  expect_buffer("1:rev:10:off:20:win:red:pur:mir:flu", 10, 10, "10,0,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,10,0,20")
 
   # --------------------------------------------------------------------                                               
   group("pushing effects to the effects buffer")
@@ -506,7 +521,7 @@ def specs():
   expected_colors = "20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
   expect_palette("1:shf:3:shf", 0, palette_size, expected_colors)                                                                 
 
-  test("the shuffler creates random complimentary colors")
+  test("the shuffler creates random complimentary color pairs")
   expected_colors = "20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"   
   expect_palette("1:shf:3:shf", 0, palette_size, expected_colors)                                                                                             
 
