@@ -50,8 +50,13 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_FADE:        do_fade();                                                         break;
     case CMD_WIPE:        do_wipe();                                                         break;
     case CMD_ANIM_ROTATE: do_rotate(arg0, arg1, true);                    reset_args = true; break;
+#ifdef USE_POWER_SHIFT
     case CMD_PSHIFT:      do_power_shift(arg0);                           reset_args = true; break;
     case CMD_PSHIFTO:     do_power_shift_object(arg0, arg1);              reset_args = true; break;
+#else
+    case CMD_PSHIFT:                                                      reset_args = true; break;
+    case CMD_PSHIFTO:                                                     reset_args = true; break;
+#endif
     case CMD_CFADE:       do_crossfade();                                                    break;
     case CMD_TEST:        do_test(arg0, arg1, arg2);                      reset_args = true; break;
     case CMD_CONFIGURE:   do_configure(arg0, arg1, arg2);                 reset_args = true; break;

@@ -1,5 +1,10 @@
 // for sequencers, use simple byte versions of the range fits 0-255 for speed
 
+// need to be able to manipulate arguments
+// example: quantize (to allow position offsets)
+// also: combine two separate random numbers into arg0, arg1
+
+
 // ----- IDEAS --------------------------------------------------------------
 // could build upon macros to form the concept of apps
 // apps:

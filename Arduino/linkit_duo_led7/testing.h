@@ -138,9 +138,14 @@ void Commands::do_test_macro(byte macro_number){
   }
 }
 
-void Commands::dump_buffer_colors(rgb_color * buffer, byte start, byte count){
+void Commands::dump_buffer_colors(rgb_color * buffer, byte start, byte count, bool correct_color){
   for(int i = 0; i < count; i++){
-    rgb_color color = ColorMath::correct_color(buffer[start + i]);
+    rgb_color color;
+    if(correct_color){
+      color = ColorMath::correct_color(buffer[start + i]);
+    } else {
+      color = buffer[start + i];
+    }
     command_processor->send_ints(color.red);
     command_processor->send_ints(color.green);
     command_processor->send_ints(color.blue);
@@ -163,7 +168,7 @@ void Commands::do_test_render(byte start, byte count){
 }
 
 void Commands::do_test_palette(byte start, byte count){
-  dump_buffer_colors(Colors::get_palette(), start, count);
+  dump_buffer_colors(Colors::get_palette(), start, count, false);
 }
 
 #endif
