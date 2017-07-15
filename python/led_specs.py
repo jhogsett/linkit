@@ -2,7 +2,7 @@
 
 # TODO: standard seed should be set for each test, not for each group 
 
-# ideas: flash green or red depending on tests when done
+# ideas:
 #        arg to run a single test
 
 import serial 
@@ -17,15 +17,6 @@ def get_line_number(back):
   frame = callerframerecord[0]                                                                                                                                                                  
   info = inspect.getframeinfo(frame)                                                                                                                                                            
   return info.lineno  
-
-#def print_frame():
-#  callerframerecord = inspect.stack()[1]    # 0 represents this line
-#                                            # 1 represents line at caller
-#  frame = callerframerecord[0]
-#  info = inspect.getframeinfo(frame)
-#  print info.filename                       # __FILE__     -> Test.py
-#  print info.function                       # __FUNCTION__ -> Main
-#  print info.lineno                         # __LINE__     -> 13
 
 response_wait = 0.2
 s = None                                                     
@@ -54,6 +45,7 @@ test_failure_summaries = []
 num_leds = 0                                                                                                                                                                                               
 palette_size = 0
 group_number_only = -1
+standard_palette = ""
 
 # --- Serial I/O ---
 
@@ -108,13 +100,16 @@ def command_str(cmd_text):
 # --- Setup ---
 
 def setup(): 
-  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only 
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette 
   s = serial.Serial("/dev/ttyS0", 115200) 
   do_reset_device()
   num_leds = command_int("0,0:tst")                                                                                                                                                        
   palette_size = command_int("0,1:tst")
   default_brightness = command_int("0,4:tst")                                                                                                
   default_brightness_percent = default_brightness / 100.0                                                                                                               
+  for i in range(0, palette_size):
+    standard_palette += test_colors.colors[i][1] + ","
+  standard_palette = standard_palette[:-1]
 
   if len(sys.argv) > 2:
     group_number_only = int(sys.argv[2])
@@ -156,6 +151,7 @@ def pre_test_reset():
 def do_reset_device():
   command_str(reset_device())                                                                                                                                                                             
 
+
 # --- test definition ---
 
 def group(description):                                                                    
@@ -168,9 +164,6 @@ def test(description):
   global test_number, test_description, test_failures, last_test_number
   test_number = test_number + 1
   test_description = description 
-#  reset_device()
-#  set_standard_seed()                                                                                                                  
-#  set_standard_fade_rate()
   pre_test_reset()
 
 def pending_test(description):                                                                                                                                                                             
@@ -197,14 +190,14 @@ def skip_test(command, description):
 def report_group():
   global last_group_number
   if group_number != last_group_number:                                                                                                                                                                    
-    test_failures.append(tc.cyan("\nGroup #" + str(group_number) + " " + group_description))                                                                                                                    
+    test_failures.append(tc.blue("\nGroup #" + str(group_number) + " " + group_description))                                                                                                                    
     last_group_number = group_number                                                       
 
 def report_test():
   global last_test_number
   report_group()
   if test_number != last_test_number:                                                                                                                                                                      
-    test_failures.append(tc.blue("  Test #" + str(test_number) + " " + test_description))                                                                                                                     
+    test_failures.append(tc.yellow("  Test #" + str(test_number)) + " " + tc.cyan(test_description))                                                                                                                     
     last_test_number = test_number                                                      
 
 def report_failure(got, expected):
@@ -213,17 +206,17 @@ def report_failure(got, expected):
     "    " + 
     tc.red("Expectation: ") + 
     tc.cyan("[" + test_command + "]") + 
-    tc.cyan(" @ " + str(test_line_number)) + 
+    tc.yellow(" @ " + str(test_line_number)) + 
     tc.red(" Failed!\n") + 
-    tc.red("\texpected:\n") + 
-    tc.yellow("\t\t[" + expected + "]\n") + 
-    tc.red("\tgot:\n") + 
-    tc.yellow("\t\t[" + got + "]") + 
+    tc.yellow("\texpected:\n") + 
+    tc.red("\t\t[" + expected + "]\n") + 
+    tc.yellow("\tgot:\n") + 
+    tc.green("\t\t[" + got + "]") + 
     "\n")
 
   test_failure_summaries.append(
-    tc.cyan("\t@ " + str(test_line_number) + " ") + 
-    tc.yellow(test_command) + 
+    tc.yellow("\t@ " + str(test_line_number) + " ") + 
+    tc.cyan(test_command) + 
     tc.red(" -" + expected) + 
     tc.green(" +" + got) + 
     "\n") 
@@ -233,8 +226,8 @@ def report_pending():
   test_failures.append(
     "    " + 
     tc.yellow("Pending expectation: ") + 
-    tc.yellow("[" + test_description + "]") + 
-    tc.cyan(" @ " + str(test_line_number))) 
+    tc.cyan("[" + test_description + "]") + 
+    tc.yellow(" @ " + str(test_line_number))) 
 
 def report_skipped():                                                                                                                                                                                      
   report_test()                                                                                                                                                                                            
@@ -243,7 +236,7 @@ def report_skipped():
     tc.red("Skipped expectation: ") + 
     tc.red("[" + test_command + "] ") + 
     tc.red("[" + test_description + "]") + 
-    tc.cyan(" @ " + str(test_line_number)))                                                             
+    tc.yellow(" @ " + str(test_line_number)))                                                             
 
 
 # --- failing/succeeding tests ---
@@ -272,6 +265,14 @@ def expect_equal(got, expected):
   else:
     succeed()
 
+def expect_not_equal(got, expected):
+  global test_line_number
+  test_line_number = get_line_number(3)
+  if got == expected:
+    fail(got, "not:" + expected)
+  else:
+    succeed()
+
 def expect_macro(command_, macro, expected):
   command(command_)
   str_ = command_str("1," + str(macro) + ":tst")
@@ -293,12 +294,15 @@ def expect_effect(command_, start, count, expected):
   str_ = command_str("4," + str(start) + "," + str(count) + ":tst")
   expect_equal(str_[:-1], expected)                                
                                                                    
-def expect_palette(command_, start, count, expected):               
+def expect_palette(command_, start, count, expected, positive=True):               
   display_width = num_leds / palette_size                                                                                                                         
   display_command = ":" + str(palette_size) + ",-2," + str(display_width) + ":cpy:flu"  
   command(command_ + display_command)                                                
   str_ = command_str("5," + str(start) + "," + str(count) + ":tst")
-  expect_equal(str_[:-1], expected)                                
+  if positive:
+    expect_equal(str_[:-1], expected)                                
+  else:
+    expect_not_equal(str_[:-1], expected)
 
 def expect_int(command_, expected):
   got = command_int(command_)
@@ -315,6 +319,7 @@ def expect_empty_render(command_, start, count):
   for i in range(count):
     str_ += "0,0,0,"
   expect_render(command_, start, count, str_[:-1])
+
 
 # --- helper functions ---
 
@@ -336,7 +341,9 @@ def rendered_color_value(buffer_color_value):
 ########################################################################
 
 def specs():
-  # --------------------------------------------------------------------
+########################################################################
+# PUSHING COLORS
+########################################################################
   group("pushing colors to display buffer")
 
   test("it sets a pre-rendered red value in the buffer")
@@ -350,7 +357,9 @@ def specs():
     expect_buffer(color[0] + ":flu", 0, 1, color[1])
 
 
-  # --------------------------------------------------------------------             
+########################################################################
+# PUSHING MULTIPLE COLORS
+########################################################################
   group("pushing multiple colors")                                                                                     
                                                                                                                        
   test("it places two colors (only)")                                                                                  
@@ -360,7 +369,9 @@ def specs():
   expect_buffer("1:rev:2:sea:flu", num_leds - 3, 3, "0,0,0,0,20,10,0,20,10")
                                                                            
 
-  # --------------------------------------------------------------------                                               
+########################################################################
+# PAUSE AND CONTINUE
+########################################################################  
   group("pause and continue")
 
   test("it doesn't render while paused")
@@ -369,7 +380,9 @@ def specs():
   # test pausing and resuming schedules and effects
 
 
-  # --------------------------------------------------------------------                                               
+########################################################################
+# RENDER BUFFER
+########################################################################
   group("rendering colors to the render buffer")
 
   test("it renders a rendered blue value in the render buffer")
@@ -379,7 +392,9 @@ def specs():
   expect_render("org:flu", 0, 1, "51,25,0")
 
 
-  # --------------------------------------------------------------------                                               
+########################################################################
+# ERASURE
+########################################################################
   group("erasure")
 
   test("it erases the rendered value")
@@ -398,7 +413,9 @@ def specs():
   # test erasing to custom black level
 
 
-  # --------------------------------------------------------------------                                               
+########################################################################
+# REPEATING
+########################################################################
   group("repeating")
 
   test("it repeats the color value only once")
@@ -415,7 +432,9 @@ def specs():
   expect_buffer("1:rev:gry:2:rep:flu", num_leds - 4, 4, "0,0,0,10,10,10,10,10,10,10,10,10")
 
 
-  # --------------------------------------------------------------------                                               
+########################################################################
+# FLOODING
+########################################################################
   group("flooding")
 
   test("it floods all leds")
@@ -433,7 +452,9 @@ def specs():
   expect_buffer("1:rev:amb:flo:flu", 0, num_leds, expected_buffer)  
 
 
-  # --------------------------------------------------------------------                                               
+########################################################################
+# MIRRORING
+########################################################################
   group("mirroring")
    
   test("it mirrors the pattern accurately")
@@ -453,7 +474,10 @@ def specs():
   test("it mirrors properly in reverse mode within an offset and window")
   expect_buffer("1:rev:10:off:20:win:red:pur:mir:flu", 10, 10, "10,0,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,10,0,20")
 
-  # --------------------------------------------------------------------                                               
+
+########################################################################
+# EFFECTS BUFFER
+########################################################################
   group("pushing effects to the effects buffer")
 
   test("it places an effect in the effects buffer")
@@ -464,7 +488,9 @@ def specs():
   pending_test("it places multiple effects in the effects buffer")
  
 
-  # --------------------------------------------------------------------                                               
+########################################################################
+# POSITIONING
+########################################################################
   group("positioning")
 
   test("pos sets the next insertion postion and default 0 width")
@@ -476,16 +502,18 @@ def specs():
   test("offset override is always relative to LED #0")
   expect_buffer("2:off:2:off:lav:flu", 0, 5, "0,0,0,0,0,0,15,0,20,0,0,0,0,0,0")
 
-  skip_test("1:rev:3:pos:tun:flo:flu", "positioning works in reverse mode")
+  test("positioning works in reverse mode")
   # positioning is always relative to LED #0 and should be unaffected by direction
-  # expect_buffer("0:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")                                                          
-  # expect_buffer("1:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")
+  expect_buffer("0:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")                                                          
+  expect_buffer("1:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")
 
   skip_test("1:rev:2,2:pos:lgr:flo:flu", "positioning with width works in reverse mode")
   # expect_buffer("1:rev:2,2:pos:lgr:flo:flu", 0, 4, "")                                                                                                                                  
 
 
-  # --------------------------------------------------------------------                                               
+########################################################################
+# COPYING
+########################################################################
   group("copying")
 
   pending_test("it copies the right number of pixels")
@@ -500,40 +528,55 @@ def specs():
   pending_test("it pastes the pattern at the current offset")
  
 
-  # --------------------------------------------------------------------                                                                                                                                   
-  group("palette manipulation")                                                            
-
-  test("the palette resets to the right fixed set of colors")
-  all_palette_colors = ""  
-  for i in range(0, palette_size):
-    all_palette_colors += test_colors.colors[i][1] + ","
-  expect_palette("1:shf", 0, palette_size, all_palette_colors[:-1])
+########################################################################
+# PALETTE SHUFFING
+########################################################################
+  group("palette shuffling")                                                            
 
   test("the palette can be shuffled")
-  expected_colors = "20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"                                                                                                                 
-  expect_palette("1:shf", 0, palette_size, expected_colors)                                                                            
+  expected_colors = "x20,10,0,15,20,0,0,0,20,0,20,0,0,10,20,20,20,0,20,0,15,20,0,0,10,20,0,20,0,10,0,20,10,10,0,20,20,15,0,20,0,20,0,15,20,0,20,15,15,0,20,0,20,20"
+  expect_palette("shf", 0, palette_size, expected_colors)
 
-  test("the shuffler sets every odd-numbered palette color to its compliment")
-  expected_colors = "20,0,0,0,20,20,20,20,0,0,0,20,0,0,20,20,20,0,0,20,20,20,0,0,0,10,20,20,10,0,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
-  expect_palette("1:shf:2:shf", 0, palette_size, expected_colors)                                                                         
+  test("the palette resets to the right fixed set of colors")
+  expect_palette("shf:1:shf", 0, palette_size, standard_palette)
 
-  test("the shuffler creates complimentary colors for the current palette")
-  expected_colors = "20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
-  expect_palette("1:shf:3:shf", 0, palette_size, expected_colors)                                                                 
+  test("the shuffler sets every odd-numbered palette color to the previous one's compliment")
+  expected_colors = "x20,0,0,0,20,20,20,20,0,0,0,20,0,0,20,20,20,0,0,20,20,20,0,0,0,10,20,20,10,0,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+  expect_palette("shf:2:shf", 0, palette_size, expected_colors)                                                                         
 
-  test("the shuffler creates random complimentary color pairs")
-  expected_colors = "20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"   
-  expect_palette("1:shf:3:shf", 0, palette_size, expected_colors)                                                                                             
+  test("the shuffler creates complimentary color pairs for the standard palette")
+  expected_colors = "x20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+  expect_palette("3:shf", 0, palette_size, expected_colors)                                                                 
+
+  test("the shuffler compliments the entire current palette")
+  expected_colors = "x20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"   
+  expect_palette("shf:4:shf", 0, palette_size, expected_colors)                                                                                             
+
+  test("the shuffler rotates the current palettes down")
+  expected_colors = "x20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+  expect_palette("shf:5:shf", 0, palette_size, expected_colors)
+
+  test("the shuffler rotates the current palette up")
+  expected_colors = "x20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+  expect_palette("shf:6:shf", 0, palette_size, expected_colors)
+
+  test("the shuffler reverses the current palette")
+  expected_colors = "x20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+  expect_palette("shf:7:shf", 0, palette_size, expected_colors)
 
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# ZONES
+########################################################################
   group("zones")                                                                          
 
   pending_test("choosing a zone sets the offset and window")
   pending_test("choosing the main zone resets to 0, num_leds")
                                                                                                                                                                                                             
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# OFFSET AND WINDOW
+########################################################################
   group("setting offset and window")                                                                          
                                                               
   test("an offset can be set")
@@ -556,14 +599,18 @@ def specs():
   #expect_int("0,3:tst", 4)
                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# REVERSE AND FORWARD
+########################################################################
   group("reverse and forward")                                                                          
           
   pending_test("the insertion mode can be set to reverse")
   pending_test("the insertion mode can be set to normal")
 
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# PUSHING RGB COLORS
+########################################################################
   group("rgb color")                                                                          
 
   color_value = 255
@@ -588,7 +635,9 @@ def specs():
   expect_render("1:lev:255,255,255:rgb:" + str(default_brightness) + ":lev:flu", 0, 1, expected_rgb_color)                         
                                                                   
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# PUSHING HSL COLORS
+########################################################################
   group("hsl color")                                                                          
 
   color_value = 255                                                                         
@@ -607,7 +656,9 @@ def specs():
   expect_render("1:lev:0,255,255:hsl:" + str(default_brightness) + ":lev:flu", 0, 1, expected_rgb_color)
                                                                                                                                     
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# CUSTOM BLACK LEVEL
+########################################################################
   group("custom black level")                                                                          
   
   pending_test("a custom black level can be set")
@@ -615,7 +666,9 @@ def specs():
   pending_test("placing 'black' uses the custom black level")
                                                                                                                                                                                                          
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# PUSHING RANDOM COLORS
+########################################################################
   group("random color")                                                                          
                                                              
   test("it chooses a random color")
@@ -676,7 +729,9 @@ def specs():
   #expect_effect("2:rnd:rep:rep:flu", 0, 3, "x0,0,2")                                                                                                                                                        
 
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# BLENDING COLORS
+########################################################################
   group("blending colors")                                                                          
 
   pending_test("it blends two colors @ 50%")
@@ -684,7 +739,9 @@ def specs():
   pending_test("it blends two colors @ 10%")
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# MAX, DIM AND BRIGHT
+########################################################################
   group("max, dim and bright")                                                                          
 
   pending_test("it boosts the brightness level")
@@ -692,7 +749,9 @@ def specs():
   pending_test("it maxxes out the brightness level")
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# BLINK EFFECTS
+########################################################################
   group("blink effects")                                                             
 
   pending_test("it renders at the minimum brightness level when blink is off")
@@ -706,14 +765,18 @@ def specs():
   # alternate custom rates
                                                                                                                                                                                                    
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# BREATHE EFFECT
+########################################################################
   group("breathe effect")                                                             
                  
   pending_test("the right breathe brightness levels are used for rendering")
                                                                                                                                                                                           
 
-  # --------------------------------------------------------------------                                                                  
-  group("fade and twinkle effects")                                                             
+########################################################################
+# FADING EFFECTS
+########################################################################
+  group("fade effects")                                                             
         
   test("it modifies the display color with slow fades on flushing")
   expect_buffer("red:sfd:flu", 0, 1, "19,0,0")
@@ -738,15 +801,24 @@ def specs():
   expect_render("flu", 0, 1, "28,0,0")
   expect_render("flu", 0, 1, "20,0,0")
 
-  # --------------------------------------------------------------------                                                                  
+  pending_test("it fast fades properly")
+
+
+########################################################################
+# RESET CLEAR AND STOP
+########################################################################
   group("reset, clear and stop")                                                             
   
                                                                                                                                                                                                          
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# BRIGHTNESS LEVEL
+########################################################################
   group("brightness level")                                                             
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# FADE ANIMATION
+########################################################################
   group("fade animation")                                                             
 
   test("it leaves the buffer empty (black) after done")
@@ -755,15 +827,22 @@ def specs():
   test("it leaves the display empty (black) after done")
   expect_empty_render("olv:flo:flu:fad", 0, num_leds)
 
-  # --------------------------------------------------------------------                                                                  
+
+########################################################################
+# WIPE ANIMATION
+########################################################################
   group("wipe animation")                                                             
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
-  group("animated rotation")                                                             
-                                                                                                                                                                                                           
+########################################################################
+# ANIMATED ROTATION
+########################################################################
+  group("animated rotation")
 
-  # --------------------------------------------------------------------                                                                  
+
+########################################################################
+# ROTATION
+########################################################################
   group("rotation")                                                             
 
   test("it rotates within the current window")
@@ -778,66 +857,92 @@ def specs():
   test("it rotates multiple times in reverse in the current window")
   expect_buffer("0:off:5:win:blu:1:rev:2:rot", 0, 5, "0,0,0,0,0,0,0,0,0,0,0,20,0,0,0")                                                                                                                                                                                                           
 
-  # --------------------------------------------------------------------                                                                  
+
+########################################################################
+# POWER SHIFT
+########################################################################
   group("power shift")                                                             
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# CROSSFADE ANIMATION
+########################################################################
   group("crossfade")                                                             
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
-  group("setting fade rate")                                                             
-                                                                                                                                                                                                           
-
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# SETTING CUSTOM BLINK PERIOD
+########################################################################
   group("setting custom blink period")                                                             
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# SETTING BLINK PERIOD
+########################################################################
   group("setting blink period")                                                             
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# CARRY COLOR
+########################################################################
   group("carry color")                                                                                                            
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# CUSTOM BREATHE TIME
+########################################################################
   group("setting custom breathe time")                                                                                                            
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# MACROS
+########################################################################
   group("setting and running macros")                                                                                                            
 
   test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
   for x in range(49,61):
     expect_macro("rnd:flu:0:set:" + str(x), 0, "249," + str(x) + ",255")                                                                                                                                                                                                           
 
-  # --------------------------------------------------------------------                                                                  
+
+########################################################################
+# DELAY
+########################################################################
   group("delay")                                                                                                            
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# RANDOM NUMBER
+########################################################################
   group("random number")                                                                                                            
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# POSITION
+########################################################################
   group("position")                                                                                                            
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# RANDOM POSITION
+########################################################################
   group("random postion")                                                                                                            
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# SEQUENCING
+########################################################################
   group("sequencing")                                                                                                            
                                                                                                                                                                                                            
 
-  # --------------------------------------------------------------------                                                                  
+########################################################################
+# TESTING
+########################################################################
   group("testing")                                                                                                            
 
 
-  # --------------------------------------------------------------------                                                                                                                                   
+########################################################################
+# PALETTE COLOR SWEEPING
+########################################################################
   group("palette color sweeping")     
 
   test("it sweeps the right default hues")                                                                                  
@@ -890,9 +995,6 @@ def specs():
   expected_colors = "0,0,0,1,0,0,1,0,0,2,0,0,2,0,0,3,0,0,3,0,0,4,0,0,4,0,0,5,0,0,6,0,0,6,0,0,7,0,0,7,0,0,8,0,0,8,0,0,9,0,0,9,0,0"                                                                                                                                             
   expect_palette("0,0,10:csl", 0, palette_size, expected_colors)                                                                                                          
                                                                                                                                                                    
-                                                                                                                     
-        
-
   # test that all three args are 0 after the test runs, saw arg2 being 1 as green success leds were pushed out 
                                                                                                                                                                                                            
 ########################################################################                     
@@ -938,4 +1040,13 @@ if __name__ == '__main__':
   setup() 
   loop()
   print
+
+#def print_frame():
+#  callerframerecord = inspect.stack()[1]    # 0 represents this line
+#                                            # 1 represents line at caller
+#  frame = callerframerecord[0]
+#  info = inspect.getframeinfo(frame)
+#  print info.filename                       # __FILE__     -> Test.py
+#  print info.function                       # __FUNCTION__ -> Main
+#  print info.lineno                         # __LINE__     -> 13
 
