@@ -30,8 +30,11 @@
 // 44-LED Wearable and Hard Hat
 // #define WEARABLE_AND_HARDHAT
 
-// 64-LED Glasses (on wearable, one buffer)
+// 64-LED Glasses
 // #define WEARABLE_AND_GLASSES
+
+// 8-LED standalone wearable
+// #define WEARABLE_8
 
 //////////////////////////////
 // devices profile definitions
@@ -56,11 +59,11 @@
 #define NUM_EEPROM_MACROS 51
 #define BLINK_PERIOD 6000
 #define BREATHE_PERIOD 300
+#define NUM_SEQUENCERS 6
 
 #ifdef LED_STRIP_72
 #define USE_1_DISPLAYS
 #define ANIM_LED_COUNT 72
-#define TWO_WAY_MACROS
 #define ZONES_72_LEDS
 #endif
 
@@ -71,7 +74,6 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #define BLINK_PERIOD 1500
 #define BREATHE_PERIOD 100
-#define TWO_WAY_MACROS
 #endif
 
 #ifdef APOLLO_DISPLAY
@@ -83,7 +85,6 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #define BLINK_PERIOD 1000
 #define BREATHE_PERIOD 50
-#define APOLLO_MACROS
 #endif
 
 #ifdef SPHERE
@@ -93,7 +94,6 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #define BLINK_PERIOD 1500
 #define BREATHE_PERIOD 100
-#define THREE_WAY_MACROS
 #endif
 
 #ifdef RADIUS8
@@ -102,8 +102,8 @@
 #define ZONES_RADIUS8
 #define BLINK_PERIOD 1000
 #define BREATHE_PERIOD 80
-#define NUM_MEMORY_MACROS 4
-#define THREE_WAY_MACROS
+#define NUM_MEMORY_MACROS 2
+#define NUM_SEQUENCERS 2
 #endif
 
 #ifdef PROJECTOR
@@ -113,27 +113,35 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 100
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 150
-#define ONE_WAY_MACROS
 #endif
 
 #ifdef WEARABLE_AND_HARDHAT
 #define WEARABLE
-#define ANIM_LED_COUNT 93
+#define ANIM_LED_COUNT 44
 #define ZONES_HARDHAT
 #define DEFAULT_BRIGHTNESS_PERCENT 15
-#define THREE_WAY_MACROS
 #endif
 
 #ifdef WEARABLE_AND_GLASSES
-#define WEARABLE_TYPE2
+#define WEARABLE
 #define ANIM_LED_COUNT 64
 #define ZONES_GLASSES
 #define DEFAULT_BRIGHTNESS_PERCENT 10
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 150
-#define ONE_WAY_MACROS
 #endif
 
+#ifdef WEARABLE_8
+#define WEARABLE_TYPE3
+#define ANIM_LED_COUNT 72
+#define ZONES_72_LEDS
+#define DEFAULT_BRIGHTNESS_PERCENT 10
+//#define BLINK_PERIOD 6000
+//#define BREATHE_PERIOD 150
+//#define ONE_WAY_MACROS
+#endif
+
+// first wearable: internal is pin 12
 #ifdef WEARABLE
 #define USE_2_DISPLAYS
 #define DISPLAY_PIN1 11
@@ -141,7 +149,16 @@
 #define DISPLAY_PIN3 10
 #endif
 
+// internal as first display
 #ifdef WEARABLE_TYPE2
+#define USE_2_DISPLAYS
+#define DISPLAY_PIN1 12
+#define DISPLAY_PIN2 11
+#define DISPLAY_PIN3 10
+#endif
+
+// internal as only display
+#ifdef WEARABLE_TYPE3
 #define USE_1_DISPLAYS
 #define DISPLAY_PIN1 12
 #define DISPLAY_PIN2 11

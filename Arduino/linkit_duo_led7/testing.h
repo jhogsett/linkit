@@ -65,6 +65,8 @@ void Commands::do_test(int type, int arg1, int arg2){
 //#define TEST_INQUIRY_NUM_ZONES    1
 //#define TEST_INQUIRY_NUM_PALETTES 2
 
+// # displays
+
 // current offset, window, buffer, effects buffer
 
 void Commands::do_test_inquiry(byte type, int arg2){

@@ -162,8 +162,11 @@ class Colors
   static void reset_palette();
   static void shuffle_palette();
   static rgb_color complimentary_color(rgb_color color);
+  static void compliment_pairs();
+  static void random_compliment_pairs();
   static void compliment_palette();
-  static void complimentary_palette();
+  static void rotate_palette(byte times, bool down = true);
+  static void reverse_palette();
   static rgb_color * get_palette();
   static byte get_num_palette_colors();
 
@@ -232,18 +235,56 @@ rgb_color Colors::complimentary_color(rgb_color color){
 
 // create pairs of complimentary colors by making each odd color
 // complimentary of the previous even color
-void Colors::compliment_palette()
+void Colors::compliment_pairs()
 {
   for(byte i = 0; i < NUM_PALETTE_COLORS; i += 2)
     palette[i+1] = complimentary_color(palette[i]);
 }
 
 // create a random palette of complimentary color pairs
-void Colors::complimentary_palette()
+void Colors::random_compliment_pairs()
 {
   reset_palette();
   shuffle_palette();
-  compliment_palette();
+  compliment_pairs();
+}
+
+void Colors::compliment_palette(){
+  for(byte i = 0; i < NUM_PALETTE_COLORS; i ++)
+    palette[i] = complimentary_color(palette[i]);
+}
+
+void Colors::rotate_palette(byte times, bool down){
+  times = max(1, times);
+
+  byte limit = NUM_PALETTE_COLORS - 1;
+  if(down == true){
+      rgb_color carry_color = palette[0];
+
+      for(byte i = 0; i < limit; i++){
+        byte p_from = (i + times) % NUM_PALETTE_COLORS;
+        palette[i] = palette[p_from];
+      }
+      palette[limit] = carry_color;
+  } else {
+      rgb_color carry_color = palette[limit];
+      for(byte i = limit; i > 0; i--){
+        byte p_from = (i - times) % NUM_PALETTE_COLORS;
+        palette[i] = palette[p_from];
+      }
+      palette[0] = carry_color;
+  }
+}
+
+void Colors::reverse_palette(){
+  byte max = NUM_PALETTE_COLORS - 1;
+  byte limit = NUM_PALETTE_COLORS / 2;
+  for(byte i = 0; i < limit; i++){
+    byte swap = max - i;
+    rgb_color carry_color = palette[i];
+    palette[i] = palette[swap];
+    palette[swap] = carry_color;
+  }
 }
 
 rgb_color * Colors::get_palette(){
