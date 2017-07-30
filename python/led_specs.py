@@ -308,6 +308,28 @@ def expect_int(command_, expected):
   got = command_int(command_)
   expect_equal(str(expected), str(got))                                                                  
 
+def expect_offset(command_, expected, positive=True):
+  command_str(command_)
+  got = get_offset()
+  if positive:
+    expect_equal(str(expected), str(got))
+  else:
+    expect_not_equal(str(expected), str(got))
+
+def expect_window(command_, expected, positive=True):
+  command_str(command_)
+  got = get_window()
+  if positive:
+    expect_equal(str(expected), str(got))
+  else:
+    expect_not_equal(str(expected), str(got))
+
+def get_offset():
+  return command_int("0,2:tst")
+
+def get_window():
+  return command_int("0,3:tst")
+
 def expect_empty_buffer(command_, start, count):
   str_ = ""
   for i in range(count):
@@ -483,10 +505,13 @@ def specs():
   test("it places an effect in the effects buffer")
   expect_effect("org:bli:flu", 0, 1, "10")
 
-  pending_test("it places an alternate effect in the effects buffer")
+  test("it places an alternate effect in the effects buffer")
+  expect_effect("org:bre:flu", 0, 1, "30")
 
-  pending_test("it places multiple effects in the effects buffer")
- 
+  test("it places multiple effects in the effects buffer")
+  expect_effect("blu:bla:grn:blb:flu", 0, 2, "22,21") 
+
+  # test placement of all effects with their values
 
 ########################################################################
 # POSITIONING
@@ -582,9 +607,20 @@ def specs():
 ########################################################################
   group("zones")                                                                          
 
-  pending_test("choosing a zone sets the offset and window")
-  pending_test("choosing the main zone resets to 0, num_leds")
+  test("zone zero is the entire display")
+  expect_offset("0:zon:dgr:flo", 0)
+  expect_window("0:zon:olv:flo", num_leds)
+
+  test("zone one is the first 'fine' zone and not equal to the whole display")
+  window = get_window()
+  expect_window("1:zon", window, False)
                                                                                                                                                                                                             
+  test("there are always at least two fine zones, and the second doesn't start at zero")
+  offset = get_offset()
+  window = get_window()
+  expect_offset("2:zon", offset, False)
+  expect_offset("2:zon", window, False)
+
 
 ########################################################################
 # OFFSET AND WINDOW
