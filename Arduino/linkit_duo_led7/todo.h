@@ -1,3 +1,35 @@
+// replace getters/settings with C macros
+
+// rst should not set display back to zero
+
+// introduce setting for "primary" and "secondary" display so the particular display can be changed in real time outside of running program
+
+// ideas for reducing code footprint
+// remove getters/settings and use variables directly (maybe with a special naming convention so they stand out)
+// remove the individual color commands and use the palette only
+// cache dereferenced array element pointers
+// remove commands that are effecively the same like rep and cpy (keep cpy)
+// remove overly-protective guard code
+// move additional settings to the cfg command
+// remove low-use commands/features
+// segment features so they can be enabled/disabled easily
+// DRY up the blink code
+// remove the range of blink commands and set with an argument
+// combine the various switch statements in dispatch command back to single switch 
+// could switch the test code in/out 
+// remove all floating point constants / math
+// pass a pointer to dependencies instead of passing individual arguments if/where possible
+// convert setters/getters into macros
+
+
+// modify clr to reset config to defaults
+
+// a mode when doing random position: only even, or only odd, or only mod N
+
+
+// -1,0:pal could do random palette color, -1,5:pal do random within first 5 colors
+
+
 // for sequencers, use simple byte versions of the range fits 0-255 for speed
 
 // need to be able to manipulate arguments
@@ -23,67 +55,26 @@
 // palette: shift, rotate, sweeps that modify existing palette
 
 
+
+
+
 // ------ COLORS --------------------------------------------------------------
 // add a 15,15,15 gray
+// add high pressure sodium vapor lamp
+
+// water other recognizable colors are common?
+// xenon white
+// argon purple
+// green light green
+// yelllow light amber
+
+// add remaining 5's colors (they may be took dark)
 
 
 
-// this is odd
-
-//command: 0:set:50:seq:pos:blu:flu:rst
-//10k
-//command: 0:run
-//k
-//command: 1,0:tst
-//252,50,0,2,0,92,87,17,1,63,255,0,0,0,0,0,0,0,0,0,k
-//
-
-//command: 0:set:50:seq:pos:blu:flu:rst
-//10k
-//command: 0:run
-//k
-//command: 1,0:tst
-//252,50,0,2,0,89,84,17,1,64,255,0,0,0,0,0,0,0,0,0,k
-//command:
-
-//--> why the extra 3 arg bytes? 
-//
-//3k
-//command: 0:set:0
-//2k
-//command: 0:set:1
-//2k
-//command: 0:set:5
-//2k
-//command: 0:set:50
-//5k
-//command: 0:set:500
-//3k
-//command: 0:set:5000
-//3k
-//command: 0:set:50000
-//3k
-//command: 0:set:500000
-//3k
+// cfg command - signal to reset to default config value
 
 
-
-
-
-
-// need to save previous args for:
-// - passing arguments to macros (calling macro destroys arguments)
-// - direct testing of arguments
-
-// the step argument for sine sequencers could be the sine frequency (default = 1 cycle)
-
-// palette sweep
-// goes from 0-359 automatically filling 18 palette slots (20º apart)
-//   specify saturation and lightness
-//   idea: first arg could be a number specifying anything from 18 colors 1º apart to 18 colors with any angle of sweep
-//   arg0: step angle, default=20 (18 evenly spaced colors)
-//   arg1: saturation, default=255
-//   arg2: lightness, default=255
 
 // shf: need to rotate and transform palette in various ways
 

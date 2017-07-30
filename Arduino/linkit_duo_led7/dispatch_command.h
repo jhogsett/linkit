@@ -73,7 +73,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_POSITION:    set_position(arg0, arg1);                       reset_args = true; break;
     case CMD_RPOSITION:   random_position(arg0);                          reset_args = true; break;
     case CMD_PALETTE:     do_palette(arg0, arg1);                         reset_args = true; break;
-    case CMD_SHUFFLE:     do_shuffle(arg0);                               reset_args = true; break;
+    case CMD_SHUFFLE:     do_shuffle(arg0, arg1);                         reset_args = true; break;
     case CMD_SETBLACK:    set_black_level(arg0, arg1, arg2);              reset_args = true; break;
     case CMD_SEQ_WHEEL:   case CMD_SEQ_SWING: case CMD_SEQ_WHLCO: case CMD_SEQ_SWGCO:
     case CMD_SEQ_WHLSN:   case CMD_SEQ_SWGSN: case CMD_SEQ_WHLPW:

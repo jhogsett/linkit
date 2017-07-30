@@ -2,8 +2,9 @@
 #define SEQUENCER_H
 
 #include <power_ease.h>
+#include "config.h"
 
-#define NUM_SEQUENCES 6
+// #define NUM_SEQUENCERS 6
 
 #define SEQUENCE_WHEEL        0
 #define SEQUENCE_SWING        1
@@ -235,6 +236,12 @@ int Sequence::increment_swing_power(int step){
     spread_position = (this->max - this->current) * this->factor;
 //    spread_position = (this->current - this->low) * this->factor;
 //    spread_position = (this->width - (this->current - this->low)) * this->factor;
+
+  // spread position 
+
+
+
+
   }
   return this->low + (this->width * PowerEase::get_ease(spread_position));
 }
@@ -275,14 +282,14 @@ class Sequencer
 
   private:
 
-  static Sequence sequences[NUM_SEQUENCES];  
+  static Sequence sequences[NUM_SEQUENCERS];  
 };
 
-Sequence Sequencer::sequences[NUM_SEQUENCES];  
+Sequence Sequencer::sequences[NUM_SEQUENCERS];  
 
 void Sequencer::begin(){
   // set default sequences
-  for(int i = 0; i < NUM_SEQUENCES; i++){
+  for(int i = 0; i < NUM_SEQUENCERS; i++){
     sequences[i].begin();
   }
 }

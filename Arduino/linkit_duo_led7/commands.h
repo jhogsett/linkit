@@ -95,7 +95,7 @@ class Commands
   void do_random_number(int arg0, int arg1, int arg2);
   void do_stop();
   void do_palette(int arg0, int arg1);
-  void do_shuffle(int arg0);
+  void do_shuffle(int arg0, int arg1);
   void set_black_level(int arg0, int arg1, int arg2);
 
 #ifdef TEST_FRAMEWORK
@@ -352,8 +352,6 @@ void Commands::do_flood(){
   rgb_color color = buf[source];
   byte effect = effects[source];
 
-//  buf += (offset + 1);
-//  effects += (offset + 1);
   buf += start;
   effects += start;
 
@@ -695,6 +693,8 @@ void Commands::set_fade_rate(int arg0){
   fade_effects->set_fade_rate(arg0/ 10000.0);
 }
 
+//  @ 508 era:1:rev:3:pos:tun:flo:flu -0,0,0,0,0,0,0,0,0,20,11,2,0,0,0 +0,0,0,0,0,0,20,11,2,0,0,0,0,0,0
+      
 // arg[0] index of insertion pointer, default = 0
 // arg[1] width of window, default = 1
 //        -- any magic widths?
@@ -1117,6 +1117,7 @@ void Commands::do_stop(){
   pause();                                                            
  }
 
+// TODO: it's inefficient to insert the colors one at a time; would be better to shift the buffer then overwrite the colors
 // arg[0] the index into the palette of the color to insert, or where to stop rubberstamp insert
 // arg[1] if > 0, colors are inserted counting down from this position
 //                the counting down is done so the palette achieves a left-to-right order when inserted  
@@ -1134,28 +1135,55 @@ void Commands::do_palette(int arg0, int arg1){
   }
 }
 
-void Commands::do_shuffle(int arg0){
+#define SHUFFLE_RANDOM           0
+#define SHUFFLE_RESET            1
+#define SHUFFLE_COMPLIMENT_PAIRS 2
+#define SHUFFLE_RAND_COMP_PAIRS  3
+#define SHUFFLE_COMPLIMENT       4
+#define SHUFFLE_ROTATE_DOWN      5
+#define SHUFFLE_ROTATE_UP        6
+#define SHUFFLE_REVERSE          7
+
+// arg0 - type of shuffle operation
+// arg1 - type-specific argument
+void Commands::do_shuffle(int arg0, int arg1){
   switch(arg0)
   {
-    case 0:
+    case SHUFFLE_RANDOM:
       // create a palette of random colors
       Colors::shuffle_palette();
       break;
 
-    case 1:
+    case SHUFFLE_RESET:
       // reset palette to original built-in colors
       Colors::reset_palette();  
       break;
 
-    case 2:
+    case SHUFFLE_COMPLIMENT_PAIRS:
       // make every odd color the complimentary color of the previous even color
-      Colors::compliment_palette();
+      Colors::compliment_pairs();
       break;
 
-    case 3:
+    case SHUFFLE_RAND_COMP_PAIRS:
       // create a palette of random complimentary color pairs
-      Colors::complimentary_palette();        
+      Colors::random_compliment_pairs();        
        break;
+
+    case SHUFFLE_COMPLIMENT:
+      Colors::compliment_palette();        
+      break;
+      
+    case SHUFFLE_ROTATE_DOWN:
+      Colors::rotate_palette(arg1, true);
+      break;
+      
+    case SHUFFLE_ROTATE_UP:
+      Colors::rotate_palette(arg1, false); 
+      break;
+      
+    case SHUFFLE_REVERSE:
+      Colors::reverse_palette();
+      break;
   }            
 }
 
@@ -1163,10 +1191,6 @@ void Commands::set_black_level(int arg0, int arg1, int arg2){
   rgb_color black_level = {(byte)arg0, (byte)arg1, (byte)arg2};
   buffer->set_black_level(black_level);
 }
-
-
-
-
 
 #include "dispatch_command.h"
 
