@@ -502,13 +502,18 @@ def specs():
   test("offset override is always relative to LED #0")
   expect_buffer("2:off:2:off:lav:flu", 0, 5, "0,0,0,0,0,0,15,0,20,0,0,0,0,0,0")
 
-  test("positioning works in reverse mode")
-  # positioning is always relative to LED #0 and should be unaffected by direction
-  expect_buffer("0:rev:3:pos:tun:flo:flu:rst", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")                                                          
-  expect_buffer("era:1:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")
+  test("positioning in forward mode when offset+width is zero")
+  expect_buffer("0:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")
 
-  skip_test("1:rev:2,2:pos:lgr:flo:flu", "positioning with width works in reverse mode")
-  # expect_buffer("1:rev:2,2:pos:lgr:flo:flu", 0, 4, "")                                                                                                                                  
+  test("positioning in reverse mode when offset+width is zero") 
+  # in reverse mode, color is pushed one less than max and since max = offset, 
+  # the position is reduced by one
+  expect_buffer("1:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,20,11,2,0,0,0,0,0,0")
+
+  test("positioning with width works in reverse mode")
+  # in reverse mode, color is pushed one less than max,
+  # the start position is reduced by one
+  expect_buffer("1:rev:2,2:pos:lgr:flo:flu", 0, 5, "0,0,0,0,0,0,10,20,0,10,20,0,0,0,0")                                                                                                                                  
 
 
 ########################################################################
@@ -534,35 +539,42 @@ def specs():
   group("palette shuffling")                                                            
 
   test("the palette can be shuffled")
-  expected_colors = "20,10,0,15,20,0,0,0,20,0,20,0,0,10,20,20,20,0,20,0,15,20,0,0,10,20,0,20,0,10,0,20,10,10,0,20,20,15,0,20,0,20,0,15,20,0,20,15,15,0,20,0,20,20"
+  expect_palette("shf", 0, palette_size, standard_palette, False)
+  expected_colors = "10,20,0,20,0,0,0,15,20,0,20,0,15,20,0,20,20,0,20,0,15,0,0,20,10,0,20,20,10,0,0,20,15,0,10,20,20,15,0,20,0,20,20,0,10,15,0,20,0,20,10,0,20,20"
   expect_palette("shf", 0, palette_size, expected_colors)
 
   test("the palette resets to the right fixed set of colors")
   expect_palette("shf:1:shf", 0, palette_size, standard_palette)
 
   test("the shuffler sets every odd-numbered palette color to the previous one's compliment")
-  expected_colors = "20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+  expect_palette("2:shf", 0, palette_size, standard_palette, False)
+  expected_colors = "0,20,20,20,0,0,0,0,20,20,20,0,0,10,20,20,10,0,5,20,0,15,0,20,20,10,0,0,10,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
   expect_palette("shf:2:shf", 0, palette_size, expected_colors)                                                                         
 
-  test("the shuffler creates complimentary color pairs for the standard palette")
-  expected_colors = "20,10,0,0,10,20,0,0,20,20,20,0,0,10,20,20,10,0,20,0,15,0,20,5,10,20,0,10,0,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+  test("the shuffler creates a random palette of complimentary pairs")
+  expect_palette("3:shf", 0, palette_size, standard_palette, False)
+  expected_colors = "0,10,20,20,10,0,0,15,20,20,5,0,20,10,0,0,10,20,0,20,20,20,0,0,20,0,10,0,20,10,0,20,15,20,0,5,20,15,0,0,5,20,10,20,0,10,0,20,0,20,10,20,0,10"
   expect_palette("3:shf", 0, palette_size, expected_colors)                                                                 
 
   test("the shuffler compliments the entire current palette")
-  expected_colors = "20,10,0,15,20,0,0,0,20,0,20,0,0,10,20,20,20,0,20,0,15,20,0,0,10,20,0,20,0,10,0,20,10,10,0,20,20,15,0,20,0,20,0,15,20,0,20,15,15,0,20,0,20,20"   
-  expect_palette("shf:4:shf", 0, palette_size, expected_colors)                                                                                             
+  expect_palette("4:shf", 0, palette_size, standard_palette, False)
+  expected_colors = "0,20,20,0,10,20,0,0,20,20,0,20,20,20,0,10,20,0,20,0,0,0,20,0,20,10,0,10,0,20,20,0,10,0,20,10,0,5,20,5,0,20,20,5,0,20,0,5,5,20,0,0,20,5"
+  expect_palette("1:shf:4:shf", 0, palette_size, expected_colors)                                                                                             
 
   test("the shuffler rotates the current palettes down")
-  expected_colors = "20,10,0,15,20,0,0,0,20,0,20,0,0,10,20,20,20,0,20,0,15,20,0,0,10,20,0,20,0,10,0,20,10,10,0,20,20,15,0,20,0,20,0,15,20,0,20,15,15,0,20,0,20,20"
-  expect_palette("shf:5:shf", 0, palette_size, expected_colors)
+  expect_palette("5:shf", 0, palette_size, standard_palette, False)
+  expected_colors = "20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0"
+  expect_palette("1:shf:5:shf", 0, palette_size, expected_colors)
 
   test("the shuffler rotates the current palette up")
-  expected_colors = "20,10,0,15,20,0,0,0,20,0,20,0,0,10,20,20,20,0,20,0,15,20,0,0,10,20,0,20,0,10,0,20,10,10,0,20,20,15,0,20,0,20,0,15,20,0,20,15,15,0,20,0,20,20"
-  expect_palette("shf:6:shf", 0, palette_size, expected_colors)
+  expect_palette("6:shf", 0, palette_size, standard_palette, False)
+  expected_colors = "20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20"
+  expect_palette("1:shf:6:shf", 0, palette_size, expected_colors)
 
   test("the shuffler reverses the current palette")
-  expected_colors = "20,10,0,15,20,0,0,0,20,0,20,0,0,10,20,20,20,0,20,0,15,20,0,0,10,20,0,20,0,10,0,20,10,10,0,20,20,15,0,20,0,20,0,15,20,0,20,15,15,0,20,0,20,20"
-  expect_palette("shf:7:shf", 0, palette_size, expected_colors)
+  expect_palette("7:shf", 0, palette_size, standard_palette, False)
+  expected_colors = "20,0,15,15,0,20,0,20,15,0,15,20,15,20,0,20,15,0,20,0,10,0,20,10,10,20,0,0,10,20,20,0,20,0,20,20,10,0,20,0,0,20,0,20,0,20,20,0,20,10,0,20,0,0"
+  expect_palette("1:shf:7:shf", 0, palette_size, expected_colors)
 
 
 ########################################################################
