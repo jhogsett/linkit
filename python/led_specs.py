@@ -46,6 +46,7 @@ num_leds = 0
 palette_size = 0
 group_number_only = -1
 standard_palette = ""
+alternate_seed = 2
 
 # --- Serial I/O ---
 
@@ -133,6 +134,9 @@ def reset_device():
 
 def reset_standard_seed():
   return "6,3," + str(standard_seed) + ":tst"
+
+def reset_alternate_seed():
+  return "6,3," + str(alternate_seed) + ":tst"
 
 def reset_standard_fade_rate():
   return "3,9995:cfg"
@@ -453,6 +457,9 @@ def specs():
   test("it repeats properly in reverse modei multiple times")
   expect_buffer("1:rev:gry:2:rep:flu", num_leds - 4, 4, "0,0,0,10,10,10,10,10,10,10,10,10")
 
+  test("it repeats the effect")
+  expect_effect("amb:bli:rep", 0, 2, "10,10")
+
 
 ########################################################################
 # FLOODING
@@ -749,8 +756,8 @@ def specs():
   else:
     expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,10,0,20")
 
-  test("the repeated colors get no effect set")
-  expect_effect("1:rnd:rep:rep:flu", 0, 3, "0,0,1") 
+  test("the repeated colors get repeated effects")
+  expect_effect("1:rnd:rep:rep:flu", 0, 3, "1,1,1") 
 
   test("the flooded colors get no effect set")                          
   expect_effect("1:rnd:flo:flu", 0, 3, "1,0,0")    
@@ -759,9 +766,10 @@ def specs():
   expect_buffer("2:rnd:flu", 0, 1, "15,20,0")                                                                                                                                                                    
   expect_effect("2:rnd:flu", 0, 1, "2") 
 
-  test("it repeats using a different color")                                                                                                                                                               
+  test("it repeats using a different color and different effect")                                                                                                                                                               
   expect_buffer("2:rnd:rep:flu", 0, 2, "10,0,20,15,20,0")                                                                                                              
-                                                                                                                                                                                                           
+  expect_effect("2:rnd:rep:flu", 0, 2, "16,2")  
+
   test("it floods using a different color each time")                                                 
   if num_leds == 90:
     expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,20,20,0")                                                                                                                                          
@@ -775,6 +783,9 @@ def specs():
 
   skip_test("2:rnd:rep:rep:flu", "the repeated colors get random effects set")                                                                                                                                                            
   #expect_effect("2:rnd:rep:rep:flu", 0, 3, "x0,0,2")                                                                                                                                                        
+
+  test("it places a random color from the palette")
+  expect_buffer("3:rnd:flu", 0, 1, "15,20,0")
 
 
 ########################################################################
