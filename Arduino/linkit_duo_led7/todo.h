@@ -1,8 +1,12 @@
+// rep doesn't seem to be repeating effects
+
 // replace getters/settings with C macros
 
 // rst should not set display back to zero
 
 // introduce setting for "primary" and "secondary" display so the particular display can be changed in real time outside of running program
+
+// could expand rev command into insertion/operation mode and add things like: xor-remixed position insertion, other insertion modes
 
 // ideas for reducing code footprint
 // remove getters/settings and use variables directly (maybe with a special naming convention so they stand out)

@@ -374,6 +374,7 @@ void Commands::do_flood(){
 #define RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT 0
 #define RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT 1
 #define RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS 2
+#define RANDOM_COLOR_TYPE_PALETTE           3
 
 // types 
 // 0: random color with no effect
@@ -382,14 +383,17 @@ void Commands::do_flood(){
 // others: b&w palette, all colors, all colors including blk
 void Commands::do_random(byte type){
   type = (type < 0) ? 0 : type;
-  buffer->push_color(ColorMath::random_color());
 
   byte effect;
   switch(type){
     case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT: effect = RANDOM0; break;
     case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT: effect = RANDOM1; break;
     case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS: effect = RANDOM2; break;
+
+    case RANDOM_COLOR_TYPE_PALETTE: buffer->push_color(Colors::random_palette_color()); return;
   }
+
+  buffer->push_color(ColorMath::random_color());
   buffer->get_effects_buffer()[buffer->get_offset()] = effect;
 }
 
@@ -541,32 +545,40 @@ void Commands::do_repeat(byte times = 1){
   }
   
   byte effect = buffer->get_effects_buffer()[offset];
-  for(byte i = 0; i < times; i++){
-    switch(effect){
-      case RANDOM0:
-        {
-          // repeat the same color, no effect
-          rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
-          buffer->push_color(color, 1, NO_EFFECT);
-        }
-        break;
-      case RANDOM1:
+  switch(effect){
+    case RANDOM0:
+      {
+        // repeat the same color, no effect
+        rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
+        buffer->push_color(color, times, false, NO_EFFECT);
+      }
+      break;
+    case RANDOM1:
+      {
         // changing random color only, no random effect
-        buffer->push_color(ColorMath::random_color(), 1, effect);
-        break;
-      case RANDOM2:
-        // changing random color and random effect
-        buffer->push_color(ColorMath::random_color(), 1, EffectsProcessor::random_effect());
-        break;
-      default:
-        {
-          rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
-          buffer->push_color(color, 1, effect);
+        for(byte i = 0; i < times; i++){
+          buffer->push_color(ColorMath::random_color(), 1, false, effect);
         }
-        break;
-    }
-  }    
+      }
+      break;
+    case RANDOM2:
+      {
+        // changing random color and random effect
+        for(byte i = 0; i < times; i++){
+          buffer->push_color(ColorMath::random_color(), 1, false, EffectsProcessor::random_effect());
+        }
+      }
+      break;
+    default:
+      {
+        rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
+        buffer->push_color(color, times, false, effect);
+      }
+      break;
+  }
 }
+
+// void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
 
 //void Commands::do_elastic_shift(byte count, byte max = 0){
 //#ifdef USE_ELASTIC_EASE  

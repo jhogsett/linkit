@@ -9,11 +9,14 @@
 // device profile selection
 ///////////////////////////
 
+// wearable and 36-LED annunciator
+#define WEARABLE_AND_ANNUNCIATOR
+
 // single 72-LED strip
 // #define LED_STRIP_72
 
 // single 90-LED strip
-#define LED_STRIP_90
+// #define LED_STRIP_90
 
 // single 90-LED strip in Apollo
 // #define APOLLO_DISPLAY
@@ -139,6 +142,15 @@
 //#define BLINK_PERIOD 6000
 //#define BREATHE_PERIOD 150
 //#define ONE_WAY_MACROS
+#endif
+
+#ifdef WEARABLE_AND_ANNUNCIATOR
+#define WEARABLE
+#define ANIM_LED_COUNT 36
+#define ZONES_ANNUNCIATOR
+#define DEFAULT_BRIGHTNESS_PERCENT 25
+#define BLINK_PERIOD 2000
+#define BREATHE_PERIOD 125
 #endif
 
 // first wearable: internal is pin 12

@@ -7,17 +7,23 @@
 
 //#if defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV)
 
-#if defined(ZONES_90_LEDS)
+#if defined(ZONES_ANNUNCIATOR)
+#define NUM_ZONES 10
+#define FINE_ZONES 3 //                              3 zones of 12    6 zones of 6
+const byte PROGMEM zone_offsets[NUM_ZONES]= {   0,    0, 12, 24,       0, 6,  12, 18, 24, 30 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 36,   12, 24, 36,       6, 12, 18, 24, 30, 36 };
+
+#elif defined(ZONES_90_LEDS)
 #define NUM_ZONES 12
 #define FINE_ZONES 6 //                              6 zones of 15             2 halves  3 thirds
-const byte PROGMEM zone_offsets[NUM_ZONES]= {  0,     0, 15, 30, 45, 60, 75,    0, 45,     0, 30, 60, };
-const byte PROGMEM zone_windows[NUM_ZONES] = { 90,   15, 30, 45, 60, 75, 90,   45, 90,    30, 60, 90, };
+const byte PROGMEM zone_offsets[NUM_ZONES]= {  0,     0, 15, 30, 45, 60, 75,    0, 45,     0, 30, 60 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 90,   15, 30, 45, 60, 75, 90,   45, 90,    30, 60, 90 };
 
 #elif defined(ZONES_72_LEDS)
 #define NUM_ZONES 8
 #define FINE_ZONES 4 //                              4 zones of 18     halves     center half
-const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,    0, 18, 36, 54,    0, 36,    18, };
-const byte PROGMEM zone_windows[NUM_ZONES] = { 72,   18, 36, 54, 72,   36, 72,    53, };
+const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,    0, 18, 36, 54,    0, 36,    18 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 72,   18, 36, 54, 72,   36, 72,    53 };
 
 #elif defined(ZONES_SPHERE)
 #define NUM_ZONES 13
