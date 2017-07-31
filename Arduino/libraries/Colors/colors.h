@@ -159,6 +159,7 @@ class Colors
 
   static const rgb_color * const get_color(byte c);
 
+  static rgb_color random_palette_color();
   static void reset_palette();
   static void shuffle_palette();
   static rgb_color complimentary_color(rgb_color color);
@@ -199,6 +200,10 @@ const rgb_color * const Colors::get_color(byte c){
   return &return_color;
 }
 #endif
+
+rgb_color Colors::random_palette_color(){
+  return palette[random(NUM_PALETTE_COLORS)];
+}
 
 void Colors::reset_palette(){
   for(byte i = 0; i < NPRETTY_COLORS; i++){
