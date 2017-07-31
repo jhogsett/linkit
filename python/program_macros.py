@@ -139,6 +139,26 @@ def setup():
 
 ######################################################################
 
+def annunciator_macros():
+  print cyan("annunciator macros:\n")
+
+  set_macro(10, "1:pau:16:run:19:run:21:run", 0)
+
+  set_macro(11, "0:snw:pos:0:pal:sfd:flo:rst:flu", 0);
+  set_macro(12, "1:snw:pos:1:pal:sfd:flo:rst", 0);
+  set_macro(13, "2:snw:pos:2:pal:sfd:flo:rst", 0);
+
+  set_macro(14, "0,13,0:ssc:1,25,12:ssc", 0);
+  set_macro(15, "2,37,24:ssc", 0);
+  set_macro(16, "14:run:15:run:3,8000:cfg", 0);
+
+  set_macro(17, "145,11:sch:150,12:sch", 0);
+  set_macro(18, "155,13:sch", 0);
+  set_macro(19, "17:run:18:run", 0);
+
+  set_macro(20, "shf", 1);
+  set_macro(21, "13000,20:sch", 0);
+
 def apollo_macros(): 
   print cyan("apollo macros:\n")
 
@@ -174,18 +194,6 @@ def apollo_macros():
   set_macro(39, "4,76,60:ssc:5,91,75:ssc", 16);          
   set_macro(40, "37:run:38:run:39:run", 9);    
                                                       
-#  set_macro(31, "0:ssp:pos:0:pal:sfd:rst:flu", 10);             
-#  set_macro(32, "1:ssp:pos:1:pal:sfd:rst", 9);                 
-#  set_macro(33, "2:ssp:pos:2:pal:sfd:rst", 9);                 
-#  set_macro(34, "3:ssp:pos:3:pal:sfd:rst", 9);                 
-#  set_macro(35, "4:ssp:pos:4:pal:sfd:rst", 9);         
-#  set_macro(36, "5:ssp:pos:5:pal:sfd:rst", 9);                
-                                                              
-#  set_macro(37, "0,16,0:ssp:1,31,15:ssp", 14);                  
-#  set_macro(38, "2,44,30:ssp:3,60,44:ssp", 16);         
-#  set_macro(39, "4,75,59:ssp:5,90,74:ssp", 16);                 
-#  set_macro(40, "37:run:38:run:39:run", 9);            
-                                                              
   set_macro(41, "21,31:sch:22,32:sch", 12);             
   set_macro(42, "23,33:sch:24,34:sch", 12);                     
   set_macro(43, "25,35:sch:26,36:sch", 12);                     
@@ -200,24 +208,24 @@ def default_macros():
 def threeway_macros():
   print cyan("three way macros\n")
 
-  set_macro(10, "19:run");
+  set_macro(10, "19:run", 0);
 
-  set_macro(11, "wht:brt:brt:flo:flu:30:del");
-  set_macro(12, "rnd:brt:brt:sfd:flo:flu");
-  set_macro(13, "11:run:12:run");
-  set_macro(14, "13:run:20000,10000,14:rng:sch");
+  set_macro(11, "wht:brt:brt:flo:flu:30:del", 0);
+  set_macro(12, "rnd:brt:brt:sfd:flo:flu", 0);
+  set_macro(13, "11:run:12:run", 0);
+  set_macro(14, "13:run:20000,10000,14:rng:sch", 0);
     
-  set_macro(15, "rps:wht:brt:brt:sfd:rst");
-  set_macro(16, "rps:1:rnd:sfd:flu:rst");
-  set_macro(17, "fad:50,15:sch:20000,14:sch");
-  set_macro(18, "fad:50,16:sch");
+  set_macro(15, "rps:wht:brt:brt:sfd:rst", 0);
+  set_macro(16, "rps:1:rnd:sfd:flu:rst", 0);
+  set_macro(17, "fad:50,15:sch:20000,14:sch", 0);
+  set_macro(18, "fad:50,16:sch", 0);
     
-  set_macro(19, "-1:sch:60000,19,20:sch:17:run");
-  set_macro(20, "-1:sch:60000,19,21:sch:18:run");
-  set_macro(21, "-1:sch:60000,19,19:sch:23:run");
+  set_macro(19, "-1:sch:60000,19,20:sch:17:run", 0);
+  set_macro(20, "-1:sch:60000,19,21:sch:18:run", 0);
+  set_macro(21, "-1:sch:60000,19,19:sch:23:run", 0);
 
-  set_macro(22, "-3:rng:zon:art:flu:rst");
-  set_macro(23, "fad:2:rnd:flo:flu:50,22:sch");
+  set_macro(22, "-3:rng:zon:art:flu:rst", 0);
+  set_macro(23, "fad:2:rnd:flo:flu:50,22:sch", 0);
 
 def oneway_macros():
   print cyan("one way macros\n")
@@ -239,8 +247,12 @@ def loop():
       threeway_macros()
     elif sys.argv[1] == "oneway":
       oneway_macros()
+    elif sys.argv[1] == "annunciator":
+      annunciator_macros()
   else:
     default_macros()
+
+  command_str("cnt:10:run")
 
   if len(sys.argv) > 2:                                      
     command_str(sys.argv[2])
