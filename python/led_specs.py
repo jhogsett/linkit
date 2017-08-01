@@ -520,6 +520,7 @@ def specs():
 
   # test placement of all effects with their values
 
+
 ########################################################################
 # POSITIONING
 ########################################################################
@@ -571,42 +572,42 @@ def specs():
   group("palette shuffling")                                                            
 
   test("the palette can be shuffled")
-  expect_palette("shf", 0, palette_size, standard_palette, False)
+  expect_palette("shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "10,20,0,20,0,0,0,15,20,0,20,0,15,20,0,20,20,0,20,0,15,0,0,20,10,0,20,20,10,0,0,20,15,0,10,20,20,15,0,20,0,20,20,0,10,15,0,20,0,20,10,0,20,20"
-  expect_palette("shf", 0, palette_size, expected_colors)
+  expect_palette("shf:flu", 0, palette_size, expected_colors)
 
   test("the palette resets to the right fixed set of colors")
-  expect_palette("shf:1:shf", 0, palette_size, standard_palette)
+  expect_palette("shf:1:shf:flu", 0, palette_size, standard_palette)
 
   test("the shuffler sets every odd-numbered palette color to the previous one's compliment")
-  expect_palette("2:shf", 0, palette_size, standard_palette, False)
+  expect_palette("2:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "0,20,20,20,0,0,0,0,20,20,20,0,0,10,20,20,10,0,5,20,0,15,0,20,20,10,0,0,10,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
-  expect_palette("shf:2:shf", 0, palette_size, expected_colors)                                                                         
+  expect_palette("shf:2:shf:flu", 0, palette_size, expected_colors)                                                                         
 
   test("the shuffler creates a random palette of complimentary pairs")
-  expect_palette("3:shf", 0, palette_size, standard_palette, False)
+  expect_palette("3:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "0,10,20,20,10,0,0,15,20,20,5,0,20,10,0,0,10,20,0,20,20,20,0,0,20,0,10,0,20,10,0,20,15,20,0,5,20,15,0,0,5,20,10,20,0,10,0,20,0,20,10,20,0,10"
-  expect_palette("3:shf", 0, palette_size, expected_colors)                                                                 
+  expect_palette("3:shf:flu", 0, palette_size, expected_colors)                                                                 
 
   test("the shuffler compliments the entire current palette")
-  expect_palette("4:shf", 0, palette_size, standard_palette, False)
+  expect_palette("4:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "0,20,20,0,10,20,0,0,20,20,0,20,20,20,0,10,20,0,20,0,0,0,20,0,20,10,0,10,0,20,20,0,10,0,20,10,0,5,20,5,0,20,20,5,0,20,0,5,5,20,0,0,20,5"
-  expect_palette("1:shf:4:shf", 0, palette_size, expected_colors)                                                                                             
+  expect_palette("1:shf:4:shf:flu", 0, palette_size, expected_colors)                                                                                             
 
   test("the shuffler rotates the current palettes down")
-  expect_palette("5:shf", 0, palette_size, standard_palette, False)
+  expect_palette("5:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0"
-  expect_palette("1:shf:5:shf", 0, palette_size, expected_colors)
+  expect_palette("1:shf:5:shf:flu", 0, palette_size, expected_colors)
 
   test("the shuffler rotates the current palette up")
-  expect_palette("6:shf", 0, palette_size, standard_palette, False)
+  expect_palette("6:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20"
-  expect_palette("1:shf:6:shf", 0, palette_size, expected_colors)
+  expect_palette("1:shf:6:shf:flu", 0, palette_size, expected_colors)
 
   test("the shuffler reverses the current palette")
-  expect_palette("7:shf", 0, palette_size, standard_palette, False)
+  expect_palette("7:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "20,0,15,15,0,20,0,20,15,0,15,20,15,20,0,20,15,0,20,0,10,0,20,10,10,20,0,0,10,20,20,0,20,0,20,20,10,0,20,0,0,20,0,20,0,20,20,0,20,10,0,20,0,0"
-  expect_palette("1:shf:7:shf", 0, palette_size, expected_colors)
+  expect_palette("1:shf:7:shf:flu", 0, palette_size, expected_colors)
 
 
 ########################################################################
@@ -615,18 +616,18 @@ def specs():
   group("zones")                                                                          
 
   test("zone zero is the entire display")
-  expect_offset("0:zon:dgr:flo", 0)
-  expect_window("0:zon:olv:flo", num_leds)
+  expect_offset("0:zon:dgr:flo:flu", 0)
+  expect_window("0:zon:olv:flo:flu", num_leds)
 
   test("zone one is the first 'fine' zone and not equal to the whole display")
   window = get_window()
-  expect_window("1:zon", window, False)
+  expect_window("1:zon:lav:flo:flu", window, False)
                                                                                                                                                                                                             
   test("there are always at least two fine zones, and the second doesn't start at zero")
   offset = get_offset()
   window = get_window()
-  expect_offset("2:zon", offset, False)
-  expect_offset("2:zon", window, False)
+  expect_offset("2:zon:amb:flo:flu", offset, False)
+  expect_offset("2:zon:ros:flo:flu", window, False)
 
 
 ########################################################################
@@ -659,8 +660,11 @@ def specs():
 ########################################################################
   group("reverse and forward")                                                                          
           
-  pending_test("the insertion mode can be set to reverse")
-  pending_test("the insertion mode can be set to normal")
+  test("the insertion mode can be set to reverse")
+  expect_buffer("5:win:1:rev:blu:flu", 0, 6, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0")
+
+  test("the insertion mode can be set to normal")
+  expect_buffer("5:win:0:rev:yel:flu", 0, 6, "20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
 
 
 ########################################################################
