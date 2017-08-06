@@ -1,3 +1,37 @@
+// goals: sequence crawling from zone to zone, move a sequencing zone back and forth slowly
+
+// maybe setting sequence should leave arg set to low value
+
+
+// could have an arg command that does various stuff
+// examples:
+//   0:arg - restore previous arg0
+//   1:arg - restore previous arg0, arg1
+//   2:arg - 
+
+
+// can the wheel sequence be switched in direction?
+
+// could have 8-bit versions of sequencers for speed
+
+
+// need triggers, want the cosine swing and wheel to trigger other ones
+//   also need one-time action sequencers
+//   could set trigger macros per type of sequencer
+
+// trigger idea: when filling up and ran out of open positions
+
+// to sequence hsl color sweep starting angle, need the output of the sequencer to be in arg1 wit arg0 being a fixed value
+// --> maybe reverse the arguments? might be more likely to sequence the starting angle instead of the step angle
+
+// sequencer will leave value in arg0, how to get it into arg1?
+// another sequencer type?
+
+// arg command: shifts args up and puts values in arg0
+// for instnace: existing values are 1,2,3, then 120:arg, now they're 120,1,2
+// 120,5:arg would produce 120,5,1
+
+
 // rep doesn't seem to be repeating effects
 
 // replace getters/settings with C macros

@@ -37,9 +37,20 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_BRIGHT:      do_bright();                                                       break;
     case CMD_BLINK:       case CMD_BLINK1:    case CMD_BLINK2:    case CMD_BLINK3:       case CMD_BLINK4:    
     case CMD_BLINK5:      case CMD_BLINK6:    case CMD_BLINKA:    case CMD_BLINKB:       case CMD_BLINKC:
-    case CMD_BREATHE:     case CMD_SLOW_FADE: case CMD_FAST_FADE: case CMD_TWINKLE_OPEN:
-    case CMD_RAW_OPEN: 
+    case CMD_BREATHE:     case CMD_SLOW_FADE: case CMD_FAST_FADE: 
     case CMD_STATIC:      dispatch_effect(cmd);                                              break;
+    
+    case CMD_ARGUMENT:    
+    {
+      // put the previous arg0 into arg1 and set arg0
+      command_processor->sub_args[2] = 0;
+      command_processor->sub_args[1] = command_processor->accumulator;  
+      // don't reset args
+    }
+    break;
+
+    case CMD_RAW_OPEN:                                                                       break;
+
     case CMD_BLINKR:      effects_processor->start_blinking_r();                             break;
     case CMD_EFFECTR:     effects_processor->start_effect_r();                               break;
     case CMD_PAUSE:       pause(arg0);                                    reset_args = true; break;
@@ -148,8 +159,6 @@ void Commands::dispatch_effect(int cmd){
     case CMD_BREATHE:   effect = BREATHE_ON; break;
     case CMD_SLOW_FADE: effect = SLOW_FADE;  break;
     case CMD_FAST_FADE: effect = FAST_FADE;  break;
-    case CMD_TWINKLE_OPEN: effect = NO_EFFECT; break;
-    case CMD_RAW_OPEN:  effect = NO_EFFECT;  break;
     case CMD_STATIC:    effect = STATIC_ON;  break;
   }
    
@@ -178,6 +187,9 @@ void Commands::dispatch_color_sequence(int cmd){
   byte type;
   switch(cmd)
     {
+      // what if arg0 and arg1 positions were swapped?
+      // there's a symmetry with the other types that should keep them not swapped
+      
       // arg0 - step angle, default = 20
       //   if arg0 < 0, the order is reverse
       // arg1 - starting hue angle 0-359, default = 0 (red)

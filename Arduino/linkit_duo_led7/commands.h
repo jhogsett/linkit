@@ -846,12 +846,16 @@ int Commands::random_num(int max, int min){
 
 // shortcut: once a special command is set to establish type, 'seq' can be used to read the values regardless of type
 //
+// need to be able to toggle the direction of a wheel sequencer
+// 
 // setting
 // arg0 - sequence number, 0-5, default = 0
 // arg1 - high limit, default = 10 for 0-9, must be >0 for 'setting' mode
 // arg2 - low limit, default = 0 for 0-9
 // 1,10,0:seq - set sequence #1 to 0 - 9, reset to 0
 // 1,10,2:seq - set sequence #1 to 2 - 9, reset to 2
+// note: leaves arg0 set to the sequence low value
+//       to clear, use an argument of "0"
 //
 // getting
 // arg0 - sequence number, 0-5, default = 0
@@ -882,12 +886,13 @@ int Commands::do_sequence(byte type, int arg0, int arg1, int arg2){
   }
 }
 
+// returns the low value to begin the sequece
 int Commands::do_set_sequence(byte type, int arg0, int arg1, int arg2){
   // values are entered in high,low order, so low can be skipped if zero
   // note the reverse argument order compared to do_next_sequence()
   //                         low   high
   sequencer->set(arg0, type, arg2, arg1);
-  return 0;
+  return arg2;
 }
 
 int Commands::do_next_sequence(int arg0, int arg1, int arg2){
