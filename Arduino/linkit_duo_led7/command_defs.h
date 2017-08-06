@@ -63,11 +63,13 @@
 #define CMD_BREATHE      54
 #define CMD_SLOW_FADE    55
 #define CMD_FAST_FADE    56
-#define CMD_TWINKLE_OPEN      57
-#define CMD_RAW_OPEN          58 
-#define CMD_STATIC       59
-#define CMD_BLINKR       60
-#define CMD_EFFECTR      61
+#define CMD_STATIC       57
+#define CMD_BLINKR       58
+#define CMD_EFFECTR      59
+
+#define CMD_ARGUMENT     60
+#define CMD_RAW_OPEN          61 
+
 #define CMD_PAUSE        62
 #define CMD_CONTINUE     63
 
@@ -150,7 +152,6 @@ const char cmd_035[] PROGMEM = "tur";
 const char cmd_036[] PROGMEM = "lav";
 const char cmd_037[] PROGMEM = "ros";
 const char cmd_038[] PROGMEM = "neo";
-
 const char cmd_039[] PROGMEM = "rnd";
 const char cmd_040[] PROGMEM = "ble";
 const char cmd_041[] PROGMEM = "max";
@@ -169,11 +170,11 @@ const char cmd_053[] PROGMEM = "blc";
 const char cmd_054[] PROGMEM = "bre";
 const char cmd_055[] PROGMEM = "sfd";
 const char cmd_056[] PROGMEM = "ffd";
-const char cmd_057[] PROGMEM = "twi";
-const char cmd_058[] PROGMEM = "raw";
-const char cmd_059[] PROGMEM = "sta";
-const char cmd_060[] PROGMEM = "blr";
-const char cmd_061[] PROGMEM = "efr";
+const char cmd_057[] PROGMEM = "sta";
+const char cmd_058[] PROGMEM = "blr";
+const char cmd_059[] PROGMEM = "efr";
+const char cmd_060[] PROGMEM = "arg";
+const char cmd_061[] PROGMEM = "raw";
 const char cmd_062[] PROGMEM = "pau";
 const char cmd_063[] PROGMEM = "cnt";
 const char cmd_064[] PROGMEM = "rst";

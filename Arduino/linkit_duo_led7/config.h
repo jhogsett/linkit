@@ -10,13 +10,13 @@
 ///////////////////////////
 
 // wearable and 36-LED annunciator
-#define WEARABLE_AND_ANNUNCIATOR
+// #define WEARABLE_AND_ANNUNCIATOR
 
 // single 72-LED strip
 // #define LED_STRIP_72
 
 // single 90-LED strip
-// #define LED_STRIP_90
+#define LED_STRIP_90
 
 // single 90-LED strip in Apollo
 // #define APOLLO_DISPLAY
@@ -85,7 +85,7 @@
 #define ZONES_90_LEDS
 #define AUTO_BRIGHTNESS_MIN 5
 #define AUTO_BRIGHTNESS_MAX 100
-#define DEFAULT_BRIGHTNESS_PERCENT 25
+#define DEFAULT_BRIGHTNESS_PERCENT 100
 #define BLINK_PERIOD 1000
 #define BREATHE_PERIOD 50
 #endif
