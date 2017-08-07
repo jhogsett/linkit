@@ -1,4 +1,4 @@
-// goals: sequence crawling from zone to zone, move a sequencing zone back and forth slowly
+// goals: sequence crawling from zone to zone, move a sequencing zone back and forth slowly, slowly sequencing HSL along with 6 sequncers
 
 // maybe setting sequence should leave arg set to low value
 
@@ -8,6 +8,47 @@
 //   0:arg - restore previous arg0
 //   1:arg - restore previous arg0, arg1
 //   2:arg - 
+
+// maybe keep math, argument manipulation/recovery separate for simplicity
+
+// what are the useful combinations of argument manipulation?
+// arg0 = saved arg0, also arg1=arg0 first
+// arg1 = saved arg0
+// arg2 = saved arg0
+
+// maybe: 
+// 0:arg (upshift)   - arg2 = arg1, arg1 = arg0, arg0 = accum
+// 1:arg (downshift) - accum = arg0, arg0 = arg1, arg1 = arg2, arg2 = 0
+
+// use case: need to supply arg0 and arg1 to change color sequence
+// need to supply varying arg0 and arg1
+//   get the first arg0 - 0:seq  (at this point arg0 receives the next seq #0)
+//   get the second arg0 - 1:seq (on "1" argument, accum receives arg0; on "seq" arg0 receives next seq #1
+//   shift the arguments up - arg (at this point arg2 receives arg1, arg1 receives arg0, arg0 receives = accum)
+
+
+// could have sto and rcl
+// 0:sto saves arg0,arg1,arg2
+// 1:sto saves arg0
+// 2:sto saves arg1
+// 4:sto saves arg2
+// 7:sto saves arg0,arg1,arg2
+// 0:rcl restores arg0,arg1,arg2
+// 1:rcl restores arg0
+// 2:rcl restores arg1
+// 4:rcl restores arg2
+// 7:rcl restores arg0,arg1,arg2
+// PROBLEM: sto and rcl can't take arguments in order to prevent contamination
+
+
+// when running a macro, like 0:run, could leave arg1 and arg2, then set arg0 = accum, in this way the macro running arg is hidden and arguments can be passed in to the macro
+
+
+// sto could always store all three arguments, then an argument can be passed to rcl to restore a specific argument using accum to keep arg0
+// could do something much simpler:
+//   sto: just saves arg0 to accum
+//   rcl: just restores arg1 from accum
+
 
 
 // can the wheel sequence be switched in direction?

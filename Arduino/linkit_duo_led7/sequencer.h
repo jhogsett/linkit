@@ -24,6 +24,8 @@
 #define DEFAULT_LOW    0
 #define DEFAULT_HIGH  10
 
+#define REDUCED_MEMORY_FOOTPRINT
+
 #include <macros.h>
 
 class Sequence
@@ -58,16 +60,47 @@ class Sequence
   int increment_wheel_power(int step);
   int increment_swing_power(int step);
 
+  // can type and state be consolidated
+
   byte type;
+
   int low;
   int max;
+
+#if !defined(REDUCED_MEMORY_FOOTPRINT)  
   int width;
+#endif
+  
   int current;
   int previous;
+  
   byte state;
+
+//#if !defined(REDUCED_MEMORY_FOOTPRINT)  
   float factor;
+//#endif
+
+// how different is this from previous?
   int prev_computed;
+
+#if defined(REDUCED_MEMORY_FOOTPRINT)
+  int width();
+//  float factor();
+#endif
+
  };
+
+  int Sequence::width(){
+#if defined(REDUCED_MEMORY_FOOTPRINT)
+    return this->max - this->low;    
+#else
+    return this->width;
+#endif
+  }
+  
+//  float Sequence::factor(){
+//    
+//  }
 
 void Sequence::begin(){
   set(DEFAULT_TYPE, DEFAULT_LOW, DEFAULT_HIGH);
@@ -78,7 +111,11 @@ void Sequence::set(byte type, int low, int high){
   this->type = type;
   this->low = low;
   this->max = high - 1;
+
+#if !defined(REDUCED_MEMORY_FOOTPRINT)  
   this->width = this->max - this->low;
+#endif
+  
   this->previous = this->low;
 
   switch(this->type){
@@ -86,11 +123,15 @@ void Sequence::set(byte type, int low, int high){
     case SEQUENCE_SWING_COSINE:
     case SEQUENCE_WHEEL_SINE:
     case SEQUENCE_SWING_SINE:
-      this->factor = COSINE_RANGE / this->width;
+// #if defined(REDUCED_MEMORY_FOOTPRINT) - unfinished
+//      this->factor = COSINE_RANGE / this->width;
+//#else
+      this->factor = COSINE_RANGE / this->width();
+//#endif
       break;
     case SEQUENCE_WHEEL_POWER:
     case SEQUENCE_SWING_POWER:
-      this->factor = PowerEase::ease_range() / this->width;
+      this->factor = PowerEase::ease_range() / this->width();
       break;
   }
 
@@ -189,31 +230,31 @@ int Sequence::increment_swing_reverse(int step){
 int Sequence::increment_wheel_cosine(int step){
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
-  return this->low + (this->width * ColorMath::get_cosine(spread_position));
+  return this->low + (this->width() * ColorMath::get_cosine(spread_position));
 }
 
 int Sequence::increment_swing_cosine(int step){
   increment_swing(step);
   byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
-  return this->low + (this->width * ColorMath::get_cosine(spread_position));
+  return this->low + (this->width() * ColorMath::get_cosine(spread_position));
 }
 
 int Sequence::increment_wheel_sine(int step){
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
-  return this->low + (this->width * ColorMath::get_sine(spread_position));
+  return this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
 int Sequence::increment_swing_sine(int step){
   increment_swing(step);
   byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
-  return this->low + (this->width * ColorMath::get_sine(spread_position));
+  return this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
 int Sequence::increment_wheel_power(int step){
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
-  return this->low + (this->width * PowerEase::get_ease(spread_position));
+  return this->low + (this->width() * PowerEase::get_ease(spread_position));
 }
 
 // TODO the sequence is not symmetrical forward and back so when coming back need to treat it oppositely
@@ -243,7 +284,7 @@ int Sequence::increment_swing_power(int step){
 
 
   }
-  return this->low + (this->width * PowerEase::get_ease(spread_position));
+  return this->low + (this->width() * PowerEase::get_ease(spread_position));
 }
 
 int Sequence::current_position(){

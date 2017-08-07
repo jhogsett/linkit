@@ -40,16 +40,21 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_BREATHE:     case CMD_SLOW_FADE: case CMD_FAST_FADE: 
     case CMD_STATIC:      dispatch_effect(cmd);                                              break;
     
-    case CMD_ARGUMENT:    
+    case CMD_STORE:    
     {
-      // put the previous arg0 into arg1 and set arg0
-      command_processor->sub_args[2] = 0;
-      command_processor->sub_args[1] = command_processor->accumulator;  
+      // save arg0 in the accumulator 
+      command_processor->accumulator = command_processor->sub_args[0];
       // don't reset args
     }
     break;
 
-    case CMD_RAW_OPEN:                                                                       break;
+    case CMD_RECALL:    
+    {
+      // restore the accumulator to arg1
+      command_processor->sub_args[1] = command_processor->accumulator;
+      // don't reset args
+    }
+    break;
 
     case CMD_BLINKR:      effects_processor->start_blinking_r();                             break;
     case CMD_EFFECTR:     effects_processor->start_effect_r();                               break;
