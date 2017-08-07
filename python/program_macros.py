@@ -163,44 +163,48 @@ def apollo_macros():
   print cyan("apollo macros:\n")
 
   # tunsten lamp                                 
-  set_macro(12, "clr:-1:sch:1:pau:21:run", 11);
+  set_macro(12, "clr:-1:sch:1:pau:21:run", 11)
                                                  
   # sparking colors with drain                   
-  set_macro(11, "clr:100,13:sch:10000,14:sch", 13); 
+  set_macro(11, "clr:100,13:sch:10000,14:sch", 13) 
   
   # swinging random colors                                               
-  set_macro(10, "clr:30:run", 4);                  
+  set_macro(10, "clr:30:run:25:run", 0)                  
                                                  
-  set_macro(13, "-1:rps:1:rnd:sfd:flu:rst", 10);    
-  set_macro(14, "15,15:run:500:del", 10);           
-  set_macro(15, "16:run:17:run:18:run:flu", 10); 
-  set_macro(16, "1:zon:1:blk:2:zon:1:rev:1:blk:rst", 16);
-  set_macro(17, "3:zon:1:blk:4:zon:1:rev:1:blk:rst", 16);
-  set_macro(18, "5:zon:1:blk:6:zon:1:rev:1:blk:rst", 16);
+  set_macro(13, "-1:rps:1:rnd:sfd:flu:rst", 10)    
+  set_macro(14, "15,15:run:500:del", 10)           
+  set_macro(15, "16:run:17:run:18:run:flu", 10) 
+  set_macro(16, "1:zon:1:blk:2:zon:1:rev:1:blk:rst", 16)
+  set_macro(17, "3:zon:1:blk:4:zon:1:rev:1:blk:rst", 16)
+  set_macro(18, "5:zon:1:blk:6:zon:1:rev:1:blk:rst", 16)
                                                       
-  set_macro(21, "era:50:lev:13,120:run:tun:flo:cfa:100:lev", 16);
+  set_macro(21, "era:50:lev:13,120:run:tun:flo:cfa:100:lev", 16)
                                                               
-  set_macro(30, "1:pau:40:run:44:run:46:run:1:shf", 15);              
+  set_macro(30, "1:pau:40:run:44:run:46:run:1:shf", 15)              
                                                            
-  set_macro(31, "0:snw:pos:0:pal:sfd:flo:rst:flu", 11);      
-  set_macro(32, "1:snw:pos:1:pal:sfd:flo:rst", 10);           
-  set_macro(33, "2:snw:pos:2:pal:sfd:flo:rst", 10);           
-  set_macro(34, "3:snw:pos:3:pal:sfd:flo:rst", 10);           
-  set_macro(35, "4:snw:pos:4:pal:sfd:flo:rst", 10);                   
-  set_macro(36, "5:snw:pos:5:pal:sfd:flo:rst", 10);           
+  set_macro(31, "0:snw:pos:0:pal:sfd:flo:rst:flu", 11)      
+  set_macro(32, "1:snw:pos:1:pal:sfd:flo:rst", 10)           
+  set_macro(33, "2:snw:pos:2:pal:sfd:flo:rst", 10)          
+  set_macro(34, "3:snw:pos:3:pal:sfd:flo:rst", 10)           
+  set_macro(35, "4:snw:pos:4:pal:sfd:flo:rst", 10)                   
+  set_macro(36, "5:snw:pos:5:pal:sfd:flo:rst", 10)           
                                                                  
-  set_macro(37, "0,16,0:ssc:1,31,15:ssc", 14);           
-  set_macro(38, "2,46,30:ssc:3,61,45:ssc", 16);                  
-  set_macro(39, "4,76,60:ssc:5,91,75:ssc", 16);          
-  set_macro(40, "37:run:38:run:39:run", 9);    
+  set_macro(37, "0,16,0:ssc:1,31,15:ssc", 14)           
+  set_macro(38, "2,46,30:ssc:3,61,45:ssc", 16)                  
+  set_macro(39, "4,76,60:ssc:5,91,75:ssc", 16)          
+  set_macro(40, "37:run:38:run:39:run", 9)    
                                                       
-  set_macro(41, "21,31:sch:22,32:sch", 12);             
-  set_macro(42, "23,33:sch:24,34:sch", 12);                     
-  set_macro(43, "25,35:sch:26,36:sch", 12);                     
-  set_macro(44, "41:run:42:run:43:run", 9);                    
+  set_macro(41, "21,31:sch:22,32:sch", 12)             
+  set_macro(42, "23,33:sch:24,34:sch", 12)                     
+  set_macro(43, "25,35:sch:26,36:sch", 12)                     
+  set_macro(44, "41:run:42:run:43:run", 9)                    
                                                               
-  set_macro(45, "shf", 1);                                   
-  set_macro(46, "700,45:sch", 6);   
+  # set_macro(45, "shf", 1)                                   
+  # set_macro(46, "700,45:sch", 6)   
+  set_macro(46, "0,45:sch", 0)
+
+  set_macro(25, "6,360:seq:100,26:sch", 0)
+  set_macro(26, "6:seq:sto:60:rcl:csh", 0)
 
 def default_macros():
   apollo_macros()

@@ -1076,6 +1076,15 @@ def specs():
   expect_palette("0,0,10:csl", 0, palette_size, expected_colors)                                                                                                          
                                                                                                                                                                    
   # test that all three args are 0 after the test runs, saw arg2 being 1 as green success leds were pushed out 
+
+
+########################################################################
+# Store & Recall
+########################################################################
+  group("storing and recalling arguments")
+
+  test("it stores arg0 and recalls as arg1")
+  expect_buffer("5:sto:2:rcl:pos:red:flo:flu:rst:", 0, 8, "0,0,0,0,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,0,0,0")
                                                                                                                                                                                                            
 ########################################################################                     
 ########################################################################                     
@@ -1109,7 +1118,7 @@ def loop():
   show_success = 0.5 + (success_count * num_leds / total)
   show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
   show_pending = 0.5 + (num_pending * num_leds / total)
-  command_str("rst:era")
+  command_str("rst:era:0:lev")
   command_str(str(show_success) + ",1:grn") 
   command_str(str(show_failure) + ",1:red")                                                                                                                                                                  
   command_str(str(show_pending) + ",1:yel")                                                                                                                                                                  
