@@ -11,6 +11,7 @@ import sys
 import inspect
 import terminal_colors as tc
 import test_colors
+import argparse
 
 def get_line_number(back):
   callerframerecord = inspect.stack()[back]    # 0 represents this line, 1 represents line at caller                                                                                                                       
@@ -18,6 +19,7 @@ def get_line_number(back):
   info = inspect.getframeinfo(frame)                                                                                                                                                            
   return info.lineno  
 
+app_description = "Apollo Lighting System - Test Framework v0.0 - Aug 10, 2017"
 response_wait = 0.2
 s = None                                                     
 debug_mode = False  
@@ -44,7 +46,7 @@ num_groups = 0
 test_failure_summaries = []
 num_leds = 0                                                                                                                                                                                               
 palette_size = 0
-group_number_only = -1
+group_number_only = 0
 standard_palette = ""
 alternate_seed = 2
 
@@ -102,6 +104,12 @@ def command_str(cmd_text):
 
 def setup(): 
   global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette 
+
+  parser = argparse.ArgumentParser(description=app_description)
+  parser.add_argument("-g", "--group", dest="group", default=0)
+  args = parser.parse_args()
+  group_number_only = args.group
+
   s = serial.Serial("/dev/ttyS0", 115200) 
   do_reset_device()
   num_leds = command_int("0,0:tst")                                                                                                                                                        
@@ -157,6 +165,8 @@ def do_reset_device():
 
 
 # --- test definition ---
+
+#TODO how to skip to another group?
 
 def group(description):                                                                    
   global group_number, group_description, last_group_number, num_groups
@@ -604,6 +614,8 @@ def specs():
   expected_colors = "20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20"
   expect_palette("1:shf:6:shf:flu", 0, palette_size, expected_colors)
 
+  #@@@
+
   test("the shuffler reverses the current palette")
   expect_palette("7:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "20,0,15,15,0,20,0,20,15,0,15,20,15,20,0,20,15,0,20,0,10,0,20,10,10,20,0,0,10,20,20,0,20,0,20,20,10,0,20,0,0,20,0,20,0,20,20,0,20,10,0,20,0,0"
@@ -995,7 +1007,10 @@ def specs():
 # SEQUENCING
 ########################################################################
   group("sequencing")                                                                                                            
-                                                                                                                                                                                                           
+  
+  test("setting a sequence leaves arg0 set to the low value")
+  expect_buffer("0,5,4:seq:olv:flu", 0, 5, "15,20,0,15,20,0,15,20,0,15,20,0,0,0,0")
+                                                                                                                                                                                                         
   test("it does a wheel sequence")
   expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0")
   expect_buffer("seq:org:flu", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
@@ -1125,7 +1140,7 @@ def loop():
   command_str("flu:cnt")
 
 if __name__ == '__main__': 
-  print tc.magenta("\nApollo Lighting System - Test Framework v0.0\n")
+  print tc.magenta("\n" + app_description + "\n")
   setup() 
   loop()
   print
