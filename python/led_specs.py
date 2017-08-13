@@ -119,6 +119,7 @@ def setup():
   for i in range(0, palette_size):
     standard_palette += test_colors.colors[i][1] + ","
   standard_palette = standard_palette[:-1]
+  # 20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15
 
   if len(sys.argv) > 2:
     group_number_only = int(sys.argv[2])
@@ -614,7 +615,21 @@ def specs():
   expected_colors = "20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20"
   expect_palette("1:shf:6:shf:flu", 0, palette_size, expected_colors)
 
-  #@@@
+  test("the shuffler rotates the palette down a number of times")
+  expected_colors = "20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0,20,10,0"
+  expect_palette("5,2:shf:flu", 0, palette_size, expected_colors)
+
+  test("the shuffler rotates the palette up a number of times")
+  expected_colors = "0,20,15,15,0,20,20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20"
+  expect_palette("6,3:shf:flu", 0, palette_size, expected_colors)
+
+  test("the shuffer rotates a number of positions of the palette down")
+  expected_colors = "20,10,0,20,20,0,0,20,0,20,0,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
+  expect_palette("5,0,4:shf:flu", 0, palette_size, expected_colors)
+
+  test("the shuffler rotates a number of positions of the palette up")
+  expected_colors = "0,0,20,20,0,0,20,10,0,20,20,0,0,20,0,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
+  expect_palette("6,0,5:shf:flu", 0, palette_size, expected_colors)
 
   test("the shuffler reverses the current palette")
   expect_palette("7:shf:flu", 0, palette_size, standard_palette, False)
