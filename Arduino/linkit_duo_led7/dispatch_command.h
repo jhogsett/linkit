@@ -50,8 +50,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
 
     case CMD_RECALL:    
     {
-      // restore the accumulator to arg1
-      command_processor->sub_args[1] = command_processor->accumulator;
+      // shift the arguments: arg0 -> arg1, arg1 -> arg2
+      // and recall arg0 from the accumulator
+      command_processor->sub_args[2] = command_processor->sub_args[1];
+      command_processor->sub_args[1] = command_processor->sub_args[0];
+      command_processor->sub_args[0] = command_processor->accumulator;
       // don't reset args
     }
     break;
@@ -89,7 +92,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_POSITION:    set_position(arg0, arg1);                       reset_args = true; break;
     case CMD_RPOSITION:   random_position(arg0);                          reset_args = true; break;
     case CMD_PALETTE:     do_palette(arg0, arg1);                         reset_args = true; break;
-    case CMD_SHUFFLE:     do_shuffle(arg0, arg1);                         reset_args = true; break;
+    case CMD_SHUFFLE:     do_shuffle(arg0, arg1, arg2);                   reset_args = true; break;
     case CMD_SETBLACK:    set_black_level(arg0, arg1, arg2);              reset_args = true; break;
     case CMD_SEQ_WHEEL:   case CMD_SEQ_SWING: case CMD_SEQ_WHLCO: case CMD_SEQ_SWGCO:
     case CMD_SEQ_WHLSN:   case CMD_SEQ_SWGSN: case CMD_SEQ_WHLPW:
@@ -195,9 +198,9 @@ void Commands::dispatch_color_sequence(int cmd){
       // what if arg0 and arg1 positions were swapped?
       // there's a symmetry with the other types that should keep them not swapped
       
-      // arg0 - step angle, default = 20
-      //   if arg0 < 0, the order is reverse
-      // arg1 - starting hue angle 0-359, default = 0 (red)
+      // arg0 - starting hue angle 0-359, default = 0 (red)
+      // arg1 - step angle, default = 20
+      //   if arg1 < 0, the order is reverse
       // arg2 - lightness, default = 255
       // (saturation = 255)
       case CMD_CLR_SEQ_HUE: type = COLOR_SEQUENCE_HUE; break;

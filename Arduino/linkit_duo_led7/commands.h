@@ -95,7 +95,7 @@ class Commands
   void do_random_number(int arg0, int arg1, int arg2);
   void do_stop();
   void do_palette(int arg0, int arg1);
-  void do_shuffle(int arg0, int arg1);
+  void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
 
 #ifdef TEST_FRAMEWORK
@@ -424,6 +424,7 @@ void Commands::do_mirror(){
 //         0 = repeat and fill the current window
 //        -1 = copy the pattern to the palette buffer but don't duplicate
 //        -2 = duplicate the pattern in the palette buffer but don't copy first
+// zoom - how many pixels to draw per source pixel
 void Commands::do_copy(byte size, int times, byte zoom){
   size = max(1, size);
   zoom = max(1, zoom);
@@ -864,6 +865,7 @@ int Commands::random_num(int max, int min){
 // arg1 -2 = get opposite of current number without advancing (for range 0-9 and current number 4, this would be 5)
 // arg1 -3 = reset current number to low limit and return it without advancing
 // arg1 -4 = step (arg2) instead is a macro # to run for each position, filling gaps
+// arg2 - step, default = 1
 // 1,0,0:seq - get next number from #1
 // 1:seq - get next number from #1
 // seq - get next number from #0
@@ -1055,20 +1057,20 @@ bool Commands::do_set_macro(byte macro, byte * dispatch_data){
 void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
   switch(type){
     case COLOR_SEQUENCE_HUE:
-      // arg0 - step angle, default = 20
-      //   if arg0 < 0, the order is reverse
-      // arg1 - starting hue angle 0-359, default = 0 (red)
+      // arg0 - starting hue angle 0-359, default = 0 (red)
+      // arg1 - step angle, default = 20
+      //   if arg1 < 0, the order is reverse
       // arg2 - lightness, default = 20
       // (saturation = 255)
       {
-        if(arg0 == 0) arg0 = 20;
+        if(arg1 == 0) arg1 = 20;
         if(arg2 < 1) arg2 = 20;
 
-        int angle = arg1;
+        int angle = arg0;
         rgb_color *palette = Colors::get_palette();
         for(byte i = 0; i < NUM_PALETTE_COLORS; i++){
           palette[i] = ColorMath::hsl_to_rgb(angle % 360, 255, arg2);
-          angle += arg0;
+          angle += arg1;
         }
       }
       break;
@@ -1141,14 +1143,14 @@ void Commands::do_stop(){
 //                in this case arg[0] is the stopping point when counting down
 // for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
 void Commands::do_palette(int arg0, int arg1){
+  rgb_color * palette = Colors::get_palette();
   if(arg1 > 0){
     arg0 = max(0, arg0);
-    rgb_color * palette = Colors::get_palette();
-    for(byte i = arg1; i >= arg0; i--){
+    for(int i = arg1; i >= arg0; i--){
       buffer->push_color(palette[i]);                      
     }
   } else {
-    buffer->push_color(Colors::get_palette()[arg0]);                                                      
+    buffer->push_color(palette[arg0]);                                                      
   }
 }
 
@@ -1163,7 +1165,8 @@ void Commands::do_palette(int arg0, int arg1){
 
 // arg0 - type of shuffle operation
 // arg1 - type-specific argument
-void Commands::do_shuffle(int arg0, int arg1){
+// arg2 - type-specific argument
+void Commands::do_shuffle(int arg0, int arg1, int arg2){
   switch(arg0)
   {
     case SHUFFLE_RANDOM:
@@ -1191,11 +1194,11 @@ void Commands::do_shuffle(int arg0, int arg1){
       break;
       
     case SHUFFLE_ROTATE_DOWN:
-      Colors::rotate_palette(arg1, true);
+      Colors::rotate_palette(arg1, arg2, true);
       break;
       
     case SHUFFLE_ROTATE_UP:
-      Colors::rotate_palette(arg1, false); 
+      Colors::rotate_palette(arg1, arg2, false); 
       break;
       
     case SHUFFLE_REVERSE:

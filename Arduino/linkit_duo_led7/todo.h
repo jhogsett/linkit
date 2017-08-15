@@ -1,7 +1,17 @@
-// goals: sequence crawling from zone to zone, move a sequencing zone back and forth slowly, slowly sequencing HSL along with 6 sequncers
+// goals: 
+// sequence crawling from zone to zone (triggers) 
+// move a sequencing zone back and forth slowly (value safety upon arbitrary changes)
+// something speeding up and slowing down (should be able to adjust schedule timing without it resetting)
 
-// maybe setting sequence should leave arg set to low value
 
+// test could highlight differences between strings to reduce need to manually diff them 
+
+
+
+// for palette rotation, maybe specify how many colors to involve in rotation, such as 6
+
+
+// for dynamically changing scheduler timing, make sure changing the time can be done without reseting it
 
 // could have an arg command that does various stuff
 // examples:

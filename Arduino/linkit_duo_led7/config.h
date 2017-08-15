@@ -39,6 +39,9 @@
 // 8-LED standalone wearable
 // #define WEARABLE_8
 
+// 19-LED Mini Disc
+// #define MINI_DISC_19
+
 //////////////////////////////
 // devices profile definitions
 //////////////////////////////
@@ -116,6 +119,15 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 100
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 150
+#endif
+
+#ifdef MINI_DISC_19
+#define USE_1_DISPLAYS
+#define ANIM_LED_COUNT 19
+#define DEFAULT_BRIGHTNESS_PERCENT 70
+#define FADE_RATE 0.925
+#define FADE_PERIOD 400
+#define ZONES_MINI_DISC
 #endif
 
 #ifdef WEARABLE_AND_HARDHAT

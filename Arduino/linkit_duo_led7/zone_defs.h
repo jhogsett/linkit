@@ -50,13 +50,17 @@ const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,   0,  17, 31, 41 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 44,   17, 31, 41, 44 };
 
 #elif defined(ZONES_GLASSES)
-#define NUM_ZONES 12 
+#define NUM_ZONES 8 
 #define FINE_ZONES 4 // from the wearer perspective: right strip, right circle, left circle, left strip
                      //                              fine             circles only   L/R halves                                                
 const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,   0,  8, 32, 56,    8,            0, 32,      };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 64,   8, 32, 56, 64,   56,            32, 64,     };
 
-
+#elif defined(ZONES_MINI_DISC)
+#define NUM_ZONES 5
+#define FINE_ZONES 3 //                             inner, middle, outer rings  inner + middle rings
+const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,  0, 1,  7,                   0 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 19,  1, 7, 19,                   7 };
 #endif
 
 
