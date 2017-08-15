@@ -103,7 +103,7 @@ byte Buffer::get_display(){
 void Buffer::reset(){
   //this->reset_black_level();
   this->set_zone(0);
-  this->set_display(0);
+  //this->set_display(0);
   this->set_reverse(false);
 }
 

@@ -166,7 +166,7 @@ class Colors
   static void compliment_pairs();
   static void random_compliment_pairs();
   static void compliment_palette();
-  static void rotate_palette(byte times, bool down = true);
+  static void rotate_palette(byte times, byte limit, bool down = true);
   static void reverse_palette();
   static rgb_color * get_palette();
   static byte get_num_palette_colors();
@@ -259,25 +259,33 @@ void Colors::compliment_palette(){
     palette[i] = complimentary_color(palette[i]);
 }
 
-void Colors::rotate_palette(byte times, bool down){
+// times - number of rotations
+// limit - how many color positions to rotate
+// down - type = rotate higher number positions toward lower ones
+void Colors::rotate_palette(byte times, byte limit, bool down){
   times = max(1, times);
 
-  byte limit = NUM_PALETTE_COLORS - 1;
-  if(down == true){
-      rgb_color carry_color = palette[0];
+  if(limit < 1){
+    limit = NUM_PALETTE_COLORS ;
+  }
+  limit--;
 
+  if(down == true){
+    for(byte t = 0; t < times; t++){
+      rgb_color carry_color = palette[0];
       for(byte i = 0; i < limit; i++){
-        byte p_from = (i + times) % NUM_PALETTE_COLORS;
-        palette[i] = palette[p_from];
+        palette[i] = palette[i + 1];
       }
       palette[limit] = carry_color;
+    }
   } else {
+    for(byte t = 0; t < times; t++){
       rgb_color carry_color = palette[limit];
       for(byte i = limit; i > 0; i--){
-        byte p_from = (i - times) % NUM_PALETTE_COLORS;
-        palette[i] = palette[p_from];
+        palette[i] = palette[i - 1];
       }
       palette[0] = carry_color;
+    }
   }
 }
 
