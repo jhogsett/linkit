@@ -588,53 +588,53 @@ def specs():
   expect_palette("shf:flu", 0, palette_size, expected_colors)
 
   test("the palette resets to the right fixed set of colors")
-  expect_palette("shf:1:shf:flu", 0, palette_size, standard_palette)
+  expect_palette("shf:flu:1:shf:flu", 0, palette_size, standard_palette)
 
   test("the shuffler sets every odd-numbered palette color to the previous one's compliment")
   expect_palette("2:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "0,20,20,20,0,0,0,0,20,20,20,0,0,10,20,20,10,0,5,20,0,15,0,20,20,10,0,0,10,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
-  expect_palette("shf:2:shf:flu", 0, palette_size, expected_colors)                                                                         
+  expect_palette("shf:flu:2:shf:flu", 0, palette_size, expected_colors)                                                                         
 
   test("the shuffler creates a random palette of complimentary pairs")
   expect_palette("3:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "0,10,20,20,10,0,0,15,20,20,5,0,20,10,0,0,10,20,0,20,20,20,0,0,20,0,10,0,20,10,0,20,15,20,0,5,20,15,0,0,5,20,10,20,0,10,0,20,0,20,10,20,0,10"
-  expect_palette("3:shf:flu", 0, palette_size, expected_colors)                                                                 
+  expect_palette("flu:3:shf:flu", 0, palette_size, expected_colors)                                                                 
 
   test("the shuffler compliments the entire current palette")
   expect_palette("4:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "0,20,20,0,10,20,0,0,20,20,0,20,20,20,0,10,20,0,20,0,0,0,20,0,20,10,0,10,0,20,20,0,10,0,20,10,0,5,20,5,0,20,20,5,0,20,0,5,5,20,0,0,20,5"
-  expect_palette("1:shf:4:shf:flu", 0, palette_size, expected_colors)                                                                                             
+  expect_palette("1:shf:flu:4:shf:flu", 0, palette_size, expected_colors)                                                                                             
 
   test("the shuffler rotates the current palettes down")
   expect_palette("5:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0"
-  expect_palette("1:shf:5:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:5:shf:flu", 0, palette_size, expected_colors)
 
   test("the shuffler rotates the current palette up")
   expect_palette("6:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20"
-  expect_palette("1:shf:6:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:6:shf:flu", 0, palette_size, expected_colors)
 
   test("the shuffler rotates the palette down a number of times")
   expected_colors = "20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0,20,10,0"
-  expect_palette("5,2:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:5,2:shf:flu", 0, palette_size, expected_colors)
 
   test("the shuffler rotates the palette up a number of times")
   expected_colors = "0,20,15,15,0,20,20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20"
-  expect_palette("6,3:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:6,3:shf:flu", 0, palette_size, expected_colors)
 
   test("the shuffer rotates a number of positions of the palette down")
   expected_colors = "20,10,0,20,20,0,0,20,0,20,0,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
-  expect_palette("5,0,4:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:5,0,4:shf:flu", 0, palette_size, expected_colors)
 
   test("the shuffler rotates a number of positions of the palette up")
   expected_colors = "0,0,20,20,0,0,20,10,0,20,20,0,0,20,0,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
-  expect_palette("6,0,5:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:6,0,5:shf:flu", 0, palette_size, expected_colors)
 
   test("the shuffler reverses the current palette")
   expect_palette("7:shf:flu", 0, palette_size, standard_palette, False)
   expected_colors = "20,0,15,15,0,20,0,20,15,0,15,20,15,20,0,20,15,0,20,0,10,0,20,10,10,20,0,0,10,20,20,0,20,0,20,20,10,0,20,0,0,20,0,20,0,20,20,0,20,10,0,20,0,0"
-  expect_palette("1:shf:7:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:7:shf:flu", 0, palette_size, expected_colors)
 
 
 ########################################################################
@@ -817,6 +817,26 @@ def specs():
 
   test("it places a random color from the palette")
   expect_buffer("3:rnd:flu", 0, 1, "15,20,0")
+
+########################################################################
+# PUSHING PALETTE COLORS
+########################################################################
+  group("palette color")
+
+  test("it places the first palette color")
+  expect_buffer("pal:flu", 0, 1, "20,0,0")
+
+  test("it places the second palette color")
+  expect_buffer("1:pal:flu", 0, 1, "20,10,0")
+
+  test("it places multiple palette colors")
+  expect_buffer("0,1:pal:flu", 0, 3, "20,0,0,20,10,0,0,0,0")
+
+  test("it places an alternate set of multiple palette colors")
+  expect_buffer("2,3:pal:flu", 0, 3, "20,20,0,0,20,0,0,0,0")
+
+  test("it places all palette colors")
+  expect_buffer("0,17:pal:flu", 0, 18, standard_palette) 
 
 
 ########################################################################
@@ -1061,11 +1081,11 @@ def specs():
 
   test("it sweeps hues with a custom step angle")                                                                                                                  
   expected_colors = "20,0,0,20,13,0,13,20,0,0,20,0,0,20,13,0,13,20,0,0,20,13,0,20,20,0,13,20,0,0,20,13,0,13,20,0,0,20,0,0,20,13,0,13,20,0,0,20,13,0,20,20,0,13"       
-  expect_palette("40:csh", 0, palette_size, expected_colors) 
+  expect_palette("0,40:csh", 0, palette_size, expected_colors) 
         
   test("it sweeps hues with a custom starting angle")                                                                                                                  
   expected_colors = "20,20,0,13,20,0,6,20,0,0,20,0,0,20,6,0,20,13,0,20,20,0,13,20,0,6,20,0,0,20,6,0,20,13,0,20,20,0,20,20,0,13,20,0,6,20,0,0,20,6,0,20,13,0"                                                                                                                                             
-  expect_palette("0,60:csh", 0, palette_size, expected_colors)                                                                                                       
+  expect_palette("60:csh", 0, palette_size, expected_colors)                                                                                                       
                                                                                                                                                             
   test("it sweeps hues with a custom lightness")                                                                                                                  
   expected_colors = "10,0,0,10,3,0,10,6,0,10,10,0,6,10,0,3,10,0,0,10,0,0,10,3,0,10,6,0,10,10,0,6,10,0,3,10,0,0,10,3,0,10,6,0,10,10,0,10,10,0,6,10,0,3"                                                                                                                                             
@@ -1113,9 +1133,12 @@ def specs():
 ########################################################################
   group("storing and recalling arguments")
 
-  test("it stores arg0 and recalls as arg1")
-  expect_buffer("5:sto:2:rcl:pos:red:flo:flu:rst:", 0, 8, "0,0,0,0,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,0,0,0")
-                                                                                                                                                                                                           
+  test("it stores arg0 and recalls as arg0, shifting arg0 to arg1")
+  expect_buffer("2:sto:5:rcl:pos:red:flo:flu:rst:", 0, 8, "0,0,0,0,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,0,0,0")
+                                                                 
+  pending_test("it also shifts arg1 to arg2")
+
+                                                                                                                                          
 ########################################################################                     
 ########################################################################                     
  
