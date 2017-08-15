@@ -3,6 +3,7 @@
 import serial 
 import time
 import sys
+import terminal_colors as tc
 
 response_wait = 0.1
 s = None                                                     
@@ -58,60 +59,6 @@ def write(text):
   sys.stdout.write(text)                                
   sys.stdout.flush() 
 
-def black(text):                                                                
-  return "\x1b[30m" + text + normal()                                                                          
-                                                                                                               
-def red(text):                                                                                                 
-  return "\x1b[31m" + text + normal()                                                                          
-                                                                                
-def green(text):                                                                                               
-  return "\x1b[32m" + text + normal()                                                                          
-                                                                                                               
-def yellow(text):                                                               
-  return "\x1b[33m" + text + normal()                                                                          
-                                                                                                    
-def blue(text):                                                                                                
-  return "\x1b[34m" + text + normal()                                                                          
-                                                                                                               
-def magenta(text):                                                              
-  return "\x1b[35m" + text + normal()                                                                          
-                                                                     
-def cyan(text):                                                                                                
-  return "\x1b[36m" + text + normal()                                                                          
-                                                         
-def white(text):                                                                                               
-  return "\x1b[37m" + text + normal()                                                                          
-                                                                                                               
-def normal():                                                          
-  return "\x1b[39m"                                                             
-                                                                                
-def black(text):                                                                
-  return "\x1b[40m" + text + normal()                                                                          
-                                                                       
-def redbg(text):                                                                                               
-  return "\x1b[41m" + text + normalbg()                                
-                                                                                                               
-def greenbg(text):                                                                                             
-  return "\x1b[42m" + text + normalbg()                                                                        
-                                                                                                               
-def yellowbg(text):                                                    
-  return "\x1b[43m" + text + normalbg()                                                                        
-                                                                                         
-def bluebg(text):                                                                                              
-  return "\x1b[44m" + text + normalbg()                                                                        
-                                                                                         
-def magentabg(text):                                                                                           
-  return "\x1b[45m" + text + normalbg()                                                  
-                                                                                                               
-def cyanbg(text):                                                                                              
-  return "\x1b[46m" + text + normalbg()                                                                        
-                                                                                                               
-def whitebg(text):                                                                                             
-  return "\x1b[47m" + text + normalbg()                                                                                                                                                                    
-                                                                                                                                                                                                           
-def normalbg():                                                                                                                                                                                            
-  return "\x1b[49m"
-     
 def set_macro(macro, macro_text, expected_bytes):
   global macro_count
   if debug_mode:
@@ -123,7 +70,7 @@ def set_macro(macro, macro_text, expected_bytes):
     print str(bytes) + " bytes"                                    
     print command_str("1," + str(macro) + ":tst")
   else:
-    write(green('.'))
+    write(tc.green('.'))
     if expected_bytes > 0 and expected_bytes != bytes:
       print "Wrong number of bytes received for macro #" + str(macro) + "- retrying"
       set_macro(macro, macro_text, expected_bytes)
@@ -139,28 +86,47 @@ def setup():
 
 ######################################################################
 
+def monument_macros():
+  print tc.cyan("monument macros:\n")
+ 
+  set_macro(10, "20:lev:16:run:11:run:12:run", 0)
+  set_macro(11, "3:zon:0,3:pal:3,0,4:cpy", 0)
+  set_macro(12, "2:zon:0,3:pal:3,0,2:cpy", 0)
+  set_macro(13, "3:shf:11:run:12:run:rst", 0)
+  set_macro(14, "3:zon:art:flu:rst", 0)
+  set_macro(15, "2:zon:art:flu:rst", 0)
+  set_macro(16, "800,14:sch:1600,15:sch:60000,13:sch", 0)
+
+# process_commands(F("10:set:100:lev:800,14:sch:1600,15:sch:60000,13:sch"));
+# process_commands(F("11:set:3:zon:0,2:pal:2,0,6:cpy"));
+# process_commands(F("12:set:2:zon:0,2:pal:2,0,3:cpy"));
+# process_commands(F("13:set:3:shf:11:run:12:run:rst"));
+# process_commands(F("14:set:3:zon:art:flu:rst"));
+# process_commands(F("15:set:2:zon:art:flu:rst"));
+
+
 def annunciator_macros():
-  print cyan("annunciator macros:\n")
+  print tc.cyan("annunciator macros:\n")
 
   set_macro(10, "1:pau:16:run:19:run:21:run", 0)
 
-  set_macro(11, "0:snw:pos:0:pal:sfd:flo:rst:flu", 0);
-  set_macro(12, "1:snw:pos:1:pal:sfd:flo:rst", 0);
-  set_macro(13, "2:snw:pos:2:pal:sfd:flo:rst", 0);
+  set_macro(11, "0:snw:pos:0:pal:sfd:flo:rst:flu", 0)
+  set_macro(12, "1:snw:pos:1:pal:sfd:flo:rst", 0)
+  set_macro(13, "2:snw:pos:2:pal:sfd:flo:rst", 0)
 
-  set_macro(14, "0,13,0:ssc:1,25,12:ssc", 0);
-  set_macro(15, "2,37,24:ssc", 0);
-  set_macro(16, "14:run:15:run:3,8000:cfg", 0);
+  set_macro(14, "0,13,0:ssc:1,25,12:ssc", 0)
+  set_macro(15, "2,37,24:ssc", 0)
+  set_macro(16, "14:run:15:run:3,8000:cfg", 0)
 
-  set_macro(17, "145,11:sch:150,12:sch", 0);
-  set_macro(18, "155,13:sch", 0);
-  set_macro(19, "17:run:18:run", 0);
+  set_macro(17, "145,11:sch:150,12:sch", 0)
+  set_macro(18, "155,13:sch", 0)
+  set_macro(19, "17:run:18:run", 0)
 
-  set_macro(20, "shf", 1);
-  set_macro(21, "13000,20:sch", 0);
+  set_macro(20, "shf", 1)
+  set_macro(21, "13000,20:sch", 0)
 
 def apollo_macros(): 
-  print cyan("apollo macros:\n")
+  print tc.cyan("apollo macros:\n")
 
   # tunsten lamp                                 
   set_macro(12, "clr:-1:sch:1:pau:21:run", 11)
@@ -204,13 +170,13 @@ def apollo_macros():
   set_macro(46, "0,45:sch", 0)
 
   set_macro(25, "6,360:seq:100,26:sch", 0)
-  set_macro(26, "6:seq:sto:60:rcl:csh", 0)
+  set_macro(26, "6,0,5:seq:sto:60:rcl:csh", 0)
 
 def default_macros():
   apollo_macros()
 
 def threeway_macros():
-  print cyan("three way macros\n")
+  print tc.cyan("three way macros\n")
 
   set_macro(10, "19:run", 0);
 
@@ -232,7 +198,7 @@ def threeway_macros():
   set_macro(23, "fad:2:rnd:flo:flu:50,22:sch", 0);
 
 def oneway_macros():
-  print cyan("one way macros\n")
+  print tc.cyan("one way macros\n")
 
   set_macro(10, "era:50,11:sch:15,12:sch:200,16:sch", 0);
   set_macro(11, "rng:pos:rnd:twi:flu:rst", 0);
@@ -253,6 +219,8 @@ def loop():
       oneway_macros()
     elif sys.argv[1] == "annunciator":
       annunciator_macros()
+    elif sys.argv[1] == "monument":
+      monument_macros()
   else:
     default_macros()
 
@@ -262,10 +230,10 @@ def loop():
     command_str(sys.argv[2])
 
   print "\n" 
-  print green(str(macro_count) + " macros successfully programmed\n")
+  print tc.green(str(macro_count) + " macros successfully programmed\n")
 
 if __name__ == '__main__': 
-  print magenta("\nApollo Lighting System - Macro Programmer v0.0\n")                         
+  print tc.magenta("\nApollo Lighting System - Macro Programmer v0.0\n")                         
 
   setup() 
   loop()
