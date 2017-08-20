@@ -18,8 +18,8 @@ def get_line_number(back):
   return info.lineno  
 
 app_description = "Apollo Lighting System - Test Framework v0.0 - Aug 10, 2017"
-slow_response_wait = 0.12
-fast_response_wait = 0.02
+slow_response_wait = 0.11
+fast_response_wait = 0.01
 response_wait = fast_response_wait
 s = None                                                     
 debug_mode = False  
@@ -97,6 +97,8 @@ def command(cmd_text):
   wait_for_ack()
 
 def command_int(cmd_text):
+  global test_command
+  test_command = cmd_text
   s.write((cmd_text + ':').encode())
   return wait_for_int()
 
@@ -219,14 +221,14 @@ def skip_test(command, description):
 def report_group():
   global last_group_number
   if group_number != last_group_number:                                                                                                                                                                    
-    test_failures.append(tc.blue("\nGroup #" + str(group_number) + " " + group_description))                                                                                                                    
+    test_failures.append(tc.white("\nGroup #" + str(group_number) + " " + group_description))                                                                                                                    
     last_group_number = group_number                                                       
 
 def report_test():
   global last_test_number
   report_group()
   if test_number != last_test_number:                                                                                                                                                                      
-    test_failures.append(tc.yellow("  Test #" + str(test_number)) + " " + tc.cyan(test_description))                                                                                                                     
+    test_failures.append(tc.white("  Test #" + str(test_number)) + " " + tc.white(test_description))                                                                                                                     
     last_test_number = test_number                                                      
 
 def report_failure(got, expected):
@@ -237,9 +239,9 @@ def report_failure(got, expected):
     tc.cyan("[" + test_command + "]") + 
     tc.yellow(" @ " + str(test_line_number)) + 
     tc.red(" Failed!\n") + 
-    tc.yellow("\texpected:\n") + 
+    tc.white("\texpected:\n") + 
     tc.red("\t\t[" + expected + "]\n") + 
-    tc.yellow("\tgot:\n") + 
+    tc.white("\tgot:\n") + 
     tc.green("\t\t[" + got + "]") + 
     "\n")
 
@@ -254,9 +256,9 @@ def report_pending():
   report_test()
   test_failures.append(
     "    " + 
-    tc.yellow("Pending expectation: ") + 
-    tc.cyan("[" + test_description + "]") + 
-    tc.yellow(" @ " + str(test_line_number))) 
+    tc.white("Pending expectation: ") + 
+    tc.white("[" + test_description + "]") + 
+    tc.white(" @ " + str(test_line_number))) 
 
 def report_skipped(command):                                                                                                                                                                                      
   report_test()                                                                                                                                                                                            
@@ -346,16 +348,20 @@ def expect_int(command_, expected):
   expect_equal(str(got), str(expected))                                                                  
 
 def expect_offset(command_, expected, positive=True):
+  global test_command
   command_str(command_)
   got = get_offset()
+  test_command = command_
   if positive:
     expect_equal(str(got), str(expected))
   else:
     expect_not_equal(str(got), str(expected))
 
 def expect_window(command_, expected, positive=True):
+  global test_command
   command_str(command_)
   got = get_window()
+  test_command = command_
   if positive:
     expect_equal(str(got), str(expected))
   else:
@@ -700,13 +706,18 @@ def specs():
   test("setting an offset is not relative to the current offset")
   expect_buffer("1:off:1:off:lgr", 0, 2, "0,0,0,10,20,0")
 
-  test("the window is adjusted if the offset is set beyond the current window")
-  command_str("2:win:4:off:dgr")
-  current_offset = command_str("0,2:tst")
-  current_window = command_str("0,3:tst")
-  expect_int("0,2:tst", 4)
-  expect_int("0,3:tst", 4)
-   
+  test("on setting offset override, it adjusts the window override if set")
+  expect_window("2:win:4:off:dgr", 5)  
+
+  test("on setting window override, it adjusts the offset override if set")
+  expect_offset("6:off:4:win:dgr", 3)
+
+  test("on setting offset override, it doesn't adjust the window override if not set")
+  expect_window("4:off:dgr", num_leds)
+
+  test("on setting window override, it doesn't adjust the offset override if not set")
+  expect_offset("4:win:dgr", 0)
+
 
 ########################################################################
 # REVERSE AND FORWARD
