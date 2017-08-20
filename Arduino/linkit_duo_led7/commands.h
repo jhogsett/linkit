@@ -850,7 +850,7 @@ int Commands::random_num(int max, int min){
 // need to be able to toggle the direction of a wheel sequencer
 // 
 // setting
-// arg0 - sequence number, 0-5, default = 0
+// arg0 - sequence number, 0-9, default = 0
 // arg1 - high limit, default = 10 for 0-9, must be >0 for 'setting' mode
 // arg2 - low limit, default = 0 for 0-9
 // 1,10,0:seq - set sequence #1 to 0 - 9, reset to 0
@@ -865,6 +865,10 @@ int Commands::random_num(int max, int min){
 // arg1 -2 = get opposite of current number without advancing (for range 0-9 and current number 4, this would be 5)
 // arg1 -3 = reset current number to low limit and return it without advancing
 // arg1 -4 = step (arg2) instead is a macro # to run for each position, filling gaps
+
+// arg1 -5 = set new upper limit
+// arg1 -6 = set new lower limit
+
 // arg2 - step, default = 1
 // 1,0,0:seq - get next number from #1
 // 1:seq - get next number from #1
@@ -875,7 +879,7 @@ int Commands::random_num(int max, int min){
 // 1:-2:seq - get opposite of current number from #1 (for range 0-9 and current number 4, this would be 5)
 // 1:-3:seq - reset #1 to low and return it
 // 1:0:2:seq - get next number from #1, stepping by 2
-// 1:0:-1:seq - get next number from #1, stepping by -1
+// 1:0:-1:seq - get next number from #1, stepping by -1 (THIS DOESN'T SEEM TO WORK)
 
 int Commands::do_sequence(byte type, int arg0, int arg1, int arg2){
   
