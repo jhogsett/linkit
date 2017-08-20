@@ -24,8 +24,6 @@
 #define DEFAULT_LOW    0
 #define DEFAULT_HIGH  10
 
-#define REDUCED_MEMORY_FOOTPRINT
-
 #include <macros.h>
 
 class Sequence
@@ -34,6 +32,8 @@ class Sequence
 
   void begin();
   void set(byte type, int low, int high);
+  void set_limit(int low, int high);
+  void fix_current();
   void reset();
   int next(int advancement, int step);
 
@@ -63,45 +63,23 @@ class Sequence
   // can type and state be consolidated
 
   byte type;
-
   int low;
   int max;
-
-#if !defined(REDUCED_MEMORY_FOOTPRINT)  
-  int width;
-#endif
-  
   int current;
   int previous;
-  
   byte state;
-
-//#if !defined(REDUCED_MEMORY_FOOTPRINT)  
   float factor;
-//#endif
 
 // how different is this from previous?
   int prev_computed;
 
-#if defined(REDUCED_MEMORY_FOOTPRINT)
   int width();
-//  float factor();
-#endif
-
  };
 
-  int Sequence::width(){
-#if defined(REDUCED_MEMORY_FOOTPRINT)
-    return this->max - this->low;    
-#else
-    return this->width;
-#endif
-  }
+int Sequence::width(){
+  return this->max - this->low;    
+}
   
-//  float Sequence::factor(){
-//    
-//  }
-
 void Sequence::begin(){
   set(DEFAULT_TYPE, DEFAULT_LOW, DEFAULT_HIGH);
   this->reset();
@@ -109,33 +87,50 @@ void Sequence::begin(){
 
 void Sequence::set(byte type, int low, int high){
   this->type = type;
+
+//  this->low = low;
+//  this->max = high - 1;
+//  
+//  this->previous = this->low;
+//
+//  switch(this->type){
+//    case SEQUENCE_WHEEL_COSINE:
+//    case SEQUENCE_SWING_COSINE:
+//    case SEQUENCE_WHEEL_SINE:
+//    case SEQUENCE_SWING_SINE:
+//      this->factor = COSINE_RANGE / this->width();
+//      break;
+//    case SEQUENCE_WHEEL_POWER:
+//    case SEQUENCE_SWING_POWER:
+//      this->factor = PowerEase::ease_range() / this->width();
+//      break;
+//  }
+
+  this->set_limit(low, high);
+  this->reset();
+}
+
+void Sequence::set_limit(int low, int high){
   this->low = low;
   this->max = high - 1;
-
-#if !defined(REDUCED_MEMORY_FOOTPRINT)  
-  this->width = this->max - this->low;
-#endif
-  
-  this->previous = this->low;
 
   switch(this->type){
     case SEQUENCE_WHEEL_COSINE:
     case SEQUENCE_SWING_COSINE:
     case SEQUENCE_WHEEL_SINE:
     case SEQUENCE_SWING_SINE:
-// #if defined(REDUCED_MEMORY_FOOTPRINT) - unfinished
-//      this->factor = COSINE_RANGE / this->width;
-//#else
       this->factor = COSINE_RANGE / this->width();
-//#endif
       break;
     case SEQUENCE_WHEEL_POWER:
     case SEQUENCE_SWING_POWER:
       this->factor = PowerEase::ease_range() / this->width();
       break;
   }
+}
 
-  this->reset();
+void Sequence::fix_current(){
+  this->current = max(this->low, this->current);
+  this->current = min(this->max, this->current);
 }
 
 void Sequence::reset(){
@@ -149,7 +144,9 @@ void Sequence::reset(){
 #define ADVANCE_CURRENT  -1
 #define ADVANCE_OPPOSITE -2
 #define ADVANCE_RESET    -3
-#define ADVANCE_MACRO    -3
+#define ADVANCE_MACRO    -4
+#define ADVANCE_NEW_HIGH -5
+#define ADVANCE_NEW_LOW  -6
 
 int Sequence::next(int advancement, int step){ // step or macro
   
@@ -161,12 +158,19 @@ int Sequence::next(int advancement, int step){ // step or macro
       this->reset();
       return this->current;
     case ADVANCE_OPPOSITE:
-      //this->increment(step);
       return (this->max - this->current) + this->low;
     case ADVANCE_CURRENT:
       return this->current;
     case ADVANCE_NEXT:
       return this->increment(step);
+    case ADVANCE_NEW_HIGH:
+      this->set_limit(this->low, step);
+      this->fix_current();
+      return this->current;
+    case ADVANCE_NEW_LOW:
+      this->set_limit(step, this->max + 1);
+      this->fix_current();
+      return this->current;
   }
 }
 

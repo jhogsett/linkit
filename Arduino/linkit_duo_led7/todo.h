@@ -1,3 +1,8 @@
+// make sure sequence parameters can be changed without resetting
+
+
+// documentation to wiki
+
 // goals: 
 // sequence crawling from zone to zone (triggers) 
 // move a sequencing zone back and forth slowly (value safety upon arbitrary changes)
