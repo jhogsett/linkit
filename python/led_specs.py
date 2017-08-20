@@ -294,18 +294,24 @@ def expect_macro(command_, macro, expected):
   count = len(expected)
   expect_equal(str_[:count], expected)
 
-def expect_buffer(command_, start, count, expected):
+def expect_buffer(command_, start, count, expected, flush = True):
+  if flush:
+    command_ += ":flu"
   command(command_)
   str_ = command_str("2," + str(start) + "," + str(count) + ":tst")                                 
   expect_equal(str_[:-1], expected)
 
-def expect_render(command_, start, count, expected):               
+def expect_render(command_, start, count, expected, flush = True):
+  if flush:
+    command_ += ":flu"               
   command(command_)                                                
   str_ = command_str("3," + str(start) + "," + str(count) + ":tst")
   expect_equal(str_[:-1], expected)                                
                                                                    
-def expect_effect(command_, start, count, expected):               
-  command(command_)                                                
+def expect_effect(command_, start, count, expected, flush = True):               
+  if flush:
+    command_ += ":flu"
+  command(command_)
   str_ = command_str("4," + str(start) + "," + str(count) + ":tst")
   expect_equal(str_[:-1], expected)                                
                                                                    
@@ -412,7 +418,7 @@ def specs():
   group("pause and continue")
 
   test("it doesn't render while paused")
-  expect_render("red", 0, 1, "0,0,0")
+  expect_render("red", 0, 1, "0,0,0", False)
 
   # test pausing and resuming schedules and effects
 
@@ -889,27 +895,26 @@ def specs():
   group("fade effects")                                                             
         
   test("it modifies the display color with slow fades on flushing")
-  expect_buffer("red:sfd:flu", 0, 1, "19,0,0")
-
-  expect_buffer("flu", 0, 1, "18,0,0")
-  expect_buffer("flu", 0, 1, "17,0,0")
+  expect_buffer("red:sfd:flu", 0, 1, "19,0,0", False)
+  expect_buffer("flu", 0, 1, "18,0,0", False)
+  expect_buffer("flu", 0, 1, "17,0,0", False)
 
   test("it renders the fading color with slow fades on flushing")
-  expect_render("red:sfd:flu", 0, 1, "48,0,0")
-  expect_render("flu", 0, 1, "45,0,0")
-  expect_render("flu", 0, 1, "43,0,0")
+  expect_render("red:sfd:flu", 0, 1, "48,0,0", False)
+  expect_render("flu", 0, 1, "45,0,0", False)
+  expect_render("flu", 0, 1, "43,0,0", False)
 
   test("a custom fade rate modifies the display buffer properly")
   command_str("3,7500:cfg")
-  expect_buffer("red:sfd:flu", 0, 1, "15,0,0")
-  expect_buffer("flu", 0, 1, "11,0,0")
-  expect_buffer("flu", 0, 1, "8,0,0")
+  expect_buffer("red:sfd:flu", 0, 1, "15,0,0", False)
+  expect_buffer("flu", 0, 1, "11,0,0", False)
+  expect_buffer("flu", 0, 1, "8,0,0", False)
 
   test("a custom fade rate renders properly")
   command_str("3,7500:cfg")
-  expect_render("red:sfd:flu", 0, 1, "38,0,0")
-  expect_render("flu", 0, 1, "28,0,0")
-  expect_render("flu", 0, 1, "20,0,0")
+  expect_render("red:sfd:flu", 0, 1, "38,0,0", False)
+  expect_render("flu", 0, 1, "28,0,0", False)
+  expect_render("flu", 0, 1, "20,0,0", False)
 
   pending_test("it fast fades properly")
 
@@ -1073,13 +1078,18 @@ def specs():
   expect_buffer("seq:blu:flu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
   expect_buffer("seq:pur:flu", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
   expect_buffer("seq:red:flu", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-
   expect_buffer("era:flu:0,-5,4:seq:red:flu", 0, 2, "20,0,0,0,0,0")
   expect_buffer("seq:org:flu", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
   expect_buffer("seq:yel:flu", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
   expect_buffer("seq:grn:flu", 0, 8,       "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
   expect_buffer("seq:blu:flu", 0, 10,      "0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
   expect_buffer("seq:pur:flu", 0, 13,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+
+  test("the low limit can be changed")
+
+
+
+
 
 ########################################################################
 # TESTING
