@@ -170,7 +170,7 @@ def apollo_macros():
   set_macro(46, "0,45:sch", 0)
 
   set_macro(25, "6,360:seq:100,26:sch", 0)
-  set_macro(26, "6,0,5:seq:sto:60:rcl:csh", 0)
+  set_macro(26, "6,0,2:seq:sto:60:rcl:csh", 0)
 
 def default_macros():
   apollo_macros()
