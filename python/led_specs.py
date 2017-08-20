@@ -343,23 +343,23 @@ def expect_palette(command_, start, count, expected, positive=True):
 
 def expect_int(command_, expected):
   got = command_int(command_)
-  expect_equal(str(expected), str(got))                                                                  
+  expect_equal(str(got), str(expected))                                                                  
 
 def expect_offset(command_, expected, positive=True):
   command_str(command_)
   got = get_offset()
   if positive:
-    expect_equal(str(expected), str(got))
+    expect_equal(str(got), str(expected))
   else:
-    expect_not_equal(str(expected), str(got))
+    expect_not_equal(str(got), str(expected))
 
 def expect_window(command_, expected, positive=True):
   command_str(command_)
   got = get_window()
   if positive:
-    expect_equal(str(expected), str(got))
+    expect_equal(str(got), str(expected))
   else:
-    expect_not_equal(str(expected), str(got))
+    expect_not_equal(str(got), str(expected))
 
 def get_offset():
   return command_int("0,2:tst")
@@ -700,13 +700,13 @@ def specs():
   test("setting an offset is not relative to the current offset")
   expect_buffer("1:off:1:off:lgr", 0, 2, "0,0,0,10,20,0")
 
-  skip_test("2:win:4:off:dgr", "the window is adjusted if the offset is set beyond the current window")
-  #command_str("2:win:4:off:dgr:flu")
-  #current_offset = command_str("0,2:tst")
-  #current_window = command_str("0,3:tst")
-  #expect_int("0,2:tst", 4)
-  #expect_int("0,3:tst", 4)
-                                                                                                                                           
+  test("the window is adjusted if the offset is set beyond the current window")
+  command_str("2:win:4:off:dgr")
+  current_offset = command_str("0,2:tst")
+  current_window = command_str("0,3:tst")
+  expect_int("0,2:tst", 4)
+  expect_int("0,3:tst", 4)
+   
 
 ########################################################################
 # REVERSE AND FORWARD
@@ -838,8 +838,8 @@ def specs():
   test("the flooded colors get random effects set")                                     
   expect_effect("2:rnd:flo", 0, 3, "2,0,16") 
 
-  skip_test("2:rnd:rep:rep:flu", "the repeated colors get random effects set")                                                                                                                                                            
-  #expect_effect("2:rnd:rep:rep", 0, 3, "x0,0,2")                                                                                                                                                        
+  test("the repeated colors get random effects set")                                                                                                                                                            
+  expect_effect("2:rnd:rep:rep:rep", 0, 4, "x0,0,2")                                                                                                                                                        
 
   test("it places a random color from the palette")
   expect_buffer("3:rnd", 0, 1, "15,20,0")
