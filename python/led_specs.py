@@ -397,7 +397,7 @@ def specs():
 
   test("it accurately sets all standard colors")
   for color in test_colors.colors:
-    expect_buffer(color[0] + ":flu", 0, 1, color[1])
+    expect_buffer(color[0], 0, 1, color[1])
 
 
 ########################################################################
@@ -406,10 +406,10 @@ def specs():
   group("pushing multiple colors")                                                                                     
                                                                                                                        
   test("it places two colors (only)")                                                                                  
-  expect_buffer("2:yel:flu", 0, 3, "20,20,0,20,20,0,0,0,0")                          
+  expect_buffer("2:yel", 0, 3, "20,20,0,20,20,0,0,0,0")                          
 
   test("it places multiple colors in reverse mode")
-  expect_buffer("1:rev:2:sea:flu", num_leds - 3, 3, "0,0,0,0,20,10,0,20,10")
+  expect_buffer("1:rev:2:sea", num_leds - 3, 3, "0,0,0,0,20,10,0,20,10")
                                                                            
 
 ########################################################################
@@ -429,10 +429,10 @@ def specs():
   group("rendering colors to the render buffer")
 
   test("it renders a rendered blue value in the render buffer")
-  expect_render("blu:flu", 0, 1, "0,0,51")
+  expect_render("blu", 0, 1, "0,0,51")
 
   test("it renders an alternate orange value in the render buffer")
-  expect_render("org:flu", 0, 1, "51,25,0")
+  expect_render("org", 0, 1, "51,25,0")
 
 
 ########################################################################
@@ -441,17 +441,17 @@ def specs():
   group("erasure")
 
   test("it erases the rendered value")
-  expect_render("red:flu", 0, 1, "51,0,0")
-  expect_render("era:flu", 0, 1, "0,0,0")
+  expect_render("red", 0, 1, "51,0,0")
+  expect_render("era", 0, 1, "0,0,0")
 
   test("it erases only within the set window")
-  expect_render("6:pnk:flu", 0, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")
-  expect_render("2:off:4:win:era:flu", 0, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25")
+  expect_render("6:pnk", 0, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")
+  expect_render("2:off:4:win:era", 0, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25")
 
   test("it erases within the set window in reverse mode")
-  expect_render("1:rev:6:pnk:flu", num_leds - 6, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")                                                                                                                                                              
+  expect_render("1:rev:6:pnk", num_leds - 6, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")                                                                                                                                                              
   # offset and window are always in reference to pixel 0 regardless of reversal
-  expect_render(str(num_leds - 4) + ":off:" + str(num_leds - 2) + ":win:era:flu", num_leds - 6, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25") 
+  expect_render(str(num_leds - 4) + ":off:" + str(num_leds - 2) + ":win:era", num_leds - 6, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25") 
 
   # test erasing to custom black level
 
@@ -462,17 +462,17 @@ def specs():
   group("repeating")
 
   test("it repeats the color value only once")
-  expect_buffer("grn:rep:flu", 0, 3, "0,20,0,0,20,0,0,0,0")
+  expect_buffer("grn:rep", 0, 3, "0,20,0,0,20,0,0,0,0")
 
   test("it repeats the color value multiple times")
-  expect_buffer("grn:2:rep:flu", 0, 4, "0,20,0,0,20,0,0,20,0,0,0,0")
+  expect_buffer("grn:2:rep", 0, 4, "0,20,0,0,20,0,0,20,0,0,0,0")
 
   # repeating works in reverse mode
   test("it repeats properly in reverse mode")
-  expect_buffer("1:rev:gry:rep:flu", num_leds - 3, 3, "0,0,0,10,10,10,10,10,10")
+  expect_buffer("1:rev:gry:rep", num_leds - 3, 3, "0,0,0,10,10,10,10,10,10")
 
   test("it repeats properly in reverse modei multiple times")
-  expect_buffer("1:rev:gry:2:rep:flu", num_leds - 4, 4, "0,0,0,10,10,10,10,10,10,10,10,10")
+  expect_buffer("1:rev:gry:2:rep", num_leds - 4, 4, "0,0,0,10,10,10,10,10,10,10,10,10")
 
   test("it repeats the effect")
   expect_effect("amb:bli:rep", 0, 2, "10,10")
@@ -485,17 +485,17 @@ def specs():
 
   test("it floods all leds")
   expected_buffer = ("10,0,20," * num_leds)[:-1]
-  expect_buffer("pur:flo:flu", 0, num_leds, expected_buffer)
+  expect_buffer("pur:flo", 0, num_leds, expected_buffer)
 
   test("it floods only within the set window")
-  expect_buffer("2:off:4:win:ros:flo:flu", 0, 6, "0,0,0,0,0,0,20,0,15,20,0,15,0,0,0,0,0,0")
+  expect_buffer("2:off:4:win:ros:flo", 0, 6, "0,0,0,0,0,0,20,0,15,20,0,15,0,0,0,0,0,0")
 
   # not sure how to test this
   # pending_test("it does no flooding if there's no room")
 
   test("it floods properly in reverse mode")
   expected_buffer = ("20,15,0," * num_leds)[:-1]                                                                                                                                                           
-  expect_buffer("1:rev:amb:flo:flu", 0, num_leds, expected_buffer)  
+  expect_buffer("1:rev:amb:flo", 0, num_leds, expected_buffer)  
 
 
 ########################################################################
@@ -504,21 +504,21 @@ def specs():
   group("mirroring")
    
   test("it mirrors the pattern accurately")
-  expect_buffer("cyn:yel:mag:mir:flu", 0, 3, "20,0,20,20,20,0,0,20,20")
+  expect_buffer("cyn:yel:mag:mir", 0, 3, "20,0,20,20,20,0,0,20,20")
   expect_buffer("", num_leds - 3, 3, "0,20,20,20,20,0,20,0,20")
 
   test("it mirrors only within the set window")
-  expect_buffer("10:win:grn:blu:mir:flu", 0, 10, "0,0,20,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,20")
+  expect_buffer("10:win:grn:blu:mir", 0, 10, "0,0,20,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,20")
 
   test("it mirrors only within the set offset and window")
-  expect_buffer("10:off:20:win:mag:lgr:mir:flu", 10, 10, "10,20,0,20,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,20,10,20,0")
+  expect_buffer("10:off:20:win:mag:lgr:mir", 10, 10, "10,20,0,20,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,20,10,20,0")
 
   test("it mirrors properly in reverse mode") 
-  expect_buffer("1:rev:lbl:pnk:mir:flu", num_leds - 10, 10, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,20,20,0,10")
+  expect_buffer("1:rev:lbl:pnk:mir", num_leds - 10, 10, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,20,20,0,10")
   expect_buffer("", 0, 10, "20,0,10,0,10,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
 
   test("it mirrors properly in reverse mode within an offset and window")
-  expect_buffer("1:rev:10:off:20:win:red:pur:mir:flu", 10, 10, "10,0,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,10,0,20")
+  expect_buffer("1:rev:10:off:20:win:red:pur:mir", 10, 10, "10,0,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,10,0,20")
 
 
 ########################################################################
@@ -527,13 +527,13 @@ def specs():
   group("pushing effects to the effects buffer")
 
   test("it places an effect in the effects buffer")
-  expect_effect("org:bli:flu", 0, 1, "10")
+  expect_effect("org:bli", 0, 1, "10")
 
   test("it places an alternate effect in the effects buffer")
   expect_effect("org:bre:flu", 0, 1, "30")
 
   test("it places multiple effects in the effects buffer")
-  expect_effect("blu:bla:grn:blb:flu", 0, 2, "22,21") 
+  expect_effect("blu:bla:grn:blb", 0, 2, "22,21") 
 
   # test placement of all effects with their values
 
@@ -544,26 +544,26 @@ def specs():
   group("positioning")
 
   test("pos sets the next insertion postion and default 0 width")
-  expect_buffer("1:pos:red:flu", 0, 3, "0,0,0,20,0,0,0,0,0")
+  expect_buffer("1:pos:red", 0, 3, "0,0,0,20,0,0,0,0,0")
 
   test("pos sets the offset + width")
-  expect_buffer("1,2:pos:wht:flo:flu", 0, 4, "0,0,0,20,20,20,20,20,20,0,0,0")
+  expect_buffer("1,2:pos:wht:flo", 0, 4, "0,0,0,20,20,20,20,20,20,0,0,0")
 
   test("offset override is always relative to LED #0")
-  expect_buffer("2:off:2:off:lav:flu", 0, 5, "0,0,0,0,0,0,15,0,20,0,0,0,0,0,0")
+  expect_buffer("2:off:2:off:lav", 0, 5, "0,0,0,0,0,0,15,0,20,0,0,0,0,0,0")
 
   test("positioning in forward mode when offset+width is zero")
-  expect_buffer("0:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")
+  expect_buffer("0:rev:3:pos:tun:flo", 0, 5, "0,0,0,0,0,0,0,0,0,20,11,2,0,0,0")
 
   test("positioning in reverse mode when offset+width is zero") 
   # in reverse mode, color is pushed one less than max and since max = offset, 
   # the position is reduced by one
-  expect_buffer("1:rev:3:pos:tun:flo:flu", 0, 5, "0,0,0,0,0,0,20,11,2,0,0,0,0,0,0")
+  expect_buffer("1:rev:3:pos:tun:flo", 0, 5, "0,0,0,0,0,0,20,11,2,0,0,0,0,0,0")
 
   test("positioning with width works in reverse mode")
   # in reverse mode, color is pushed one less than max,
   # the start position is reduced by one
-  expect_buffer("1:rev:2,2:pos:lgr:flo:flu", 0, 5, "0,0,0,0,0,0,10,20,0,10,20,0,0,0,0")                                                                                                                                  
+  expect_buffer("1:rev:2,2:pos:lgr:flo", 0, 5, "0,0,0,0,0,0,10,20,0,10,20,0,0,0,0")                                                                                                                                  
 
 
 ########################################################################
@@ -589,58 +589,58 @@ def specs():
   group("palette shuffling")                                                            
 
   test("the palette can be shuffled")
-  expect_palette("shf:flu", 0, palette_size, standard_palette, False)
+  expect_palette("shf", 0, palette_size, standard_palette, False)
   expected_colors = "10,20,0,20,0,0,0,15,20,0,20,0,15,20,0,20,20,0,20,0,15,0,0,20,10,0,20,20,10,0,0,20,15,0,10,20,20,15,0,20,0,20,20,0,10,15,0,20,0,20,10,0,20,20"
-  expect_palette("shf:flu", 0, palette_size, expected_colors)
+  expect_palette("shf", 0, palette_size, expected_colors)
 
   test("the palette resets to the right fixed set of colors")
-  expect_palette("shf:flu:1:shf:flu", 0, palette_size, standard_palette)
+  expect_palette("shf:flu:1:shf", 0, palette_size, standard_palette)
 
   test("the shuffler sets every odd-numbered palette color to the previous one's compliment")
-  expect_palette("2:shf:flu", 0, palette_size, standard_palette, False)
+  expect_palette("2:shf", 0, palette_size, standard_palette, False)
   expected_colors = "0,20,20,20,0,0,0,0,20,20,20,0,0,10,20,20,10,0,5,20,0,15,0,20,20,10,0,0,10,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
-  expect_palette("shf:flu:2:shf:flu", 0, palette_size, expected_colors)                                                                         
+  expect_palette("shf:flu:2:shf", 0, palette_size, expected_colors)                                                                         
 
   test("the shuffler creates a random palette of complimentary pairs")
-  expect_palette("3:shf:flu", 0, palette_size, standard_palette, False)
+  expect_palette("3:shf", 0, palette_size, standard_palette, False)
   expected_colors = "0,10,20,20,10,0,0,15,20,20,5,0,20,10,0,0,10,20,0,20,20,20,0,0,20,0,10,0,20,10,0,20,15,20,0,5,20,15,0,0,5,20,10,20,0,10,0,20,0,20,10,20,0,10"
-  expect_palette("flu:3:shf:flu", 0, palette_size, expected_colors)                                                                 
+  expect_palette("flu:3:shf", 0, palette_size, expected_colors)                                                                 
 
   test("the shuffler compliments the entire current palette")
-  expect_palette("4:shf:flu", 0, palette_size, standard_palette, False)
+  expect_palette("4:shf", 0, palette_size, standard_palette, False)
   expected_colors = "0,20,20,0,10,20,0,0,20,20,0,20,20,20,0,10,20,0,20,0,0,0,20,0,20,10,0,10,0,20,20,0,10,0,20,10,0,5,20,5,0,20,20,5,0,20,0,5,5,20,0,0,20,5"
-  expect_palette("1:shf:flu:4:shf:flu", 0, palette_size, expected_colors)                                                                                             
+  expect_palette("1:shf:flu:4:shf", 0, palette_size, expected_colors)                                                                                             
 
   test("the shuffler rotates the current palettes down")
-  expect_palette("5:shf:flu", 0, palette_size, standard_palette, False)
+  expect_palette("5:shf", 0, palette_size, standard_palette, False)
   expected_colors = "20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0"
-  expect_palette("1:shf:flu:5:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:5:shf", 0, palette_size, expected_colors)
 
   test("the shuffler rotates the current palette up")
-  expect_palette("6:shf:flu", 0, palette_size, standard_palette, False)
+  expect_palette("6:shf", 0, palette_size, standard_palette, False)
   expected_colors = "20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20"
-  expect_palette("1:shf:flu:6:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:6:shf", 0, palette_size, expected_colors)
 
   test("the shuffler rotates the palette down a number of times")
   expected_colors = "20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0,20,10,0"
-  expect_palette("1:shf:flu:5,2:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:5,2:shf", 0, palette_size, expected_colors)
 
   test("the shuffler rotates the palette up a number of times")
   expected_colors = "0,20,15,15,0,20,20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20"
-  expect_palette("1:shf:flu:6,3:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:6,3:shf", 0, palette_size, expected_colors)
 
   test("the shuffer rotates a number of positions of the palette down")
   expected_colors = "20,10,0,20,20,0,0,20,0,20,0,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
-  expect_palette("1:shf:flu:5,0,4:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:5,0,4:shf", 0, palette_size, expected_colors)
 
   test("the shuffler rotates a number of positions of the palette up")
   expected_colors = "0,0,20,20,0,0,20,10,0,20,20,0,0,20,0,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
-  expect_palette("1:shf:flu:6,0,5:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:6,0,5:shf", 0, palette_size, expected_colors)
 
   test("the shuffler reverses the current palette")
-  expect_palette("7:shf:flu", 0, palette_size, standard_palette, False)
+  expect_palette("7:shf", 0, palette_size, standard_palette, False)
   expected_colors = "20,0,15,15,0,20,0,20,15,0,15,20,15,20,0,20,15,0,20,0,10,0,20,10,10,20,0,0,10,20,20,0,20,0,20,20,10,0,20,0,0,20,0,20,0,20,20,0,20,10,0,20,0,0"
-  expect_palette("1:shf:flu:7:shf:flu", 0, palette_size, expected_colors)
+  expect_palette("1:shf:flu:7:shf", 0, palette_size, expected_colors)
 
 
 ########################################################################
@@ -649,18 +649,18 @@ def specs():
   group("zones")                                                                          
 
   test("zone zero is the entire display")
-  expect_offset("0:zon:dgr:flo:flu", 0)
-  expect_window("0:zon:olv:flo:flu", num_leds)
+  expect_offset("0:zon:dgr:flo", 0)
+  expect_window("0:zon:olv:flo", num_leds)
 
   test("zone one is the first 'fine' zone and not equal to the whole display")
   window = get_window()
-  expect_window("1:zon:lav:flo:flu", window, False)
+  expect_window("1:zon:lav:flo", window, False)
                                                                                                                                                                                                             
   test("there are always at least two fine zones, and the second doesn't start at zero")
   offset = get_offset()
   window = get_window()
-  expect_offset("2:zon:amb:flo:flu", offset, False)
-  expect_offset("2:zon:ros:flo:flu", window, False)
+  expect_offset("2:zon:amb:flo", offset, False)
+  expect_offset("2:zon:ros:flo", window, False)
 
 
 ########################################################################
@@ -669,16 +669,16 @@ def specs():
   group("setting offset and window")                                                                          
                                                               
   test("an offset can be set")
-  expect_buffer("1:off:grn:flu", 0, 2, "0,0,0,0,20,0")
+  expect_buffer("1:off:grn", 0, 2, "0,0,0,0,20,0")
 
   test("a window can be set")
-  expect_buffer("2:win:neo:flo:flu", 0, 2, "20,5,0,20,5,0")
+  expect_buffer("2:win:neo:flo", 0, 2, "20,5,0,20,5,0")
 
   test("pushed-off-the-end colors don't exceed the window boundary")
-  expect_buffer("2:win:lbl:flo:lbl:flu", 0, 2, "0,10,20,0,10,20")
+  expect_buffer("2:win:lbl:flo:lbl", 0, 2, "0,10,20,0,10,20")
 
   test("setting an offset is not relative to the current offset")
-  expect_buffer("1:off:1:off:lgr:flu", 0, 2, "0,0,0,10,20,0")
+  expect_buffer("1:off:1:off:lgr", 0, 2, "0,0,0,10,20,0")
 
   skip_test("2:win:4:off:dgr", "the window is adjusted if the offset is set beyond the current window")
   #command_str("2:win:4:off:dgr:flu")
@@ -694,10 +694,10 @@ def specs():
   group("reverse and forward")                                                                          
           
   test("the insertion mode can be set to reverse")
-  expect_buffer("5:win:1:rev:blu:flu", 0, 6, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0")
+  expect_buffer("5:win:1:rev:blu", 0, 6, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0")
 
   test("the insertion mode can be set to normal")
-  expect_buffer("5:win:0:rev:yel:flu", 0, 6, "20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
+  expect_buffer("5:win:0:rev:yel", 0, 6, "20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
 
 
 ########################################################################
@@ -713,7 +713,7 @@ def specs():
   expected_rgb_color = rgb_string(unscaled_color_value_, unscaled_color_value_, unscaled_color_value_)
 
   test("it unscales to the proper pre-rendered value")
-  expect_buffer("255,255,255:rgb:flu", 0, 1, expected_rgb_color)
+  expect_buffer("255,255,255:rgb", 0, 1, expected_rgb_color)
 
   # compute rendered value for recovered full-brightness pixel
   expected_render_value = rendered_color_value_
@@ -721,10 +721,10 @@ def specs():
 
   test("it renders the expected RGB value in the render buffer")                                                                                                        
   # must render at default brightness to recover the original value
-  expect_render(str(default_brightness) + ":lev:255,255,255:rgb:flu", 0, 1, expected_rgb_color)                                                         
+  expect_render(str(default_brightness) + ":lev:255,255,255:rgb", 0, 1, expected_rgb_color)                                                         
 
   test("current brightness level doesn't affect unscaling calculation")
-  expect_render("1:lev:255,255,255:rgb:" + str(default_brightness) + ":lev:flu", 0, 1, expected_rgb_color)                         
+  expect_render("1:lev:255,255,255:rgb:" + str(default_brightness) + ":lev", 0, 1, expected_rgb_color)                         
                                                                   
 
 ########################################################################
@@ -738,14 +738,14 @@ def specs():
                                                          
   test("it sets the expected HSL value in the display buffer")                                                                                                                                     
   expected_rgb_color = str(unscaled_color_value_) + ",0,0"
-  expect_buffer("0,255,255:hsl:flu", 0, 1, expected_rgb_color)
+  expect_buffer("0,255,255:hsl", 0, 1, expected_rgb_color)
 
   test("it renders the expected HSL value in the render buffer")                                                                                                                                   
   expected_rgb_color = str(rendered_color_value_) + ",0,0"                                                                                                                                                 
-  expect_render(str(default_brightness) + ":lev:0,255,255:hsl:flu", 0, 1, expected_rgb_color)                                                                                                          
+  expect_render(str(default_brightness) + ":lev:0,255,255:hsl", 0, 1, expected_rgb_color)                                                                                                          
                 
   test("current brightness level doesn't affect unscaling calculation")                                                                                                                                    
-  expect_render("1:lev:0,255,255:hsl:" + str(default_brightness) + ":lev:flu", 0, 1, expected_rgb_color)
+  expect_render("1:lev:0,255,255:hsl:" + str(default_brightness) + ":lev", 0, 1, expected_rgb_color)
                                                                                                                                     
 
 ########################################################################
@@ -764,65 +764,66 @@ def specs():
   group("random color")                                                                          
                                                              
   test("it chooses a random color")
-  expect_buffer("rnd:flu", 0, 1, "15,20,0")  
+  expect_buffer("rnd", 0, 1, "15,20,0")  
 
   test("it chooses another random color")
-  expect_buffer("rnd:flu", 0, 1, "15,20,0")                                                                                                                                 
+  expect_buffer("rnd", 0, 1, "15,20,0")                                                                                                                                 
 
   test("it sets no effect")
-  expect_effect("rnd:flu", 0, 1, "0")
+  expect_effect("rnd", 0, 1, "0")
 
   test("it repeats using the same color not another random color")               
-  expect_buffer("rnd:rep:flu", 0, 2, "15,20,0,15,20,0")  
+  expect_buffer("rnd:rep", 0, 2, "15,20,0,15,20,0")  
 
   test("it floods using the same color not another random color")
-  expect_buffer("rnd:flo:flu", 0, 2, "15,20,0,15,20,0")
+  expect_buffer("rnd:flo", 0, 2, "15,20,0,15,20,0")
 
   test("it sets a random color and sets the effect to repeat with random colors")
-  expect_buffer("1:rnd:flu", 0, 1, "15,20,0")                                                                                        
-  expect_effect("1:rnd:flu", 0, 1, "1")  
+  expect_buffer("1:rnd", 0, 1, "15,20,0")                                                                                        
+  expect_effect("1:rnd", 0, 1, "1")  
 
   test("it repeats using a different color")
-  expect_buffer("1:rnd:rep:flu", 0, 2, "20,0,20,15,20,0")
+  expect_buffer("1:rnd:rep", 0, 2, "20,0,20,15,20,0")
 
   test("it floods using a different color each time")                                                                                                                                                      
   if num_leds == 90:  
-    expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,10,0,20") 
+    expect_buffer("1:rnd:flo", 0, 3, "15,20,0,20,0,20,10,0,20") 
   elif num_leds == 100:
-    expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,0,20,20,0,10,20")
+    expect_buffer("1:rnd:flo", 0, 3, "15,20,0,0,20,20,0,10,20")
   else:
-    expect_buffer("1:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,10,0,20")
+    expect_buffer("1:rnd:flo", 0, 3, "15,20,0,20,0,20,10,0,20")
 
   test("the repeated colors get repeated effects")
-  expect_effect("1:rnd:rep:rep:flu", 0, 3, "1,1,1") 
+  expect_effect("1:rnd:rep:rep", 0, 3, "1,1,1") 
 
   test("the flooded colors get no effect set")                          
-  expect_effect("1:rnd:flo:flu", 0, 3, "1,0,0")    
+  expect_effect("1:rnd:flo", 0, 3, "1,0,0")    
 
   test("it sets a random color and sets the effect to repeat with random colors+effects")                                                                                                                          
-  expect_buffer("2:rnd:flu", 0, 1, "15,20,0")                                                                                                                                                                    
-  expect_effect("2:rnd:flu", 0, 1, "2") 
+  expect_buffer("2:rnd", 0, 1, "15,20,0")                                                                                                                                                                    
+  expect_effect("2:rnd", 0, 1, "2") 
 
   test("it repeats using a different color and different effect")                                                                                                                                                               
-  expect_buffer("2:rnd:rep:flu", 0, 2, "10,0,20,15,20,0")                                                                                                              
-  expect_effect("2:rnd:rep:flu", 0, 2, "16,2")  
+  expect_buffer("2:rnd:rep", 0, 2, "10,0,20,15,20,0")                                                                                                              
+  expect_effect("2:rnd:rep", 0, 2, "16,2")  
 
   test("it floods using a different color each time")                                                 
   if num_leds == 90:
-    expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,20,20,0")                                                                                                                                          
+    expect_buffer("2:rnd:flo", 0, 3, "15,20,0,20,0,20,20,20,0")                                                                                                                                          
   elif num_leds == 100:
-    expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,0,20,20,20,20,0")
+    expect_buffer("2:rnd:flo", 0, 3, "15,20,0,0,20,20,20,20,0")
   else:
-    expect_buffer("2:rnd:flo:flu", 0, 3, "15,20,0,20,0,20,20,20,0")
+    expect_buffer("2:rnd:flo", 0, 3, "15,20,0,20,0,20,20,20,0")
 
   test("the flooded colors get random effects set")                                     
-  expect_effect("2:rnd:flo:flu", 0, 3, "2,0,16") 
+  expect_effect("2:rnd:flo", 0, 3, "2,0,16") 
 
   skip_test("2:rnd:rep:rep:flu", "the repeated colors get random effects set")                                                                                                                                                            
-  #expect_effect("2:rnd:rep:rep:flu", 0, 3, "x0,0,2")                                                                                                                                                        
+  #expect_effect("2:rnd:rep:rep", 0, 3, "x0,0,2")                                                                                                                                                        
 
   test("it places a random color from the palette")
-  expect_buffer("3:rnd:flu", 0, 1, "15,20,0")
+  expect_buffer("3:rnd", 0, 1, "15,20,0")
+
 
 ########################################################################
 # PUSHING PALETTE COLORS
@@ -830,19 +831,19 @@ def specs():
   group("palette color")
 
   test("it places the first palette color")
-  expect_buffer("pal:flu", 0, 1, "20,0,0")
+  expect_buffer("pal", 0, 1, "20,0,0")
 
   test("it places the second palette color")
-  expect_buffer("1:pal:flu", 0, 1, "20,10,0")
+  expect_buffer("1:pal", 0, 1, "20,10,0")
 
   test("it places multiple palette colors")
-  expect_buffer("0,1:pal:flu", 0, 3, "20,0,0,20,10,0,0,0,0")
+  expect_buffer("0,1:pal", 0, 3, "20,0,0,20,10,0,0,0,0")
 
   test("it places an alternate set of multiple palette colors")
-  expect_buffer("2,3:pal:flu", 0, 3, "20,20,0,0,20,0,0,0,0")
+  expect_buffer("2,3:pal", 0, 3, "20,20,0,0,20,0,0,0,0")
 
   test("it places all palette colors")
-  expect_buffer("0,17:pal:flu", 0, 18, standard_palette) 
+  expect_buffer("0,17:pal", 0, 18, standard_palette) 
 
 
 ########################################################################
@@ -961,10 +962,10 @@ def specs():
   group("rotation")                                                             
 
   test("it rotates within the current window")
-  expect_buffer("0:off:5:win:red:rot:flu", 0, 5, "0,0,0,20,0,0,0,0,0,0,0,0,0,0,0")
+  expect_buffer("0:off:5:win:red:rot", 0, 5, "0,0,0,20,0,0,0,0,0,0,0,0,0,0,0")
 
   test("it rotates in reverse in the current window")
-  expect_buffer("0:off:5:win:blu:1:rev:rot:flu", 0, 5, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,20")
+  expect_buffer("0:off:5:win:blu:1:rev:rot", 0, 5, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,20")
 
   test("it rotates multiple times within the current window")
   expect_buffer("0:off:5:win:red:2:rot", 0, 5, "0,0,0,0,0,0,20,0,0,0,0,0,0,0,0")
@@ -1016,6 +1017,7 @@ def specs():
 
   test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
   for x in range(49,61):
+    # the random color is just so there's something to see while it runs
     expect_macro("rnd:flu:0:set:" + str(x), 0, "249," + str(x) + ",255")                                                                                                                                                                                                           
 
 
@@ -1049,41 +1051,41 @@ def specs():
   group("sequencing")                                                                                                            
   
   test("setting a sequence leaves arg0 set to the low value")
-  expect_buffer("0,5,4:seq:olv:flu", 0, 5, "15,20,0,15,20,0,15,20,0,15,20,0,0,0,0")
+  expect_buffer("0,5,4:seq:olv", 0, 5, "15,20,0,15,20,0,15,20,0,15,20,0,0,0,0")
                                                                                                                                                                                                          
   test("it does a wheel sequence")
   expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0")
-  expect_buffer("seq:org:flu", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:yel:flu", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:grn:flu", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:blu:flu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:pur:flu", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:red:flu", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
 
   test("it does a swing sequence")
-  expect_buffer("0,4,1:sqs:wht:flu", 0, 2, "20,20,20,0,0,0")
-  expect_buffer("seq:gry:flu", 0, 4,       "10,10,10,10,10,10,20,20,20,0,0,0")
-  expect_buffer("seq:dgr:flu", 0, 7,       "5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
-  expect_buffer("seq:gry:flu", 0, 9,       "10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
-  expect_buffer("seq:wht:flu", 0, 10,      "20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
-  expect_buffer("seq:gry:flu", 0, 12,      "10,10,10,10,10,10,20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
+  expect_buffer("0,4,1:sqs:wht", 0, 2, "20,20,20,0,0,0")
+  expect_buffer("seq:gry", 0, 4,       "10,10,10,10,10,10,20,20,20,0,0,0")
+  expect_buffer("seq:dgr", 0, 7,       "5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
+  expect_buffer("seq:gry", 0, 9,       "10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
+  expect_buffer("seq:wht", 0, 10,      "20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
+  expect_buffer("seq:gry", 0, 12,      "10,10,10,10,10,10,20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
 
   # test adjusting sequence high/low, fixing current 
 
   test("the high limit can be changed")
-  expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0")
-  expect_buffer("seq:org:flu", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:yel:flu", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:grn:flu", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:blu:flu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:pur:flu", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:red:flu", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("era:flu:0,-5,4:seq:red:flu", 0, 2, "20,0,0,0,0,0")
-  expect_buffer("seq:org:flu", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:yel:flu", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:grn:flu", 0, 8,       "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:blu:flu", 0, 10,      "0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:pur:flu", 0, 13,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0")
+  expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("era:flu:0,-5,4:seq:red", 0, 2, "20,0,0,0,0,0")
+  expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:grn", 0, 8,       "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:blu", 0, 10,      "0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("seq:pur", 0, 13,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
 
   test("the low limit can be changed")
 
@@ -1161,7 +1163,7 @@ def specs():
   group("storing and recalling arguments")
 
   test("it stores arg0 and recalls as arg0, shifting arg0 to arg1")
-  expect_buffer("2:sto:5:rcl:pos:red:flo:flu:rst:", 0, 8, "0,0,0,0,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,0,0,0")
+  expect_buffer("2:sto:5:rcl:pos:red:flo:rst:", 0, 8, "0,0,0,0,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,0,0,0")
                                                                  
   pending_test("it also shifts arg1 to arg2")
 
