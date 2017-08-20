@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-# TODO: standard seed should be set for each test, not for each group 
-
 # ideas:
 #        arg to run a single test
 
@@ -20,7 +18,9 @@ def get_line_number(back):
   return info.lineno  
 
 app_description = "Apollo Lighting System - Test Framework v0.0 - Aug 10, 2017"
-response_wait = 0.2
+slow_response_wait = 0.12
+fast_response_wait = 0.02
+response_wait = fast_response_wait
 s = None                                                     
 debug_mode = False  
 num_tests = 0
@@ -50,6 +50,8 @@ group_number_only = 0
 standard_palette = ""
 alternate_seed = 2
 
+
+# -----------------------------------------------------------------------------
 # --- Serial I/O ---
 
 def flush_input():                        
@@ -84,6 +86,8 @@ def wait_for_str():
     str = str + s.read(s.inWaiting())
   return str[:-1]
 
+
+# -----------------------------------------------------------------------------
 # --- Sending Commands ---
 
 def command(cmd_text):
@@ -96,10 +100,17 @@ def command_int(cmd_text):
   s.write((cmd_text + ':').encode())
   return wait_for_int()
 
-def command_str(cmd_text):       
+def command_str(cmd_text, slow = False):       
+  global response_wait
+  if slow:
+    response_wait = slow_response_wait
+  else:
+    response_wait = fast_response_wait
   s.write((cmd_text + ':').encode()) 
   return wait_for_str()                     
 
+
+# -----------------------------------------------------------------------------
 # --- Setup ---
 
 def setup(): 
@@ -136,6 +147,7 @@ def write(text):
   sys.stdout.flush()                                                
 
 
+# -----------------------------------------------------------------------------
 # --- device handling ---
 
 def reset_device():
@@ -165,6 +177,7 @@ def do_reset_device():
   command_str(reset_device())                                                                                                                                                                             
 
 
+# -----------------------------------------------------------------------------
 # --- test definition ---
 
 #TODO how to skip to another group?
@@ -195,11 +208,12 @@ def skip_test(command, description):
   test_line_number = get_line_number(2)                                                                                                                                                                    
   test_number = test_number + 1                                                                                                                                                                            
   test_description = description                                                                                                                                                                           
-  report_skipped()                                                                                                                                                                                         
+  report_skipped(command)                                                                                                                                                                                         
   num_skipped += 1                                                                                                                                                                                         
   write(tc.red("."))                                                                                                                                                                          
 
 
+# -----------------------------------------------------------------------------
 # --- reporting results ---
                                                                                                                                                                                                            
 def report_group():
@@ -244,16 +258,17 @@ def report_pending():
     tc.cyan("[" + test_description + "]") + 
     tc.yellow(" @ " + str(test_line_number))) 
 
-def report_skipped():                                                                                                                                                                                      
+def report_skipped(command):                                                                                                                                                                                      
   report_test()                                                                                                                                                                                            
   test_failures.append(
     "    " + 
     tc.red("Skipped expectation: ") + 
-    tc.red("[" + test_command + "] ") + 
+    tc.red("[" + command + "] ") + 
     tc.red("[" + test_description + "]") + 
     tc.yellow(" @ " + str(test_line_number)))                                                             
 
 
+# -----------------------------------------------------------------------------
 # --- failing/succeeding tests ---
                                                                                       
 def fail(got, expected):
@@ -270,6 +285,7 @@ def succeed():
   success_count += 1
 
 
+# -----------------------------------------------------------------------------
 # --- expectations ---
 
 def expect_equal(got, expected):
@@ -294,32 +310,32 @@ def expect_macro(command_, macro, expected):
   count = len(expected)
   expect_equal(str_[:count], expected)
 
-def expect_buffer(command_, start, count, expected, flush = True):
+def expect_buffer(command_, start, count, expected, flush = True, slow = False):
   if flush:
     command_ += ":flu"
   command(command_)
-  str_ = command_str("2," + str(start) + "," + str(count) + ":tst")                                 
+  str_ = command_str("2," + str(start) + "," + str(count) + ":tst", slow)                                 
   expect_equal(str_[:-1], expected)
 
-def expect_render(command_, start, count, expected, flush = True):
+def expect_render(command_, start, count, expected, flush = True, slow = False):
   if flush:
     command_ += ":flu"               
   command(command_)                                                
-  str_ = command_str("3," + str(start) + "," + str(count) + ":tst")
+  str_ = command_str("3," + str(start) + "," + str(count) + ":tst", slow)
   expect_equal(str_[:-1], expected)                                
                                                                    
-def expect_effect(command_, start, count, expected, flush = True):               
+def expect_effect(command_, start, count, expected, flush = True, slow = False):               
   if flush:
     command_ += ":flu"
   command(command_)
-  str_ = command_str("4," + str(start) + "," + str(count) + ":tst")
+  str_ = command_str("4," + str(start) + "," + str(count) + ":tst", slow)
   expect_equal(str_[:-1], expected)                                
                                                                    
 def expect_palette(command_, start, count, expected, positive=True):               
   display_width = num_leds / palette_size                                                                                                                         
   display_command = ":" + str(palette_size) + ",-2," + str(display_width) + ":cpy:flu"  
   command(command_ + display_command)                                                
-  str_ = command_str("5," + str(start) + "," + str(count) + ":tst")
+  str_ = command_str("5," + str(start) + "," + str(count) + ":tst", True)
   if positive:
     expect_equal(str_[:-1], expected)                                
   else:
@@ -352,18 +368,22 @@ def get_window():
   return command_int("0,3:tst")
 
 def expect_empty_buffer(command_, start, count):
-  str_ = ""
+  expected = ""
   for i in range(count):
-    str_ += "0,0,0,"
-  expect_buffer(command_, start, count, str_[:-1])
+    expected += "0,0,0,"
+  command(command_)
+  str_ = command_str("2," + str(start) + "," + str(count) + ":tst", True)
+  expect_equal(str_[:-1], expected[:-1])
 
 def expect_empty_render(command_, start, count):
-  str_ = ""
+  expected = ""
   for i in range(count):
-    str_ += "0,0,0,"
-  expect_render(command_, start, count, str_[:-1])
+    expected += "0,0,0,"
+  command(command_)
+  str_ = command_str("3," + str(start) + "," + str(count) + ":tst", True)
+  expect_equal(str_[:-1], expected[:-1])
 
-
+# -----------------------------------------------------------------------------
 # --- helper functions ---
 
 def rgb_string(red, green, blue):
@@ -485,17 +505,17 @@ def specs():
 
   test("it floods all leds")
   expected_buffer = ("10,0,20," * num_leds)[:-1]
-  expect_buffer("pur:flo", 0, num_leds, expected_buffer)
+  expect_buffer("pur:flo", 0, num_leds, expected_buffer, True, True)
 
   test("it floods only within the set window")
-  expect_buffer("2:off:4:win:ros:flo", 0, 6, "0,0,0,0,0,0,20,0,15,20,0,15,0,0,0,0,0,0")
+  expect_buffer("2:off:4:win:ros:flo", 0, 6, "0,0,0,0,0,0,20,0,15,20,0,15,0,0,0,0,0,0", True, True)
 
   # not sure how to test this
   # pending_test("it does no flooding if there's no room")
 
   test("it floods properly in reverse mode")
   expected_buffer = ("20,15,0," * num_leds)[:-1]                                                                                                                                                           
-  expect_buffer("1:rev:amb:flo", 0, num_leds, expected_buffer)  
+  expect_buffer("1:rev:amb:flo", 0, num_leds, expected_buffer, True, True)  
 
 
 ########################################################################
@@ -504,8 +524,8 @@ def specs():
   group("mirroring")
    
   test("it mirrors the pattern accurately")
-  expect_buffer("cyn:yel:mag:mir", 0, 3, "20,0,20,20,20,0,0,20,20")
-  expect_buffer("", num_leds - 3, 3, "0,20,20,20,20,0,20,0,20")
+  expect_buffer("cyn:yel:mag:mir", 0, 3, "20,0,20,20,20,0,0,20,20", True, True)
+  expect_buffer("", num_leds - 3, 3, "0,20,20,20,20,0,20,0,20", True, True)
 
   test("it mirrors only within the set window")
   expect_buffer("10:win:grn:blu:mir", 0, 10, "0,0,20,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,0,20")
@@ -843,7 +863,7 @@ def specs():
   expect_buffer("2,3:pal", 0, 3, "20,20,0,0,20,0,0,0,0")
 
   test("it places all palette colors")
-  expect_buffer("0,17:pal", 0, 18, standard_palette) 
+  expect_buffer("0,17:pal", 0, 18, standard_palette, True, True) 
 
 
 ########################################################################
@@ -1054,38 +1074,38 @@ def specs():
   expect_buffer("0,5,4:seq:olv", 0, 5, "15,20,0,15,20,0,15,20,0,15,20,0,0,0,0")
                                                                                                                                                                                                          
   test("it does a wheel sequence")
-  expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0")
-  expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
+  expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
   test("it does a swing sequence")
-  expect_buffer("0,4,1:sqs:wht", 0, 2, "20,20,20,0,0,0")
-  expect_buffer("seq:gry", 0, 4,       "10,10,10,10,10,10,20,20,20,0,0,0")
-  expect_buffer("seq:dgr", 0, 7,       "5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
-  expect_buffer("seq:gry", 0, 9,       "10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
-  expect_buffer("seq:wht", 0, 10,      "20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
-  expect_buffer("seq:gry", 0, 12,      "10,10,10,10,10,10,20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0")
+  expect_buffer("0,4,1:sqs:wht", 0, 2, "20,20,20,0,0,0", True, True)
+  expect_buffer("seq:gry", 0, 4,       "10,10,10,10,10,10,20,20,20,0,0,0", True, True)
+  expect_buffer("seq:dgr", 0, 7,       "5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0", True, True)
+  expect_buffer("seq:gry", 0, 9,       "10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0", True, True)
+  expect_buffer("seq:wht", 0, 10,      "20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0", True, True)
+  expect_buffer("seq:gry", 0, 12,      "10,10,10,10,10,10,20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0", True, True)
 
   # test adjusting sequence high/low, fixing current 
 
   test("the high limit can be changed")
-  expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0")
-  expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("era:flu:0,-5,4:seq:red", 0, 2, "20,0,0,0,0,0")
-  expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:grn", 0, 8,       "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:blu", 0, 10,      "0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
-  expect_buffer("seq:pur", 0, 13,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0")
+  expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
+  expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("era:flu:0,-5,4:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
+  expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:grn", 0, 8,       "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:blu", 0, 10,      "0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+  expect_buffer("seq:pur", 0, 13,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
   test("the low limit can be changed")
 
