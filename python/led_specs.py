@@ -850,7 +850,7 @@ def specs():
   expect_effect("2:rnd:flo", 0, 3, "2,0,16") 
 
   test("the repeated colors get random effects set")                                                                                                                                                            
-  expect_effect("2:rnd:rep:rep:rep", 0, 4, "x0,0,2")                                                                                                                                                        
+  expect_effect("2:rnd:rep:2:rnd:rep", 0, 5, "16,2,30,2,0")                                                                                                                                                        
 
   test("it places a random color from the palette")
   expect_buffer("3:rnd", 0, 1, "15,20,0")
