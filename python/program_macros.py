@@ -108,22 +108,46 @@ def monument_macros():
 def annunciator_macros():
   print tc.cyan("annunciator macros:\n")
 
-  set_macro(10, "1:pau:16:run:19:run:21:run", 0)
+  # main start
+  # pause effects, set up sequencers and fade, set up display macro schedules, set shuffle schedule
+  set_macro(10, "1:pau:16:run:21:run:31:run", 0)
 
+  # sequence the next window for each display
   set_macro(11, "0:snw:pos:0:pal:sfd:flo:rst:flu", 0)
   set_macro(12, "1:snw:pos:1:pal:sfd:flo:rst", 0)
   set_macro(13, "2:snw:pos:2:pal:sfd:flo:rst", 0)
 
+  # set up each sequencer
   set_macro(14, "0,13,0:ssc:1,25,12:ssc", 0)
   set_macro(15, "2,37,24:ssc", 0)
+
+  # set up all sequences and a quick fade rate
   set_macro(16, "14:run:15:run:3,8000:cfg", 0)
 
+  # set up each each display macro schedule
   set_macro(17, "145,11:sch:150,12:sch", 0)
   set_macro(18, "155,13:sch", 0)
-  set_macro(19, "17:run:18:run", 0)
 
-  set_macro(20, "shf", 1)
-  set_macro(21, "13000,20:sch", 0)
+  # set up all display macro schedules
+  set_macro(21, "17:run:18:run", 0)
+
+  # set up shuffler
+  set_macro(30, "shf", 1)
+
+  # set shuffler schedule
+  set_macro(31, "13000,30:sch", 0)
+
+
+
+
+
+
+
+
+
+
+
+
 
 def apollo_macros(): 
   print tc.cyan("apollo macros:\n")
