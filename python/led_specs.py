@@ -153,7 +153,7 @@ def write(text):
 # --- device handling ---
 
 def reset_device():
-  return ":::stp:stp:20:lev"
+  return ":::stp:stp:20:lev:3,0:cfg"
 
 def reset_standard_seed():
   return "6,3," + str(standard_seed) + ":tst"
@@ -1199,6 +1199,17 @@ def specs():
   pending_test("it also shifts arg1 to arg2")
 
                                                                                                                                           
+########################################################################
+# Configuring
+########################################################################
+  group("setting configuration values")
+
+  test("the fade rate can be reset to the default")
+  expect_int("3,1000:cfg:0,8:tst", 1000)
+  default = command_int("0,7:tst")
+  expect_int("3,0:cfg:0,8:tst", default)
+
+
 ########################################################################                     
 ########################################################################                     
  
@@ -1231,9 +1242,10 @@ def loop():
   show_success = 0.5 + (success_count * num_leds / total)
   show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
   show_pending = 0.5 + (num_pending * num_leds / total)
-  command_str("rst:era:0:lev")
+  command_str("rst:era:0:lev:3,0:cfg")
   command_str(str(show_success) + ",1:grn") 
-  command_str(str(show_failure) + ",1:red")                                                                                                                                                                  
+  if show_failure >- 1.0:  
+    command_str(str(show_failure) + ",1:red")                                                                                                                                                                  
   command_str(str(show_pending) + ",1:yel")                                                                                                                                                                  
   command_str("flu:cnt")
 
