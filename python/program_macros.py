@@ -118,8 +118,11 @@ def annunciator_macros():
   set_macro(15, "2:snw:pos:2:pal:sfd:flo:rst", 0)
 
   # set up each sequencer
-  set_macro(16, "0,13,0:ssc:1,25,12:ssc", 0)
-  set_macro(17, "2,37,24:ssc", 0)
+  #set_macro(16, "0,13,0:ssc:1,25,12:ssc", 0)
+  #set_macro(17, "2,37,24:ssc", 0)
+
+  set_macro(16, "0,13,0:sqs:1,25,12:sqs", 0)
+  set_macro(17, "2,37,24:sqs", 0)
 
   # set up all sequences and a quick fade rate
   set_macro(18, "16:run:17:run:3,8000:cfg", 0)
