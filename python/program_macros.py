@@ -109,27 +109,38 @@ def annunciator_macros():
   print tc.cyan("annunciator macros:\n")
 
   # m
-  set_macro(10, "-1:sch:22:run", 0)
-  set_macro(11, "-1:sch:23:run", 0)
+  set_macro(10, "-1:sch:23:run", 0)
+  set_macro(11, "-1:sch:22:run", 0)
 
   # sequence the next window for each display
-  set_macro(13, "0:snw:pos:0:pal:sfd:flo:rst:flu", 0)
-  set_macro(14, "1:snw:pos:1:pal:sfd:flo:rst", 0)
-  set_macro(15, "2:snw:pos:2:pal:sfd:flo:rst", 0)
+  #set_macro(13, "0:snw:pos:0:pal:sfd:flo:rst:flu", 0)
+  #set_macro(14, "1:snw:pos:1:pal:sfd:flo:rst", 0)
+  #set_macro(15, "2:snw:pos:2:pal:sfd:flo:rst", 0)
+
+  set_macro(13, "0:seq:pos:0:pal:sfd:flo:rst", 0)
+  set_macro(14, "1:seq:pos:1:pal:sfd:flo:rst", 0)
+  set_macro(15, "2:seq:pos:2:pal:sfd:flo:rst:flu", 0)
 
   # set up each sequencer
   #set_macro(16, "0,13,0:ssc:1,25,12:ssc", 0)
   #set_macro(17, "2,37,24:ssc", 0)
 
-  set_macro(16, "0,13,0:sqs:1,25,12:sqs", 0)
-  set_macro(17, "2,37,24:sqs", 0)
+  #set_macro(16, "0,13,0:sqs:1,25,12:sqs", 0)
+  #set_macro(17, "2,37,24:sqs", 0)
+
+  set_macro(16, "0,12,0:seq:1,24,12:seq", 0)
+  set_macro(17, "2,36,24:seq", 0)
 
   # set up all sequences and a quick fade rate
   set_macro(18, "16:run:17:run:3,8000:cfg", 0)
 
   # set up each each display macro schedule
-  set_macro(19, "145,13:sch:150,14:sch", 0)
-  set_macro(20, "155,15:sch", 0)
+  #set_macro(19, "145,13:sch:150,14:sch", 0)
+  #set_macro(20, "155,15:sch", 0)
+
+  # set up each each display macro schedule
+  set_macro(19, "147,13:sch:150,14:sch", 0)
+  set_macro(20, "153,15:sch", 0)
 
   # set up all display macro schedules
   set_macro(21, "19:run:20:run", 0)
@@ -148,9 +159,9 @@ def annunciator_macros():
 
   # set up sequencing hues
   set_macro(32, "3,360:seq:500,33:sch", 0)
-  set_macro(33, "3,0,1:seq:sto:120:rcl:csh", 0)
+  #set_macro(33, "3,0,5:seq:sto:120:rcl:csh", 0)
 
-
+  set_macro(33, "3,0,1:seq:sto:45:rcl:csh", 0)
 
 
 
