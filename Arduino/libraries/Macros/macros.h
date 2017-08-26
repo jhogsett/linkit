@@ -1,6 +1,7 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+#include <common.h>
 #include <avr/eeprom.h>
 #include <command_processor.h>
 

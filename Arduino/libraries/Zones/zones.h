@@ -1,6 +1,8 @@
 #ifndef ZONES_H
 #define ZONES_H
 
+#include <common.h>
+
 // todo: rearrange zones:
 // zone 0: always the whole width
 // zones 1-last fine:the best zones for quick animation

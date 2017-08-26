@@ -1,6 +1,8 @@
 #ifndef BREATHE_EFFECTS_H
 #define BREATHE_EFFECTS_H
 
+#include <common.h>
+
 #define BREATHE_ON 30
 
 #define BREATHE_TIME 500

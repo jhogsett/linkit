@@ -1,5 +1,7 @@
 #ifndef RANDOM_SEED_H
 #define RANDOM_SEED_H
+
+#include <common.h>
 #include "Arduino.h"
 
 #define RANDOM_SEED_SAMPLES 16

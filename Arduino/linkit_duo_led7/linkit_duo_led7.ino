@@ -1,3 +1,4 @@
+#include <common.h>
 #include "dependencies.h"
 
 Dependencies dependencies;

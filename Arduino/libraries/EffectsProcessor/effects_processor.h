@@ -1,6 +1,8 @@
 #ifndef EFFECTS_PROCESSOR_H
 #define EFFECTS_PROCESSOR_H
 
+#include <common.h>
+
 // built-in simple effects
 #define STATIC_ON  101
 // #define RAW_ON     102

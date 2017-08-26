@@ -1,6 +1,8 @@
 #ifndef BLINK_EFFECTS_H
 #define BLINK_EFFECTS_H
 
+#include <common.h>
+
 // to do: investigate storing states as bit patterns
 
 // main blink

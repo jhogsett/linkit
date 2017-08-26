@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <common.h>
+
 #define TEST_FRAMEWORK
 
 // #define REAL_ARDUINO
@@ -13,7 +15,7 @@
 // #define WEARABLE_AND_ANNUNCIATOR
 
 // single 72-LED strip
-// #define LED_STRIP_72
+ #define LED_STRIP_72
 
 // single 90-LED strip
 #define LED_STRIP_90
@@ -108,6 +110,7 @@
 #define ZONES_RADIUS8
 #define BLINK_PERIOD 1000
 #define BREATHE_PERIOD 80
+#define FADE_RATE 0.925
 #define NUM_MEMORY_MACROS 2
 #define NUM_SEQUENCERS 2
 #endif

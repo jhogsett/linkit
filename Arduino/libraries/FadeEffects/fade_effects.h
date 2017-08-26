@@ -1,6 +1,8 @@
 #ifndef FADE_EFFECTS_H
 #define FADE_EFFECTS_H
 
+#include <common.h>
+
 #define SLOW_FADE 40
 #define FAST_FADE 41
 
@@ -20,6 +22,7 @@ class FadeEffects
   static bool is_handled_effect(byte effect);
   rgb_color apply_fade(rgb_color color, byte effect);
   void set_fade_rate(float fade_rate);
+  float get_fade_rate();
 
   private:
 
@@ -78,6 +81,10 @@ rgb_color FadeEffects::apply_fade(rgb_color color, byte effect){
 
 void FadeEffects::set_fade_rate(float fade_rate){
   this->fade_rate = fade_rate;
+}
+
+float FadeEffects::get_fade_rate(){
+  return this->fade_rate;
 }
 
 rgb_color FadeEffects::apply_slow_fade(rgb_color color){

@@ -1,11 +1,12 @@
 #ifndef COLOR_MATH_H
 #define COLOR_MATH_H
 
-// pickup: make ColorMath the authority on brightness levels
-
+#include <common.h>
 #include <PololuLedStrip.h>
 #include <colors.h>
 #include <power_ease.h>
+
+// pickup: make ColorMath the authority on brightness levels
 
 #define CROSSFADE_STEPS   20
 #define NUM_COSINES       13

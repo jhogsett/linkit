@@ -1,6 +1,8 @@
 #ifndef ELASTIC_EASE_H
 #define ELASTIC_EASE_H
 
+#include <common.h>
+
 #define EASE_COUNT 32
 #define EASE_DELAY 2
 #define EASE_EXPONENT 3 // cubic

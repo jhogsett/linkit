@@ -1,6 +1,8 @@
 #ifndef DISPATCH_COMMAND_H
 #define DISPATCH_COMMAND_H
 
+#include <common.h>
+
 bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   bool continue_dispatching = true;
   bool reset_args = false;
@@ -19,9 +21,15 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_MIRROR:      do_mirror();                                                      break;
     case CMD_DISPLAY:     set_display(arg0);                             reset_args = true; break;
     case CMD_ZONE:        buffer->set_zone(arg0);                        reset_args = true; break;
-    case CMD_WINDOW:      buffer->set_window_override(arg0);             reset_args = true; break;
-    case CMD_OFFSET:      buffer->set_offset_override(arg0);             reset_args = true; break;
+    case CMD_WINDOW:      buffer->set_window_override(arg0, true);       reset_args = true; break;
+    case CMD_OFFSET:      buffer->set_offset_override(arg0, true);       reset_args = true; break;
+    
+#ifndef NO_SETTERS_GETTERS
     case CMD_REVERSE:     buffer->set_reverse(arg0 == 1 ? true : false); reset_args = true; break;
+#else
+    case CMD_REVERSE:     buffer->reverse = (arg0 == 1 ? true : false);  reset_args = true; break;
+#endif
+
     case CMD_RGBCOLOR:    buffer->push_rgb_color(arg0, arg1, arg2);      reset_args = true; break;
     case CMD_HSLCOLOR:    buffer->push_hsl_color(arg0, arg1, arg2);      reset_args = true; break;
     case CMD_RED:         case CMD_GREEN:    case CMD_BLUE:    case CMD_BLACK:   case CMD_YELLOW: 

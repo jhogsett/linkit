@@ -1,6 +1,7 @@
 #ifndef RENDER_H
 #define RENDER_H
 
+#include <common.h>
 #include <effects_processor.h>
 
 class Render
