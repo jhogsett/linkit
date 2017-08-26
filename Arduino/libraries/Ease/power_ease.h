@@ -1,6 +1,8 @@
 #ifndef POWER_EASE_H
 #define POWER_EASE_H
 
+#include <common.h>
+
 #define EASE_COUNT 24
 #define EASE_DELAY 1
 #define EASE_RANGE 24.0

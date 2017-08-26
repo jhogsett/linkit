@@ -1,6 +1,8 @@
 #ifndef COMMAND_PROCESSOR_H
 #define COMMAND_PROCESSOR_H
 
+#include <common.h>
+
 #define DELIMITER_CHAR ':'
 #define DELIMITER_STR ":"
 #define MAX_STRING_LENGTH 60

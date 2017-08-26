@@ -1,6 +1,8 @@
 #ifndef AUTO_BRIGHTNESS_H
 #define AUTO_BRIGHTNESS_H
 
+#include <common.h>
+
 // todo: fix how it sets the brightness amount
 
 // todo: see if the static ligth sample array is needed or can be on the stack

@@ -1,6 +1,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include <common.h>
 #include <PololuLedStrip.h>
 #include <render.h>
 #include <zones.h>
@@ -29,11 +30,9 @@ class Buffer
   void fade_fast();
   void cross_fade(byte step);
   byte get_window();
-  void set_display(byte display);
   void set_buffer(byte buffer);
   rgb_color * get_buffer();
   byte * get_effects_buffer();
-  byte get_current_display();
   rgb_color * get_render_buffer();
   void set_offset_override(byte offset, bool fixup);
   void set_window_override(byte window, bool fixup);
@@ -41,20 +40,35 @@ class Buffer
   byte get_width();
   void set_zone(byte zone);
   void reset();
+  void rotate();
+
+#ifndef NO_SETTERS_GETTERS
+  byte get_current_display();
+  byte get_display();
+  void set_display(byte display);
   void set_reverse(bool reverse);
   bool get_reverse();
-  void rotate();
-  byte get_display();
+#endif
+
   byte get_zones();
   void set_black_level(rgb_color black_level);
   void reset_black_level();
   rgb_color black;
   int get_default_brightness();
 
+#ifndef NO_SETTERS_GETTERS
+  private:
+  byte current_display;
+  bool reverse = false;
+#else
+  public:
+  byte current_display;
+  bool reverse = false;
+#endif
+
   // todo: is there an alternative to storing all these pointers?
   private:
   PololuLedStripBase **ledStrips;
-  byte current_display;
   rgb_color **buffers;
   static rgb_color *render;
   byte **effects_buffers;
@@ -70,7 +84,6 @@ class Buffer
 
   Zones *zones;
   byte current_zone = 0;
-  bool reverse = false;
 
   void shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse);
 };
@@ -96,15 +109,37 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte
   this->carry_effect = NO_EFFECT;
 }
 
+#ifndef NO_SETTERS_GETTERS
 byte Buffer::get_display(){
   return this->current_display;
 }
 
+void Buffer::set_display(byte display){
+  this->current_display = display;
+}
+
+byte Buffer::get_current_display(){
+  return this->current_display;
+}
+
+void Buffer::set_reverse(bool reverse = true){
+  this->reverse = reverse;
+}
+
+bool Buffer::get_reverse(){
+  return this->reverse;
+}
+
+#endif
+
 void Buffer::reset(){
-  //this->reset_black_level();
   this->set_zone(0);
-  //this->set_display(0);
+
+#ifndef NO_SETTERS_GETTERS
   this->set_reverse(false);
+#else
+  this->reverse = false;
+#endif
 }
 
 // always write from the render buffer to a pin,
@@ -320,14 +355,6 @@ void Buffer::set_zone(byte zone){
   this->offset_override = OVERRIDE_OFF;
 }
 
-void Buffer::set_display(byte display){
-  this->current_display = display;
-}
-
-byte Buffer::get_current_display(){
-  return this->current_display;
-}
-
 rgb_color * Buffer::get_buffer(){
   return this->buffers[current_display];
 }
@@ -338,14 +365,6 @@ byte * Buffer::get_effects_buffer(){
 
 rgb_color * Buffer::get_render_buffer(){
   return this->render;
-}
-
-void Buffer::set_reverse(bool reverse = true){
-  this->reverse = reverse;
-}
-
-bool Buffer::get_reverse(){
-  return this->reverse;
 }
 
 byte Buffer::get_zones(){

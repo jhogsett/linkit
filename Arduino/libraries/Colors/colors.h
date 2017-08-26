@@ -1,6 +1,7 @@
 #ifndef COLORS_H
 #define COLORS_H
 
+#include <common.h>
 #include <PololuLedStrip.h>
 
 #define USE_BYTE_ARRAYS

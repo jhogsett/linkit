@@ -1,6 +1,7 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
 
+#include <common.h>
 #include <macros.h>
 
 #define NUM_SCHEDULES NUM_MACROS
