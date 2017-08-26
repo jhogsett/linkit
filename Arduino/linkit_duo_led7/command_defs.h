@@ -1,6 +1,8 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
+#include <common.h>
+
 #define NUM_COMMANDS    101
 #define CMD_NULL         -1
 #define CMD_NONE          0

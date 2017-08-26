@@ -1,6 +1,8 @@
 #ifndef ZONE_DEFS_H
 #define ZONE_DEFS_H
 
+#include <common.h>
+
 #define FIRST_FINE_ZONE 1
 
 // fine zones start at zone #1 and are the set of best zones for quick animations and effects

@@ -1,6 +1,7 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
+#include <common.h>
 #include <macros.h>
 #include <scheduler.h>
 
@@ -246,7 +247,11 @@ void Commands::resume_schedules(){
 }
 
 void Commands::set_display(byte display){
+#ifndef NO_SETTERS_GETTERS
   buffer->set_display(display);
+#else
+  buffer->current_display = display;
+#endif
 
   // reset to the default zone on a display change (? this confused me when working on glasses, maybe not needed)
   buffer->set_zone(0);
@@ -339,7 +344,12 @@ void Commands::do_flood(){
   byte start;
   byte end_;
   byte source;
+  
+#ifndef NO_SETTERS_GETTERS
   if(buffer->get_reverse()){
+#else
+  if(buffer->reverse){
+#endif
     source = buffer->get_window() - 1;
     start = offset;
     end_ = window - 1;
@@ -403,7 +413,13 @@ void Commands::do_mirror(){
   byte width = buffer->get_width() / 2;
   rgb_color * buf = buffer->get_buffer();
   byte * effects = buffer->get_effects_buffer();
+  
+#ifndef NO_SETTERS_GETTERS
   bool reverse = buffer->get_reverse();
+#else
+  bool reverse = buffer->reverse;
+#endif
+
   for(byte i = 0; i < width; i++){
     if(reverse){
       buf[front + i] = buf[back - i];
@@ -539,7 +555,12 @@ void Commands::do_repeat(byte times = 1){
   times = max(1, times);
 
   byte offset;
+  
+#ifndef NO_SETTERS_GETTERS
   if(buffer->get_reverse()){
+#else
+  if(buffer->reverse){
+#endif
     offset = buffer->get_window() - 1;
   } else {
     offset = buffer->get_offset();
@@ -651,14 +672,28 @@ void Commands::flush(bool force_display = false){
 // todo: force a particular rendering buffer and display 
 // instead of setting and unsetting
 void Commands::flush_all(bool force_display){
+#ifndef NO_SETTERS_GETTERS
   byte orig_display = buffer->get_current_display();
+#else
+  byte orig_display = buffer->current_display;
+#endif
   
   for(byte i = 0; i < NUM_BUFFERS; i++){
+  
+#ifndef NO_SETTERS_GETTERS
     buffer->set_display(i);
+#else
+    buffer->current_display = i;
+#endif
+
     flush(force_display);
   }
 
+#ifndef NO_SETTERS_GETTERS
   buffer->set_display(orig_display);
+#else
+  buffer->current_display = orig_display;
+#endif
 }
 
 // reset internal states without pausing
@@ -687,14 +722,27 @@ void Commands::clear(){
   // that have to pause again afterwards; moved to reset
   resume();
 
+#ifndef NO_SETTERS_GETTERS
   byte orig_display = buffer->get_current_display();
+#else
+  byte orig_display = buffer->current_display;
+#endif
+  
   for(byte i = 0; i < NUM_BUFFERS; i++){
+#ifndef NO_SETTERS_GETTERS
     buffer->set_display(i);
+#else
+    buffer->current_display = i;
+#endif
     buffer->reset_black_level();
     buffer->erase(true);                                                          
   }
 
+#ifndef NO_SETTERS_GETTERS
   buffer->set_display(orig_display);
+#else
+  buffer->current_display = orig_display;
+#endif
 }
 
 void Commands::do_delay(int milliseconds){
@@ -702,8 +750,13 @@ void Commands::do_delay(int milliseconds){
 }
 
 // arg0 - 10000 = 1.0, 9999 = 0.9999
+// arg0 <= zero, reset to default
 void Commands::set_fade_rate(int arg0){
-  fade_effects->set_fade_rate(arg0/ 10000.0);
+  if(arg0 < 1){
+    fade_effects->set_fade_rate(FADE_RATE);
+  } else {
+    fade_effects->set_fade_rate(arg0/ 10000.0);
+  }
 }
 
 //  @ 508 era:1:rev:3:pos:tun:flo:flu -0,0,0,0,0,0,0,0,0,20,11,2,0,0,0 +0,0,0,0,0,0,20,11,2,0,0,0,0,0,0
@@ -734,7 +787,6 @@ void Commands::set_position(int position, int width){
 //  // don't go outside of zone
 //  position = min(current_window, max(current_offset, position));
 //    
-//  buffer->set_offset_override(position); 
 //  buffer->set_window_override(position); 
 }
 

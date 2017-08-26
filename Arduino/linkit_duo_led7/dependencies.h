@@ -1,6 +1,7 @@
 #ifndef DEPENDENCIES_H
 #define DEPENDENCIES_H
 
+#include <common.h>
 #include <PololuLedStrip.h>
 #include <random_seed.h>
 

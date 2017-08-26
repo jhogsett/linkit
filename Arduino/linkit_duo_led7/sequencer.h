@@ -1,6 +1,7 @@
 #ifndef SEQUENCER_H
 #define SEQUENCER_H
 
+#include <common.h>
 #include <power_ease.h>
 #include "config.h"
 

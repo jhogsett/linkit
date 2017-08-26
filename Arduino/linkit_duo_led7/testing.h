@@ -1,6 +1,7 @@
 #ifndef TESTING_H
 #define TESTING_H
 
+#include <common.h>
 #include "config.h"
 
 #ifdef TEST_FRAMEWORK
@@ -59,6 +60,8 @@ void Commands::do_test(int type, int arg1, int arg2){
 #define TEST_INQUIRY_DEFAULT_BRIGHTNESS 4
 #define TEST_INQUIRY_MINIMUM_BRIGHTNESS 5 
 #define TEST_INQUIRY_REVERSE            6
+#define TEST_INQUIRY_DEFAULT_FADE_RATE  7
+#define TEST_INQUIRY_FADE_RATE          8
 
 // #define TEST_INQUIRY_WIDTH              1
 //#define TEST_INQUIRY_DEVICENAME   4
@@ -90,9 +93,20 @@ void Commands::do_test_inquiry(byte type, int arg2){
       command_processor->send_int(renderer->get_minimum_brightness());
       break;
     case TEST_INQUIRY_REVERSE:
+#ifndef NO_SETTERS_GETTERS
       command_processor->send_int(buffer->get_reverse() ? 1 : 0);
+#else
+      command_processor->send_int(buffer->reverse ? 1 : 0);
+#endif
       break;
-  }
+    case TEST_INQUIRY_DEFAULT_FADE_RATE:
+      // fade rate passed x 10K
+      command_processor->send_int(int(FADE_RATE * 10000));
+      break;
+    case TEST_INQUIRY_FADE_RATE:
+      command_processor->send_int(int(fade_effects->get_fade_rate() * 10000));
+      break;
+    }
 }
 
 #define TEST_FUNCTION_PROCESS_EFFECTS   0 // arg2 = number of times to run
