@@ -2,7 +2,7 @@
 #define SEQUENCER_H
 
 #include <common.h>
-#include <power_ease.h>
+// #include <power_ease.h>
 #include "config.h"
 
 // #define NUM_SEQUENCERS 6

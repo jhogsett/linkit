@@ -180,7 +180,11 @@ void Commands::do_test_effects(byte start, byte count){
 }
 
 void Commands::do_test_render(byte start, byte count){
+#ifndef NO_SETTERS_GETTERS
   dump_buffer_colors(buffer->get_render_buffer(), start, count);
+#else
+  dump_buffer_colors(buffer->render, start, count);
+#endif
 }
 
 void Commands::do_test_palette(byte start, byte count){

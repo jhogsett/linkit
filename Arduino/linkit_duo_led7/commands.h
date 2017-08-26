@@ -76,7 +76,6 @@ class Commands
   void do_demo();
   void flush(bool force_display);
   void set_display(byte display);
-  void set_buffer(byte nbuffer);
   void set_pin(byte pin, bool on);
   void clear();
   void do_rotate(byte times, byte steps, bool flush);
@@ -321,7 +320,11 @@ void Commands::do_fade(){
 }
 
 void Commands::do_crossfade(){
+#ifndef NO_SETTERS_GETTERS
   rgb_color * render_buffer = buffer->get_render_buffer();
+#else
+  rgb_color * render_buffer = buffer->render;
+#endif
   byte steps = ColorMath::crossfade_steps();
   for(byte i = 0; i <= steps; i++){
     buffer->cross_fade(i);
@@ -472,7 +475,11 @@ void Commands::do_copy(byte size, int times, byte zoom){
   byte window = buffer->get_window();
   byte * effects = buffer->get_effects_buffer();
   rgb_color * buf = buffer->get_buffer();
+#ifndef NO_SETTERS_GETTERS
   rgb_color * render_buffer = buffer->get_render_buffer();
+#else
+  rgb_color * render_buffer = buffer->render;
+#endif
 
   rgb_color * palette;
   if(use_palette_buffer)
@@ -663,7 +670,11 @@ void Commands::do_rotate(byte times, byte steps, bool flush){
 
 void Commands::flush(bool force_display = false){
   if(force_display || !effects_paused){
+#ifndef NO_SETTERS_GETTERS
     rgb_color * render_buffer = buffer->get_render_buffer();
+#else
+    rgb_color * render_buffer = buffer->render;
+#endif
     renderer->render_buffer(render_buffer, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
     buffer->display_buffer(render_buffer);
   }

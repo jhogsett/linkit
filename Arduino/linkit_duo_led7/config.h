@@ -15,7 +15,7 @@
 // #define WEARABLE_AND_ANNUNCIATOR
 
 // single 72-LED strip
-// #define LED_STRIP_72
+ #define LED_STRIP_72
 
 // single 90-LED strip
 #define LED_STRIP_90

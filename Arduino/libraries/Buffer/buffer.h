@@ -30,10 +30,8 @@ class Buffer
   void fade_fast();
   void cross_fade(byte step);
   byte get_window();
-  void set_buffer(byte buffer);
   rgb_color * get_buffer();
   byte * get_effects_buffer();
-  rgb_color * get_render_buffer();
   void set_offset_override(byte offset, bool fixup);
   void set_window_override(byte window, bool fixup);
   byte get_offset();
@@ -43,6 +41,7 @@ class Buffer
   void rotate();
 
 #ifndef NO_SETTERS_GETTERS
+  rgb_color * get_render_buffer();
   byte get_current_display();
   byte get_display();
   void set_display(byte display);
@@ -58,19 +57,17 @@ class Buffer
 
 #ifndef NO_SETTERS_GETTERS
   private:
-  byte current_display;
-  bool reverse = false;
 #else
   public:
+#endif
   byte current_display;
   bool reverse = false;
-#endif
+  static rgb_color *render;
 
   // todo: is there an alternative to storing all these pointers?
   private:
   PololuLedStripBase **ledStrips;
   rgb_color **buffers;
-  static rgb_color *render;
   byte **effects_buffers;
   float default_brightness_scale;
   Render *renderer;
@@ -128,6 +125,10 @@ void Buffer::set_reverse(bool reverse = true){
 
 bool Buffer::get_reverse(){
   return this->reverse;
+}
+
+rgb_color * Buffer::get_render_buffer(){
+  return this->render;
 }
 
 #endif
@@ -361,10 +362,6 @@ rgb_color * Buffer::get_buffer(){
 
 byte * Buffer::get_effects_buffer(){
   return this->effects_buffers[current_display];
-}
-
-rgb_color * Buffer::get_render_buffer(){
-  return this->render;
 }
 
 byte Buffer::get_zones(){
