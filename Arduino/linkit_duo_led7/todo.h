@@ -1,3 +1,9 @@
+// crash annunciator switching from wheel with next window to wheel wit position only 
+
+// have a sequencer that runs to one side, stops, and has to be triggered to continue to the other side
+
+// allow setting the current value of a sequencer (to allow multiple ones running that are offset from each other)
+
 // make sure sequence parameters can be changed without resetting
 
 

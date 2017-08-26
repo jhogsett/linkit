@@ -59,7 +59,9 @@ void Commands::do_test(int type, int arg1, int arg2){
 #define TEST_INQUIRY_DEFAULT_BRIGHTNESS 4
 #define TEST_INQUIRY_MINIMUM_BRIGHTNESS 5 
 #define TEST_INQUIRY_REVERSE            6
-
+#define TEST_INQUIRY_DEFAULT_FADE_RATE  7
+#define TEST_INQUIRY_FADE_RATE          8
+ 
 // #define TEST_INQUIRY_WIDTH              1
 //#define TEST_INQUIRY_DEVICENAME   4
 //#define TEST_INQUIRY_NUM_ZONES    1
@@ -92,7 +94,14 @@ void Commands::do_test_inquiry(byte type, int arg2){
     case TEST_INQUIRY_REVERSE:
       command_processor->send_int(buffer->get_reverse() ? 1 : 0);
       break;
-  }
+    case TEST_INQUIRY_DEFAULT_FADE_RATE:
+      // fade rate passed x 10K
+      command_processor->send_int(int(FADE_RATE * 10000));
+      break;
+    case TEST_INQUIRY_FADE_RATE:
+      command_processor->send_int(int(fade_effects->get_fade_rate() * 10000));
+      break;
+    }  
 }
 
 #define TEST_FUNCTION_PROCESS_EFFECTS   0 // arg2 = number of times to run

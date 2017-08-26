@@ -11,7 +11,10 @@
 #include <color_math.h>
 #include <colors.h>
 #include <command_processor.h>
+
+#ifdef USE_POWER_EASE
 #include <power_ease.h>
+#endif
 
 #ifdef USE_ELASTIC_EASE
 #include <elastic_ease.h>

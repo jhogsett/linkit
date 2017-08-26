@@ -702,12 +702,15 @@ void Commands::do_delay(int milliseconds){
 }
 
 // arg0 - 10000 = 1.0, 9999 = 0.9999
+// arg0 <= zero, reset to default
 void Commands::set_fade_rate(int arg0){
-  fade_effects->set_fade_rate(arg0/ 10000.0);
+  if(arg0 < 1){
+    fade_effects->set_fade_rate(FADE_RATE);
+  } else {
+    fade_effects->set_fade_rate(arg0/ 10000.0);
+  }
 }
 
-//  @ 508 era:1:rev:3:pos:tun:flo:flu -0,0,0,0,0,0,0,0,0,20,11,2,0,0,0 +0,0,0,0,0,0,20,11,2,0,0,0,0,0,0
-      
 // arg[0] index of insertion pointer, default = 0
 // arg[1] width of window, default = 1
 //        -- any magic widths?
