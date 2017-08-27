@@ -905,6 +905,24 @@ def specs():
   pending_test("it renders at the minimum brightness level when blink is off")
   pending_test("it renders at the current brightness level when blink is on")
 
+  test("blinking")
+
+  # set the blink period to the minimum possible value 
+  command_str("1,6:cfg")
+
+  # use a macro to process the effects and update the render buffer
+  # this gets around the fact effects are reset on processing commands
+  command_str("0:set:6:tst:flu")
+
+  # place a blinking red
+  command_str("red:bli")
+
+  # simulate a full blink period
+  command_str("0,6:run")
+
+  # this will leave the render buffer in the dim/unblinked state
+  expect_render("", 0, 1, "2,0,0", False)
+
   pending_test("the standard blink alternates correctly")
   pending_test("the a/b blinks alternate correctly")
   pending_test("the 6-blink chase chases correctly")
