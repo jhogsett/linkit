@@ -1,6 +1,19 @@
 #ifndef BLINK_EFFECTS_H
 #define BLINK_EFFECTS_H
 
+// have a blink overall counter, the blink period
+// (and additional custom blink period? maybe get rid of)
+//
+// based on effect, compute 
+//
+//
+//
+//
+//
+//
+
+
+
 // to do: investigate storing states as bit patterns
 
 // main blink
@@ -27,7 +40,9 @@
 #define MAX_BLINK_SEGMENTS 6
 #define DEFAULT_BLINK_PERIOD 6000
 #define DEFAULT_BLINKC_TIME 500
-#define MINIMUM_BLINKC_TIME 50
+
+//#define MINIMUM_BLINKC_TIME 50
+#define MINIMUM_BLINKC_TIME 2
 
 class BlinkEffects
 {

@@ -1,3 +1,5 @@
+// need to reset blink period after testing
+
 // crash annunciator switching from wheel with next window to wheel wit position only 
 
 // have a sequencer that runs to one side, stops, and has to be triggered to continue to the other side
