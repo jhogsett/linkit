@@ -960,26 +960,6 @@ def specs():
   # simulate 6/6 blink period
   expect_render("0,6:run", 0, 6, "1,0,2,0,0,2,0,2,0,2,2,0,2,1,0,51,0,0", False)
 
-#  test("custom blink effect")
-
-  # set the blink period to the minimum possible value
-#  command_str("0,4:cfg")
-
-  # use a macro to process the effects and update the render buffer
-  # this gets around the fact effects are reset on processing commands
-#  command_str("0:set:6:tst:flu")
-
-  # place a blinking red
-#  command_str("neo:blc")
-
-  # simulate a half blink period
-  # this will leave the render buffer in the off/unblinked state
-#  expect_render("0,2:run", 0, 1, "0,0,0", False)
-
-  # simulate a full blink period
-  # this will leave the render buffer in the normal/blinked state
-#  expect_render("0,4:run", 0, 1, "51,12,0", False)
-
 
 ########################################################################
 # BREATHE EFFECT
