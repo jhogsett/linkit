@@ -203,7 +203,7 @@ def pending_test(description):
   test_description = description                                                                                                                                                                           
   report_pending()                                                                                                                                                                                         
   num_pending += 1                                                                                                                                                                                         
-  write(tc.yellow("."))                                                                                                                                                                       
+  write(tc.yellow("*"))                                                                                                                                                                       
                                                                                                                                                                                                            
 def skip_test(command, description):                                                                                                                                                                       
   global test_number, test_description, test_line_number, num_skipped                                                                                                                                      
@@ -902,10 +902,7 @@ def specs():
 ########################################################################
   group("blink effects")                                                             
 
-  pending_test("it renders at the minimum brightness level when blink is off")
-  pending_test("it renders at the current brightness level when blink is on")
-
-  test("blinking")
+  test("main blink effect")
 
   # set the blink period to the minimum possible value 
   command_str("1,6:cfg")
@@ -918,17 +915,48 @@ def specs():
   command_str("red:bli")
 
   # simulate a full blink period
-  command_str("0,6:run")
-
   # this will leave the render buffer in the dim/unblinked state
-  expect_render("", 0, 1, "2,0,0", False)
+  expect_render("0,6:run", 0, 1, "2,0,0", False)
 
-  pending_test("the standard blink alternates correctly")
-  pending_test("the a/b blinks alternate correctly")
-  pending_test("the 6-blink chase chases correctly")
+  test("a/b blink effects")
+  command_str("1,6:cfg")
+  command_str("0:set:6:tst:flu")
+
+  # set one of each effect
+  command_str("grn:bla:blu:blb")
+
+  # simulate a half blink period
+  expect_render("0,3:run", 0, 2, "0,0,51,0,2,0", False)
+
+  # simulate a full blink period
+  expect_render("0,6:run", 0, 2, "0,0,2,0,51,0", False)
+
+  test("1/2/3/4/5/6 blink effects")
+  command_str("1,6:cfg")
+  command_str("0:set:6:tst:flu")
+
+  # set one of each effect
+  command_str("red:bl1:org:bl2:yel:bl3:grn:bl4:blu:bl5:pur:bl6")
+
+  # simulate 1/6 blink period
+  expect_render("0,1:run", 0, 6, "1,0,2,0,0,2,0,2,0,2,2,0,51,25,0,2,0,0", False)
+
+  # simulate 2/6 blink period
+  expect_render("0,2:run", 0, 6, "1,0,2,0,0,2,0,2,0,51,51,0,2,1,0,2,0,0", False)
+
+  # simulate 3/6 blink period
+  expect_render("0,3:run", 0, 6, "1,0,2,0,0,2,0,51,0,2,2,0,2,1,0,2,0,0", False)
+
+  # simulate 4/6 blink period
+  expect_render("0,4:run", 0, 6, "1,0,2,0,0,51,0,2,0,2,2,0,2,1,0,2,0,0", False)
+
+  # simulate 5/6 blink period
+  expect_render("0,5:run", 0, 6, "25,0,51,0,0,2,0,2,0,2,2,0,2,1,0,2,0,0", False)
+
+  # simulate 6/6 blink period
+  expect_render("0,6:run", 0, 6, "1,0,2,0,0,2,0,2,0,2,2,0,2,1,0,51,0,0", False)
+
   pending_test("the custom blink alternates correctly")
-        
-  # alternate custom rates
                                                                                                                                                                                                    
 
 ########################################################################
