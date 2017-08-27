@@ -23,7 +23,6 @@ class Zones
   byte fine_zones;
   const byte *zone_offsets;
   const byte *zone_windows;
-
 };
 
 void Zones::begin(byte num_zones, byte num_fine_zones, const byte *zone_offsets, const byte *zone_windows){

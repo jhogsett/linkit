@@ -8,14 +8,15 @@
 class Scheduler
 {
   public:
+
   void begin(Macros * macros);
   void set_schedule(unsigned int schedule_period_, byte schedule_number, byte macro_number_);
   void process_schedules();
-
   void reset_all_schedules();
   void reset_schedule(byte schedule_number);
 
   private:
+
   static unsigned int schedule_period[NUM_SCHEDULES];  // zero means the schedule is turned off
   static byte macro_number[NUM_SCHEDULES];             // could leave this off and assume schedule is same as macro to run,
   static unsigned int schedule_counter[NUM_SCHEDULES]; // but the ability to switch schedules to run different macros is the basis for toggling
@@ -34,6 +35,7 @@ void Scheduler::begin(Macros * macros){
 void Scheduler::process_schedules(){
   for(byte i = 0; i < NUM_SCHEDULES; i++){
 
+    // skip disabled schedules
     if(schedule_period[i] == 0)
       continue;
 
@@ -81,4 +83,3 @@ void Scheduler::reset_all_schedules(){
 }
 
 #endif
-

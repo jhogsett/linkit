@@ -1,3 +1,5 @@
+// negative testing: ensure things out of bounds don't crash
+
 // need to reset blink period after testing
 
 // crash annunciator switching from wheel with next window to wheel wit position only 

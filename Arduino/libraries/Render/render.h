@@ -44,30 +44,14 @@ void Render::begin(BlinkEffects *blink_effects, BreatheEffects *breathe_effects,
 }
 
 rgb_color Render::get_blink(rgb_color color, byte effect){
-  rgb_color render_color;
-  if(blink_effects->blink_on(effect))
-  {
-    render_color = ColorMath::scale_color(color, default_brightness_scale);
-  }
-  else
-  {
-#ifndef NO_BLINKC
-    if(effect == BLINK_ON_C){
-      // the custom blink is at 0% when off for maximum contrast
-      render_color = black;
-    } else
-#endif
-    {
-      render_color = ColorMath::scale_color(color, minimum_brightness_scale);
-    }
-  }
-  return render_color;
+  return ColorMath::scale_color(color, blink_effects->blink_on(effect) ? default_brightness_scale : minimum_brightness_scale);
 }
 
 rgb_color Render::get_breathe(rgb_color color){
   return ColorMath::scale_color(color, breathe_effects->breathe_ratio() * default_brightness_scale);
 }
 
+//
 rgb_color Render::get_fade(rgb_color *color, byte effect){
   *color = fade_effects->apply_fade(*color, effect);
   return get_default(*color);
