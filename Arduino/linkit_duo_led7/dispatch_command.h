@@ -72,8 +72,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       } 
       else 
       {
-        // no arguments supplied, fill second argument from accumulator1 
+        // no arguments supplied, fill second and third arguments from accumulators 1 and 2 
         command_processor->sub_args[1] = command_processor->accumulator1;
+        command_processor->sub_args[2] = command_processor->accumulator2;
       }
 
       // always fill first argument from accumulator0
