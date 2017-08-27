@@ -59,7 +59,7 @@
 #define CMD_BLINK6       51
 #define CMD_BLINKA       52
 #define CMD_BLINKB       53
-#define CMD_BLINKC       54
+#define CMD_BLINKC_OPEN       54
 #define CMD_BREATHE      55
 #define CMD_SLOW_FADE    56
 #define CMD_FAST_FADE    57

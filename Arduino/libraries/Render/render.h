@@ -3,6 +3,8 @@
 
 #include <effects_processor.h>
 
+#define NO_BLINKC
+
 class Render
 {
   public:
@@ -49,10 +51,13 @@ rgb_color Render::get_blink(rgb_color color, byte effect){
   }
   else
   {
+#ifndef NO_BLINKC
     if(effect == BLINK_ON_C){
       // the custom blink is at 0% when off for maximum contrast
       render_color = black;
-    } else {
+    } else
+#endif
+    {
       render_color = ColorMath::scale_color(color, minimum_brightness_scale);
     }
   }

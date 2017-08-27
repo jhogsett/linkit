@@ -36,7 +36,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_DIM:         do_dim();                                                          break;
     case CMD_BRIGHT:      do_bright();                                                       break;
     case CMD_BLINK:       case CMD_BLINK1:    case CMD_BLINK2:    case CMD_BLINK3:       case CMD_BLINK4:    
-    case CMD_BLINK5:      case CMD_BLINK6:    case CMD_BLINKA:    case CMD_BLINKB:       case CMD_BLINKC:
+    case CMD_BLINK5:      case CMD_BLINK6:    case CMD_BLINKA:    case CMD_BLINKB:       case CMD_BLINKC_OPEN:
     case CMD_BREATHE:     case CMD_SLOW_FADE: case CMD_FAST_FADE: 
     case CMD_STATIC:      dispatch_effect(cmd);                                              break;
     
@@ -163,7 +163,7 @@ void Commands::dispatch_effect(int cmd){
     case CMD_BLINK6:    effect = BLINK_ON_6; break;   
     case CMD_BLINKA:    effect = BLINK_ON_A; break;   
     case CMD_BLINKB:    effect = BLINK_ON_B; break;   
-    case CMD_BLINKC:    effect = BLINK_ON_C; break;
+    case CMD_BLINKC_OPEN:    effect = NO_EFFECT; break;
     case CMD_BREATHE:   effect = BREATHE_ON; break;
     case CMD_SLOW_FADE: effect = SLOW_FADE;  break;
     case CMD_FAST_FADE: effect = FAST_FADE;  break;
