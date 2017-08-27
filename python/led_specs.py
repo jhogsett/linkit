@@ -153,7 +153,7 @@ def write(text):
 # --- device handling ---
 
 def reset_device():
-  return ":::stp:stp:20:lev:3,0:cfg"
+  return ":::stp:stp:20:lev:2,0:cfg"
 
 def reset_standard_seed():
   return "6,3," + str(standard_seed) + ":tst"
@@ -162,7 +162,7 @@ def reset_alternate_seed():
   return "6,3," + str(alternate_seed) + ":tst"
 
 def reset_standard_fade_rate():
-  return "3,9995:cfg"
+  return "2,9995:cfg"
 
 def reset_standard_palette():
   return "1:shf"
@@ -559,7 +559,7 @@ def specs():
   expect_effect("org:bre:flu", 0, 1, "30")
 
   test("it places multiple effects in the effects buffer")
-  expect_effect("blu:bla:grn:blb", 0, 2, "22,21") 
+  expect_effect("blu:bla:grn:blb", 0, 2, "18,17") 
 
   # test placement of all effects with their values
 
@@ -905,7 +905,7 @@ def specs():
   test("main blink effect")
 
   # set the blink period to the minimum possible value 
-  command_str("1,6:cfg")
+  command_str("0,6:cfg")
 
   # use a macro to process the effects and update the render buffer
   # this gets around the fact effects are reset on processing commands
@@ -923,7 +923,7 @@ def specs():
   expect_render("0,12:run", 0, 1, "51,0,0", False)
 
   test("a/b blink effects")
-  command_str("1,6:cfg")
+  command_str("0,6:cfg")
   command_str("0:set:6:tst:flu")
 
   # set one of each effect
@@ -936,7 +936,7 @@ def specs():
   expect_render("0,6:run", 0, 2, "0,0,2,0,51,0", False)
 
   test("1/2/3/4/5/6 blink effects")
-  command_str("1,6:cfg")
+  command_str("0,6:cfg")
   command_str("0:set:6:tst:flu")
 
   # set one of each effect
@@ -960,25 +960,25 @@ def specs():
   # simulate 6/6 blink period
   expect_render("0,6:run", 0, 6, "1,0,2,0,0,2,0,2,0,2,2,0,2,1,0,51,0,0", False)
 
-  test("custom blink effect")
+#  test("custom blink effect")
 
   # set the blink period to the minimum possible value
-  command_str("0,4:cfg")
+#  command_str("0,4:cfg")
 
   # use a macro to process the effects and update the render buffer
   # this gets around the fact effects are reset on processing commands
-  command_str("0:set:6:tst:flu")
+#  command_str("0:set:6:tst:flu")
 
   # place a blinking red
-  command_str("neo:blc")
+#  command_str("neo:blc")
 
   # simulate a half blink period
   # this will leave the render buffer in the off/unblinked state
-  expect_render("0,2:run", 0, 1, "0,0,0", False)
+#  expect_render("0,2:run", 0, 1, "0,0,0", False)
 
   # simulate a full blink period
   # this will leave the render buffer in the normal/blinked state
-  expect_render("0,4:run", 0, 1, "51,12,0", False)
+#  expect_render("0,4:run", 0, 1, "51,12,0", False)
 
 
 ########################################################################
@@ -1005,13 +1005,13 @@ def specs():
   expect_render("flu", 0, 1, "43,0,0", False)
 
   test("a custom fade rate modifies the display buffer properly")
-  command_str("3,7500:cfg")
+  command_str("2,7500:cfg")
   expect_buffer("red:sfd:flu", 0, 1, "15,0,0", False)
   expect_buffer("flu", 0, 1, "11,0,0", False)
   expect_buffer("flu", 0, 1, "8,0,0", False)
 
   test("a custom fade rate renders properly")
-  command_str("3,7500:cfg")
+  command_str("2,7500:cfg")
   expect_render("red:sfd:flu", 0, 1, "38,0,0", False)
   expect_render("flu", 0, 1, "28,0,0", False)
   expect_render("flu", 0, 1, "20,0,0", False)
@@ -1273,9 +1273,9 @@ def specs():
   group("setting configuration values")
 
   test("the fade rate can be reset to the default")
-  expect_int("3,1000:cfg:0,8:tst", 1000)
+  expect_int("2,1000:cfg:0,8:tst", 1000)
   default = command_int("0,7:tst")
-  expect_int("3,0:cfg:0,8:tst", default)
+  expect_int("2,0:cfg:0,8:tst", default)
 
 
 ########################################################################                     
@@ -1310,7 +1310,7 @@ def loop():
   show_success = 0.5 + (success_count * num_leds / total)
   show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
   show_pending = 0.5 + (num_pending * num_leds / total)
-  command_str("rst:era:0:lev:3,0:cfg")
+  command_str("rst:era:0:lev:2,0:cfg")
   command_str(str(show_success) + ",1:grn") 
   if show_failure >- 1.0:  
     command_str(str(show_failure) + ",1:red")                                                                                                                                                                  
