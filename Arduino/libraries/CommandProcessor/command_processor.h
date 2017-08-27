@@ -18,7 +18,9 @@ class CommandProcessor
   char str[MAX_STRING_LENGTH];
 
   int sub_args[NUM_SUB_ARGS];
-  int accumulator = 0;
+  int accumulator0 = 0;
+  int accumulator1 = 0;
+  int accumulator2 = 0;
 
   const char * const *commands;
 
@@ -49,7 +51,6 @@ class CommandProcessor
 
   bool str_equal_P(char *str1, const char *str2);
   bool is_command_P(char *str, const char *command);
-//  void save_accumulator();
 };
 
 void CommandProcessor::begin(HardwareSerial *serial, const char* const *commands, byte num_commands){
@@ -126,8 +127,6 @@ bool CommandProcessor::is_command_P(char *str, const char *command){
 }
 
 void CommandProcessor::get_sub_args(char * args = NULL){
-  //save_accumulator();
-
   if(args == NULL){
     args = this->str;
   }
@@ -142,16 +141,10 @@ void CommandProcessor::get_sub_args(char * args = NULL){
 }
 
 void CommandProcessor::reset_args(){
-  //save_accumulator();
-
   sub_args[0] = 0;
   sub_args[1] = 0;
   sub_args[2] = 0;
 }
-
-//void CommandProcessor::save_accumulator(){
-//  accumulator = sub_args[0];
-//}
 
 int CommandProcessor::lookup_command(char * str){
   if(str == NULL){

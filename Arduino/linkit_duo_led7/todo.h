@@ -1,3 +1,16 @@
+// working example of passing params to a macro
+//command: 0:set:rcl:pos:red:flo:flu:rst
+//6k
+//command: stp
+//k
+//command: 10,20:sto:0:run
+//k
+//command:
+
+// tests: display time it took to run them
+
+// negative testing: ensure things out of bounds don't crash
+
 // need to reset blink period after testing
 
 // crash annunciator switching from wheel with next window to wheel wit position only 

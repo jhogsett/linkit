@@ -302,7 +302,7 @@ byte Macros::set_macro_from_serial(byte macro){
 
 // arg[0] macro number to run, default = 0
 // arg[1] number of times to run, default = 1
-// arg[3] milliseconds delay between runs, default = no delay
+// arg[2] milliseconds delay between runs, default = no delay
 void Macros::run_macro(byte macro, int times, int delay_){
   times = max(1, times);
 

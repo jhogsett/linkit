@@ -56,31 +56,31 @@
 // };
 
 #ifdef USE_BYTE_ARRAYS
-const byte color_00[] PROGMEM = {20, 0, 0};
-const byte color_01[] PROGMEM = {20, 10, 0};
-const byte color_02[] PROGMEM = {20, 20, 0};
-const byte color_03[] PROGMEM = {0, 20, 0};
-const byte color_04[] PROGMEM = {0, 0, 20};
-const byte color_05[] PROGMEM = {10, 0, 20};
-const byte color_06[] PROGMEM = {0, 20, 20};
-const byte color_07[] PROGMEM = {20, 0, 20};
-const byte color_08[] PROGMEM = {0, 10, 20};
-const byte color_09[] PROGMEM = {10, 20, 0};
-const byte color_10[] PROGMEM = {0, 20, 10};
-const byte color_11[] PROGMEM = {20, 0, 10};
-const byte color_12[] PROGMEM = {20, 15, 0};
-const byte color_13[] PROGMEM = {15, 20, 0};
-const byte color_14[] PROGMEM = {0, 15, 20};
-const byte color_15[] PROGMEM = {0, 20, 15};
-const byte color_16[] PROGMEM = {15, 0, 20};
-const byte color_17[] PROGMEM = {20, 0, 15};
+const byte color_00[] PROGMEM = {20,  0,  0};
+const byte color_01[] PROGMEM = {20, 10,  0};
+const byte color_02[] PROGMEM = {20, 20,  0};
+const byte color_03[] PROGMEM = { 0, 20,  0};
+const byte color_04[] PROGMEM = { 0,  0, 20};
+const byte color_05[] PROGMEM = {10,  0, 20};
+const byte color_06[] PROGMEM = { 0, 20, 20};
+const byte color_07[] PROGMEM = {20,  0, 20};
+const byte color_08[] PROGMEM = { 0, 10, 20};
+const byte color_09[] PROGMEM = {10, 20,  0};
+const byte color_10[] PROGMEM = { 0, 20, 10};
+const byte color_11[] PROGMEM = {20,  0, 10};
+const byte color_12[] PROGMEM = {20, 15,  0};
+const byte color_13[] PROGMEM = {15, 20,  0};
+const byte color_14[] PROGMEM = { 0, 15, 20};
+const byte color_15[] PROGMEM = { 0, 20, 15};
+const byte color_16[] PROGMEM = {15,  0, 20};
+const byte color_17[] PROGMEM = {20,  0, 15};
 
-const byte color_18[] PROGMEM = {0, 0, 0};
-const byte color_19[] PROGMEM = {5, 5, 5};
+const byte color_18[] PROGMEM = { 0,  0,  0};
+const byte color_19[] PROGMEM = { 5,  5,  5};
 const byte color_20[] PROGMEM = {10, 10, 10};
 const byte color_21[] PROGMEM = {20, 20, 20};
-const byte color_22[] PROGMEM = {20, 11, 2};
-const byte color_23[] PROGMEM = {20, 5, 0};
+const byte color_22[] PROGMEM = {20, 11,  2};
+const byte color_23[] PROGMEM = {20,  5,  0};
 
 const byte* const bytes_array[] PROGMEM = {
   color_00, color_01, color_02, color_03, color_04, color_05,
@@ -169,7 +169,7 @@ class Colors
   static void rotate_palette(byte times, byte limit, bool down = true);
   static void reverse_palette();
   static rgb_color * get_palette();
-  static byte get_num_palette_colors();
+  //static byte get_num_palette_colors();
 
   private:
   // this is pointed-to as the return value for get_color()
@@ -304,7 +304,7 @@ rgb_color * Colors::get_palette(){
   return palette;
 }
 
-byte Colors::get_num_palette_colors(){
-}
+//byte Colors::get_num_palette_colors(){
+//}
 
 #endif

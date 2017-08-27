@@ -39,23 +39,46 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_BLINK5:      case CMD_BLINK6:    case CMD_BLINKA:    case CMD_BLINKB:       case CMD_BLINKC_OPEN:
     case CMD_BREATHE:     case CMD_SLOW_FADE: case CMD_FAST_FADE: 
     case CMD_STATIC:      dispatch_effect(cmd);                                              break;
-    
+
+    // save all arguments in the accumulators
     case CMD_STORE:    
     {
-      // save arg0 in the accumulator 
-      command_processor->accumulator = command_processor->sub_args[0];
+      command_processor->accumulator0 = command_processor->sub_args[0];
+      command_processor->accumulator1 = command_processor->sub_args[1];
+      command_processor->accumulator2 = command_processor->sub_args[2];
       // don't reset args
     }
     break;
 
-    case CMD_RECALL:    
+    // arg0  = 0: restore all arguments from the accumulators
+    // arg0 != 0 and arg1 =  0: arg0->arg1 acc0->arg0 acc1->arg2
+    // arg0 != 0 and arg1 != 0: arg1->arg2 arg0->arg1 acco->arg0
+    case CMD_RECALL:     
     {
-      // shift the arguments: arg0 -> arg1, arg1 -> arg2
-      // and recall arg0 from the accumulator
-      command_processor->sub_args[2] = command_processor->sub_args[1];
-      command_processor->sub_args[1] = command_processor->sub_args[0];
-      command_processor->sub_args[0] = command_processor->accumulator;
-      // don't reset args
+      if(arg0 != 0)
+      {
+        if(arg1 != 0)
+        {
+          // two args supplied, shift second argument to third 
+          command_processor->sub_args[2] = command_processor->sub_args[1];
+        } 
+        else 
+        {
+          // one arg supplied, shift arg1 accumulator to third arg
+          command_processor->sub_args[2] = command_processor->accumulator1;
+        }
+        // one or two args supplied, shift the first to the second
+        command_processor->sub_args[1] = command_processor->sub_args[0];
+      } 
+      else 
+      {
+        // no arguments supplied, fill second and third arguments from accumulators 1 and 2 
+        command_processor->sub_args[1] = command_processor->accumulator1;
+        command_processor->sub_args[2] = command_processor->accumulator2;
+      }
+
+      // always fill first argument from accumulator0
+      command_processor->sub_args[0] = command_processor->accumulator0;
     }
     break;
 
