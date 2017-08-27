@@ -1,3 +1,5 @@
+// tests: display time it took to run them
+
 // negative testing: ensure things out of bounds don't crash
 
 // need to reset blink period after testing

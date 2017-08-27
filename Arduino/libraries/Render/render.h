@@ -51,7 +51,7 @@ rgb_color Render::get_breathe(rgb_color color){
   return ColorMath::scale_color(color, breathe_effects->breathe_ratio() * default_brightness_scale);
 }
 
-//
+// this is a destructive rendering: the original color value is redudced
 rgb_color Render::get_fade(rgb_color *color, byte effect){
   *color = fade_effects->apply_fade(*color, effect);
   return get_default(*color);
@@ -67,14 +67,11 @@ rgb_color Render::get_default(rgb_color color){
 }
 
 rgb_color Render::render(rgb_color *color, byte effect){
-  rgb_color render_color;
-
-                         if(effect == STATIC_ON) { render_color = get_default(get_static()); } else
-    if(blink_effects->is_handled_effect(effect)) { render_color = get_blink(*color, effect); } else
-  if(breathe_effects->is_handled_effect(effect)) { render_color = get_breathe(*color);       } else
-     if(fade_effects->is_handled_effect(effect)) { render_color = get_fade(color, effect);   } else
-                                                 { render_color = get_default(*color);       }
-  return render_color;
+                         if(effect == STATIC_ON) { return get_default(get_static()); } else
+    if(blink_effects->is_handled_effect(effect)) { return get_blink(*color, effect); } else
+  if(breathe_effects->is_handled_effect(effect)) { return get_breathe(*color);       } else
+     if(fade_effects->is_handled_effect(effect)) { return get_fade(color, effect);   } else
+                                                 { return get_default(*color);       }
 }
 
 rgb_color Render::fast_render(rgb_color color, byte _effect){
