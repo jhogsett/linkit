@@ -235,7 +235,7 @@ def report_failure(got, expected):
   report_test()
   test_failures.append(
     "    " + 
-    tc.red("Expectation: ") + 
+    tc.white("Expectation: ") + 
     tc.cyan("[" + test_command + "]") + 
     tc.yellow(" @ " + str(test_line_number)) + 
     tc.red(" Failed!\n") + 
@@ -980,7 +980,9 @@ def specs():
   # place a breathing greenn
   command_str("grn:bre")
 
-  expected_render_values = [0, 0, 0, 0, 0, 4, 8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 47, 49, 50, 50]
+  expected_render_values = [ 0,  0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 47, 49, 50, 50, 
+                            50, 49, 47, 46, 44, 41, 39, 36, 32, 29, 25, 21, 17, 13,  8,  4,  0,  0,  0,  0,  0,  0 ]
+
   # similar rendering through each breathe step period
   for n in range(0, len(expected_render_values)):
     expect_render("0," + str(n) + ":run", 0, 1, "0," + str(expected_render_values[n]) + ",0", False)
