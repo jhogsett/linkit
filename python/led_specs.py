@@ -968,6 +968,23 @@ def specs():
                  
   pending_test("the right breathe brightness levels are used for rendering")
                                                                                                                                                                                           
+  test("the breathe effect renders properly")
+
+  # set the breate period to the minimum possible value
+  command_str("1,1:cfg")
+
+  # use a macro to process the effects and update the render buffer
+  # this gets around the fact effects are reset on processing commands
+  command_str("0:set:6:tst:flu")
+
+  # place a breathing greenn
+  command_str("grn:bre")
+
+  expected_render_values = [0, 0, 0, 0, 0, 4, 8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 47, 49, 50, 50]
+  # similar rendering through each breathe step period
+  for n in range(0, len(expected_render_values)):
+    expect_render("0," + str(n) + ":run", 0, 1, "0," + str(expected_render_values[n]) + ",0", False)
+
 
 ########################################################################
 # FADING EFFECTS
@@ -1292,7 +1309,7 @@ def loop():
   show_pending = 0.5 + (num_pending * num_leds / total)
   command_str("rst:era:0:lev:2,0:cfg")
   command_str(str(show_success) + ",1:grn") 
-  if show_failure >- 1.0:  
+  if show_failure >= 1.0:  
     command_str(str(show_failure) + ",1:red")                                                                                                                                                                  
   command_str(str(show_pending) + ",1:yel")                                                                                                                                                                  
   command_str("flu:cnt")
