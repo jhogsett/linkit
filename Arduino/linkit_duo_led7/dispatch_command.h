@@ -149,24 +149,23 @@ void Commands::dispatch_color(int cmd){
 }
 
 void Commands::dispatch_effect(int cmd){
-  byte effect = NO_EFFECT;
-  switch(cmd){
-    case CMD_STATIC:    effect = STATIC_ON;  break;
-    case CMD_BLINK:     effect = BLINK_ON;   break;
-    case CMD_BLINK1:    effect = BLINK_ON_1; break;
-    case CMD_BLINK2:    effect = BLINK_ON_2; break;    
-    case CMD_BLINK3:    effect = BLINK_ON_3; break;    
-    case CMD_BLINK4:    effect = BLINK_ON_4; break;    
-    case CMD_BLINK5:    effect = BLINK_ON_5; break;   
-    case CMD_BLINK6:    effect = BLINK_ON_6; break;   
-    case CMD_BLINKA:    effect = BLINK_ON_A; break;   
-    case CMD_BLINKB:    effect = BLINK_ON_B; break;   
-    case CMD_BREATHE:   effect = BREATHE_ON; break;
-    case CMD_SLOW_FADE: effect = SLOW_FADE;  break;
-    case CMD_FAST_FADE: effect = FAST_FADE;  break;
-  }
-   
-  effects_processor->start_effect(effect);
+//  byte effect = NO_EFFECT;
+//  switch(cmd){
+//    case CMD_STATIC:    effect = STATIC_ON;  break;
+//    case CMD_BLINK:     effect = BLINK_ON;   break;
+//    case CMD_BLINK1:    effect = BLINK_ON_1; break;
+//    case CMD_BLINK2:    effect = BLINK_ON_2; break;    
+//    case CMD_BLINK3:    effect = BLINK_ON_3; break;    
+//    case CMD_BLINK4:    effect = BLINK_ON_4; break;    
+//    case CMD_BLINK5:    effect = BLINK_ON_5; break;   
+//    case CMD_BLINK6:    effect = BLINK_ON_6; break;   
+//    case CMD_BLINKA:    effect = BLINK_ON_A; break;   
+//    case CMD_BLINKB:    effect = BLINK_ON_B; break;   
+//    case CMD_BREATHE:   effect = BREATHE_ON; break;
+//    case CMD_SLOW_FADE: effect = SLOW_FADE;  break;
+//    case CMD_FAST_FADE: effect = FAST_FADE;  break;
+//  }
+  effects_processor->start_effect((cmd - CMD_STATIC) + STATIC_ON);
 }
 
 void Commands::dispatch_sequence(int cmd){
