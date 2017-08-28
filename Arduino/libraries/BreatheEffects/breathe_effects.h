@@ -8,11 +8,18 @@
 #define BREATHE_MAX_STEP 22
 #define BREATHE_BRIGHTNESS_MIN 0
 
+#define BYTE_MAP
+
 class BreatheEffects
 {
   public:
   byte breathe_step = 0;
+
+#ifndef BYTE_MAP
   static const float PROGMEM breathe_steps[];
+#else
+  static const byte PROGMEM breathe_steps[];
+#endif
 
   void begin(int breathe_time);
   void reset();
@@ -27,6 +34,7 @@ class BreatheEffects
   char breathe_direction = 1;
 };
 
+#ifndef BYTE_MAP
 // ruby: (0..90).step(5).each { |i| puts (Math.cos(i * Math::PI / 180)).round(15) }
 const float PROGMEM BreatheEffects::breathe_steps[]
 = {
@@ -53,6 +61,34 @@ const float PROGMEM BreatheEffects::breathe_steps[]
     0.0,
     0,0
   };
+#else
+// (0..90).step(5).each { |i| puts ((Math.cos(i * Math::PI / 180)) * 255).round }
+const byte PROGMEM BreatheEffects::breathe_steps[]
+= {
+    255,
+    254,
+    251,
+    246,
+    240,
+    231,
+    221,
+    209,
+    195,
+    180,
+    164,
+    146,
+    128,
+    108,
+    87,
+    66,
+    44,
+    22,
+    0,
+    0,
+    0,
+    0
+  };
+#endif
 
 void BreatheEffects::begin(int breathe_time = BREATHE_TIME){
   this->breathe_time = breathe_time;
@@ -85,11 +121,14 @@ bool BreatheEffects::is_handled_effect(byte effect){
 }
 
 float BreatheEffects::breathe_ratio(){
+#ifndef BYTE_MAP
   return pgm_read_float(&breathe_steps[BREATHE_MAX_STEP - breathe_step]);
+#else
+  return pgm_read_byte(&breathe_steps[BREATHE_MAX_STEP - breathe_step]) / 255.0;
+#endif
 }
 
 void BreatheEffects::set_breathe_time(int time){
   this->breathe_time = time;
 }
-
 #endif
