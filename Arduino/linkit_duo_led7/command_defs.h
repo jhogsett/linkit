@@ -21,37 +21,31 @@
 #define CMD_REVERSE      13
 #define CMD_RGBCOLOR     14
 #define CMD_HSLCOLOR     15
-
 #define CMD_RED          16
 #define CMD_ORANGE       17
 #define CMD_YELLOW       18
 #define CMD_GREEN        19
 #define CMD_BLUE         20
 #define CMD_PURPLE       21
-
 #define CMD_CYAN         22
 #define CMD_MAGENTA      23
 #define CMD_LTBLUE       24
 #define CMD_LTGREEN      25
 #define CMD_SEAFOAM      26
 #define CMD_PINK         27
-
 #define CMD_AMBER        28
 #define CMD_OLIVE        29
 #define CMD_SKYBLUE      30
 #define CMD_TURQUOISE    31
 #define CMD_LAVENDER     32
 #define CMD_ROSE         33
-
 #define CMD_DKGRAY       34
 #define CMD_GRAY         35
 #define CMD_WHITE        36
 #define CMD_TUNGSTEN     37
 #define CMD_NEON         38
 #define CMD_SODIUM       39
-
 #define CMD_BLACK        40
-
 #define CMD_RANDOM       41
 #define CMD_BLEND        42
 #define CMD_MAX          43
@@ -129,37 +123,31 @@ const char cmd_012[] PROGMEM = "off";
 const char cmd_013[] PROGMEM = "rev";
 const char cmd_014[] PROGMEM = "rgb";
 const char cmd_015[] PROGMEM = "hsl";
-
 const char cmd_016[] PROGMEM = "red";
 const char cmd_017[] PROGMEM = "org";
 const char cmd_018[] PROGMEM = "yel";
 const char cmd_019[] PROGMEM = "grn";
 const char cmd_020[] PROGMEM = "blu";
 const char cmd_021[] PROGMEM = "pur";
-
 const char cmd_022[] PROGMEM = "cyn";
 const char cmd_023[] PROGMEM = "mag";
 const char cmd_024[] PROGMEM = "lbl";
 const char cmd_025[] PROGMEM = "lgr";
 const char cmd_026[] PROGMEM = "sea";
 const char cmd_027[] PROGMEM = "pnk";
-
 const char cmd_028[] PROGMEM = "amb";
 const char cmd_029[] PROGMEM = "olv";
 const char cmd_030[] PROGMEM = "sky";
 const char cmd_031[] PROGMEM = "tur";
 const char cmd_032[] PROGMEM = "lav";
 const char cmd_033[] PROGMEM = "ros";
-
 const char cmd_034[] PROGMEM = "dgr";
 const char cmd_035[] PROGMEM = "gry";
 const char cmd_036[] PROGMEM = "wht";
 const char cmd_037[] PROGMEM = "tun";
 const char cmd_038[] PROGMEM = "neo";
 const char cmd_039[] PROGMEM = "sod";
-
 const char cmd_040[] PROGMEM = "blk";
-
 const char cmd_041[] PROGMEM = "rnd";
 const char cmd_042[] PROGMEM = "ble";
 const char cmd_043[] PROGMEM = "max";

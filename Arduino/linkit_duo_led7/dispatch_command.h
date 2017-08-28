@@ -24,38 +24,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_REVERSE:     buffer->set_reverse(arg0 == 1 ? true : false); reset_args = true; break;
     case CMD_RGBCOLOR:    buffer->push_rgb_color(arg0, arg1, arg2);      reset_args = true; break;
     case CMD_HSLCOLOR:    buffer->push_hsl_color(arg0, arg1, arg2);      reset_args = true; break;
-    
-    case CMD_RED:         
-    case CMD_ORANGE:      
-    case CMD_YELLOW: 
-    case CMD_GREEN:    
-    case CMD_BLUE:    
-    case CMD_PURPLE:   
-
-    case CMD_CYAN:    
-    case CMD_MAGENTA: 
-    case CMD_LTBLUE:  
-    case CMD_LTGREEN: 
-    case CMD_SEAFOAM: 
-    case CMD_PINK:      
-
-    case CMD_AMBER:   
-    case CMD_OLIVE:   
-    case CMD_SKYBLUE: 
-    case CMD_TURQUOISE:   
-    case CMD_LAVENDER: 
-    case CMD_ROSE:    
-
-    case CMD_DKGRAY:      
-    case CMD_GRAY:     
-    case CMD_WHITE:       
-    case CMD_TUNGSTEN: 
-    case CMD_NEON:
-    case CMD_SODIUM:      
-
-    case CMD_BLACK:  
-                          dispatch_color(cmd);                            reset_args = true; break;
-
+    case CMD_RED:    case CMD_ORANGE:  case CMD_YELLOW:  case CMD_GREEN:     case CMD_BLUE:     case CMD_PURPLE:   
+    case CMD_CYAN:   case CMD_MAGENTA: case CMD_LTBLUE:  case CMD_LTGREEN:   case CMD_SEAFOAM:  case CMD_PINK:      
+    case CMD_AMBER:  case CMD_OLIVE:   case CMD_SKYBLUE: case CMD_TURQUOISE: case CMD_LAVENDER: case CMD_ROSE:    
+    case CMD_DKGRAY: case CMD_GRAY:    case CMD_WHITE:   case CMD_TUNGSTEN:  case CMD_NEON:     case CMD_SODIUM:      
+    case CMD_BLACK:       dispatch_color(cmd);                            reset_args = true; break;
     case CMD_RANDOM:      do_random(arg0);                                reset_args = true; break;   
     case CMD_BLEND:       do_blend(arg0);                                 reset_args = true; break;
     case CMD_MAX:         do_max();                                                          break;
@@ -169,40 +142,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
 
 void Commands::dispatch_color(int cmd){
   rgb_color color = BLACK;
-
-  // can an offset be computed into the colors table instead of all this code?
-  switch(cmd){
-    case CMD_RED:       color = RED;       break;
-    case CMD_ORANGE:    color = ORANGE;    break;
-    case CMD_YELLOW:    color = YELLOW;    break;
-    case CMD_GREEN:     color = GREEN;     break;
-    case CMD_BLUE:      color = BLUE;      break;     
-    case CMD_PURPLE:    color = PURPLE;    break;    
-
-    case CMD_CYAN:      color = CYAN;      break; 
-    case CMD_MAGENTA:   color = MAGENTA;   break;  
-    case CMD_LTBLUE:    color = LTBLUE;    break;   
-    case CMD_LTGREEN:   color = LTGREEN;   break;
-    case CMD_SEAFOAM:   color = SEAFOAM;   break;
-    case CMD_PINK:      color = PINK;      break;
-    
-    case CMD_AMBER:     color = AMBER;     break;
-    case CMD_OLIVE:     color = OLIVE;     break;
-    case CMD_SKYBLUE:   color = SKYBLUE;   break;
-    case CMD_TURQUOISE: color = TURQUOISE; break;
-    case CMD_LAVENDER:  color = LAVENDER;  break;
-    case CMD_ROSE:      color = ROSE;      break;
-
-    case CMD_DKGRAY:    color = DKGRAY;    break;
-    case CMD_GRAY:      color = GRAY;      break;      
-    case CMD_WHITE:     color = WHITE;     break;
-    case CMD_TUNGSTEN:  color = TUNGSTEN;  break;   
-    case CMD_NEON:      color = NEON;      break;
-    case CMD_SODIUM:    color = SODIUM;    break;
-    
-    case CMD_BLACK:     color = buffer->black; break;
-  }
-  
+  if(cmd == CMD_BLACK)
+    color = buffer->black;
+  else 
+    color = (*Colors::get_color(cmd - CMD_RED));
   buffer->push_color(color, command_processor->sub_args[0], command_processor->sub_args[1]);                                                   
 }
 
