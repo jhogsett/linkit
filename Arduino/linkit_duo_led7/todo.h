@@ -1,3 +1,6 @@
+// backtick to run command in color_command; also up arrow for previous commands
+
+
 // working example of passing params to a macro
 //command: 0:set:rcl:pos:red:flo:flu:rst
 //6k
