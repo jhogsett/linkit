@@ -182,7 +182,7 @@ def pre_test_reset():
   command += reset_standard_seed() + ":"
   command += reset_standard_fade_rate() + ":"
   command += reset_standard_palette() + ":"
-  command += reset_standard_brighntess()
+  command += reset_standard_brightness()
   command_str(command)
 
 def do_reset_device():
