@@ -49,6 +49,10 @@ palette_size = 0
 group_number_only = 0
 standard_palette = ""
 alternate_seed = 2
+color_map = {
+              "running": "lbl:bre",
+         "unrecognized": "blu:bla"
+}
 
 
 # -----------------------------------------------------------------------------
@@ -132,7 +136,6 @@ def setup():
   for i in range(0, palette_size):
     standard_palette += test_colors.colors[i][1] + ","
   standard_palette = standard_palette[:-1]
-  # 20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15
 
   if len(sys.argv) > 2:
     group_number_only = int(sys.argv[2])
@@ -424,6 +427,10 @@ def specs():
   test("it accurately sets all standard colors")
   for color in test_colors.colors:
     expect_buffer(color[0], 0, 1, color[1])
+
+  test("all color commands work as expected")
+  for i in range(0, palette_size):
+    expect_buffer(test_colors.colors[i][0] + ":flu", 0, 1, test_colors.colors[i][1])
 
 
 ########################################################################
