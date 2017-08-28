@@ -20,7 +20,7 @@
 #define BLINK_MAX BLINK_ON_B
 
 #define MAX_BLINK_SEGMENTS 6
-#define DEFAULT_BLINK_PERIOD 1000
+#define DEFAULT_BLINK_PERIOD 1500
 
 class BlinkEffects
 {
