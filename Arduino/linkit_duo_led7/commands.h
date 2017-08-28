@@ -355,19 +355,26 @@ void Commands::do_flood(){
   buf += start;
   effects += start;
 
-  for(byte i = start; i < end_; i++){
-    if(effect == RANDOM1){
-      *buf = ColorMath::random_color();
-      *effects = NO_EFFECT;
-    } else if(effect == RANDOM2){
-      *buf = ColorMath::random_color();
-      *effects = EffectsProcessor::random_effect();
-    } else {
+  if(effect != RANDOM1 && effect != RANDOM2){
+    for(byte i = start; i < end_; i++){
       *buf = color;
       *effects = effect;    
+      buf++;
+      effects++;
     }
+  } else {
+    // this could be further optimized but this type of 
+    // flooding isn't used often
+    for(byte i = start; i < end_; i++){
+      *buf = ColorMath::random_color();
+      if(effect == RANDOM2){
+        *effects = EffectsProcessor::random_effect();
+      } else {
+        *effects = NO_EFFECT;
+      }
     buf++;
     effects++;
+    }
   }
 }
 
@@ -953,23 +960,19 @@ void Commands::do_next_window(int arg0, int arg1, int arg2){
 //  
 //}
 
-#define CONFIG_SETBLINKC   0
-#define CONFIG_SETBLINKP   1
-#define CONFIG_SETBREATHET 2
-#define CONFIG_SETFADERATE 3
+#define CONFIG_SETBLINKP   0
+#define CONFIG_SETBREATHET 1
+#define CONFIG_SETFADERATE 2
 
 // arg0 setting to configure
-// arg1 value to set
+// arg1 value to set (0 = default)
 void Commands::do_configure(int arg0, int arg1, int arg2){
   switch(arg0){
-    case CONFIG_SETBLINKC:
-      blink_effects->set_custom_blink(arg1);
-      break;
     case CONFIG_SETBLINKP:
-      blink_effects->set_blink_period(arg1);
+      blink_effects->set_blink_period(arg1 == 0 ? BLINK_PERIOD : arg1);
       break;
     case CONFIG_SETBREATHET:
-      breathe_effects->set_breathe_time(arg1);
+      breathe_effects->set_breathe_time(arg1 == 0 ? BREATHE_PERIOD : arg1);
       break;
     case CONFIG_SETFADERATE:
       set_fade_rate(arg1);
