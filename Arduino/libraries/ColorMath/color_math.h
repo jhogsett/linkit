@@ -250,7 +250,7 @@ rgb_color ColorMath::correct_color(rgb_color color){
 
 // needed in renderer
 rgb_color ColorMath::random_color(){
-  return *Colors::get_color((Colors::color)random(NPRETTY_COLORS));
+  return *Colors::get_color(random(NPRETTY_COLORS));
 }
 
 bool ColorMath::equal(rgb_color color1, rgb_color color2){
