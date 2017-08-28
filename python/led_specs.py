@@ -156,10 +156,7 @@ def write(text):
 # --- device handling ---
 
 def reset_device():
-  return ":::stp:stp:0:lev:" + reset_configuration();
-
-def reset_standard_brightness():
-  return "20:lev"
+  return ":::stp:stp:20:lev:2,0:cfg"
 
 def reset_standard_seed():
   return "6,3," + str(standard_seed) + ":tst"
@@ -173,16 +170,12 @@ def reset_standard_fade_rate():
 def reset_standard_palette():
   return "1:shf"
 
-def reset_configuration():
-  return "0,0:cfg:1,0:cfg:2,0:cfg"
-
 def pre_test_reset():
   command = ""
   command += reset_device() + ":"
   command += reset_standard_seed() + ":"
   command += reset_standard_fade_rate() + ":"
-  command += reset_standard_palette() + ":"
-  command += reset_standard_brightness()
+  command += reset_standard_palette() 
   command_str(command)
 
 def do_reset_device():
@@ -1340,8 +1333,8 @@ def loop():
   show_success = 0.5 + (success_count * num_leds / total)
   show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
   show_pending = 0.5 + (num_pending * num_leds / total)
-  # command_str("rst:era:0:lev:2,0:cfg")
-  do_reset_device();
+  command_str("rst:era:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
+  # do_reset_device();
   command_str(str(show_success) + ",1:grn") 
   if show_failure >= 1.0:  
     command_str(str(show_failure) + ",1:red")                                                                                                                                                                  
