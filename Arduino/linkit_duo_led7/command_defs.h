@@ -51,19 +51,19 @@
 #define CMD_MAX          43
 #define CMD_DIM          44
 #define CMD_BRIGHT       45
-#define CMD_BLINK        46
-#define CMD_BLINK1       47
-#define CMD_BLINK2       48
-#define CMD_BLINK3       49
-#define CMD_BLINK4       50
-#define CMD_BLINK5       51
-#define CMD_BLINK6       52
-#define CMD_BLINKA       53
-#define CMD_BLINKB       54
-#define CMD_BREATHE      55
-#define CMD_SLOW_FADE    56
-#define CMD_FAST_FADE    57
-#define CMD_STATIC       58
+#define CMD_STATIC       46
+#define CMD_BLINK        47
+#define CMD_BLINK1       48
+#define CMD_BLINK2       49
+#define CMD_BLINK3       50
+#define CMD_BLINK4       51
+#define CMD_BLINK5       52
+#define CMD_BLINK6       53
+#define CMD_BLINKA       54
+#define CMD_BLINKB       55
+#define CMD_BREATHE      56
+#define CMD_SLOW_FADE    57
+#define CMD_FAST_FADE    58
 #define CMD_BLINKR       59
 #define CMD_EFFECTR      60
 #define CMD_STORE        61 
@@ -153,19 +153,19 @@ const char cmd_042[] PROGMEM = "ble";
 const char cmd_043[] PROGMEM = "max";
 const char cmd_044[] PROGMEM = "dim";
 const char cmd_045[] PROGMEM = "brt";
-const char cmd_046[] PROGMEM = "bli";
-const char cmd_047[] PROGMEM = "bl1";
-const char cmd_048[] PROGMEM = "bl2";
-const char cmd_049[] PROGMEM = "bl3";
-const char cmd_050[] PROGMEM = "bl4";
-const char cmd_051[] PROGMEM = "bl5";
-const char cmd_052[] PROGMEM = "bl6";
-const char cmd_053[] PROGMEM = "bla";
-const char cmd_054[] PROGMEM = "blb";
-const char cmd_055[] PROGMEM = "bre";
-const char cmd_056[] PROGMEM = "sfd";
-const char cmd_057[] PROGMEM = "ffd";
-const char cmd_058[] PROGMEM = "sta";
+const char cmd_046[] PROGMEM = "sta";
+const char cmd_047[] PROGMEM = "bli";
+const char cmd_048[] PROGMEM = "bl1";
+const char cmd_049[] PROGMEM = "bl2";
+const char cmd_050[] PROGMEM = "bl3";
+const char cmd_051[] PROGMEM = "bl4";
+const char cmd_052[] PROGMEM = "bl5";
+const char cmd_053[] PROGMEM = "bl6";
+const char cmd_054[] PROGMEM = "bla";
+const char cmd_055[] PROGMEM = "blb";
+const char cmd_056[] PROGMEM = "bre";
+const char cmd_057[] PROGMEM = "sfd";
+const char cmd_058[] PROGMEM = "ffd";
 const char cmd_059[] PROGMEM = "blr";
 const char cmd_060[] PROGMEM = "efr";
 const char cmd_061[] PROGMEM = "sto";

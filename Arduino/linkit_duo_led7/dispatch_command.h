@@ -34,10 +34,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_MAX:         do_max();                                                          break;
     case CMD_DIM:         do_dim();                                                          break;
     case CMD_BRIGHT:      do_bright();                                                       break;
-    case CMD_BLINK:       case CMD_BLINK1:    case CMD_BLINK2:    case CMD_BLINK3:       case CMD_BLINK4:    
-    case CMD_BLINK5:      case CMD_BLINK6:    case CMD_BLINKA:    case CMD_BLINKB:       case CMD_BREATHE:     
-    case CMD_SLOW_FADE:   case CMD_FAST_FADE: 
-    case CMD_STATIC:      dispatch_effect(cmd);                                              break;
+    case CMD_STATIC: case CMD_BLINK:  case CMD_BLINK1: case CMD_BLINK2: case CMD_BLINK3:  case CMD_BLINK4:    
+    case CMD_BLINK5: case CMD_BLINK6: case CMD_BLINKA: case CMD_BLINKB: case CMD_BREATHE: case CMD_SLOW_FADE:   
+    case CMD_FAST_FADE:   dispatch_effect(cmd);                                              break;
 
     // save all arguments in the accumulators
     case CMD_STORE:    
@@ -141,7 +140,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
 }
 
 void Commands::dispatch_color(int cmd){
-  rgb_color color = BLACK;
+  rgb_color color;
   if(cmd == CMD_BLACK)
     color = buffer->black;
   else 
@@ -152,6 +151,7 @@ void Commands::dispatch_color(int cmd){
 void Commands::dispatch_effect(int cmd){
   byte effect = NO_EFFECT;
   switch(cmd){
+    case CMD_STATIC:    effect = STATIC_ON;  break;
     case CMD_BLINK:     effect = BLINK_ON;   break;
     case CMD_BLINK1:    effect = BLINK_ON_1; break;
     case CMD_BLINK2:    effect = BLINK_ON_2; break;    
@@ -164,7 +164,6 @@ void Commands::dispatch_effect(int cmd){
     case CMD_BREATHE:   effect = BREATHE_ON; break;
     case CMD_SLOW_FADE: effect = SLOW_FADE;  break;
     case CMD_FAST_FADE: effect = FAST_FADE;  break;
-    case CMD_STATIC:    effect = STATIC_ON;  break;
   }
    
   effects_processor->start_effect(effect);

@@ -2,19 +2,19 @@
 #define BLINK_EFFECTS_H
 
 // main blink
-#define BLINK_ON 10
+#define BLINK_ON 11
 
 // blink group 1-6 (1/6)
-#define BLINK_ON_1 11
-#define BLINK_ON_2 12
-#define BLINK_ON_3 13
-#define BLINK_ON_4 14
-#define BLINK_ON_5 15
-#define BLINK_ON_6 16
+#define BLINK_ON_1 12
+#define BLINK_ON_2 13
+#define BLINK_ON_3 14
+#define BLINK_ON_4 15
+#define BLINK_ON_5 16
+#define BLINK_ON_6 17
 
 // blink group a-b (1/2)
-#define BLINK_ON_A 17
-#define BLINK_ON_B 18
+#define BLINK_ON_A 18
+#define BLINK_ON_B 19
 
 #define BLINK_MIN BLINK_ON
 #define BLINK_MAX BLINK_ON_B
