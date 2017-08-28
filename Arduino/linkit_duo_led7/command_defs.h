@@ -22,44 +22,44 @@
 #define CMD_RGBCOLOR     14
 #define CMD_HSLCOLOR     15
 #define CMD_RED          16
-#define CMD_GREEN        17
-#define CMD_BLUE         18
-#define CMD_BLACK        19
-#define CMD_YELLOW       20
-#define CMD_ORANGE       21
-#define CMD_PURPLE       22
-#define CMD_CYAN         23
-#define CMD_MAGENTA      24
-#define CMD_PINK         25
-#define CMD_WHITE        26
-#define CMD_GRAY         27
-#define CMD_LTGREEN      28
-#define CMD_SEAFOAM      29
-#define CMD_LTBLUE       30
-#define CMD_DKGRAY       31
-#define CMD_TUNGSTEN     32
-#define CMD_AMBER        33
-#define CMD_OLIVE        34
-#define CMD_SKYBLUE      35
-#define CMD_TURQUOISE    36
-#define CMD_LAVENDER     37
-#define CMD_ROSE         38
-#define CMD_NEON         39
-#define CMD_RANDOM       40
-#define CMD_BLEND        41
-#define CMD_MAX          42
-#define CMD_DIM          43
-#define CMD_BRIGHT       44
-#define CMD_BLINK        45
-#define CMD_BLINK1       46
-#define CMD_BLINK2       47
-#define CMD_BLINK3       48
-#define CMD_BLINK4       49
-#define CMD_BLINK5       50
-#define CMD_BLINK6       51
-#define CMD_BLINKA       52
-#define CMD_BLINKB       53
-#define CMD_BLINKC_OPEN       54
+#define CMD_ORANGE       17
+#define CMD_YELLOW       18
+#define CMD_GREEN        19
+#define CMD_BLUE         20
+#define CMD_PURPLE       21
+#define CMD_CYAN         22
+#define CMD_MAGENTA      23
+#define CMD_LTBLUE       24
+#define CMD_LTGREEN      25
+#define CMD_SEAFOAM      26
+#define CMD_PINK         27
+#define CMD_AMBER        28
+#define CMD_OLIVE        29
+#define CMD_SKYBLUE      30
+#define CMD_TURQUOISE    31
+#define CMD_LAVENDER     32
+#define CMD_ROSE         33
+#define CMD_DKGRAY       34
+#define CMD_GRAY         35
+#define CMD_WHITE        36
+#define CMD_TUNGSTEN     37
+#define CMD_NEON         38
+#define CMD_SODIUM       39
+#define CMD_BLACK        40
+#define CMD_RANDOM       41
+#define CMD_BLEND        42
+#define CMD_MAX          43
+#define CMD_DIM          44
+#define CMD_BRIGHT       45
+#define CMD_BLINK        46
+#define CMD_BLINK1       47
+#define CMD_BLINK2       48
+#define CMD_BLINK3       49
+#define CMD_BLINK4       50
+#define CMD_BLINK5       51
+#define CMD_BLINK6       52
+#define CMD_BLINKA       53
+#define CMD_BLINKB       54
 #define CMD_BREATHE      55
 #define CMD_SLOW_FADE    56
 #define CMD_FAST_FADE    57
@@ -124,44 +124,44 @@ const char cmd_013[] PROGMEM = "rev";
 const char cmd_014[] PROGMEM = "rgb";
 const char cmd_015[] PROGMEM = "hsl";
 const char cmd_016[] PROGMEM = "red";
-const char cmd_017[] PROGMEM = "grn";
-const char cmd_018[] PROGMEM = "blu";
-const char cmd_019[] PROGMEM = "blk";
-const char cmd_020[] PROGMEM = "yel";
-const char cmd_021[] PROGMEM = "org";
-const char cmd_022[] PROGMEM = "pur";
-const char cmd_023[] PROGMEM = "cyn";
-const char cmd_024[] PROGMEM = "mag";
-const char cmd_025[] PROGMEM = "pnk";
-const char cmd_026[] PROGMEM = "wht";
-const char cmd_027[] PROGMEM = "gry";
-const char cmd_028[] PROGMEM = "lgr";
-const char cmd_029[] PROGMEM = "sea";
-const char cmd_030[] PROGMEM = "lbl";
-const char cmd_031[] PROGMEM = "dgr";
-const char cmd_032[] PROGMEM = "tun";
-const char cmd_033[] PROGMEM = "amb";
-const char cmd_034[] PROGMEM = "olv";
-const char cmd_035[] PROGMEM = "sky";
-const char cmd_036[] PROGMEM = "tur";
-const char cmd_037[] PROGMEM = "lav";
-const char cmd_038[] PROGMEM = "ros";
-const char cmd_039[] PROGMEM = "neo";
-const char cmd_040[] PROGMEM = "rnd";
-const char cmd_041[] PROGMEM = "ble";
-const char cmd_042[] PROGMEM = "max";
-const char cmd_043[] PROGMEM = "dim";
-const char cmd_044[] PROGMEM = "brt";
-const char cmd_045[] PROGMEM = "bli";
-const char cmd_046[] PROGMEM = "bl1";
-const char cmd_047[] PROGMEM = "bl2";
-const char cmd_048[] PROGMEM = "bl3";
-const char cmd_049[] PROGMEM = "bl4";
-const char cmd_050[] PROGMEM = "bl5";
-const char cmd_051[] PROGMEM = "bl6";
-const char cmd_052[] PROGMEM = "bla";
-const char cmd_053[] PROGMEM = "blb";
-const char cmd_054[] PROGMEM = "blc";
+const char cmd_017[] PROGMEM = "org";
+const char cmd_018[] PROGMEM = "yel";
+const char cmd_019[] PROGMEM = "grn";
+const char cmd_020[] PROGMEM = "blu";
+const char cmd_021[] PROGMEM = "pur";
+const char cmd_022[] PROGMEM = "cyn";
+const char cmd_023[] PROGMEM = "mag";
+const char cmd_024[] PROGMEM = "lbl";
+const char cmd_025[] PROGMEM = "lgr";
+const char cmd_026[] PROGMEM = "sea";
+const char cmd_027[] PROGMEM = "pnk";
+const char cmd_028[] PROGMEM = "amb";
+const char cmd_029[] PROGMEM = "olv";
+const char cmd_030[] PROGMEM = "sky";
+const char cmd_031[] PROGMEM = "tur";
+const char cmd_032[] PROGMEM = "lav";
+const char cmd_033[] PROGMEM = "ros";
+const char cmd_034[] PROGMEM = "dgr";
+const char cmd_035[] PROGMEM = "gry";
+const char cmd_036[] PROGMEM = "wht";
+const char cmd_037[] PROGMEM = "tun";
+const char cmd_038[] PROGMEM = "neo";
+const char cmd_039[] PROGMEM = "sod";
+const char cmd_040[] PROGMEM = "blk";
+const char cmd_041[] PROGMEM = "rnd";
+const char cmd_042[] PROGMEM = "ble";
+const char cmd_043[] PROGMEM = "max";
+const char cmd_044[] PROGMEM = "dim";
+const char cmd_045[] PROGMEM = "brt";
+const char cmd_046[] PROGMEM = "bli";
+const char cmd_047[] PROGMEM = "bl1";
+const char cmd_048[] PROGMEM = "bl2";
+const char cmd_049[] PROGMEM = "bl3";
+const char cmd_050[] PROGMEM = "bl4";
+const char cmd_051[] PROGMEM = "bl5";
+const char cmd_052[] PROGMEM = "bl6";
+const char cmd_053[] PROGMEM = "bla";
+const char cmd_054[] PROGMEM = "blb";
 const char cmd_055[] PROGMEM = "bre";
 const char cmd_056[] PROGMEM = "sfd";
 const char cmd_057[] PROGMEM = "ffd";

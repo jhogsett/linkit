@@ -148,6 +148,7 @@ void Sequence::reset(){
 #define ADVANCE_NEW_HIGH -5
 #define ADVANCE_NEW_LOW  -6
 
+// can advancement be a byte?
 int Sequence::next(int advancement, int step){ // step or macro
   
   if(step == 0)
