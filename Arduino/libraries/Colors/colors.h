@@ -12,32 +12,6 @@
 // 20 * (255 / 20) to get 255
 #define BRIGHTNESS_DIVISOR 20.0
 
-#define RED       (*Colors::get_color(0))
-#define ORANGE    (*Colors::get_color(1))
-#define YELLOW    (*Colors::get_color(2))
-#define GREEN     (*Colors::get_color(3))
-#define BLUE      (*Colors::get_color(4))
-#define PURPLE    (*Colors::get_color(5))
-#define CYAN      (*Colors::get_color(6))
-#define MAGENTA   (*Colors::get_color(7))
-#define LTBLUE    (*Colors::get_color(8))
-#define LTGREEN   (*Colors::get_color(9))
-#define SEAFOAM   (*Colors::get_color(10))
-#define PINK      (*Colors::get_color(11))
-#define AMBER     (*Colors::get_color(12))
-#define OLIVE     (*Colors::get_color(13))
-#define SKYBLUE   (*Colors::get_color(14))
-#define TURQUOISE (*Colors::get_color(15))
-#define LAVENDER  (*Colors::get_color(16))
-#define ROSE      (*Colors::get_color(17))
-#define DKGRAY    (*Colors::get_color(18))
-#define GRAY      (*Colors::get_color(19))
-#define WHITE     (*Colors::get_color(20))
-#define TUNGSTEN  (*Colors::get_color(21))
-#define NEON      (*Colors::get_color(22))
-#define SODIUM    (*Colors::get_color(23))
-#define BLACK     (*Colors::get_color(24))
-
 // tungsten based on 20% brightness, 29,230,255:hsl became 133,70,12
 // when unscaled, full strength is 255,135,23, downscaled to 0..20
 // is 20,11,2
@@ -46,15 +20,6 @@
 // scaled to 0..20 = 20,5,0
 
 // sodium based on looked right at 136,68,24, scaled to 20,10,4
-
-// to do: consider higher divisor
-// consider: specifying colors with full RGB values as full brightness color
-
-// const byte bytes_01[] PROGMEM = {40, 30, 20};
-//
-// const byte* const bytes_array[] PROGMEM = {
-//   bytes_01
-// };
 
 const byte color_00[] PROGMEM = {20,  0,  0};
 const byte color_01[] PROGMEM = {20, 10,  0};
@@ -93,38 +58,6 @@ const byte* const bytes_array[] PROGMEM = {
 class Colors
 {
   public:
-  enum color{
-    red,         // pretty palette includes these
-    orange,
-    yellow,
-    green,
-    blue,
-    purple,
-
-    cyan,
-    magenta,
-    ltblue,
-    ltgreen,
-    seafoam,
-    pink,
-
-    amber,
-    olive,
-    skyblue,
-    turquoise,
-    lavender,
-    rose,
-
-    dkgray,
-    gray,
-    white,
-    tungsten,
-    neon,
-    sodium,
-
-    black,       // full palette includes these too
-  };
-
   static const rgb_color * const get_color(byte c);
 
   static rgb_color random_palette_color();
@@ -162,7 +95,7 @@ rgb_color Colors::random_palette_color(){
 
 void Colors::reset_palette(){
   for(byte i = 0; i < NPRETTY_COLORS; i++){
-    palette[i] = *Colors::get_color((Colors::color)i);
+    palette[i] = *Colors::get_color(i);
   }
 }
 

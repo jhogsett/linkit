@@ -78,7 +78,7 @@ class Buffer
 rgb_color *Buffer::render;
 
 void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones){
-  this->black = BLACK;
+  this->black = Render::black;
   this->ledStrips = ledStrips;
   this->current_display = 0;
   this->buffers = buffers;
@@ -357,7 +357,7 @@ void Buffer::set_black_level(rgb_color black_level){
 }
 
 void Buffer::reset_black_level(){
-  this->black = BLACK;
+  this->black = Render::black;
 }
 
 int Buffer::get_default_brightness(){

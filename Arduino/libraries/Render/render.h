@@ -16,8 +16,9 @@ class Render
   void set_minimum_brightness(byte brightness);
   byte get_minimum_brightness();
 
-  private:
   static rgb_color black;
+
+  private:
   BlinkEffects *blink_effects;
   BreatheEffects *breathe_effects;
   FadeEffects *fade_effects;
