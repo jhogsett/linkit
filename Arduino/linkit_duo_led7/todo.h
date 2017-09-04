@@ -1,3 +1,6 @@
+// cache some things when rendering, for instance, the states for each blink effect, the breathe step, so they're not computed constantly
+
+
 // backtick to run command in color_command; also up arrow for previous commands
 
 

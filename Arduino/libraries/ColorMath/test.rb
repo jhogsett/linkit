@@ -87,6 +87,12 @@ end
 
 
 
+max_step = 20
+steps = (0..max_step)
+steps.each do |step|
+  position = step / (max_step * 1.0)
+  puts (((0.5 - 0.5 * Math.cos(Math::PI * position)) ** 0.5) * 255.0).round(0)
+end
 
 
 
