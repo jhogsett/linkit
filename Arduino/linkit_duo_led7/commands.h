@@ -68,7 +68,7 @@ class Commands
   void do_power_shift(byte count, byte max, bool fast_render);
   void do_power_shift_object(byte width, byte shift, bool fast_render);
 #endif
-  void do_demo();
+//  void do_demo();
   void flush(bool force_display);
   void set_display(byte display);
   void set_buffer(byte nbuffer);
@@ -92,7 +92,6 @@ class Commands
   void do_palette(int arg0, int arg1);
   void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
-
   void do_store(int arg0, int arg1, int arg2);
   void do_recall(int arg0, int arg1, int arg2);
 
@@ -396,11 +395,15 @@ void Commands::do_random(byte type){
 
   byte effect;
   switch(type){
-    case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT: effect = RANDOM0; break;
-    case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT: effect = RANDOM1; break;
-    case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS: effect = RANDOM2; break;
+    case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT:
+    case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT:
+    case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS: 
+      effect = RANDOM0 + (type - RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT); 
+      break;
 
-    case RANDOM_COLOR_TYPE_PALETTE: buffer->push_color(Colors::random_palette_color()); return;
+    case RANDOM_COLOR_TYPE_PALETTE: 
+      buffer->push_color(Colors::random_palette_color()); 
+      return;
   }
 
   buffer->push_color(ColorMath::random_color());

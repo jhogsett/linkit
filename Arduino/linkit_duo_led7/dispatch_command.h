@@ -279,7 +279,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_SEQ_SWGPW: 
       command_processor->reset_args();
       command_processor->sub_args[0] = do_sequence(SEQUENCE_WHEEL + (cmd - CMD_SEQ_WHEEL), arg0, arg1, arg2); 
-      //dispatch_sequence(cmd, arg0, arg1, arg2); made it worse
+      //dispatch_sequence(cmd, arg0, arg1, arg2); //made it worse
       reset_args = false; 
       break; 
   
@@ -319,7 +319,6 @@ void Commands::dispatch_effect(byte cmd){
 //}
 
 //void Commands::dispatch_sequence(byte cmd, int arg0, int arg1, int arg2){
-//  command_processor->reset_args();
 //  command_processor->sub_args[0] = do_sequence(SEQUENCE_WHEEL + (cmd - CMD_SEQ_WHEEL), arg0, arg1, arg2); 
 //}
 #endif
