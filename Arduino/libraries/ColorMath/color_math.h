@@ -11,6 +11,8 @@
 #define NUM_COSINES       13
 #define COSINE_RANGE    12.0
 
+#define USE_BYTE_CROSSFADE_STEPS
+
 class ColorMath
 {
   public:
@@ -31,10 +33,17 @@ class ColorMath
   static bool equal(rgb_color color1, rgb_color color2);
   static float get_cosine(byte step);
   static float get_sine(byte step);
+  static float crossfade_step_value(byte step);
 
   private:
   static bool swap_r_and_g;
+
+#ifdef USE_BYTE_CROSSFADE_STEPS
+  static const byte PROGMEM crossfade[];
+#else
   static const float PROGMEM crossfade[];
+#endif
+
   static const float PROGMEM cosines[NUM_COSINES];
 
   static byte blend_component(byte component1, byte component2, float strength);
@@ -45,6 +54,40 @@ class ColorMath
 
 bool ColorMath::swap_r_and_g;
 
+#ifdef USE_BYTE_CROSSFADE_STEPS
+/* ruby:
+max_step = 20
+steps = (0..max_step)
+steps.each do |step|
+  position = step / (max_step * 1.0)
+  puts (((0.5 - 0.5 * Math.cos(Math::PI * position)) ** 0.5) * 255.0).round(0)
+end
+*/
+const byte PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
+= {
+    0,
+    20,
+    40,
+    60,
+    79,
+    98,
+    116,
+    133,
+    150,
+    166,
+    180,
+    194,
+    206,
+    217,
+    227,
+    236,
+    243,
+    248,
+    252,
+    254,
+    255
+};
+#else
 /* ruby:
   max_step = 20
   steps = (0..max_step)
@@ -77,6 +120,7 @@ const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
     0.996917333733128,
     1.0
 };
+#endif
 
 // ruby code
 // steps = 24
@@ -202,18 +246,31 @@ byte ColorMath::crossfade_steps(){
   return CROSSFADE_STEPS;
 }
 
+
+float ColorMath::crossfade_step_value(byte step){
+#ifdef USE_BYTE_CROSSFADE_STEPS
+  return pgm_read_byte(&crossfade[step]) / 255.0;
+#else
+  return pgm_read_float(&crossfade[step]);
+#endif
+}
+
 // on subsequent steps, component1 must be set to the return value of the previous step
 // the steps must go from zero, to and including CROSSFADE_STEPS
 byte ColorMath::crossfade_component(byte step, byte component1, byte component2){
   if(step > 1){
     byte prev_step = step - 1;
-    int prevc2 = component2 * pgm_read_float(&crossfade[prev_step]);
-    int restored_c1 = (component1 - prevc2) / pgm_read_float(&crossfade[CROSSFADE_STEPS - prev_step]);
+//    int prevc2 = component2 * pgm_read_float(&crossfade[prev_step]);
+//    int restored_c1 = (component1 - prevc2) / pgm_read_float(&crossfade[CROSSFADE_STEPS - prev_step]);
+    int prevc2 = component2 * crossfade_step_value(prev_step);
+    int restored_c1 = (component1 - prevc2) / crossfade_step_value(CROSSFADE_STEPS - prev_step);
     component1 = restored_c1;
   }
 
-  int newc1 = component1 * pgm_read_float(&crossfade[CROSSFADE_STEPS - step]);
-  int newc2 = component2 * pgm_read_float(&crossfade[step]);
+//  int newc1 = component1 * pgm_read_float(&crossfade[CROSSFADE_STEPS - step]);
+//  int newc2 = component2 * pgm_read_float(&crossfade[step]);
+  int newc1 = component1 * crossfade_step_value(CROSSFADE_STEPS - step);
+  int newc2 = component2 * crossfade_step_value(step);
   return newc1 + newc2;
 }
 
