@@ -37,10 +37,6 @@ class Commands
   void reset();
   void set_brightness_level(byte level = 0);
   bool dispatch_command(int cmd, byte *dispatch_data = NULL);
-  void dispatch_color(int cmd);
-  void dispatch_effect(int cmd);
-  void dispatch_sequence(int cmd);
-  void dispatch_color_sequence(int cmd);
   void flush_all(bool force_display = false);
   void run_default_macro();
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
@@ -72,7 +68,7 @@ class Commands
   void do_power_shift(byte count, byte max, bool fast_render);
   void do_power_shift_object(byte width, byte shift, bool fast_render);
 #endif
-  void do_demo();
+//  void do_demo();
   void flush(bool force_display);
   void set_display(byte display);
   void set_buffer(byte nbuffer);
@@ -88,7 +84,6 @@ class Commands
   int do_set_sequence(byte type, int arg0, int arg1, int arg2);
   int do_next_sequence(int arg0, int arg1, int arg2);
   void do_next_window(int arg0, int arg1, int arg2);
-//  int do_next_macro(int arg1, int arg2);
   void do_configure(int arg0, int arg1, int arg2);
   bool do_set_macro(byte macro, byte * dispatch_data);
   void do_color_sequence(byte type, int arg0, int arg1, int arg2);
@@ -97,6 +92,13 @@ class Commands
   void do_palette(int arg0, int arg1);
   void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
+  void do_store(int arg0, int arg1, int arg2);
+  void do_recall(int arg0, int arg1, int arg2);
+
+  void dispatch_effect(byte cmd);
+//  void dispatch_sequence(byte cmd, int arg0, int arg1, int arg2);
+  void displatch_color(byte cmd, int arg0, int arg1);
+//  void displatch_color_sequence(byte cmd, int arg0, int arg1, int arg2);
 
 #ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
@@ -393,11 +395,15 @@ void Commands::do_random(byte type){
 
   byte effect;
   switch(type){
-    case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT: effect = RANDOM0; break;
-    case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT: effect = RANDOM1; break;
-    case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS: effect = RANDOM2; break;
+    case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT:
+    case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT:
+    case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS: 
+      effect = RANDOM0 + (type - RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT); 
+      break;
 
-    case RANDOM_COLOR_TYPE_PALETTE: buffer->push_color(Colors::random_palette_color()); return;
+    case RANDOM_COLOR_TYPE_PALETTE: 
+      buffer->push_color(Colors::random_palette_color()); 
+      return;
   }
 
   buffer->push_color(ColorMath::random_color());
@@ -1059,8 +1065,8 @@ bool Commands::do_set_macro(byte macro, byte * dispatch_data){
 }
 
 #define COLOR_SEQUENCE_HUE 0
-#define COLOR_SEQUENCE_LIT 2
 #define COLOR_SEQUENCE_SAT 1
+#define COLOR_SEQUENCE_LIT 2
 
 // to do need to add some limiting to not go over 255, etc.
 
@@ -1220,6 +1226,36 @@ void Commands::do_shuffle(int arg0, int arg1, int arg2){
 void Commands::set_black_level(int arg0, int arg1, int arg2){
   rgb_color black_level = {(byte)arg0, (byte)arg1, (byte)arg2};
   buffer->set_black_level(black_level);
+}
+
+void Commands::do_store(int arg0, int arg1, int arg2){
+  command_processor->accumulator0 = arg0;
+  command_processor->accumulator1 = arg1;
+  command_processor->accumulator2 = arg2;
+}
+
+// arg0 = 0: restore all arguments from the accumulators
+// arg0 != 0 and arg1 = 0: arg0->arg1 acc0->arg0 acc1->arg2
+// arg0 != 0 and arg1 != 0: arg1->arg2 arg0->arg1 acco->arg0
+void Commands::do_recall(int arg0, int arg1, int arg2){
+  if(arg0 != 0){
+    if(arg1 != 0) 
+        // two args supplied, shift second argument to third
+        command_processor->sub_args[2] = arg1;
+      else 
+        // one arg supplied, shift arg1 accumulator to third arg 
+        command_processor->sub_args[2] = command_processor->accumulator1;
+
+      // one or two args supplied, shift the first to the second
+      command_processor->sub_args[1] = arg0;
+    } else {
+      // no arguments supplied, fill second and third arguments from accumulators 1 and 2
+      command_processor->sub_args[1] = command_processor->accumulator1;
+      command_processor->sub_args[2] = command_processor->accumulator2;
+    }
+    
+  // always set the new arg0 from accumulator0
+  command_processor->sub_args[0] = command_processor->accumulator0;
 }
 
 #include "dispatch_command.h"
