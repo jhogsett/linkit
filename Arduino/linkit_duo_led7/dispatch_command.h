@@ -233,7 +233,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_RUN_MACRO: 
-      macros.run_macro(arg0, arg1, arg2); 
+      do_run_macro(arg0, arg1, arg2);
       break;
     
     case CMD_DELAY: 
@@ -279,7 +279,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_SEQ_SWGPW: 
       command_processor->reset_args();
       command_processor->sub_args[0] = do_sequence(SEQUENCE_WHEEL + (cmd - CMD_SEQ_WHEEL), arg0, arg1, arg2); 
-      //dispatch_sequence(cmd, arg0, arg1, arg2); //made it worse
+      //dispatch_sequence(cmd, arg0, arg1, arg2); //made prog mem usage worse
       reset_args = false; 
       break; 
   
@@ -296,7 +296,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   case CMD_CLR_SEQ_SAT:
   case CMD_CLR_SEQ_LIT:
     do_color_sequence(COLOR_SEQUENCE_HUE + (cmd - CMD_CLR_SEQ_HUE), arg0, arg1, arg2); 
-    //displatch_color_sequence(cmd, arg0, arg1, arg2); made it worse
+    //displatch_color_sequence(cmd, arg0, arg1, arg2); //made prog mem usage worse
     break;
   }
   

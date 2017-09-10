@@ -75,8 +75,6 @@ bool EffectsProcessor::process_effects() {
   should_flush = fade_effects->process() ? true : should_flush;
   return should_flush;
 
-//  return blink_effects->process() || breathe_effects->process() || fade_effects->process();
-
   // twinkle is left out of deciding to flush
   // otherwise it would be rendering constantly
 }

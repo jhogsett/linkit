@@ -60,7 +60,6 @@ class Buffer
   byte **effects_buffers;
   float default_brightness_scale;
   Render *renderer;
-  byte safety_led_count;
   byte visible_led_count;
   rgb_color carry_color;
   byte carry_effect;
@@ -86,7 +85,6 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte
   this->default_brightness_scale = default_brightness / 100.0;
   this->effects_buffers = effects_buffers;
   this->renderer = renderer;
-  this->safety_led_count = safety_led_count;
   this->visible_led_count = visible_led_count;
   this->window_override = OVERRIDE_OFF;
   this->offset_override = OVERRIDE_OFF;
@@ -101,9 +99,7 @@ byte Buffer::get_display(){
 }
 
 void Buffer::reset(){
-  //this->reset_black_level();
   this->set_zone(0);
-  //this->set_display(0);
   this->set_reverse(false);
 }
 
@@ -373,7 +369,6 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
   byte * effects = effects_buffers[current_display];
 
   // to do: restrict to visible led count?
-  maxx = min(maxx, safety_led_count);
 
   // this is used repeatedly during a shift animation to render the
 

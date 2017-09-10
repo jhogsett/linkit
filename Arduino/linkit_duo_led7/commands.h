@@ -32,13 +32,11 @@ class Commands
 #endif
 
   void process_events();
-  void process_commands(char * buffer);
-  void process_commands(const __FlashStringHelper * commands);
+  void do_run_macro(byte macro, int times = 1, int delay_ = 0);
   void reset();
   void set_brightness_level(byte level = 0);
   bool dispatch_command(int cmd, byte *dispatch_data = NULL);
   void flush_all(bool force_display = false);
-  void run_default_macro();
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
   static Scheduler scheduler;
 
@@ -68,7 +66,6 @@ class Commands
   void do_power_shift(byte count, byte max, bool fast_render);
   void do_power_shift_object(byte width, byte shift, bool fast_render);
 #endif
-//  void do_demo();
   void flush(bool force_display);
   void set_display(byte display);
   void set_buffer(byte nbuffer);
@@ -96,7 +93,7 @@ class Commands
   void do_recall(int arg0, int arg1, int arg2);
 
   void dispatch_effect(byte cmd);
-//  void dispatch_sequence(byte cmd, int arg0, int arg1, int arg2);
+  void dispatch_sequence(byte cmd, int arg0, int arg1, int arg2);
   void displatch_color(byte cmd, int arg0, int arg1);
 //  void displatch_color_sequence(byte cmd, int arg0, int arg1, int arg2);
 
@@ -160,35 +157,7 @@ void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects
   scheduler.begin(&macros);
 }
 
-/////////////////////////////////
-// THIS IS THE MAIN EVENT LOOP
-/////////////////////////////////
-void Commands::process_events(){
-  if(command_processor->received_command())
-  {
-    dispatch_command(command_processor->get_command());
-    command_processor->acknowledge_command();
-
-    // resync the effects to a blank state to minimize visual artifacts 
-    // of pausing and restarting if there are display changes
-    effects_processor->reset_effects();
-  }
-  else 
-  {
-    // do schedule processing
-    if(!schedules_paused){
-      scheduler.process_schedules();
-    }
-
-    // process the effects and update the display if needed
-    if(!effects_paused){
-      if(effects_processor->process_effects())
-        flush_all();
-    }
-  }
-}
-/////////////////////////////////
-/////////////////////////////////
+#include "event_loop.h"
 
 bool Commands::dispatch_function(int cmd, byte *dispatch_data){
   return me->dispatch_command(cmd, dispatch_data);  
@@ -986,68 +955,6 @@ void Commands::do_configure(int arg0, int arg1, int arg2){
   }
 }
 
-// process the series of unpacked commands and arguments in the passed memory buffer
-// the string must be tokenizable by strtok (get's corrupted)
-void Commands::process_commands(char * buffer){
-  if(buffer == NULL || *buffer == '\0'){
-    return;
-  }
-
-  // point to the end of the buffer for overrun protection
-  // this points at the terminator
-  char *last_char = buffer + strlen(buffer);
-
-  // begin_get_commands() and get_next_command() need an external pointer
-  // to hold onto the strtok_r state
-  // this allows this function to be reentrant
-  char *saveptr;
-
-  // get the first command or set of arguments
-  char *command = command_processor->begin_get_commands(buffer, &saveptr);
-
-  // point to the remaining string after this command + terminator
-  // this is needed for copying strings when setting macros
-  // if this is the last command in the string, the location 
-  //   1 past the string + terminator overruns the end of the buffer
-  byte * rest_of_buffer = (byte*)min(command + strlen(command) + 1, last_char);
-
-  // process the command or arguments
-  int cmd = command_processor->process_command(command);
-
-  if(cmd == CMD_NULL){
-    // there was no command or arguments
-    return;
-  }
-
-  do{
-    // CMD_NONE is returned when there are arguments instead of a command
-    // arguments are not dispatched they're captured in CommandProcessor::process_command()
-    if(cmd != CMD_NONE){
-      // send the command to the dispatcher to be run
-      // pass the pointer to the rest of the buffer 
-      //   in case it's needed to set a macro
-      if(!dispatch_command(cmd, rest_of_buffer)){
-        // false means the rest of the buffer has been copied 
-        // so there are no more commands to process 
-        return;
-      }
-    }
-
-    // get the next set command or argumemts
-    command = command_processor->get_next_command(&saveptr);
-    rest_of_buffer = (byte*)min(command + strlen(command) + 1, last_char);
-    cmd = command_processor->process_command(command);
-    
-  }while(cmd != CMD_NULL);
-}
-
-// process commands stored in PROGMEM 
-void Commands::process_commands(const __FlashStringHelper * commands){
-  char * buffer = command_processor->borrow_char_buffer();
-  strcpy_P(buffer, (const char *)commands);
-  process_commands(buffer);
-}
-
 bool Commands::do_set_macro(byte macro, byte * dispatch_data){
   bool continue_dispatching = true;
   if(dispatch_data != NULL){
@@ -1062,6 +969,10 @@ bool Commands::do_set_macro(byte macro, byte * dispatch_data){
     command_processor->send_int(num_bytes);
   }
   return continue_dispatching;
+}
+
+void Commands::do_run_macro(byte macro, int times, int delay_){
+  macros.run_macro(macro, times, delay_); 
 }
 
 #define COLOR_SEQUENCE_HUE 0
