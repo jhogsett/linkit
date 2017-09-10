@@ -184,43 +184,19 @@ void Macros::determine_arg_marker(byte &arg_marker, byte &num_args){
   int * sub_args = command_processor->sub_args;
 
   if(sub_args[2] != 0){
-
-//    command_processor->send_str("arg2 value:\n");
-//    command_processor->send_int(sub_args[2]);
-//    command_processor->send_str("\n");
-
     arg_marker = MACRO_ARG6_MARKER;
     num_args = 3;
   } else if(sub_args[1] != 0){
-
-//    command_processor->send_str("arg1 value:\n");
-//    command_processor->send_int(sub_args[1]);
-//    command_processor->send_str("\n");
-
     arg_marker = MACRO_ARG4_MARKER;
     num_args = 2;
   } else {
     int arg0 = sub_args[0];
     if(arg0 >= 0 && arg0 <= 255 ) {
-
-//      command_processor->send_str("arg0 B value:\n");
-//      command_processor->send_int(sub_args[0]);
-//      command_processor->send_str("\n");
-
       arg_marker = MACRO_ARG1_MARKER;
     } else if(arg0 != 0){
-
-//      command_processor->send_str("arg0 value:\n");
-//      command_processor->send_int(sub_args[0]);
-//      command_processor->send_str("\n");
-
       arg_marker = MACRO_ARG2_MARKER;
       num_args = 1;
     } else {
-      //arg_marker = MACRO_ARG2_MARKER;
-
-//      command_processor->send_str("no value:\n");
-
       num_args = 0;
     }
   }

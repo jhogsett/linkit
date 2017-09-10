@@ -369,7 +369,6 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
   byte * effects = effects_buffers[current_display];
 
   // to do: restrict to visible led count?
-  // maxx = min(maxx, safety_led_count);
 
   // this is used repeatedly during a shift animation to render the
 

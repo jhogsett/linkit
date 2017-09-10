@@ -31,7 +31,7 @@
 // #define PROJECTOR
 
 // 44-LED Wearable and Hard Hat
-//#define WEARABLE_AND_HARDHAT
+// #define WEARABLE_AND_HARDHAT
 
 // 64-LED Glasses
 // #define WEARABLE_AND_GLASSES

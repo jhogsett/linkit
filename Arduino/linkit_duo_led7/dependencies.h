@@ -288,10 +288,6 @@ void Dependencies::begin(){
   commands.set_brightness_level();
   commands.scheduler.reset_all_schedules();
   
-//#ifdef USE_DEFAULT_MACROS
-//commands.run_default_macro();
-//#endif
-  //commands.process_commands(F("10:run"));
   commands.do_run_macro(DEFAULT_MACRO);
 }
 

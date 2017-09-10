@@ -142,90 +142,9 @@ void CommandProcessor::get_sub_args(char * args = NULL){
   int arg1 = atoi(strtok_r(NULL, ",", &saveptr));
   int arg2 = atoi(strtok_r(NULL, ",", &saveptr));
 
-//  send_str("arg0: ");
-//  send_int(arg0);
-//  send_str("\n");
-//
-//  send_str("arg1: ");
-//  send_int(arg1);
-//  send_str("\n");
-//
-//  send_str("arg2: ");
-//  send_int(arg2);
-//  send_str("\n");
-
   sub_args[0] = arg0;
   sub_args[1] = arg1;
   sub_args[2] = arg2;
-
-//  char *saveptr;
-//  char *token0 = strtok_r(args, ",", &saveptr);
-//  char *token1 = strtok_r(NULL, ",", &saveptr);
-//
-//  send_str("token1: ");
-//  send_str(token1);
-//  send_str("\n");
-//
-//  int i = atoi(token1);
-//
-//  send_str("i value: ");
-//  send_int(i);
-//  send_str("\n");
-//
-//  char *token2 = strtok_r(NULL, ",", &saveptr);
-//
-////  send_str("arg0 bytes:\n");
-////  send_bytes((byte*)token, strlen(token) + 1);
-////  send_str("\n");
-//
-////  if(*token)
-////    sub_args[0] = atoi(token);
-////  else
-////    sub_args[0] = 0;
-//
-//    sub_args[0] = atoi(token0);
-//
-////  send_str("arg0 value:\n");
-////  send_int(sub_args[0]);
-////  send_str("\n");
-//
-////  token = strtok_r(NULL, ",", &saveptr);
-//
-////  send_str("arg1 bytes:\n");
-////  send_bytes((byte*)token, strlen(token) + 1);
-////  send_str("\n");
-//
-////  if(*token)
-////    sub_args[1] = atoi(token);
-////  else
-////    sub_args[1] = 0;
-//
-//    sub_args[1] = atoi(token1);
-//
-////  send_str("arg1 bytes:\n");
-////  send_bytes((byte*)token, strlen(token) + 1);
-////  send_str("\n");
-////
-////  send_str("arg1 orig value:\n");
-////  send_int(sub_args[1]);
-////  send_str("\n");
-//
-////  token = strtok_r(NULL, ",", &saveptr);
-//
-////  send_str("arg2 bytes:\n");
-////  send_bytes((byte*)token, strlen(token) + 1);
-////  send_str("\n");
-//
-////  if(*token)
-////    sub_args[2] = atoi(token);
-////  else
-////    sub_args[2] = 0;
-//
-//    sub_args[2] = atoi(token2);
-//
-////  send_str("arg2 value:\n");
-////  send_int(sub_args[2]);
-////  send_str("\n");
 }
 
 void CommandProcessor::reset_args(){
