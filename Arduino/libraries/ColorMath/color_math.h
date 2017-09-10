@@ -27,8 +27,6 @@ class ColorMath
   static rgb_color crossfade_colors(byte step, rgb_color color1, rgb_color color2);
   static rgb_color correct_color(rgb_color color);
   static byte crossfade_steps();
-  static rgb_color simple_scale_color(rgb_color color, float scale);
-  static rgb_color simple_unscale_color(rgb_color color, float scale);
   static rgb_color complimentary_color(rgb_color color);
   static bool equal(rgb_color color1, rgb_color color2);
   static float get_cosine(byte step);
@@ -122,10 +120,11 @@ const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
 };
 #endif
 
-// ruby code
-// steps = 24
-// cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
-// only elements 0-12 are needed of cosines array to compute both sine and cosine values
+/* ruby code
+  steps = 24
+  cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+only elements 0-12 are needed of cosines array to compute both sine and cosine values
+*/
 const float PROGMEM ColorMath::cosines[NUM_COSINES]
 = {
     0.0,
@@ -156,22 +155,6 @@ rgb_color ColorMath::unscale_color(rgb_color color, float scale){
     ((color.red / scale) / 255) * BRIGHTNESS_DIVISOR,
     ((color.green / scale) / 255) * BRIGHTNESS_DIVISOR,
     ((color.blue / scale) / 255) * BRIGHTNESS_DIVISOR,
-  };
-}
-
-rgb_color ColorMath::simple_scale_color(rgb_color color, float scale){
-  return (rgb_color){
-    color.red * scale,
-    color.green * scale,
-    color.blue * scale
-  };
-}
-
-rgb_color ColorMath::simple_unscale_color(rgb_color color, float scale){
-  return (rgb_color){
-    color.red / scale,
-    color.green / scale,
-    color.blue / scale
   };
 }
 
@@ -246,7 +229,6 @@ byte ColorMath::crossfade_steps(){
   return CROSSFADE_STEPS;
 }
 
-
 float ColorMath::crossfade_step_value(byte step){
 #ifdef USE_BYTE_CROSSFADE_STEPS
   return pgm_read_byte(&crossfade[step]) / 255.0;
@@ -260,15 +242,11 @@ float ColorMath::crossfade_step_value(byte step){
 byte ColorMath::crossfade_component(byte step, byte component1, byte component2){
   if(step > 1){
     byte prev_step = step - 1;
-//    int prevc2 = component2 * pgm_read_float(&crossfade[prev_step]);
-//    int restored_c1 = (component1 - prevc2) / pgm_read_float(&crossfade[CROSSFADE_STEPS - prev_step]);
     int prevc2 = component2 * crossfade_step_value(prev_step);
     int restored_c1 = (component1 - prevc2) / crossfade_step_value(CROSSFADE_STEPS - prev_step);
     component1 = restored_c1;
   }
 
-//  int newc1 = component1 * pgm_read_float(&crossfade[CROSSFADE_STEPS - step]);
-//  int newc2 = component2 * pgm_read_float(&crossfade[step]);
   int newc1 = component1 * crossfade_step_value(CROSSFADE_STEPS - step);
   int newc2 = component2 * crossfade_step_value(step);
   return newc1 + newc2;

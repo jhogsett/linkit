@@ -1,3 +1,20 @@
+// blend could work over a numnber of pixels
+
+// set exit code from led_specs depending on failures or not
+
+// what does changing number of displays affect program memory
+
+// use the high bit of the effect byte to signal that the rgb.red color represents a palette color index
+// at render time, the palette color is pulled and inserted
+// could have a series of palette colors spread out and continuously modulate them
+//   could use red to refer to main color, then grn and blu to refer to alternate colors for a color rotating blink
+
+// super pixels
+// for 2d strips, it sets several leds with fade off ends
+// for 3d displays, it sets a circle with fade off edges
+
+// calibrate timing setting by use testing timer to compare
+
 // cache some things when rendering, for instance, the states for each blink effect, the breathe step, so they're not computed constantly
 
 
