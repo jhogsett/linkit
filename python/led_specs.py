@@ -615,6 +615,28 @@ def specs():
 # COPYING
 ########################################################################
   group("copying")
+ 
+  test("it copies the pattern once")
+  expect_buffer("neo:sod:tun:flu:3,1:cpy:flu", 0, 4, "20,11,2,20,10,4,20,5,0,0,0,0")
+
+  test("it copies the pattern twice")
+  expect_buffer("neo:sod:tun:flu:3,2:cpy:flu", 0, 7, "20,11,2,20,10,4,20,5,0,20,11,2,20,10,4,20,5,0,0,0,0")
+
+  test("it defaults to copying to fill the default full width")
+  expected_buffer = ""
+  for i in range(0, num_leds / 2):
+    expected_buffer += "20,0,10,20,0,0,"
+  expect_buffer("red:pnk:2:cpy:flu", 0, num_leds, expected_buffer[:-1], True, True)
+
+  test("it fills an alternate width")
+  expected_buffer = ""
+  for i in range(0, 5):
+    expected_buffer += "10,10,10,0,20,20,"
+  expected_buffer += "0,0,0"
+  expect_buffer("10:win:cyn:gry:2:cpy:flu", 0, 11, expected_buffer, True, True) 
+
+
+  # try other width
 
   pending_test("it copies the right number of pixels")
   pending_test("it copies the right number of times")
