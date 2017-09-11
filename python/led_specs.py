@@ -650,8 +650,16 @@ def specs():
   test("it pastes what's in the palette without copying")
   expect_buffer(str(palette_size) + ",-2:cpy", 0, palette_size, standard_palette, True, True)
 
-  pending_test("it pastes the pattern at the current offset")
+  test("it pastes the pattern at the current offset")
   expect_buffer("yel:olv:flu:2,-1:cpy:era:1:off:2,-2:cpy", 0, 4, "0,0,0,15,20,0,20,20,0,0,0,0") 
+
+  pending_test("it duplicates any arbitrary pattern in the palette buffer")
+  pending_test("it duplicates only the whole pattern if running out of space - leaving blank spots")
+  pending_test("  or it fills what it can and stops?")
+  pending_test("it copies the effects too when using palette memory")
+  pending_test("it copies the effects too when using render memory")
+  pending_test("effects are not set on a duplicate-only operation")
+
 
 ########################################################################
 # PALETTE SHUFFING
