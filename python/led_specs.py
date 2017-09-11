@@ -617,38 +617,41 @@ def specs():
   group("copying")
  
   test("it copies the pattern once")
-  expect_buffer("neo:sod:tun:flu:3,1:cpy:flu", 0, 4, "20,11,2,20,10,4,20,5,0,0,0,0")
+  expect_buffer("neo:sod:tun:flu:3,1:cpy", 0, 4, "20,11,2,20,10,4,20,5,0,0,0,0")
 
   test("it copies the pattern twice")
-  expect_buffer("neo:sod:tun:flu:3,2:cpy:flu", 0, 7, "20,11,2,20,10,4,20,5,0,20,11,2,20,10,4,20,5,0,0,0,0")
+  expect_buffer("neo:sod:tun:flu:3,2:cpy", 0, 7, "20,11,2,20,10,4,20,5,0,20,11,2,20,10,4,20,5,0,0,0,0")
+
+  test("it zooms the pattern to twice as big")
+  expect_buffer("neo:sod:tun:flu:3,1,2:cpy", 0, 7, "20,11,2,20,11,2,20,10,4,20,10,4,20,5,0,20,5,0,0,0,0")
 
   test("it defaults to copying to fill the default full width")
   expected_buffer = ""
   for i in range(0, num_leds / 2):
     expected_buffer += "20,0,10,20,0,0,"
-  expect_buffer("red:pnk:2:cpy:flu", 0, num_leds, expected_buffer[:-1], True, True)
+  expect_buffer("red:pnk:2:cpy", 0, num_leds, expected_buffer[:-1], True, True)
 
   test("it fills an alternate width")
   expected_buffer = ""
   for i in range(0, 5):
     expected_buffer += "10,10,10,0,20,20,"
   expected_buffer += "0,0,0"
-  expect_buffer("10:win:cyn:gry:2:cpy:flu", 0, 11, expected_buffer, True, True) 
+  expect_buffer("10:win:cyn:gry:2:cpy", 0, 11, expected_buffer, True, True) 
 
+  test("it copies and duplicates separately")
+  expect_buffer("org:grn:flu:2,-1:cpy:era:flu:2,-2:cpy", 0, 3, "0,20,0,20,10,0,0,0,0")
 
-  # try other width
+  test("duplicated pattern uses the palette buffer if it fits")
+  expect_palette("blu:wht:blk:flu:3,-1:cpy", 0, 3, "0,0,0,20,20,20,0,0,20")
 
-  pending_test("it copies the right number of pixels")
-  pending_test("it copies the right number of times")
-  pending_test("it fills the current width if times is zero")
-  pending_test("it copies to the palette buffer if 18 or fewer pixels are being copied")
-  pending_test("it copies to the render buffer if more than 18 pixels are being copied")
-  pending_test("it overwrites the original position when duplicating")
-  pending_test("it copies the right number of zoomed pixels")
-  pending_test("it copies a pattern to the palette")
-  pending_test("it pastes a pattern to the buffer")
+  test("duplicated pattern uses the render buffer if too big for the palette buffer")
+  expect_palette("1:rnd:" + str(palette_size) + ":rep:", 0, palette_size, standard_palette)
+
+  test("it pastes what's in the palette without copying")
+  expect_buffer(str(palette_size) + ",-2:cpy", 0, palette_size, standard_palette, True, True)
+
   pending_test("it pastes the pattern at the current offset")
- 
+  expect_buffer("yel:olv:flu:2,-1:cpy:era:1:off:2,-2:cpy", 0, 4, "0,0,0,15,20,0,20,20,0,0,0,0") 
 
 ########################################################################
 # PALETTE SHUFFING
