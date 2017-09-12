@@ -57,7 +57,11 @@ class Commands
   void do_flood();
   void do_random(byte type);
   void do_mirror();
+  
+  void fill_copy_buffer(byte size, byte offset, bool use_palette_buffer, bool do_effects, rgb_color * buf, int * effects, rgb_color * dst);
+  void dump_copy_buffer(byte size, byte offset, bool use_palette_buffer, bool do_effects, rgb_color * buf, int * effects, rgb_color * src, byte times, byte zoom, byte effective_size, byte window);
   void do_copy(byte size, int times, byte zoom);
+
   void do_repeat(byte times);
 #ifdef USE_ELASTIC_SHIFT
   void do_elastic_shift(byte count, byte max);
@@ -93,7 +97,7 @@ class Commands
   void do_recall(int arg0, int arg1, int arg2);
 
   void dispatch_effect(byte cmd);
-  void dispatch_sequence(byte cmd, int arg0, int arg1, int arg2);
+//  void dispatch_sequence(byte cmd, int arg0, int arg1, int arg2);
   void displatch_color(byte cmd, int arg0, int arg1);
 //  void displatch_color_sequence(byte cmd, int arg0, int arg1, int arg2);
 
@@ -240,6 +244,7 @@ void Commands::set_brightness_level(byte level){
   flush_all(true);
 }
 
+// todo: allow blending over a range of leds
 // strength 1-100, 100 = all color @ offset
 // 0 == 50
 void Commands::do_blend(byte strength){
@@ -267,18 +272,18 @@ void Commands::do_max(){
 
 void Commands::do_dim(){
   byte offset = buffer->get_offset();
-  rgb_color * buf = buffer->get_buffer();
-  buf[offset].red = buf[offset].red >> 1;
-  buf[offset].green = buf[offset].green >> 1;
-  buf[offset].blue = buf[offset].blue >> 1;
+  rgb_color * buf = &buffer->get_buffer()[offset];
+  buf->red = buf->red >> 1;
+  buf->green = buf->green >> 1;
+  buf->blue = buf->blue >> 1;
 }
 
 void Commands::do_bright(){
   byte offset = buffer->get_offset();
-  rgb_color * buf = buffer->get_buffer();
-  buf[offset].red = buf[offset].red << 1;
-  buf[offset].green = buf[offset].green << 1;
-  buf[offset].blue = buf[offset].blue << 1;
+  rgb_color * buf = &buffer->get_buffer()[offset];
+  buf->red = buf->red << 1;
+  buf->green = buf->green << 1;
+  buf->blue = buf->blue << 1;
 }
 
 void Commands::do_fade(){
@@ -336,15 +341,16 @@ void Commands::do_flood(){
   } else {
     // this could be further optimized but this type of 
     // flooding isn't used often
+    bool random_effect = effect == RANDOM2;
     for(byte i = start; i < end_; i++){
       *buf = ColorMath::random_color();
-      if(effect == RANDOM2){
+      if(random_effect)
         *effects = EffectsProcessor::random_effect();
-      } else {
+      else
         *effects = NO_EFFECT;
-      }
-    buf++;
-    effects++;
+
+      buf++;
+      effects++;
     }
   }
 }
@@ -386,7 +392,9 @@ void Commands::do_mirror(){
   rgb_color * buf = buffer->get_buffer();
   byte * effects = buffer->get_effects_buffer();
   bool reverse = buffer->get_reverse();
+
   for(byte i = 0; i < width; i++){
+  
     if(reverse){
       buf[front + i] = buf[back - i];
       effects[front + i] = effects[back - i];
@@ -394,8 +402,55 @@ void Commands::do_mirror(){
       buf[back - i] = buf[front + i];
       effects[back - i] = effects[front + i];
     }
+  
   }
 }
+
+// buf points to the display buffer
+// dst points to palette OR render buffer
+// effects points to effects buffer
+void Commands::fill_copy_buffer(byte size, byte offset, bool use_palette_buffer, bool do_effects, rgb_color * buf, int * effects, rgb_color * dst){
+  // copy the effects pattern to the buffer temporarily
+  for(byte i = 0; i < size; i++){
+    byte source = offset + i;
+      if(do_effects)
+        dst[i].red = effects[source];
+      else
+        if(use_palette_buffer)
+          dst[i] = ColorMath::correct_color(buf[source]); // uncorrect corrected color so it works in the palette for use later
+        else
+          dst[i] = buf[source]; 
+  }
+}
+
+// buf points to the display buffer
+// src points to palette OR render buffer
+// effects points to effects buffer
+void Commands::dump_copy_buffer(byte size, byte offset, bool use_palette_buffer, bool do_effects, rgb_color * buf, int * effects, rgb_color * src, byte times, byte zoom, byte effective_size, byte window){
+  // copy the effects
+  for(byte i = 0; i < times; i++){
+    for(byte j = 0; j < size; j++){
+      for(byte k = 0; k < zoom; k++){
+        byte source = j;
+        byte dest = offset + (i * effective_size) + (j * zoom) + k;
+
+        if(dest < window){ // prevent buffer overrun
+          if(do_effects){
+            effects[dest] = src[source].red;
+          } else {
+            if(use_palette_buffer){
+              buf[dest] = ColorMath::correct_color(src[source]); // adjut for corrected color in palette
+            } else {
+              buf[dest] = src[source];
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
 // to do: handle reverse direction
 // to do: copy only copies from position zero
@@ -454,8 +509,6 @@ void Commands::do_copy(byte size, int times, byte zoom){
         render_buffer[i].red = effects[source]; 
     }
 
-    // TODO DRY
-  
     // copy the effects
     for(byte i = 0; i < times; i++){
       for(byte j = 0; j < size; j++){
