@@ -438,9 +438,16 @@ def specs():
 ########################################################################
   group("setting effects in the effects buffer")
 
-  test("all effects are set as expected")
-  expect_buffer("red", 0, 1, "20,0,0")
+  test("it places an effect in the effects buffer")
+  expect_effect("org:bli", 0, 1, "11")
 
+  test("it places an alternate effect in the effects buffer")
+  expect_effect("org:bre:flu", 0, 1, "20")
+
+  test("it places multiple effects in the effects buffer")
+  expect_effect("blu:bla:grn:blb", 0, 2, "19,18")
+
+  test("all effects are set as expected")
   for i in range(0, len(test_colors.effects)):
     expect_effect("rnd:" + test_colors.effects[i][0] + ":flu", 0, 1, test_colors.effects[i][1])
 
@@ -466,7 +473,7 @@ def specs():
   expect_render("red", 0, 1, "0,0,0", False)
 
   # test pausing and resuming schedules and effects
-
+  
 
 ########################################################################
 # RENDER BUFFER
@@ -497,8 +504,6 @@ def specs():
   expect_render("1:rev:6:pnk", num_leds - 6, 6, "51,0,25,51,0,25,51,0,25,51,0,25,51,0,25,51,0,25")                                                                                                                                                              
   # offset and window are always in reference to pixel 0 regardless of reversal
   expect_render(str(num_leds - 4) + ":off:" + str(num_leds - 2) + ":win:era", num_leds - 6, 6, "51,0,25,51,0,25,0,0,0,0,0,0,51,0,25,51,0,25") 
-
-  # test erasing to custom black level
 
 
 ########################################################################
@@ -564,23 +569,6 @@ def specs():
 
   test("it mirrors properly in reverse mode within an offset and window")
   expect_buffer("1:rev:10:off:20:win:red:pur:mir", 10, 10, "10,0,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,10,0,20")
-
-
-########################################################################
-# EFFECTS BUFFER
-########################################################################
-  group("pushing effects to the effects buffer")
-
-  test("it places an effect in the effects buffer")
-  expect_effect("org:bli", 0, 1, "11")
-
-  test("it places an alternate effect in the effects buffer")
-  expect_effect("org:bre:flu", 0, 1, "20")
-
-  test("it places multiple effects in the effects buffer")
-  expect_effect("blu:bla:grn:blb", 0, 2, "19,18") 
-
-  # test placement of all effects with their values
 
 
 ########################################################################
@@ -967,6 +955,7 @@ def specs():
   test("it blends two colors @ 10%")
   expect_buffer("wht:blk:10:ble", 0, 3, "18,18,18,18,18,18,0,0,0")                                                                                                                                                                                                           
 
+
 ########################################################################
 # MAX, DIM AND BRIGHT
 ########################################################################
@@ -1118,13 +1107,15 @@ def specs():
 # RESET CLEAR AND STOP
 ########################################################################
   group("reset, clear and stop")                                                             
-  
+  pending_test("reset, clear and stop")
+
                                                                                                                                                                                                          
 ########################################################################
 # BRIGHTNESS LEVEL
 ########################################################################
   group("brightness level")                                                             
-                                                                                                                                                                                                           
+  pending_test("brightness level")                                                                                                                                                                                                           
+
 
 ########################################################################
 # FADE ANIMATION
@@ -1141,13 +1132,14 @@ def specs():
 ########################################################################
 # WIPE ANIMATION
 ########################################################################
-  group("wipe animation")                                                             
+#  group("wipe animation")                                                             
                                                                                                                                                                                                            
 
 ########################################################################
 # ANIMATED ROTATION
 ########################################################################
   group("animated rotation")
+  pending_test("animated rotation")
 
 
 ########################################################################
@@ -1171,38 +1163,34 @@ def specs():
 ########################################################################
 # POWER SHIFT
 ########################################################################
-  group("power shift")                                                             
+#  group("power shift")                                                             
                                                                                                                                                                                                            
 
 ########################################################################
 # CROSSFADE ANIMATION
 ########################################################################
-  group("crossfade")                                                             
-                                                                                                                                                                                                           
-
-########################################################################
-# SETTING CUSTOM BLINK PERIOD
-########################################################################
-  group("setting custom blink period")                                                             
+#  group("crossfade")                                                             
                                                                                                                                                                                                            
 
 ########################################################################
 # SETTING BLINK PERIOD
 ########################################################################
   group("setting blink period")                                                             
-                                                                                                                                                                                                           
+  pending_test("specific setting custom blink period test")                                                                                                                                                                                                           
+
 
 ########################################################################
 # CARRY COLOR
 ########################################################################
   group("carry color")                                                                                                            
-                                                                                                                                                                                                           
+  pending_test("carry color")                                                                                                                                                                                                           
 
 ########################################################################
 # CUSTOM BREATHE TIME
 ########################################################################
   group("setting custom breathe time")                                                                                                            
-                                                                                                                                                                                                           
+  pending_test("specific custom breathe time test")                                                                                                                                                                                                           
+
 
 ########################################################################
 # MACROS
@@ -1214,30 +1202,36 @@ def specs():
     # the random color is just so there's something to see while it runs
     expect_macro("rnd:flu:0:set:" + str(x), 0, "249," + str(x) + ",255")                                                                                                                                                                                                           
 
+  pending_test("general macro tests")
+
 
 ########################################################################
 # DELAY
 ########################################################################
   group("delay")                                                                                                            
-                                                                                                                                                                                                           
+  pending_test("delay")                                                                                                                                                                                                           
+
 
 ########################################################################
 # RANDOM NUMBER
 ########################################################################
   group("random number")                                                                                                            
-                                                                                                                                                                                                           
+  pending_test("random numnber")                                                                                                                                                                                                           
+
 
 ########################################################################
 # POSITION
 ########################################################################
   group("position")                                                                                                            
-                                                                                                                                                                                                           
+  pending_test("position")                                                                                                                                                                                                           
+
 
 ########################################################################
 # RANDOM POSITION
 ########################################################################
   group("random postion")                                                                                                            
-                                                                                                                                                                                                           
+  pending_test("random position")                                                                                                                                                                                                         
+
 
 ########################################################################
 # SEQUENCING
@@ -1281,7 +1275,7 @@ def specs():
   expect_buffer("seq:blu", 0, 10,      "0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
   expect_buffer("seq:pur", 0, 13,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
-  test("the low limit can be changed")
+  pending_test("the low limit can be changed")
 
 
 
@@ -1291,7 +1285,7 @@ def specs():
 # TESTING
 ########################################################################
   group("testing")                                                                                                            
-
+  pending_test("test testing")
 
 ########################################################################
 # PALETTE COLOR SWEEPING
