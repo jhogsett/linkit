@@ -638,6 +638,13 @@ def specs():
   expected_buffer += "0,0,0"
   expect_buffer("10:win:cyn:gry:2:cpy", 0, 11, expected_buffer, True, True) 
 
+  test("it fills the complete width even if not a multiple of the pattern size")
+  expected_buffer = ""
+  for i in range(0, 5):
+    expected_buffer += "10,10,10,0,20,20,"
+  expected_buffer += "10,10,10,0,0,0"
+  expect_buffer("11:win:cyn:gry:2:cpy", 0, 12, expected_buffer, True, True)
+
   test("it copies and duplicates separately")
   expect_buffer("org:grn:flu:2,-1:cpy:era:flu:2,-2:cpy", 0, 3, "0,20,0,20,10,0,0,0,0")
 
@@ -645,7 +652,7 @@ def specs():
   expect_palette("blu:wht:blk:flu:3,-1:cpy", 0, 3, "0,0,0,20,20,20,0,0,20")
 
   test("duplicated pattern uses the render buffer if too big for the palette buffer")
-  expect_palette("1:rnd:" + str(palette_size) + ":rep:", 0, palette_size, standard_palette)
+  expect_palette("1:rnd:" + str(palette_size) + ":rep:flu:" + str(palette_size + 1) + ",-1:cpy", 0, palette_size, standard_palette)
 
   test("it pastes what's in the palette without copying")
   expect_buffer(str(palette_size) + ",-2:cpy", 0, palette_size, standard_palette, True, True)
@@ -653,12 +660,21 @@ def specs():
   test("it pastes the pattern at the current offset")
   expect_buffer("yel:olv:flu:2,-1:cpy:era:1:off:2,-2:cpy", 0, 4, "0,0,0,15,20,0,20,20,0,0,0,0") 
 
-  pending_test("it duplicates any arbitrary pattern in the palette buffer")
-  pending_test("it duplicates only the whole pattern if running out of space - leaving blank spots")
-  pending_test("  or it fills what it can and stops?")
-  pending_test("it copies the effects too when using palette memory")
-  pending_test("it copies the effects too when using render memory")
-  pending_test("effects are not set on a duplicate-only operation")
+  test("it duplicates any arbitrary pattern directly from the palette buffer")
+  expect_buffer(str(palette_size) + ",-2:cpy", 0, palette_size, standard_palette, True, True)
+
+  test("it copies the effects too when using palette memory")
+  expect_effect("wht:bre:1,2:cpy", 0, 3, "20,20,0")
+
+  test("it copies the effects too when using render memory")
+  expected_effect = ""
+  for n in range(0, palette_size + 1):
+    expected_effect += "20,"
+  expected_effect += "0"
+  expect_effect("dgr:bre:" + str(palette_size) + ":rep:flu:" + str(palette_size + 1) + ",1:cpy", 0, palette_size + 2, expected_effect)
+
+  test("effects are not set on a duplicate-only operation")
+  expect_effect("lgr:bl1:1,-1:cpy:flu:era:1,-2:cpy", 0, 1, "0")
 
 
 ########################################################################
@@ -836,10 +852,12 @@ def specs():
 ########################################################################
   group("custom black level")                                                                          
   
-  pending_test("a custom black level can be set")
-  pending_test("erases uses the custom black level")
-  pending_test("placing 'black' uses the custom black level")
-                                                                                                                                                                                                         
+  test("a custom black level can be set")
+  expect_buffer("10,20,30:sbl:blk", 0, 1, "10,20,30")
+
+  test("erases uses the custom black level")
+  expect_buffer("2,3,4:sbl:era", 0, 1, "2,3,4")
+
 
 ########################################################################
 # PUSHING RANDOM COLORS
@@ -938,20 +956,31 @@ def specs():
 ########################################################################
   group("blending colors")                                                                          
 
-  pending_test("it blends two colors @ 50%")
-  pending_test("it blends two colors @ 90%")
-  pending_test("it blends two colors @ 10%")
-                                                                                                                                                                                                           
+  # the color not in position 0 dominates the color blending
+
+  test("it blends two colors @ 50%")
+  expect_buffer("wht:blk:ble", 0, 3, "10,10,10,10,10,10,0,0,0")
+
+  test("it blends two colors @ 90%")
+  expect_buffer("wht:blk:90:ble", 0, 3, "2,2,2,2,2,2,0,0,0")
+
+  test("it blends two colors @ 10%")
+  expect_buffer("wht:blk:10:ble", 0, 3, "18,18,18,18,18,18,0,0,0")                                                                                                                                                                                                           
 
 ########################################################################
 # MAX, DIM AND BRIGHT
 ########################################################################
   group("max, dim and bright")                                                                          
 
-  pending_test("it boosts the brightness level")
-  pending_test("it reduces the brightness level")
-  pending_test("it maxxes out the brightness level")
-                                                                                                                                                                                                           
+  test("it boosts the brightness level")
+  expect_buffer("wht:brt", 0, 1, "40,40,40")
+
+  test("it reduces the brightness level")
+  expect_buffer("wht:dim", 0, 1, "10,10,10")
+
+  test("it maxxes out the brightness level")
+  expect_buffer("wht:max", 0, 1, "153,153,153")                                                                                                                                                                                                           
+
 
 ########################################################################
 # BLINK EFFECTS
@@ -1022,8 +1051,6 @@ def specs():
 ########################################################################
   group("breathe effect")                                                             
                  
-  pending_test("the right breathe brightness levels are used for rendering")
-                                                                                                                                                                                          
   test("the breathe effect renders properly")
 
   # set the breate period to the minimum possible value
@@ -1064,19 +1091,27 @@ def specs():
   expect_render("flu", 0, 1, "45,0,0", False)
   expect_render("flu", 0, 1, "43,0,0", False)
 
-  test("a custom fade rate modifies the display buffer properly")
+  test("a custom slow fade rate modifies the display buffer properly")
   command_str("2,7500:cfg")
   expect_buffer("red:sfd:flu", 0, 1, "15,0,0", False)
   expect_buffer("flu", 0, 1, "11,0,0", False)
   expect_buffer("flu", 0, 1, "8,0,0", False)
 
-  test("a custom fade rate renders properly")
+  test("a custom slow fade rate renders properly")
   command_str("2,7500:cfg")
   expect_render("red:sfd:flu", 0, 1, "38,0,0", False)
   expect_render("flu", 0, 1, "28,0,0", False)
   expect_render("flu", 0, 1, "20,0,0", False)
 
-  pending_test("it fast fades properly")
+  test("it modifies the display color with fast fades on flushing")
+  expect_buffer("red:ffd:flu", 0, 1, "10,0,0", False)
+  expect_buffer("flu", 0, 1, "5,0,0", False)
+  expect_buffer("flu", 0, 1, "2,0,0", False)
+
+  test("it renders the fading color with fast fades on flushing")
+  expect_render("red:ffd:flu", 0, 1, "25,0,0", False)
+  expect_render("flu", 0, 1, "12,0,0", False)
+  expect_render("flu", 0, 1, "5,0,0", False)
 
 
 ########################################################################
@@ -1321,10 +1356,24 @@ def specs():
 ########################################################################
   group("storing and recalling arguments")
 
+  # args passed to rcl are selectively shifted up
+  # recall without argument just sets arg0
+  # if 1 arg, arg0->arg1, accum0->arg0
+  # if 2 arg, arg1->arg2, arg0->arg1, accum0->arg0
+
+  # the stored rgb values are first modified to adapt to brightness
+
   test("it stores arg0 and recalls as arg0, shifting arg0 to arg1")
   expect_buffer("2:sto:5:rcl:pos:red:flo:rst:", 0, 8, "0,0,0,0,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,0,0,0")
-                                                                 
-  pending_test("it also shifts arg1 to arg2")
+                                  
+  test("with no arguments it recalls all arguments from accumulators")
+  expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "5,10,15")
+
+  test("with one argument, it shifts that argument to arg1, recalls arg0 from accumulator0 and sets arg2 from accumulator1")
+  expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "5,20,10")
+
+  test("with two arguments, it shifts second arg to arg2, shifts first arg to arg1, sets arg0 from accumulator0")
+  expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "5,20,26")
 
                                                                                                                                           
 ########################################################################
