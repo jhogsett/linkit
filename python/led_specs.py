@@ -1442,6 +1442,9 @@ if __name__ == '__main__':
   print tc.magenta("\n" + app_description + "\n")
   setup() 
 
+  if group_number_only != 0:
+    print tc.yellow("group " + str(group_number_only) + " only")
+
   if verbose_mode:
     print tc.yellow("verbose mode")
 
