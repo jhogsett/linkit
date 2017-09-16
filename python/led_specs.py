@@ -33,7 +33,7 @@ success_count = 0
 failure_count = 0                                                                                                 
 group_number = 0                                                                                                  
 group_description = None  
-test_line_num = 0
+test_line_number = 0
 num_pending = 0
 last_group_number = 0                                                  
 last_test_number = 0 
@@ -197,17 +197,18 @@ def group(description):
   group_description = description
   if group_number_only == 0 or group_number_only == group_number:
     if verbose_mode:
-      print group_message()
+      print group_message(),
     return True
   return False
 
 def test(description):
-  global test_number, test_description, test_failures, last_test_number
+  global test_number, test_description, test_failures, last_test_number, test_line_number
   test_number = test_number + 1
   test_description = description 
+  test_line_number = get_line_number(2)
   pre_test_reset()
   if verbose_mode:
-    print test_message()
+    print test_message(),
 
 def pending_test(description):                                                                                                                                                                             
   global test_number, test_description, test_line_number, num_pending                                                                                                                                      
@@ -216,9 +217,9 @@ def pending_test(description):
   test_description = description                                                                                                                                                                           
   report_pending()                                                                                                                                                                                         
   num_pending += 1                                                                                                                                                                                         
-  write(tc.yellow("*"))                                                                                                                                                                       
   if verbose_mode:
-    print pending_message()
+    print pending_message(),
+  write(tc.yellow("*"))
                                                                                                                                                                                                            
 def skip_test(command, description):                                                                                                                                                                       
   global test_number, test_description, test_line_number, num_skipped                                                                                                                                      
@@ -234,10 +235,10 @@ def skip_test(command, description):
 # --- reporting results ---
 
 def group_message():
-  return tc.white("\nGroup #" + str(group_number) + " " + group_description + "@ " + str(group_line_number))
+  return tc.white("\nGroup #" + str(group_number) + " " + group_description + " @" + str(group_line_number))
 
 def test_message():
-  return tc.white("  Test #" + str(test_number)) + " " + tc.white(test_description + "@ " + str(group_line_number))
+  return tc.white("\n  Test #" + str(test_number)) + " " + tc.white(test_description + " @" + str(test_line_number) + " ")
 
 def failure_message(got, expected):
   return ("    " +
@@ -252,13 +253,13 @@ def failure_message(got, expected):
     "\n")
 
 def pending_message():
-  return ("    " +
+  return ("\n    " +
     tc.white("Pending expectation: ") +
     tc.white("[" + test_description + "]") +
-    tc.white(" @ " + str(test_line_number)))
+    tc.white(" @ " + str(test_line_number) + " "))
 
 def skipped_message(command):
-  return ("    " +
+  return ("\n    " +
     tc.red("Skipped expectation: ") +
     tc.red("[" + command + "] ") +
     tc.red("[" + test_description + "]") +
@@ -1404,12 +1405,13 @@ def specs():
 def loop():                                  
   print
   specs()
-  test("")
+#  test("")
   print 
 
   for error in test_failures:
-    print error
-
+    print error,
+  print
+  
   if(failure_count > 0):
     print tc.red("\nFailures:")
     for summary in test_failure_summaries:                                                                                                                                                                              
