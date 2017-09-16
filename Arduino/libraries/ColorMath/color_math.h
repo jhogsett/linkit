@@ -11,7 +11,10 @@
 #define NUM_COSINES       13
 #define COSINE_RANGE    12.0
 
-#define USE_BYTE_CROSSFADE_STEPS
+//#define USE_BYTE_CROSSFADE_STEPS
+
+//smoother crossfade
+#define USE_ALT_BYTE_CROSSFADE_STEPS
 
 class ColorMath
 {
@@ -36,7 +39,7 @@ class ColorMath
   private:
   static bool swap_r_and_g;
 
-#ifdef USE_BYTE_CROSSFADE_STEPS
+#if defined(USE_BYTE_CROSSFADE_STEPS) || defined(USE_ALT_BYTE_CROSSFADE_STEPS)
   static const byte PROGMEM crossfade[];
 #else
   static const float PROGMEM crossfade[];
@@ -52,7 +55,43 @@ class ColorMath
 
 bool ColorMath::swap_r_and_g;
 
-#ifdef USE_BYTE_CROSSFADE_STEPS
+
+#if defined(USE_ALT_BYTE_CROSSFADE_STEPS)
+/*
+
+max_step = 20
+steps = (0..max_step)
+steps.each do |step|
+  position = step / (max_step * 1.0)
+  print (((0.5 - 0.5 * Math.cos(Math::PI * position)) ** 0.5) * 255.0).floor
+  puts
+end
+*/
+const byte PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
+= {
+    0,
+    20,
+    39,
+    59,
+    78,
+    97,
+    115,
+    133,
+    149,
+    165,
+    180,
+    193,
+    206,
+    217,
+    227,
+    235,
+    242,
+    247,
+    251,
+    254,
+    255
+};
+#elif defined(USE_BYTE_CROSSFADE_STEPS)
 /* ruby:
 max_step = 20
 steps = (0..max_step)
