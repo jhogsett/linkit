@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# in verbose, don't show dots, instead show text of test in color
+
 # ideas:
 #        arg to run a single test
 
@@ -51,11 +53,7 @@ standard_palette = ""
 alternate_seed = 2
 group_line_number = 0
 verbose_mode = False
-
-#color_map = {
-#              "running": "lbl:bre",
-#         "unrecognized": "blu:bla"
-#}
+verbose_test_outcome = ""
 
 
 # -----------------------------------------------------------------------------
@@ -202,13 +200,14 @@ def group(description):
   return False
 
 def test(description):
-  global test_number, test_description, test_failures, last_test_number, test_line_number
+  global test_number, test_description, test_failures, last_test_number, test_line_number, verbose_test_outcome
   test_number = test_number + 1
   test_description = description 
   test_line_number = get_line_number(2)
   pre_test_reset()
   if verbose_mode:
-    print test_message(),
+#    print test_message(),
+    verbose_test_outcome = test_message()
 
 def pending_test(description):                                                                                                                                                                             
   global test_number, test_description, test_line_number, num_pending                                                                                                                                      
@@ -218,8 +217,9 @@ def pending_test(description):
   report_pending()                                                                                                                                                                                         
   num_pending += 1                                                                                                                                                                                         
   if verbose_mode:
-    print pending_message(),
-  write(tc.yellow("*"))
+    print tc.yellow(pending_message())
+  else:
+    write(tc.yellow("*"))
                                                                                                                                                                                                            
 def skip_test(command, description):                                                                                                                                                                       
   global test_number, test_description, test_line_number, num_skipped                                                                                                                                      
@@ -228,17 +228,20 @@ def skip_test(command, description):
   test_description = description                                                                                                                                                                           
   report_skipped(command)                                                                                                                                                                                         
   num_skipped += 1                                                                                                                                                                                         
-  write(tc.red("."))                                                                                                                                                                          
+  if verbose_mode:
+    print tc.yellow(skipped_message(command))
+  else:
+    write(tc.red("."))                                                                                                                                                                          
 
 
 # -----------------------------------------------------------------------------
 # --- reporting results ---
 
 def group_message():
-  return tc.white("\nGroup #" + str(group_number) + " " + group_description + " @" + str(group_line_number))
+  return "\nGroup #" + str(group_number) + " " + group_description + " @" + str(group_line_number)
 
 def test_message():
-  return tc.white("\n  Test #" + str(test_number)) + " " + tc.white(test_description + " @" + str(test_line_number) + " ")
+  return "\n  Test #" + str(test_number) + " " + test_description + " @" + str(test_line_number) + " "
 
 def failure_message(got, expected):
   return ("    " +
@@ -307,10 +310,17 @@ def fail(got, expected):
   failure_count += 1
   last_group_number = group_number
   last_test_number = test_number
+  if verbose_mode:
+    print tc.red(verbose_test_outcome),
+  else:
+    write(tc.red("F"))
 
 def succeed():
   global success_count
-  write(tc.green("."))
+  if verbose_mode:
+    print tc.green(verbose_test_outcome),
+  else:
+    write(tc.green("."))
   success_count += 1
 
 
