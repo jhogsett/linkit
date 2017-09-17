@@ -244,7 +244,7 @@ def test_message():
   return "\n  Test #" + str(test_number) + " " + test_description + " @" + str(test_line_number) + " "
 
 def failure_message(got, expected):
-  return ("    " +
+  return ("\n    " +
     tc.white("Expectation: ") +
     tc.cyan("[" + test_command + "]") +
     tc.yellow(" @ " + str(test_line_number)) +
@@ -306,7 +306,6 @@ def report_skipped(command):
 def fail(got, expected):
   global test_failures, failure_count, last_group_number, last_test_number
   report_failure(got, expected)
-  write(tc.red("F"))
   failure_count += 1
   last_group_number = group_number
   last_test_number = test_number
@@ -877,7 +876,7 @@ def specs():
     test("a custom black level can be set")
     expect_buffer("10,20,30:sbl:blk", 0, 1, "10,20,30")
 
-    test("erases uses the custom black level")
+    test("erases using the custom black level")
     expect_buffer("2,3,4:sbl:era", 0, 1, "2,3,4")
 
 
@@ -1002,7 +1001,10 @@ def specs():
     expect_buffer("wht:dim", 0, 1, "10,10,10")
 
     test("it maxxes out the brightness level")
-    expect_buffer("wht:max", 0, 1, "153,153,153")                                                                                                                                                                                                           
+    if default_brightness == 20:
+      expect_buffer("wht:max", 0, 1, "153,153,153")                                                                                                                                                                                                           
+    elif default_brightness == 25:
+      expect_buffer("wht:max", 0, 1, "255,255,255")
 
 
 ########################################################################
@@ -1390,15 +1392,24 @@ def specs():
     expect_buffer("2:sto:5:rcl:pos:red:flo:rst:", 0, 8, "0,0,0,0,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,0,0,0")
                                   
     test("with no arguments it recalls all arguments from accumulators")
-    expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "5,10,15")
+    if default_brightness == 20:
+      expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "5,10,15")
+    elif default_brightness == 25:
+      expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "3,6,9")
 
     test("with one argument, it shifts that argument to arg1, recalls arg0 from accumulator0 and sets arg2 from accumulator1")
-    expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "5,20,10")
+    if default_brightness == 20:
+      expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "5,20,10")
+    elif default_brightness == 25:
+      expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "3,12,6")
 
     test("with two arguments, it shifts second arg to arg2, shifts first arg to arg1, sets arg0 from accumulator0")
-    expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "5,20,26")
-
-                                                                                                                                          
+    if default_brightness == 20:
+      expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "5,20,26")
+    elif default_brightness == 25:
+      expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "3,12,15")
+                                  
+                                                                                                        
 ########################################################################
 # Configuring
 ########################################################################
