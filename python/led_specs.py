@@ -1001,11 +1001,13 @@ def specs():
     expect_buffer("wht:dim", 0, 1, "10,10,10")
 
     test("it maxxes out the brightness level")
+
     if default_brightness == 20:
       expect_buffer("wht:max", 0, 1, "153,153,153")                                                                                                                                                                                                           
     elif default_brightness == 25:
       expect_buffer("wht:max", 0, 1, "255,255,255")
-
+    elif default_brightness == 10:
+      expect_buffer("wht:max", 0, 1, "102,102,102")
 
 ########################################################################
 # BLINK EFFECTS
@@ -1400,20 +1402,26 @@ def specs():
       expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "5,10,15")
     elif default_brightness == 25:
       expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "3,6,9")
+    elif default_brightness == 10:
+      expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "7,15,23")
 
     test("with one argument, it shifts that argument to arg1, recalls arg0 from accumulator0 and sets arg2 from accumulator1")
     if default_brightness == 20:
       expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "5,20,10")
     elif default_brightness == 25:
       expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "3,12,6")
+    elif default_brightness == 10:
+      expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "7,31,15")
 
     test("with two arguments, it shifts second arg to arg2, shifts first arg to arg1, sets arg0 from accumulator0")
     if default_brightness == 20:
       expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "5,20,26")
     elif default_brightness == 25:
       expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "3,12,15")
-                                  
-                                                                                                        
+    elif default_brightness == 10:
+      expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "7,31,39")                                  
+
+                                                                       
 ########################################################################
 # Configuring
 ########################################################################
