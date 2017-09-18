@@ -1150,7 +1150,11 @@ def specs():
 # BRIGHTNESS LEVEL
 ########################################################################
   if group("brightness level"):                                                             
-    pending_test("brightness level")                                                                                                                                                                                                           
+    test("it renders at a brightness level")
+    expect_render("5:lev:sea:flu", 0, 1, "0,12,6")
+
+    test("it renders at an alternate brightness level")
+    expect_render("35:lev:sea:flu", 0, 1, "0,89,44")
 
 
 ########################################################################
