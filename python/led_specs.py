@@ -1098,7 +1098,7 @@ def specs():
     expected_render_values = [ 0,  0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 48, 49, 50, 50,
                               50, 49, 48, 46, 44, 41, 39, 36, 32, 29, 25, 21, 17, 13,  8,  4,  0,  0,  0,  0,  0,  0 ]
 
-    # similar rendering through each breathe step period
+    # simulate rendering through each breathe step period
     for n in range(0, len(expected_render_values)):
       expect_render("0," + str(n) + ":run", 0, 1, "0," + str(expected_render_values[n]) + ",0", False)
 
@@ -1181,8 +1181,8 @@ def specs():
 # ANIMATED ROTATION
 ########################################################################
   if group("animated rotation"):
-    pending_test("animated rotation")
-
+    test("animated rotation")
+    expect_render("lbl:art", 0, 2, "0,0,0,0,25,51", False)
 
 ########################################################################
 # ROTATION
@@ -1218,20 +1218,121 @@ def specs():
 # SETTING BLINK PERIOD
 ########################################################################
   if group("setting blink period"):                                                             
-    pending_test("specific setting custom blink period test")                                                                                                                                                                                                           
+    test("a custom blink period can be set")                                                                                                                                                                                                           
+
+    # use a macro to process the effects and update the render buffer
+    # this gets around the fact effects are reset on processing commands
+    command_str("0:set:6:tst:flu")
+
+    # place a blinking orange
+    command_str("org:bli")
+
+    # set the blink period to the minimum possible value
+    command_str("0,6:cfg")
+
+    # the main blink is on for the first half of the cycle
+    # this will start the second half and leave the render buffer in the dim/unblinked state
+    expect_render("0,6:run", 0, 1, "2,1,0", False)
+
+    # this will advance it back to the start of the first cycle
+    # this will leave the render buffer in the normal/blinked state
+    expect_render("0,12:run", 0, 1, "51,25,0", False)
+
+    # this will advance it to the second half of the second cycle
+    # this will leave the render buffer in the dim/unblinked state
+    expect_render("0,18:run", 0, 1, "2,1,0", False)
+
+    # this will advance it to the first  half of the third cycle
+    # this will leave the render buffer in the dim/unblinked state
+    expect_render("0,24:run", 0, 1, "51,25,0", False)
+
+    test("a different custom blink period can be set")
+
+    # use a macro to process the effects and update the render buffer
+    # this gets around the fact effects are reset on processing commands
+    command_str("0:set:6:tst:flu")
+
+    # place a blinking rose
+    command_str("ros:bli")
+
+    # set the blink period to the twice the previous value
+    command_str("0,12:cfg")
+
+    # the main blink is on for the first half of the cycle
+    # simulate a quarter blink period
+    # this will leave the render buffer in the normal/blinked state
+    expect_render("0,6:run", 0, 1, "51,0,38", False)
+
+    # simulate a half blink period
+    # this will leave the render buffer in the dim/unblinked state
+    expect_render("0,12:run", 0, 1, "2,0,1", False)
+
+    # simulate a three quarter blink period
+    # this will leave the render buffer in the dim/unblinked state
+    expect_render("0,18:run", 0, 1, "2,0,1", False)
+
+    # simulate a full blink period
+    # this will leave the render buffer in the normal/blinked state
+    expect_render("0,24:run", 0, 1, "51,0,38", False)
 
 
 ########################################################################
 # CARRY COLOR
 ########################################################################
   if group("carry color"):                                                                                                            
-    pending_test("carry color")                                                                                                                                                                                                           
+    test("carry color")                                                                                                                                                                                                           
+    expect_buffer("2:win:red:blu:flu:rot:flu:car", 0, 2, "20,0,0,20,0,0")
+
 
 ########################################################################
 # CUSTOM BREATHE TIME
 ########################################################################
   if group("setting custom breathe time"):                                                                                                            
-    pending_test("specific custom breathe time test")                                                                                                                                                                                                           
+    test("setting a custom breathe time")                                                                                                                                                                                                           
+
+    # set the breate period to the minimum possible value
+    command_str("1,1:cfg")
+
+    # use a macro to process the effects and update the render buffer
+    # this gets around the fact effects are reset on processing commands
+    command_str("0:set:6:tst:flu")
+
+    # place a breathing blue
+    command_str("blu:bre")
+
+    # these are the expected values if using the floats for breathe ratio
+    # expected_render_values = [ 0,  0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 47, 49, 50, 50,
+    #                           50, 49, 47, 46, 44, 41, 39, 36, 32, 29, 25, 21, 17, 13,  8,  4,  0,  0,  0,  0,  0,  0 ]
+
+    # these are the expected values if using the bytes for breathe ratio
+    # expected_render_values = [ 0,  0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 48, 49, 50, 50,
+    #                           50, 49, 48, 46, 44, 41, 39, 36, 32, 29, 25, 21, 17, 13,  8,  4,  0,  0,  0,  0,  0,  0 ]
+
+    # simulate rendering through each breathe step period
+    # for n in range(0, len(expected_render_values)):
+    #   expect_render("0," + str(n) + ":run", 0, 1, "0," + str(expected_render_values[n]) + ",0", False)
+
+    expect_render("0,10:run", 0, 1, "0,0,25", False)
+    expect_render("0,11:run", 0, 1, "0,0,29", False)
+    expect_render("0,12:run", 0, 1, "0,0,32", False)
+    expect_render("0,13:run", 0, 1, "0,0,36", False)
+
+    test("setting an alternate custom breathe time")
+
+    # set the breathe time to twice the previous value
+    command_str("1,2:cfg")
+
+    # use a macro to process the effects and update the render buffer
+    # this gets around the fact effects are reset on processing commands
+    command_str("0:set:6:tst:flu")
+
+    # place a breathing blue
+    command_str("blu:bre")
+
+    expect_render("0,10:run", 0, 1, "0,0,4", False)
+    expect_render("0,11:run", 0, 1, "0,0,4", False)
+    expect_render("0,12:run", 0, 1, "0,0,8", False)
+    expect_render("0,13:run", 0, 1, "0,0,8", False)
 
 
 ########################################################################
@@ -1470,7 +1571,8 @@ def loop():
   command_str(str(show_success) + ",1:grn") 
   if show_failure >= 1.0:  
     command_str(str(show_failure) + ",1:red")                                                                                                                                                                  
-  command_str(str(show_pending) + ",1:yel")                                                                                                                                                                  
+  if show_success >= 1.0:
+    command_str(str(show_pending) + ",1:yel")                                                                                                                                                                  
   command_str("flu:cnt")
 
 if __name__ == '__main__': 
