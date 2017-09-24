@@ -181,13 +181,22 @@ const float PROGMEM ColorMath::cosines[NUM_COSINES]
 };
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
-  float factor = 255.0 * scale;
+  float factor = (255.0 * scale) / BRIGHTNESS_DIVISOR;
   return (rgb_color){
-    (color.red / BRIGHTNESS_DIVISOR) * factor,
-    (color.green / BRIGHTNESS_DIVISOR) * factor,
-    (color.blue / BRIGHTNESS_DIVISOR) * factor
+    color.red * factor,
+    color.green * factor,
+    color.blue * factor
   };
 }
+
+//rgb_color ColorMath::unscale_color(rgb_color color, float scale){
+//  float factor = 255.0 / BRIGHTNESS_DIVISOR;
+//  return (rgb_color){
+//    (color.red / scale) / factor,
+//    (color.green / scale) / factor,
+//    (color.blue / scale) / factor
+//  };
+//}
 
 rgb_color ColorMath::unscale_color(rgb_color color, float scale){
   float factor = 255.0 / BRIGHTNESS_DIVISOR;
