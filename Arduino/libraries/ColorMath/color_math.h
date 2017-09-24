@@ -55,7 +55,6 @@ class ColorMath
 
 bool ColorMath::swap_r_and_g;
 
-
 #if defined(USE_ALT_BYTE_CROSSFADE_STEPS)
 /*
 
@@ -182,18 +181,20 @@ const float PROGMEM ColorMath::cosines[NUM_COSINES]
 };
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
+  float factor = 255.0 * scale;
   return (rgb_color){
-    ((color.red / BRIGHTNESS_DIVISOR) * 255) * scale,
-    ((color.green / BRIGHTNESS_DIVISOR) * 255) * scale,
-    ((color.blue / BRIGHTNESS_DIVISOR) *255) * scale
+    (color.red / BRIGHTNESS_DIVISOR) * factor,
+    (color.green / BRIGHTNESS_DIVISOR) * factor,
+    (color.blue / BRIGHTNESS_DIVISOR) * factor
   };
 }
 
 rgb_color ColorMath::unscale_color(rgb_color color, float scale){
+  float factor = 255.0 / BRIGHTNESS_DIVISOR;
   return (rgb_color){
-    ((color.red / scale) / 255) * BRIGHTNESS_DIVISOR,
-    ((color.green / scale) / 255) * BRIGHTNESS_DIVISOR,
-    ((color.blue / scale) / 255) * BRIGHTNESS_DIVISOR,
+    (color.red / scale) / factor,
+    (color.green / scale) / factor,
+    (color.blue / scale) / factor
   };
 }
 

@@ -105,37 +105,41 @@ void Buffer::reset(){
 
 // always write from the render buffer to a pin,
 // the render buffer having been rendered from a specific display buffer already
-void Buffer::display_buffer(rgb_color * pbuffer){
+void Buffer::display_buffer(rgb_color * pbuffer)
+{
   ledStrips[current_display]->write(pbuffer, visible_led_count);
 }
 
 // todo might want choice of slow or fast render
-void Buffer::render_display(){
+void Buffer::render_display()
+{
   renderer->render_buffer(render, this->buffers[current_display], visible_led_count, this->effects_buffers[current_display]);
   display_buffer(render);
 }
 
 void Buffer::erase(bool display = false)
 {
+  //@@@
   byte offset = get_offset();
   byte window = get_window();
-
   rgb_color * buf = buffers[current_display];
   byte * effects = effects_buffers[current_display];
 
   rgb_color erase_color = ColorMath ::correct_color(black);
 
-  for(byte i = offset; i < window; i++){
+  for(byte i = offset; i < window; i++)
+  {
     buf[i] = erase_color;
     effects[i] = NO_EFFECT;
   }
 
-  if(display){
+  if(display)
     render_display();
-  }
 }
 
-void Buffer::cross_fade(byte step){
+void Buffer::cross_fade(byte step)
+{
+  //@@@
   byte offset = get_offset();
   byte window = get_window();
   rgb_color *buffer = buffers[current_display];
@@ -150,6 +154,7 @@ void Buffer::cross_fade(byte step){
 }
 
 void Buffer::rotate(){
+  //@@@
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
   byte max = get_window();

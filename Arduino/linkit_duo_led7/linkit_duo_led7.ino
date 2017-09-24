@@ -3,11 +3,13 @@
 Dependencies dependencies;
 Commands * commands = &dependencies.commands;
 
-void setup() { 
+void setup()
+{ 
   dependencies.begin();
 }
 
-void loop(){ 
+void loop()
+{ 
   commands->process_events();
 }
 

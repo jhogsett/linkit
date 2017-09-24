@@ -232,45 +232,54 @@ int Sequence::increment_swing_reverse(int step){
   return this->current;
 }
 
-int Sequence::increment_wheel_cosine(int step){
+int Sequence::increment_wheel_cosine(int step)
+{
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
   return this->low + (this->width() * ColorMath::get_cosine(spread_position));
 }
 
-int Sequence::increment_swing_cosine(int step){
+int Sequence::increment_swing_cosine(int step)
+{
   increment_swing(step);
   byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
   return this->low + (this->width() * ColorMath::get_cosine(spread_position));
 }
 
-int Sequence::increment_wheel_sine(int step){
+int Sequence::increment_wheel_sine(int step)
+{
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
   return this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
-int Sequence::increment_swing_sine(int step){
+int Sequence::increment_swing_sine(int step)
+{
   increment_swing(step);
   byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
   return this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
-int Sequence::increment_wheel_power(int step){
+int Sequence::increment_wheel_power(int step)
+{
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
   return this->low + (this->width() * PowerEase::get_ease(spread_position));
 }
 
 // TODO the sequence is not symmetrical forward and back so when coming back need to treat it oppositely
-int Sequence::increment_swing_power(int step){
+int Sequence::increment_swing_power(int step)
+{
   increment_swing(step);
 //  byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
   byte spread_position;
-  if(state == STATE_NORMAL){
+  if(state == STATE_NORMAL)
+  {
     // current-low = progress toward end
     spread_position = (this->current - this->low) * this->factor;
-  } else {
+  } 
+  else 
+  {
     // width - (current-low) = progress toward start 
 
     // this needs rework - power ease data oriented toward forward going animation
@@ -292,19 +301,23 @@ int Sequence::increment_swing_power(int step){
   return this->low + (this->width() * PowerEase::get_ease(spread_position));
 }
 
-int Sequence::current_position(){
+int Sequence::current_position()
+{
   return this->current;
 }
 
-int Sequence::previous_position(){
+int Sequence::previous_position()
+{
   return this->previous;
 }
 
-int Sequence::previous_computed(){
+int Sequence::previous_computed()
+{
   return this->prev_computed;
 }
 
-void Sequence::set_previous_computed(int position){
+void Sequence::set_previous_computed(int position)
+{
   this->prev_computed = position;  
 }
 
@@ -333,38 +346,47 @@ class Sequencer
 
 Sequence Sequencer::sequences[NUM_SEQUENCERS];  
 
-void Sequencer::begin(){
+void Sequencer::begin()
+{
   // set default sequences
-  for(int i = 0; i < NUM_SEQUENCERS; i++){
+  for(int i = 0; i < NUM_SEQUENCERS; i++)
+  {
     sequences[i].begin();
   }
 }
 
-void Sequencer::set(int sequencer, byte type, int low, int high){
+void Sequencer::set(int sequencer, byte type, int low, int high)
+{
   sequences[sequencer].set(type, low, high);
 }
 
-void Sequencer::reset(int sequencer){
+void Sequencer::reset(int sequencer)
+{
   sequences[sequencer].reset();
 }
 
-int Sequencer::next(int sequencer, int advancement, int step){
+int Sequencer::next(int sequencer, int advancement, int step)
+{
   return sequences[sequencer].next(advancement, step);  
 }
 
-int Sequencer::current(int sequencer){
+int Sequencer::current(int sequencer)
+{
   return sequences[sequencer].current_position();  
 }
 
-int Sequencer::previous(int sequencer){
+int Sequencer::previous(int sequencer)
+{
   return sequences[sequencer].previous_position();  
 }
 
-int Sequencer::previous_computed(int sequencer){
+int Sequencer::previous_computed(int sequencer)
+{
   return sequences[sequencer].previous_computed();
 }
 
-void Sequencer::set_previous_computed(int sequencer, int position){
+void Sequencer::set_previous_computed(int sequencer, int position)
+{
   sequences[sequencer].set_previous_computed(position);  
 }
 

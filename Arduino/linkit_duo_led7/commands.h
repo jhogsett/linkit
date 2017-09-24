@@ -3,7 +3,6 @@
 
 #include <macros.h>
 #include <scheduler.h>
-
 #include "config.h"
 #include "zone_defs.h"
 #include "sequencer.h"
@@ -19,8 +18,6 @@
 #else
 #define CROSSFADE_DELAY 1
 #endif
-
-// #define NEW_COPY much worse
 
 class Commands
 {
@@ -58,17 +55,18 @@ class Commands
   void do_flood();
   void do_random(byte type);
   void do_mirror();
-  
   void do_copy(byte size, int times, byte zoom);
-
   void do_repeat(byte times);
+
 #ifdef USE_ELASTIC_SHIFT
   void do_elastic_shift(byte count, byte max);
 #endif
+
 #ifdef USE_POWER_SHIFT
   void do_power_shift(byte count, byte max, bool fast_render);
   void do_power_shift_object(byte width, byte shift, bool fast_render);
 #endif
+
   void flush(bool force_display);
   void set_display(byte display);
   void set_buffer(byte nbuffer);
@@ -94,11 +92,8 @@ class Commands
   void set_black_level(int arg0, int arg1, int arg2);
   void do_store(int arg0, int arg1, int arg2);
   void do_recall(int arg0, int arg1, int arg2);
-
   void dispatch_effect(byte cmd);
-//  void dispatch_sequence(byte cmd, int arg0, int arg1, int arg2);
   void displatch_color(byte cmd, int arg0, int arg1);
-//  void displatch_color_sequence(byte cmd, int arg0, int arg1, int arg2);
 
 #ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
@@ -162,7 +157,8 @@ void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects
 
 #include "event_loop.h"
 
-bool Commands::dispatch_function(int cmd, byte *dispatch_data){
+bool Commands::dispatch_function(int cmd, byte *dispatch_data)
+{
   return me->dispatch_command(cmd, dispatch_data);  
 }
 
@@ -173,8 +169,10 @@ bool Commands::dispatch_function(int cmd, byte *dispatch_data){
 #define RESUME_EFFECTS   1
 #define RESUME_SCHEDULES 2
 
-void Commands::pause(byte type = PAUSE_ALL){
-  switch(type){
+void Commands::pause(byte type = PAUSE_ALL)
+{
+  switch(type)
+  {
     case PAUSE_ALL:
       pause_effects();
       pause_schedules();
@@ -188,50 +186,57 @@ void Commands::pause(byte type = PAUSE_ALL){
   }
 }
 
-void Commands::pause_effects(){
+void Commands::pause_effects()
+{
   effects_paused = true;
 }
 
-void Commands::pause_schedules(){
+void Commands::pause_schedules()
+{
   schedules_paused = true;
 }
 
-void Commands::resume(byte type = RESUME_ALL){
-  switch(type){
-    case RESUME_ALL:
-      resume_effects();
-      resume_schedules();
-      break;
+void Commands::resume(byte type = RESUME_ALL)
+{
+  switch(type)
+  {
     case RESUME_EFFECTS:
       resume_effects();
       break;
+    case RESUME_ALL:
+      resume_effects();
     case RESUME_SCHEDULES:
       resume_schedules();
       break;
   }
 }
 
-void Commands::resume_effects(){
+void Commands::resume_effects()
+{
   effects_paused = false;
 }
 
-void Commands::resume_schedules(){
+void Commands::resume_schedules()
+{
   schedules_paused = false;
 }
 
-void Commands::set_display(byte display){
+void Commands::set_display(byte display)
+{
   buffer->set_display(display);
 
   // reset to the default zone on a display change (? this confused me when working on glasses, maybe not needed)
   buffer->set_zone(0);
 }
 
-void Commands::set_pin(byte pin, bool on){
+void Commands::set_pin(byte pin, bool on)
+{
   pinMode(pin, OUTPUT);
   digitalWrite(pin, on ? HIGH : LOW);  
 }
 
-void Commands::set_brightness_level(byte level){
+void Commands::set_brightness_level(byte level)
+{
   if(level == 0){
 #ifdef USE_AUTO_BRIGHTNESS
     level = auto_brightness->get_auto_brightness_level();
@@ -246,15 +251,32 @@ void Commands::set_brightness_level(byte level){
 // todo: allow blending over a range of leds
 // strength 1-100, 100 = all color @ offset
 // 0 == 50
-void Commands::do_blend(byte strength){
-  if(strength < 1){
+//void Commands::do_blend(byte strength)
+//{
+//  if(strength < 1)
+//  {
+//    strength = 50;
+//  }
+//  rgb_color * buf = buffer->get_buffer();
+//  byte offset = buffer->get_offset();
+//  buf[offset] = ColorMath::blend_colors(buf[offset], buf[offset + 1], strength / 100.0);
+//  buf[offset + 1] = buf[offset];
+//}
+
+// todo: negative # blends in the opposite direction
+void Commands::do_blend(byte strength)
+{
+  if(strength < 1)
     strength = 50;
-  }
-  rgb_color * buf = buffer->get_buffer();
+
   byte offset = buffer->get_offset();
-  buf[offset] = ColorMath::blend_colors(buf[offset], buf[offset + 1], strength / 100.0);
-  buf[offset + 1] = buf[offset];
+  rgb_color * buf = &buffer->get_buffer()[offset];
+//  rgb_color * buf2 = &buffer->get_buffer()[offset + 1];
+
+  *buf = ColorMath::blend_colors(*buf, *(buf+1), strength / 100.0);
+  *(buf+1) = *buf;
 }
+
 
 // todo: change these to a single "adj" command
 // 0:adj - adjusts to maximum brightness
