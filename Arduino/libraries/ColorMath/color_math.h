@@ -11,6 +11,8 @@
 #define NUM_COSINES       13
 #define COSINE_RANGE    12.0
 
+#define COLOR_SCALE_FACTOR (255.0 / BRIGHTNESS_DIVISOR)
+
 //#define USE_BYTE_CROSSFADE_STEPS
 
 //smoother crossfade
@@ -181,7 +183,7 @@ const float PROGMEM ColorMath::cosines[NUM_COSINES]
 };
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
-  float factor = (255.0 * scale) / BRIGHTNESS_DIVISOR;
+  float factor = scale * COLOR_SCALE_FACTOR;
   return (rgb_color){
     color.red * factor,
     color.green * factor,
@@ -189,21 +191,12 @@ rgb_color ColorMath::scale_color(rgb_color color, float scale){
   };
 }
 
-//rgb_color ColorMath::unscale_color(rgb_color color, float scale){
-//  float factor = 255.0 / BRIGHTNESS_DIVISOR;
-//  return (rgb_color){
-//    (color.red / scale) / factor,
-//    (color.green / scale) / factor,
-//    (color.blue / scale) / factor
-//  };
-//}
-
 rgb_color ColorMath::unscale_color(rgb_color color, float scale){
-  float factor = 255.0 / BRIGHTNESS_DIVISOR;
+  float factor = scale * COLOR_SCALE_FACTOR;
   return (rgb_color){
-    (color.red / scale) / factor,
-    (color.green / scale) / factor,
-    (color.blue / scale) / factor
+    color.red / factor,
+    color.green / factor,
+    color.blue / factor
   };
 }
 
@@ -270,15 +263,18 @@ rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {
 //}
 
 // some sets have red and green swapped, usually false for led strips
-void ColorMath::begin(bool swap_r_and_g = true){
+void ColorMath::begin(bool swap_r_and_g = true)
+{
   ColorMath::swap_r_and_g = swap_r_and_g;
 }
 
-byte ColorMath::crossfade_steps(){
+byte ColorMath::crossfade_steps()
+{
   return CROSSFADE_STEPS;
 }
 
-float ColorMath::crossfade_step_value(byte step){
+float ColorMath::crossfade_step_value(byte step)
+{
 #ifdef USE_BYTE_CROSSFADE_STEPS
   return pgm_read_byte(&crossfade[step]) / 255.0;
 #else
@@ -288,8 +284,10 @@ float ColorMath::crossfade_step_value(byte step){
 
 // on subsequent steps, component1 must be set to the return value of the previous step
 // the steps must go from zero, to and including CROSSFADE_STEPS
-byte ColorMath::crossfade_component(byte step, byte component1, byte component2){
-  if(step > 1){
+byte ColorMath::crossfade_component(byte step, byte component1, byte component2)
+{
+  if(step > 1)
+  {
     byte prev_step = step - 1;
     int prevc2 = component2 * crossfade_step_value(prev_step);
     int restored_c1 = (component1 - prevc2) / crossfade_step_value(CROSSFADE_STEPS - prev_step);
@@ -302,7 +300,8 @@ byte ColorMath::crossfade_component(byte step, byte component1, byte component2)
 }
 
 //  color1 is the dominant color for strength (0.0 = all color1)
-rgb_color ColorMath::crossfade_colors(byte step, rgb_color color1, rgb_color color2){
+rgb_color ColorMath::crossfade_colors(byte step, rgb_color color1, rgb_color color2)
+{
   rgb_color result;
   result.red = crossfade_component(step, color1.red, color2.red);
   result.green = crossfade_component(step, color1.green, color2.green);
@@ -310,12 +309,14 @@ rgb_color ColorMath::crossfade_colors(byte step, rgb_color color1, rgb_color col
   return result;
 }
 
-byte ColorMath::blend_component(byte component1, byte component2, float strength){
+byte ColorMath::blend_component(byte component1, byte component2, float strength)
+{
   return (byte)((component1 * strength) + (component2 * (1.0 - strength)));
 }
 
 //  color1 is the dominant color for strength (1.0 = all color1)
-rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2, float strength = 0.5){
+rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2, float strength = 0.5)
+{
   rgb_color result;
   result.red = blend_component(color1.red, color2.red, strength);
   result.green = blend_component(color1.green, color2.green, strength);
@@ -323,8 +324,10 @@ rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2, float stre
   return result;
 }
 
-rgb_color ColorMath::correct_color(rgb_color color){
-  if(swap_r_and_g){
+rgb_color ColorMath::correct_color(rgb_color color)
+{
+  if(swap_r_and_g)
+  {
     byte swap = color.red;
     color.red = color.green;
     color.green = swap;
@@ -333,29 +336,31 @@ rgb_color ColorMath::correct_color(rgb_color color){
 }
 
 // needed in renderer
-rgb_color ColorMath::random_color(){
+rgb_color ColorMath::random_color()
+{
   return *Colors::get_color(random(NPRETTY_COLORS));
 }
 
-bool ColorMath::equal(rgb_color color1, rgb_color color2){
-  if(color1.red == color2.red && color1.green == color2.green && color1.blue == color2.blue){
+bool ColorMath::equal(rgb_color color1, rgb_color color2)
+{
+  if(color1.red == color2.red && color1.green == color2.green && color1.blue == color2.blue)
     return true;
-  }
   return false;
 }
 
 // steps 0-12
-float ColorMath::read_cosine_array(byte step){
+float ColorMath::read_cosine_array(byte step)
+{
   return pgm_read_float(&cosines[step]);
 }
 
 // steps 0-24
-float ColorMath::get_cosine(byte step){
-  if(step >= 0 && step <= 12){
+float ColorMath::get_cosine(byte step)
+{
+  if(step >= 0 && step <= 12)
     return read_cosine_array(step);
-  } else {
+  else
     return read_cosine_array(25 - step);
-  }
 }
 
 // steps 0-24
