@@ -35,14 +35,16 @@ void Scheduler::begin(Macros * macros){
 void Scheduler::process_schedules(){
   for(byte i = 0; i < NUM_SCHEDULES; i++){
 
+    int sch_period = schedule_period[i];
+    unsigned int *sch_counter = &schedule_counter[i];
+
     // skip disabled schedules
-    if(schedule_period[i] == 0)
-      continue;
+    if(sch_period > 0){
+      *sch_counter = (*sch_counter + 1) % sch_period;
 
-    schedule_counter[i] = (schedule_counter[i] + 1) % schedule_period[i];
-
-    if(schedule_counter[i] == 0){
-      macros->run_macro(macro_number[i]);
+      if(*sch_counter == 0){
+        macros->run_macro(macro_number[i]);
+      }
     }
   }
 }

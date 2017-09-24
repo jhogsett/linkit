@@ -40,12 +40,9 @@ class CommandProcessor
   char * get_next_command(char **saveptr);
   char * get_input_buffer();
   void get_sub_args(char * str);
-  char * borrow_char_buffer();
   void send_int(int value);
   void send_ints(int value);
-  void send_int_set(int * values, int count);
   void send_str(char * value);
-  void send_bytes(byte * bytes, int count);
 
   private:
 
@@ -103,12 +100,6 @@ void CommandProcessor::send_ints(int value){
   serial->print(INT_DELIMITER_CHAR);
 }
 
-void CommandProcessor::send_bytes(byte * bytes, int count){
-  for(int i = 0; i < count; i++){
-    send_ints(bytes[i]);
-  }
-}
-
 void CommandProcessor::send_str(char * value){
   serial->print(value);
 }
@@ -138,13 +129,9 @@ void CommandProcessor::get_sub_args(char * args = NULL){
   }
 
   char *saveptr = NULL;
-  int arg0 = atoi(strtok_r(args, ",", &saveptr));
-  int arg1 = atoi(strtok_r(NULL, ",", &saveptr));
-  int arg2 = atoi(strtok_r(NULL, ",", &saveptr));
-
-  sub_args[0] = arg0;
-  sub_args[1] = arg1;
-  sub_args[2] = arg2;
+  sub_args[0] = atoi(strtok_r(args, ",", &saveptr));
+  sub_args[1] = atoi(strtok_r(NULL, ",", &saveptr));
+  sub_args[2] = atoi(strtok_r(NULL, ",", &saveptr));
 }
 
 void CommandProcessor::reset_args(){
@@ -205,12 +192,4 @@ char * CommandProcessor::get_input_buffer(){
   }
 }
 
-char * CommandProcessor::borrow_char_buffer(){
-  return this->str;
-}
-
 #endif
-
-
-
-

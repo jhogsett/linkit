@@ -21,31 +21,31 @@
 
 // sodium based on looked right at 136,68,24, scaled to 20,10,4
 
-const byte color_00[] PROGMEM = {20,  0,  0};
-const byte color_01[] PROGMEM = {20, 10,  0};
-const byte color_02[] PROGMEM = {20, 20,  0};
-const byte color_03[] PROGMEM = { 0, 20,  0};
-const byte color_04[] PROGMEM = { 0,  0, 20};
-const byte color_05[] PROGMEM = {10,  0, 20};
-const byte color_06[] PROGMEM = { 0, 20, 20};
-const byte color_07[] PROGMEM = {20,  0, 20};
-const byte color_08[] PROGMEM = { 0, 10, 20};
-const byte color_09[] PROGMEM = {10, 20,  0};
-const byte color_10[] PROGMEM = { 0, 20, 10};
-const byte color_11[] PROGMEM = {20,  0, 10};
-const byte color_12[] PROGMEM = {20, 15,  0};
-const byte color_13[] PROGMEM = {15, 20,  0};
-const byte color_14[] PROGMEM = { 0, 15, 20};
-const byte color_15[] PROGMEM = { 0, 20, 15};
-const byte color_16[] PROGMEM = {15,  0, 20};
-const byte color_17[] PROGMEM = {20,  0, 15};
-const byte color_18[] PROGMEM = { 5,  5,  5};
-const byte color_19[] PROGMEM = {10, 10, 10};
-const byte color_20[] PROGMEM = {20, 20, 20};
-const byte color_21[] PROGMEM = {20, 11,  2};
-const byte color_22[] PROGMEM = {20,  5,  0};
-const byte color_23[] PROGMEM = {20, 10,  4};
-const byte color_24[] PROGMEM = { 0,  0,  0};
+const byte color_00[] PROGMEM = {20,  0,  0};  // red
+const byte color_01[] PROGMEM = {20, 10,  0};  // org
+const byte color_02[] PROGMEM = {20, 20,  0};  // yel
+const byte color_03[] PROGMEM = { 0, 20,  0};  // grn
+const byte color_04[] PROGMEM = { 0,  0, 20};  // blu
+const byte color_05[] PROGMEM = {10,  0, 20};  // pur
+const byte color_06[] PROGMEM = { 0, 20, 20};  // cyn
+const byte color_07[] PROGMEM = {20,  0, 20};  // mag
+const byte color_08[] PROGMEM = { 0, 10, 20};  // lbl
+const byte color_09[] PROGMEM = {10, 20,  0};  // lgr
+const byte color_10[] PROGMEM = { 0, 20, 10};  // sea
+const byte color_11[] PROGMEM = {20,  0, 10};  // pnk
+const byte color_12[] PROGMEM = {20, 15,  0};  // amb
+const byte color_13[] PROGMEM = {15, 20,  0};  // olv
+const byte color_14[] PROGMEM = { 0, 15, 20};  // sky
+const byte color_15[] PROGMEM = { 0, 20, 15};  // tur
+const byte color_16[] PROGMEM = {15,  0, 20};  // lav
+const byte color_17[] PROGMEM = {20,  0, 15};  // ros
+const byte color_18[] PROGMEM = { 5,  5,  5};  // dgr
+const byte color_19[] PROGMEM = {10, 10, 10};  // gry
+const byte color_20[] PROGMEM = {20, 20, 20};  // wht
+const byte color_21[] PROGMEM = {20, 11,  2};  // tun
+const byte color_22[] PROGMEM = {20,  5,  0};  // neo
+const byte color_23[] PROGMEM = {20, 10,  4};  // sod
+const byte color_24[] PROGMEM = { 0,  0,  0};  // blk
 
 const byte* const bytes_array[] PROGMEM = {
   color_00, color_01, color_02, color_03, color_04, color_05,
@@ -142,6 +142,7 @@ void Colors::random_compliment_pairs()
   compliment_pairs();
 }
 
+// todo: dry
 void Colors::compliment_palette(){
   for(byte i = 0; i < NUM_PALETTE_COLORS; i ++)
     palette[i] = complimentary_color(palette[i]);
@@ -177,6 +178,7 @@ void Colors::rotate_palette(byte times, byte limit, bool down){
   }
 }
 
+// todo: dry
 void Colors::reverse_palette(){
   byte max = NUM_PALETTE_COLORS - 1;
   byte limit = NUM_PALETTE_COLORS / 2;

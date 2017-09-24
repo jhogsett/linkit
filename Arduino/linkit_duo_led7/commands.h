@@ -20,6 +20,7 @@
 #define CROSSFADE_DELAY 1
 #endif
 
+// #define NEW_COPY much worse
 
 class Commands
 {
@@ -57,7 +58,9 @@ class Commands
   void do_flood();
   void do_random(byte type);
   void do_mirror();
+  
   void do_copy(byte size, int times, byte zoom);
+
   void do_repeat(byte times);
 #ifdef USE_ELASTIC_SHIFT
   void do_elastic_shift(byte count, byte max);
@@ -93,7 +96,7 @@ class Commands
   void do_recall(int arg0, int arg1, int arg2);
 
   void dispatch_effect(byte cmd);
-  void dispatch_sequence(byte cmd, int arg0, int arg1, int arg2);
+//  void dispatch_sequence(byte cmd, int arg0, int arg1, int arg2);
   void displatch_color(byte cmd, int arg0, int arg1);
 //  void displatch_color_sequence(byte cmd, int arg0, int arg1, int arg2);
 
@@ -240,6 +243,7 @@ void Commands::set_brightness_level(byte level){
   flush_all(true);
 }
 
+// todo: allow blending over a range of leds
 // strength 1-100, 100 = all color @ offset
 // 0 == 50
 void Commands::do_blend(byte strength){
@@ -258,6 +262,7 @@ void Commands::do_blend(byte strength){
 // 2:adj - quadruples brightness
 // -1:adj - halves the brightness
 // -2:adj - quarters the brightness
+
 // only works properly when used immediately after placing a standard color
 void Commands::do_max(){
   byte offset = buffer->get_offset();
@@ -267,18 +272,18 @@ void Commands::do_max(){
 
 void Commands::do_dim(){
   byte offset = buffer->get_offset();
-  rgb_color * buf = buffer->get_buffer();
-  buf[offset].red = buf[offset].red >> 1;
-  buf[offset].green = buf[offset].green >> 1;
-  buf[offset].blue = buf[offset].blue >> 1;
+  rgb_color * buf = &buffer->get_buffer()[offset];
+  buf->red = buf->red >> 1;
+  buf->green = buf->green >> 1;
+  buf->blue = buf->blue >> 1;
 }
 
 void Commands::do_bright(){
   byte offset = buffer->get_offset();
-  rgb_color * buf = buffer->get_buffer();
-  buf[offset].red = buf[offset].red << 1;
-  buf[offset].green = buf[offset].green << 1;
-  buf[offset].blue = buf[offset].blue << 1;
+  rgb_color * buf = &buffer->get_buffer()[offset];
+  buf->red = buf->red << 1;
+  buf->green = buf->green << 1;
+  buf->blue = buf->blue << 1;
 }
 
 void Commands::do_fade(){
@@ -336,15 +341,16 @@ void Commands::do_flood(){
   } else {
     // this could be further optimized but this type of 
     // flooding isn't used often
+    bool random_effect = effect == RANDOM2;
     for(byte i = start; i < end_; i++){
       *buf = ColorMath::random_color();
-      if(effect == RANDOM2){
+      if(random_effect)
         *effects = EffectsProcessor::random_effect();
-      } else {
+      else
         *effects = NO_EFFECT;
-      }
-    buf++;
-    effects++;
+
+      buf++;
+      effects++;
     }
   }
 }
@@ -386,7 +392,9 @@ void Commands::do_mirror(){
   rgb_color * buf = buffer->get_buffer();
   byte * effects = buffer->get_effects_buffer();
   bool reverse = buffer->get_reverse();
+
   for(byte i = 0; i < width; i++){
+  
     if(reverse){
       buf[front + i] = buf[back - i];
       effects[front + i] = effects[back - i];
@@ -394,6 +402,7 @@ void Commands::do_mirror(){
       buf[back - i] = buf[front + i];
       effects[back - i] = effects[front + i];
     }
+  
   }
 }
 
@@ -454,8 +463,6 @@ void Commands::do_copy(byte size, int times, byte zoom){
         render_buffer[i].red = effects[source]; 
     }
 
-    // TODO DRY
-  
     // copy the effects
     for(byte i = 0; i < times; i++){
       for(byte j = 0; j < size; j++){
@@ -505,14 +512,6 @@ void Commands::do_copy(byte size, int times, byte zoom){
       }
     }
   }
-
-  // is this necessary?
-  // erase the render buffer
-//  if(!use_palette_buffer){
-//    for(byte i = 0; i < visible_led_count; i++){
-//      render_buffer[i] = buffer->black;  
-//    }
-//  }
 }
 
 // to do fix re: reverse (fixed?)
@@ -560,8 +559,6 @@ void Commands::do_repeat(byte times = 1){
       break;
   }
 }
-
-// void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
 
 //void Commands::do_elastic_shift(byte count, byte max = 0){
 //#ifdef USE_ELASTIC_EASE  
@@ -930,10 +927,6 @@ void Commands::do_next_window(int arg0, int arg1, int arg2){
   command_processor->sub_args[1] = width;
   return;
 }
-
-//int Commands::do_next_macro(int arg1, int arg2){
-//  
-//}
 
 #define CONFIG_SETBLINKP   0
 #define CONFIG_SETBREATHET 1
