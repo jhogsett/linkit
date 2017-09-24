@@ -3,6 +3,7 @@
 
 #include <avr/eeprom.h>
 #include <command_processor.h>
+#include <common.h>
 
 #define SUB_ARGS_FIX
 
@@ -367,6 +368,7 @@ void Macros::run_macro(byte macro, int times, int delay_){
   }
 }
 
+#ifdef TEST_FRAMEWORK
 byte Macros::begin_dump_macro(byte macro, byte **position){
   bool from_eeprom;
   if(is_eeprom_macro(macro)){
@@ -386,3 +388,4 @@ byte Macros::continue_dump_macro(byte macro, byte **position){
 }
 #endif
 
+#endif

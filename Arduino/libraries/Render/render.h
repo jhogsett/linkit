@@ -44,6 +44,7 @@ void Render::begin(BlinkEffects *blink_effects, BreatheEffects *breathe_effects,
     this->minimum_brightness_scale = minimum_brightness / 100.0;
 }
 
+// todo: move to blink class?
 rgb_color Render::get_blink(rgb_color color, byte effect){
   return ColorMath::scale_color(color, blink_effects->blink_on(effect) ? default_brightness_scale : minimum_brightness_scale);
 }
@@ -52,7 +53,7 @@ rgb_color Render::get_breathe(rgb_color color){
   return ColorMath::scale_color(color, breathe_effects->breathe_ratio() * default_brightness_scale);
 }
 
-// this is a destructive rendering: the original color value is redudced
+// this is a destructive rendering: the original color value is reduced
 rgb_color Render::get_fade(rgb_color *color, byte effect){
   *color = fade_effects->apply_fade(*color, effect);
   return get_default(*color);

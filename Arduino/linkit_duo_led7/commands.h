@@ -20,6 +20,7 @@
 #define CROSSFADE_DELAY 1
 #endif
 
+// #define NEW_COPY much worse
 
 class Commands
 {
@@ -58,8 +59,6 @@ class Commands
   void do_random(byte type);
   void do_mirror();
   
-  void fill_copy_buffer(byte size, byte offset, bool use_palette_buffer, bool do_effects, rgb_color * buf, int * effects, rgb_color * dst);
-  void dump_copy_buffer(byte size, byte offset, bool use_palette_buffer, bool do_effects, rgb_color * buf, int * effects, rgb_color * src, byte times, byte zoom, byte effective_size, byte window);
   void do_copy(byte size, int times, byte zoom);
 
   void do_repeat(byte times);
@@ -263,6 +262,7 @@ void Commands::do_blend(byte strength){
 // 2:adj - quadruples brightness
 // -1:adj - halves the brightness
 // -2:adj - quarters the brightness
+
 // only works properly when used immediately after placing a standard color
 void Commands::do_max(){
   byte offset = buffer->get_offset();
@@ -406,52 +406,6 @@ void Commands::do_mirror(){
   }
 }
 
-// buf points to the display buffer
-// dst points to palette OR render buffer
-// effects points to effects buffer
-void Commands::fill_copy_buffer(byte size, byte offset, bool use_palette_buffer, bool do_effects, rgb_color * buf, int * effects, rgb_color * dst){
-  // copy the effects pattern to the buffer temporarily
-  for(byte i = 0; i < size; i++){
-    byte source = offset + i;
-      if(do_effects)
-        dst[i].red = effects[source];
-      else
-        if(use_palette_buffer)
-          dst[i] = ColorMath::correct_color(buf[source]); // uncorrect corrected color so it works in the palette for use later
-        else
-          dst[i] = buf[source]; 
-  }
-}
-
-// buf points to the display buffer
-// src points to palette OR render buffer
-// effects points to effects buffer
-void Commands::dump_copy_buffer(byte size, byte offset, bool use_palette_buffer, bool do_effects, rgb_color * buf, int * effects, rgb_color * src, byte times, byte zoom, byte effective_size, byte window){
-  // copy the effects
-  for(byte i = 0; i < times; i++){
-    for(byte j = 0; j < size; j++){
-      for(byte k = 0; k < zoom; k++){
-        byte source = j;
-        byte dest = offset + (i * effective_size) + (j * zoom) + k;
-
-        if(dest < window){ // prevent buffer overrun
-          if(do_effects){
-            effects[dest] = src[source].red;
-          } else {
-            if(use_palette_buffer){
-              buf[dest] = ColorMath::correct_color(src[source]); // adjut for corrected color in palette
-            } else {
-              buf[dest] = src[source];
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-
-
 // to do: handle reverse direction
 // to do: copy only copies from position zero
 
@@ -558,14 +512,6 @@ void Commands::do_copy(byte size, int times, byte zoom){
       }
     }
   }
-
-  // is this necessary?
-  // erase the render buffer
-//  if(!use_palette_buffer){
-//    for(byte i = 0; i < visible_led_count; i++){
-//      render_buffer[i] = buffer->black;  
-//    }
-//  }
 }
 
 // to do fix re: reverse (fixed?)
@@ -613,8 +559,6 @@ void Commands::do_repeat(byte times = 1){
       break;
   }
 }
-
-// void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
 
 //void Commands::do_elastic_shift(byte count, byte max = 0){
 //#ifdef USE_ELASTIC_EASE  
@@ -983,10 +927,6 @@ void Commands::do_next_window(int arg0, int arg1, int arg2){
   command_processor->sub_args[1] = width;
   return;
 }
-
-//int Commands::do_next_macro(int arg1, int arg2){
-//  
-//}
 
 #define CONFIG_SETBLINKP   0
 #define CONFIG_SETBREATHET 1
