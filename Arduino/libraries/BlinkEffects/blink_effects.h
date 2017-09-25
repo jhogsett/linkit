@@ -41,9 +41,8 @@ class BlinkEffects
   int blink_period = DEFAULT_BLINK_PERIOD;
   int blink_counter = 0;
   int interval;
-  int half_period = this->blink_period / 2;
-  int quarter_period = half_period / 2;
-  int half_counter = this->blink_counter % half_period;
+  int half_period;
+  int half_counter;
 };
 
 void BlinkEffects::begin(int blink_period = DEFAULT_BLINK_PERIOD){
@@ -64,9 +63,6 @@ void BlinkEffects::set_blink_period(int blink_period){
   }
   // for testing 1-6 blink
   this->interval = this->half_period / MAX_BLINK_SEGMENTS;
-
-  // for testing a/b blink
-  this->quarter_period = this->half_period / 2;
 
   // double the blink period internally for toggling the main blink on and off
   this->blink_period = this->half_period * 2;
@@ -89,9 +85,10 @@ bool BlinkEffects::blink_1_6_test(byte effect){
 }
 
 bool BlinkEffects::blink_a_b_test(byte effect){
+  int quarter_period = this->half_period / 2;
   switch(effect){
-    case BLINK_ON_A: return this->half_counter < this->quarter_period;
-    case BLINK_ON_B: return this->half_counter >= this->quarter_period;
+    case BLINK_ON_A: return this->half_counter < quarter_period;
+    case BLINK_ON_B: return this->half_counter >= quarter_period;
   }
 }
 

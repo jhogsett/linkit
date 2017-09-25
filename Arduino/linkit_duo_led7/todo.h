@@ -1,3 +1,24 @@
+// multiple displays specs
+
+// should push_rgb unscale to the configured default brightness or a standard brightness, like the 0-20 color standard
+
+// int-based crossfade could be smoother, like breathing is smooth
+
+/* there are independent settings for sphere that cause tests to fail
+  Failures:
+  @ 847 2,3,4:sbl:era:flu -2,3,4 +3,2,4
+  @ 971 wht:max:flu -153,153,153 +255,255,255
+  @ 1364 10,20,30:sto:4,5,6:0:rcl:rgb:flu -5,10,15 +3,6,9
+  @ 1367 10,20,30:sto:4,5,6:40:rcl:rgb:flu -5,20,10 +3,12,6
+  @ 1370 10,20,30:sto:4,5,6:40,50:rcl:rgb:flu -5,20,26 +3,12,15
+
+  PROBABLY DEFAULT BRIGHTNESS
+   
+ */
+
+// dump accum results quitting specs early
+// have a way to spit out results while running
+
 // blend could work over a numnber of pixels
 
 // set exit code from led_specs depending on failures or not
