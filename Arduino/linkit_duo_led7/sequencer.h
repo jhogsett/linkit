@@ -236,6 +236,7 @@ int Sequence::increment_swing_normal(int step)
     this->current = this->max - step_reflect;
     this->state = STATE_REVERSE;
   }
+
   return this->current;
 }
 
@@ -249,6 +250,7 @@ int Sequence::increment_swing_reverse(int step)
     this->current = this->low + step_reflect;
     this->state = STATE_NORMAL;
   }
+  
   return this->current;
 }
 

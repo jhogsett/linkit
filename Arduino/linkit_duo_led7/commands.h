@@ -1107,18 +1107,20 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2)
 // arg[0] maximum random number (see Commands::random_num() for special constant values)
 // arg[1] minimum random number (default=0)
 // arg[2] copied into arg[1] to allow passing another argument
-void Commands::do_random_number(int arg0, int arg1, int arg2){
+void Commands::do_random_number(int arg0, int arg1, int arg2)
+{
   int ran = random_num(arg0, arg1);
   command_processor->sub_args[0] = ran;
   command_processor->sub_args[1] = arg2;
   command_processor->sub_args[2] = 0;
 }
 
-void Commands::do_stop(){
+void Commands::do_stop()
+{
   scheduler.reset_all_schedules();
   clear();                                                            
   pause();                                                            
- }
+}
 
 // TODO: it's inefficient to insert the colors one at a time; would be better to shift the buffer then overwrite the colors
 // arg[0] the index into the palette of the color to insert, or where to stop rubberstamp insert
@@ -1126,16 +1128,18 @@ void Commands::do_stop(){
 //                the counting down is done so the palette achieves a left-to-right order when inserted  
 //                in this case arg[0] is the stopping point when counting down
 // for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
-void Commands::do_palette(int arg0, int arg1){
+void Commands::do_palette(int arg0, int arg1)
+{
   rgb_color * palette = Colors::get_palette();
-  if(arg1 > 0){
+
+  if(arg1 > 0)
+  {
     arg0 = max(0, arg0);
-    for(int i = arg1; i >= arg0; i--){
+    for(int i = arg1; i >= arg0; i--)
       buffer->push_color(palette[i]);                      
-    }
-  } else {
+  } 
+  else 
     buffer->push_color(palette[arg0]);                                                      
-  }
 }
 
 #define SHUFFLE_RANDOM           0
@@ -1150,7 +1154,8 @@ void Commands::do_palette(int arg0, int arg1){
 // arg0 - type of shuffle operation
 // arg1 - type-specific argument
 // arg2 - type-specific argument
-void Commands::do_shuffle(int arg0, int arg1, int arg2){
+void Commands::do_shuffle(int arg0, int arg1, int arg2)
+{
   switch(arg0)
   {
     case SHUFFLE_RANDOM:
@@ -1191,12 +1196,14 @@ void Commands::do_shuffle(int arg0, int arg1, int arg2){
   }            
 }
 
-void Commands::set_black_level(int arg0, int arg1, int arg2){
+void Commands::set_black_level(int arg0, int arg1, int arg2)
+{
   rgb_color black_level = {(byte)arg0, (byte)arg1, (byte)arg2};
   buffer->set_black_level(black_level);
 }
 
-void Commands::do_store(int arg0, int arg1, int arg2){
+void Commands::do_store(int arg0, int arg1, int arg2)
+{
   command_processor->accumulator0 = arg0;
   command_processor->accumulator1 = arg1;
   command_processor->accumulator2 = arg2;
@@ -1205,8 +1212,10 @@ void Commands::do_store(int arg0, int arg1, int arg2){
 // arg0 = 0: restore all arguments from the accumulators
 // arg0 != 0 and arg1 = 0: arg0->arg1 acc0->arg0 acc1->arg2
 // arg0 != 0 and arg1 != 0: arg1->arg2 arg0->arg1 acco->arg0
-void Commands::do_recall(int arg0, int arg1, int arg2){
-  if(arg0 != 0){
+void Commands::do_recall(int arg0, int arg1, int arg2)
+{
+  if(arg0 != 0)
+  {
     if(arg1 != 0) 
         // two args supplied, shift second argument to third
         command_processor->sub_args[2] = arg1;
