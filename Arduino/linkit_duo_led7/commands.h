@@ -46,6 +46,7 @@ class Commands
   void pause_schedules();
   void resume_effects();
   void resume_schedules();
+  rgb_color * offset_buffer();
   void do_blend(byte strength);
   void do_max();
   void do_dim();
@@ -201,6 +202,7 @@ void Commands::pause(byte type = PAUSE_ALL)
     case PAUSE_EFFECTS:
       pause_effects();
       break;
+      
     case PAUSE_ALL:
       pause_effects();
     case PAUSE_SCHEDULES:
@@ -226,6 +228,7 @@ void Commands::resume(byte type = RESUME_ALL)
     case RESUME_EFFECTS:
       resume_effects();
       break;
+
     case RESUME_ALL:
       resume_effects();
     case RESUME_SCHEDULES:
@@ -296,25 +299,27 @@ void Commands::do_blend(byte strength)
 // -1:adj - halves the brightness
 // -2:adj - quarters the brightness
 
+rgb_color * Commands::offset_buffer()
+{
+  return &buffer->get_buffer()[buffer->get_offset()];
+}
+
 // only works properly when used immediately after placing a standard color
 void Commands::do_max()
 {
-  byte offset = buffer->get_offset();
-  rgb_color * buf = &buffer->get_buffer()[offset];
+  rgb_color * buf = offset_buffer();
   *buf = ColorMath::scale_color(*buf, MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
 void Commands::do_dim(){
-  byte offset = buffer->get_offset();
-  rgb_color * buf = &buffer->get_buffer()[offset];
+  rgb_color * buf = offset_buffer();
   buf->red = buf->red >> 1;
   buf->green = buf->green >> 1;
   buf->blue = buf->blue >> 1;
 }
 
 void Commands::do_bright(){
-  byte offset = buffer->get_offset();
-  rgb_color * buf = &buffer->get_buffer()[offset];
+  rgb_color * buf = offset_buffer();
   buf->red = buf->red << 1;
   buf->green = buf->green << 1;
   buf->blue = buf->blue << 1;
@@ -355,13 +360,13 @@ void Commands::do_flood()
 
   if(buffer->get_reverse())
   {
-    source = buffer->get_window() - 1;
+    source = window - 1;
     start = offset;
     end_ = window - 1;
   } 
   else 
   {
-    source = buffer->get_offset();
+    source = offset;
     start = offset + 1;
     end_ = window;
   }
@@ -621,12 +626,14 @@ void Commands::do_power_shift(byte count, byte max = 0, bool fast_render = true)
 // width = number of pixels to include in shift
 // shift = number of positions to shift
 // note: the two should add up to no more than the visible led count!
-void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = true){
+void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = true)
+{
   do_power_shift(shift, shift + width, fast_render);
 }
 #endif
 
-void Commands::do_wipe(){
+void Commands::do_wipe()
+{
 #ifdef USE_POWER_EASE
   do_power_shift_object(0, visible_led_count, false);
 #endif
@@ -635,21 +642,24 @@ void Commands::do_wipe(){
 // arg[0] # times to rotate, default = 1
 // arg[1] # rotation steps each time, default = 1
 // arg[2] 0=flush each time, 1=don't flush, default = 0
-void Commands::do_rotate(byte times, byte steps, bool flush){
+void Commands::do_rotate(byte times, byte steps, bool flush)
+{
   times = max(1, times);
   steps = max(1, steps);
-  for(byte i = 0; i < times; i++){
-    for(byte j = 0; j < steps; j++){
+  for(byte i = 0; i < times; i++)
+  {
+    for(byte j = 0; j < steps; j++)
       buffer->rotate(); 
-    }
     if(flush){
       this->flush(true);  
     }    
   }
 }
 
-void Commands::flush(bool force_display = false){
-  if(force_display || !effects_paused){
+void Commands::flush(bool force_display = false)
+{
+  if(force_display || !effects_paused)
+  {
     rgb_color * render_buffer = buffer->get_render_buffer();
     renderer->render_buffer(render_buffer, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
     buffer->display_buffer(render_buffer);
@@ -658,10 +668,12 @@ void Commands::flush(bool force_display = false){
 
 // todo: force a particular rendering buffer and display 
 // instead of setting and unsetting
-void Commands::flush_all(bool force_display){
+void Commands::flush_all(bool force_display)
+{
   byte orig_display = buffer->get_current_display();
   
-  for(byte i = 0; i < NUM_BUFFERS; i++){
+  for(byte i = 0; i < NUM_BUFFERS; i++)
+  {
     buffer->set_display(i);
     flush(force_display);
   }
@@ -696,7 +708,8 @@ void Commands::clear(){
   resume();
 
   byte orig_display = buffer->get_current_display();
-  for(byte i = 0; i < NUM_BUFFERS; i++){
+  for(byte i = 0; i < NUM_BUFFERS; i++)
+  {
     buffer->set_display(i);
     buffer->reset_black_level();
     buffer->erase(true);                                                          
@@ -705,24 +718,31 @@ void Commands::clear(){
   buffer->set_display(orig_display);
 }
 
-void Commands::do_delay(int milliseconds){
+void Commands::do_delay(int milliseconds)
+{
   ::delay(milliseconds);
 }
 
 // arg0 - 10000 = 1.0, 9999 = 0.9999
 // arg0 <= zero, reset to default
-void Commands::set_fade_rate(int arg0){
-  if(arg0 < 1){
-    fade_effects->set_fade_rate(FADE_RATE);
-  } else {
-    fade_effects->set_fade_rate(arg0/ 10000.0);
-  }
+void Commands::set_fade_rate(int arg0)
+{
+  float rate;
+  if(arg0 < 1)
+    rate = FADE_RATE;
+    //fade_effects->set_fade_rate(FADE_RATE);
+  else
+    rate = arg0/ 10000.0; 
+    //fade_effects->set_fade_rate(arg0/ 10000.0);
+
+    fade_effects->set_fade_rate(rate);
 }
 
 // arg[0] index of insertion pointer, default = 0
 // arg[1] width of window, default = 1
 //        -- any magic widths?
-void Commands::set_position(int position, int width){
+void Commands::set_position(int position, int width)
+{
   byte current_offset = buffer->get_offset();
   byte current_window = buffer->get_window();
 
@@ -755,7 +775,8 @@ void Commands::set_position(int position, int width){
 
 // todo: position should be in relation to the current zone
 // todo: a position of zero here when a zone is selected means zero in zone #0
-void Commands::random_position(int type){
+void Commands::random_position(int type)
+{
   byte position;
   switch(type){
     case RANDOM_NUM_WIDTH_NOT_EMPTY:
@@ -782,10 +803,13 @@ void Commands::random_position(int type){
 #define RANDOM_NUM_PALCOLORS       -4
 #define RANDOM_NUM_FINE_ZONES      -3
 
-int Commands::random_num(int max, int min){
+int Commands::random_num(int max, int min)
+{
   // handle special cases
   bool non_empty_only = false;
   bool empty_only = false;
+  byte new_max = buffer->get_width(); 
+
   switch(max){ 
 //    case RANDOM_NUM_ACCUM:
 //      // need to add dependency on command processor
@@ -814,46 +838,39 @@ int Commands::random_num(int max, int min){
     
     case RANDOM_NUM_WIDTH_NOT_EMPTY: 
       non_empty_only = true;
-      max = buffer->get_width(); 
+      max = new_max; 
       break;
 
     case RANDOM_NUM_WIDTH_EMPTY:
       empty_only = true;
-      max = buffer->get_width(); 
+      max = new_max; 
       break;
 
     case  RANDOM_NUM_WIDTH: 
-      max = buffer->get_width(); 
+      max = new_max; 
       break;
   }
 
-  // TODO DRY
+  if(empty_only || non_empty_only)
+  {
+    byte protection = 0;
+    rgb_color * buf = buffer->get_buffer();
+    byte width = buffer->get_width();
 
-  if(empty_only){
-    byte protection = 0;
-    rgb_color * buf = buffer->get_buffer();
-    byte width = buffer->get_width();
-    do{
+    do
+    {
       byte pos = random(min, max); 
-      if(ColorMath::equal(buf[pos], buffer->black)){
+      rgb_color test_color = buf[pos];
+
+      if(empty_only ? ColorMath::equal(test_color, buffer->black) : !ColorMath::equal(test_color, buffer->black))
         return pos;
-      }
-    }while(protection++ <= width);
-    return 0;
-  } else if(non_empty_only){
-    byte protection = 0;
-    rgb_color * buf = buffer->get_buffer();
-    byte width = buffer->get_width();
-    do{
-      byte pos = random(min, max); 
-      if(!ColorMath::equal(buf[pos], buffer->black)){
-        return pos;
-      }
-    }while(protection++ <= width);
-    return 0;
-  } else {
+    }
+    while(protection++ <= width);
+    
+    return 0; // todo: could return random instead
+  } 
+  else 
     return random(min, max);  
-  }
 }
 
 // shortcut: once a special command is set to establish type, 'seq' can be used to read the values regardless of type
@@ -892,19 +909,24 @@ int Commands::random_num(int max, int min){
 // 1:0:2:seq - get next number from #1, stepping by 2
 // 1:0:-1:seq - get next number from #1, stepping by -1 (THIS DOESN'T SEEM TO WORK)
 
-int Commands::do_sequence(byte type, int arg0, int arg1, int arg2){
+int Commands::do_sequence(byte type, int arg0, int arg1, int arg2)
+{
   
-  if(arg1 > 0){
+  if(arg1 > 0)
+  {
     //                           num   high  low
     return do_set_sequence(type, arg0, arg1, arg2);
-  } else {
+  } 
+  else 
+  {
     //                      num   adv   step
     return do_next_sequence(arg0, arg1, arg2);
   }
 }
 
 // returns the low value to begin the sequece
-int Commands::do_set_sequence(byte type, int arg0, int arg1, int arg2){
+int Commands::do_set_sequence(byte type, int arg0, int arg1, int arg2)
+{
   // values are entered in high,low order, so low can be skipped if zero
   // note the reverse argument order compared to do_next_sequence()
   //                         low   high
@@ -912,49 +934,51 @@ int Commands::do_set_sequence(byte type, int arg0, int arg1, int arg2){
   return arg2;
 }
 
-int Commands::do_next_sequence(int arg0, int arg1, int arg2){
+int Commands::do_next_sequence(int arg0, int arg1, int arg2)
+{
   //                     num   adv   step
   return sequencer->next(arg0, arg1, arg2);
 }
 
 // advance the sequencer, then leave arg0 = position, arg1 = width
 // for the position command to allow filling gaps
-void Commands::do_next_window(int arg0, int arg1, int arg2){
+void Commands::do_next_window(int arg0, int arg1, int arg2)
+{
   byte position = sequencer->next(arg0, arg1, arg2);
   byte previous_position = sequencer->previous_computed(arg0);
   sequencer->set_previous_computed(arg0, position);
   command_processor->sub_args[2] = 0;
 
-  if(position == previous_position){      // short-circuit - no change in position
+  if(position == previous_position)
+  {      
+    // short-circuit - no change in position
     command_processor->sub_args[0] = position;
     command_processor->sub_args[1] = 0;
     return;
   }
 
-  byte offset, width;
-  if(position > previous_position){       // going up by at least one
-    width = position - previous_position; // width needing drawing
-    if(width > 0){
-      offset = previous_position;         // there's a gap, start right after the last position
-    } else {
-      offset = position;                  // there's no movement
-      width = 0;
+  byte offset = position;
+  byte width = 0;
+  byte width_;
+
+  if(position > previous_position)         // going up by at least one
+  { 
+    width_ = position - previous_position; // width needing drawing
+    if(width_ > 0)
+    {
+      offset = previous_position;          // there's a gap, start right after the last position
+      width = width_;
     }
   } 
-  else if(position < previous_position){  // going down
-    width = previous_position - position; // width needing drawing
-    if(width > 0){                        // there's a gap, new position is beginning of range
-      offset = position;                  // and width is already computed, though it might need a - 1
-    }
-    else {
-      offset = position;                  // there's no movement
-      width = 0;
-    }
+  else                                     // going down
+  {
+    width_ = previous_position - position; // width needing drawing
+    if(width_ > 0)                         // there's a gap, new position is beginning of range
+      width = width_;                      // and width is already computed, though it might need a - 1
   } 
 
   command_processor->sub_args[0] = offset;
   command_processor->sub_args[1] = width;
-  return;
 }
 
 #define CONFIG_SETBLINKP   0
@@ -963,37 +987,44 @@ void Commands::do_next_window(int arg0, int arg1, int arg2){
 
 // arg0 setting to configure
 // arg1 value to set (0 = default)
-void Commands::do_configure(int arg0, int arg1, int arg2){
+void Commands::do_configure(int arg0, int arg1, int arg2)
+{
   switch(arg0){
     case CONFIG_SETBLINKP:
       blink_effects->set_blink_period(arg1 == 0 ? BLINK_PERIOD : arg1);
       break;
+
     case CONFIG_SETBREATHET:
       breathe_effects->set_breathe_time(arg1 == 0 ? BREATHE_PERIOD : arg1);
       break;
+
     case CONFIG_SETFADERATE:
       set_fade_rate(arg1);
       break;
   }
 }
 
-bool Commands::do_set_macro(byte macro, byte * dispatch_data){
-  bool continue_dispatching = true;
-  if(dispatch_data != NULL){
+bool Commands::do_set_macro(byte macro, byte * dispatch_data)
+{
+  //bool continue_dispatching = true;
+
+  if(dispatch_data != NULL)
+  {
     // being used internally
     macros.set_macro(macro, (char*)dispatch_data);          
 
     // signal that no more commands should be processed (rest of buffer copied to macro)
-    continue_dispatching = false;
-  } else {
-    // being used over serial
-    byte num_bytes = macros.set_macro_from_serial(macro);
-    command_processor->send_int(num_bytes);
-  }
-  return continue_dispatching;
+    return false;
+  } 
+
+  // being used over serial
+  byte num_bytes = macros.set_macro_from_serial(macro);
+  command_processor->send_int(num_bytes);
+  return true;
 }
 
-void Commands::do_run_macro(byte macro, int times, int delay_){
+void Commands::do_run_macro(byte macro, int times, int delay_)
+{
   macros.run_macro(macro, times, delay_); 
 }
 
@@ -1003,8 +1034,12 @@ void Commands::do_run_macro(byte macro, int times, int delay_){
 
 // to do need to add some limiting to not go over 255, etc.
 
-void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
-  switch(type){
+void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2)
+{
+   rgb_color *palette = Colors::get_palette();
+
+   switch(type)
+  {
     case COLOR_SEQUENCE_HUE:
       // arg0 - starting hue angle 0-359, default = 0 (red)
       // arg1 - step angle, default = 20
@@ -1016,8 +1051,8 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
         if(arg2 < 1) arg2 = 20;
 
         int angle = arg0;
-        rgb_color *palette = Colors::get_palette();
-        for(byte i = 0; i < NUM_PALETTE_COLORS; i++){
+        for(byte i = 0; i < NUM_PALETTE_COLORS; i++)
+        {
           palette[i] = ColorMath::hsl_to_rgb(angle % 360, 255, arg2);
           angle += arg1;
         }
@@ -1032,9 +1067,9 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
         if(arg1 == 0) arg1 = 1422; else arg1 *= 100;
         if(arg2 < 1) arg2 = 20;
 
-        rgb_color *palette = Colors::get_palette();
         int saturation = 0;
-        for(byte i = 0; i < NUM_PALETTE_COLORS; i++){         
+        for(byte i = 0; i < NUM_PALETTE_COLORS; i++)
+        {         
           // the saturation goes from richest to whitest
           palette[i] = ColorMath::hsl_to_rgb(arg0, 255 - (saturation / 100), arg2);
           saturation = (saturation + arg1) % 25600;
@@ -1052,16 +1087,16 @@ void Commands::do_color_sequence(byte type, int arg0, int arg1, int arg2){
         if(arg1 == 0) arg1 = 1422; else arg1 *= 100;
         if(arg2 < 1) arg2 = 20;
 
-        rgb_color *palette = Colors::get_palette();
-
         // skip ahead past the black color
         int lightness = arg1;
         
-        for(byte i = 0; i < NUM_PALETTE_COLORS; i++){
-          palette[i] = ColorMath::hsl_to_rgb(arg0, 255, lightness / 100);
-          palette[i].red = palette[i].red * arg2 / 256;
-          palette[i].green = palette[i].green * arg2 / 256;
-          palette[i].blue = palette[i].blue * arg2 / 256;
+        for(byte i = 0; i < NUM_PALETTE_COLORS; i++)
+        {
+          rgb_color color = ColorMath::hsl_to_rgb(arg0, 255, lightness / 100);
+          color.red = color.red * arg2 / 256;
+          color.green = color.green * arg2 / 256;
+          color.blue = color.blue * arg2 / 256;
+          palette[i] = color;
           lightness = (lightness + arg1) % 25600;
         }
       }

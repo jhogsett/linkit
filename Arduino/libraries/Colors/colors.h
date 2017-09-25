@@ -93,10 +93,10 @@ rgb_color Colors::random_palette_color(){
   return palette[random(NUM_PALETTE_COLORS)];
 }
 
-void Colors::reset_palette(){
-  for(byte i = 0; i < NPRETTY_COLORS; i++){
+void Colors::reset_palette()
+{
+  for(byte i = 0; i < NPRETTY_COLORS; i++)
     palette[i] = *Colors::get_color(i);
-  }
 }
 
 // from https://forum.arduino.cc/index.php?topic=345964.0
@@ -147,7 +147,6 @@ void Colors::random_compliment_pairs()
   compliment_pairs();
 }
 
-// todo: dry
 void Colors::compliment_palette()
 {
   for(byte i = 0; i < NUM_PALETTE_COLORS; i++)

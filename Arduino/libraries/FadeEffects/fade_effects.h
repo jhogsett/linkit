@@ -70,6 +70,7 @@ rgb_color FadeEffects::apply_fade(rgb_color color, byte effect)
       case SLOW_FADE:
         color = apply_slow_fade(color);
         break;
+
       case FAST_FADE:
         color = apply_fast_fade(color);
         break;
