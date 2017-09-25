@@ -407,11 +407,9 @@ void Macros::run_macro(byte macro, int times, int delay_){
         else
         {
           if(!(this->dispatch_function)(cmd, macro_buffer))
-          {
             // the remaining macro buffer has been copied to set a macro
             // so there are no more commands to dispatch
             return;
-          }
         }
       }
     }

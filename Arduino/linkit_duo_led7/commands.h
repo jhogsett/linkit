@@ -260,7 +260,8 @@ void Commands::set_pin(byte pin, bool on)
 
 void Commands::set_brightness_level(byte level)
 {
-  if(level == 0){
+  if(level == 0)
+  {
 #ifdef USE_AUTO_BRIGHTNESS
     level = auto_brightness->get_auto_brightness_level();
 #else
@@ -274,18 +275,6 @@ void Commands::set_brightness_level(byte level)
 // todo: allow blending over a range of leds
 // strength 1-100, 100 = all color @ offset
 // 0 == 50
-//void Commands::do_blend(byte strength)
-//{
-//  if(strength < 1)
-//  {
-//    strength = 50;
-//  }
-//  rgb_color * buf = buffer->get_buffer();
-//  byte offset = buffer->get_offset();
-//  buf[offset] = ColorMath::blend_colors(buf[offset], buf[offset + 1], strength / 100.0);
-//  buf[offset + 1] = buf[offset];
-//}
-
 // todo: negative # blends in the opposite direction
 void Commands::do_blend(byte strength)
 {
@@ -337,6 +326,7 @@ void Commands::do_fade()
   do_crossfade();
 }
 
+// todo: move delay to the color math class
 void Commands::do_crossfade()
 {
   rgb_color * render_buffer = buffer->get_render_buffer();
@@ -383,30 +373,13 @@ void Commands::do_flood()
   buf += start;
   effects += start;
 
-//  if(effect != RANDOM1 && effect != RANDOM2)
-//   {
-    for(byte i = start; i < end_; i++){
-      *buf = color;
-      *effects = effect;    
-      buf++;
-      effects++;
-    }
-//   } 
-//  else 
-//  {
-//    // this could be further optimized but this type of flooding isn't used often
-//    bool random_effect = effect == RANDOM2;
-//    for(byte i = start; i < end_; i++){
-//      *buf = ColorMath::random_color();
-//      if(random_effect)
-//        *effects = EffectsProcessor::random_effect();
-//      else
-//        *effects = NO_EFFECT;
-//
-//      buf++;
-//      effects++;
-//    }
-//  }
+  for(byte i = start; i < end_; i++)
+  {
+    *buf = color;
+    *effects = effect;    
+    buf++;
+    effects++;
+  }
 }
 
 #define RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT 0

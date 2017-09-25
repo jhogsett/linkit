@@ -94,11 +94,13 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte
   this->carry_effect = NO_EFFECT;
 }
 
-byte Buffer::get_display(){
+byte Buffer::get_display()
+{
   return this->current_display;
 }
 
-void Buffer::reset(){
+void Buffer::reset()
+{
   this->set_zone(0);
   this->set_reverse(false);
 }
@@ -153,8 +155,8 @@ void Buffer::cross_fade(byte step)
    }
 }
 
-void Buffer::rotate(){
-  //@@@
+void Buffer::rotate()
+{
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
   byte max = get_window();
@@ -162,17 +164,22 @@ void Buffer::rotate(){
 
   shift_buffer(buffer, effects, max, start, this->reverse);
 
-  if(reverse){
+  if(this->reverse)
+  {
     buffer[max - 1] = this->carry_color;
     effects[max - 1] = this->carry_effect;
-  } else {
+  }
+  else
+  {
     buffer[start] = this->carry_color;
     effects[start] = this->carry_effect;
   }
 }
 
-void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse = false){
-  if(reverse){
+void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse = false)
+{
+  if(reverse)
+  {
     this->carry_color = buffer[start];
     this->carry_effect = effects[start];
 
@@ -180,13 +187,16 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
     byte * eff = effects + start;
     max -= 1;
 
-    for(byte i = start; i < max; i++){
+    for(byte i = start; i < max; i++)
+    {
       *buf = *(buf + 1);
       *eff = *(eff + 1);
       buf++;
       eff++;
     }
-  } else {
+  }
+  else
+  {
     this->carry_color = buffer[max - 1];
     this->carry_effect = effects[max - 1];
 
@@ -213,42 +223,47 @@ void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, b
   max = (max == 0) ? get_window() : max;
   start = (start == 0) ? get_offset() : start;
   times = max(1, times);
-
   color = ColorMath ::correct_color(color);
 
   rgb_color * buf;
   byte * eff;
-  if(this->reverse){
+  if(this->reverse)
+  {
     buf = &buffer[max-1];
     eff = &effects[max-1];
-  } else {
+  }
+  else
+  {
     buf = &buffer[start];
     eff = &effects[start];
   }
 
-  for(byte i = 0; i < times; i++){
+  for(byte i = 0; i < times; i++)
+  {
     shift_buffer(buffer, effects, max, start, this->reverse);
     *buf = color;
     *eff = effect;
     
-    if(display){
+    if(display)
       render_display();
-    }
   }
 }
 
-void Buffer::push_rgb_color(byte red, byte green, byte blue){
+void Buffer::push_rgb_color(byte red, byte green, byte blue)
+{
   rgb_color color = (rgb_color){red, green, blue};
   color = ColorMath::unscale_color(color, default_brightness_scale);
   push_color(color);
 }
 
-void Buffer::push_hsl_color(int hue, int sat, int lit){
+void Buffer::push_hsl_color(int hue, int sat, int lit)
+{
   rgb_color color = ColorMath::hsl_to_rgb(hue, sat, lit);
   push_rgb_color(color.red, color.green, color.blue);
 }
 
-void Buffer::push_carry_color(){
+void Buffer::push_carry_color()
+{
   push_color(carry_color, 1, false, carry_effect);
 }
 
@@ -271,10 +286,12 @@ void Buffer::push_carry_color(){
 
 // when setting override, should it fix the override to be normal?
 // 2:win:4:off leaves window override at 2
-void Buffer::set_window_override(byte window, bool fixup = false){
-  if(window < 0){
+void Buffer::set_window_override(byte window, bool fixup = false)
+{
+  if(window < 0)
     this->window_override = OVERRIDE_OFF;
-  } else {
+  else
+  {
     this->window_override = max(1, min(visible_led_count + 1, window));
 
     // fix up offset override if necessary
@@ -284,86 +301,100 @@ void Buffer::set_window_override(byte window, bool fixup = false){
   }
 }
 
-byte Buffer::get_window(){
-  if(this->window_override != OVERRIDE_OFF){
+byte Buffer::get_window()
+{
+  if(this->window_override != OVERRIDE_OFF)
     return this->window_override;
-  } else {
+  else
     return this->zones->zone_window(this->current_zone);
-  }
 }
 
-void Buffer::set_offset_override(byte offset, bool fixup = false){
-  if(offset < 0){
+void Buffer::set_offset_override(byte offset, bool fixup = false)
+{
+  if(offset < 0)
     this->offset_override = OVERRIDE_OFF;
-  } else {
+  else
+  {
     this->offset_override = max(0, min(visible_led_count, offset));
 
     // fix up window override if necessary
-    if(fixup && this->window_override != OVERRIDE_OFF){
+    if(fixup && this->window_override != OVERRIDE_OFF)
       this->window_override = max(this->window_override, this->offset_override + 1);
-    }
   }
 }
 
-byte Buffer::get_offset(){
-  if(this->offset_override != OVERRIDE_OFF){
+byte Buffer::get_offset()
+{
+  if(this->offset_override != OVERRIDE_OFF)
     return this->offset_override;
-  } else {
+  else
     return this->zones->zone_offset(this->current_zone);
-  }
 }
 
-byte Buffer::get_width(){
+byte Buffer::get_width()
+{
   return this->get_window() - this->get_offset();
 }
 
-void Buffer::set_zone(byte zone){
+void Buffer::set_zone(byte zone)
+{
   this->current_zone = max(0, min(this->get_zones() - 1, zone));
   this->window_override = OVERRIDE_OFF;
   this->offset_override = OVERRIDE_OFF;
 }
 
-void Buffer::set_display(byte display){
+void Buffer::set_display(byte display)
+{
   this->current_display = display;
 }
 
-byte Buffer::get_current_display(){
+byte Buffer::get_current_display()
+{
   return this->current_display;
 }
 
-rgb_color * Buffer::get_buffer(){
+rgb_color * Buffer::get_buffer()
+{
   return this->buffers[current_display];
 }
 
-byte * Buffer::get_effects_buffer(){
+byte * Buffer::get_effects_buffer()
+{
   return this->effects_buffers[current_display];
 }
 
-rgb_color * Buffer::get_render_buffer(){
+rgb_color * Buffer::get_render_buffer()
+{
   return this->render;
 }
 
-void Buffer::set_reverse(bool reverse = true){
+void Buffer::set_reverse(bool reverse = true)
+{
   this->reverse = reverse;
 }
 
-bool Buffer::get_reverse(){
+bool Buffer::get_reverse()
+{
   return this->reverse;
 }
 
-byte Buffer::get_zones(){
+byte Buffer::get_zones()
+{
   return this->zones->get_num_zones();
 }
 
-void Buffer::set_black_level(rgb_color black_level){
+void Buffer::set_black_level(rgb_color black_level)
+{
   this->black = black_level;
 }
 
-void Buffer::reset_black_level(){
+void Buffer::reset_black_level()
+{
   this->black = Render::black;
 }
 
-int Buffer::get_default_brightness(){
+int Buffer::get_default_brightness()
+{
   return (int)(this->default_brightness_scale * 100.0);
 }
 
@@ -371,7 +402,8 @@ int Buffer::get_default_brightness(){
 // to do: restrict to current zone
 // animate by shifting frame (rendering frame
 // buffer in different render buffer positions)
-void Buffer::shift(byte count, byte maxx, bool fast_render = true){
+void Buffer::shift(byte count, byte maxx, bool fast_render = true)
+{
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
 
@@ -381,23 +413,21 @@ void Buffer::shift(byte count, byte maxx, bool fast_render = true){
 
   // to do: start off offset
   // to do: would it be faster to set each individual byte?
-  for(byte i = 0; i < count; i++){
+  for(byte i = 0; i < count; i++)
     this->render[i] = black;
-  }
 
   // to do: add offset
-  for(byte i = count; i < maxx; i++){
+  for(byte i = count; i < maxx; i++)
     if(fast_render)
       this->render[i] = renderer->fast_render(buffer[i - count], effects[i - count]);
     else
       this->render[i] = renderer->render(&buffer[i - count], effects[i - count]);
-  }
 
   display_buffer(this->render);
 }
 
-void Buffer::finalize_shift(byte count, byte max){
-
+void Buffer::finalize_shift(byte count, byte max)
+{
   // to do: restrict to current zone
 //  for(byte i = 0; i < count; i++){
 //    push_color(black, 1, false, NO_EFFECT, max);

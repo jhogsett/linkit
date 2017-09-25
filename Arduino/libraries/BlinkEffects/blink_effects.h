@@ -45,22 +45,25 @@ class BlinkEffects
   int half_counter;
 };
 
-void BlinkEffects::begin(int blink_period = DEFAULT_BLINK_PERIOD){
+void BlinkEffects::begin(int blink_period = DEFAULT_BLINK_PERIOD)
+{
   set_blink_period(blink_period);
   reset();
 }
 
-void BlinkEffects::reset(){
+void BlinkEffects::reset()
+{
   this->blink_counter = 0;
   this->half_counter = 0;
 }
 
-void BlinkEffects::set_blink_period(int blink_period){
-  if(blink_period < MAX_BLINK_SEGMENTS){
+void BlinkEffects::set_blink_period(int blink_period)
+{
+  if(blink_period < MAX_BLINK_SEGMENTS)
     this->half_period = DEFAULT_BLINK_PERIOD;
-  } else {
+  else
     this->half_period = blink_period;
-  }
+
   // for testing 1-6 blink
   this->interval = this->half_period / MAX_BLINK_SEGMENTS;
 
@@ -68,38 +71,55 @@ void BlinkEffects::set_blink_period(int blink_period){
   this->blink_period = this->half_period * 2;
 }
 
-bool BlinkEffects::process(){
+bool BlinkEffects::process()
+{
   this->blink_counter = (this->blink_counter + 1) % this->blink_period;
   this->half_counter = this->blink_counter % this->half_period;
   return this->blink_counter % this->interval == 0;
 }
 
-bool BlinkEffects::is_handled_effect(byte effect){
+bool BlinkEffects::is_handled_effect(byte effect)
+{
   return effect >= BLINK_MIN && effect <= BLINK_MAX;
 }
 
-bool BlinkEffects::blink_1_6_test(byte effect){
+bool BlinkEffects::blink_1_6_test(byte effect)
+{
   int start = (effect - BLINK_ON_1) * this->interval;
   int end = start + this->interval;
   return this->half_counter >= start && half_counter < end;
 }
 
-bool BlinkEffects::blink_a_b_test(byte effect){
+bool BlinkEffects::blink_a_b_test(byte effect)
+{
   int quarter_period = this->half_period / 2;
-  switch(effect){
-    case BLINK_ON_A: return this->half_counter < quarter_period;
-    case BLINK_ON_B: return this->half_counter >= quarter_period;
+  switch(effect)
+  {
+    case BLINK_ON_A:
+      return this->half_counter < quarter_period;
+
+    case BLINK_ON_B:
+      return this->half_counter >= quarter_period;
   }
 }
 
-bool BlinkEffects::blink_on(byte effect){
+bool BlinkEffects::blink_on(byte effect)
+{
   switch(effect){
-    case BLINK_ON:                                     return this->blink_counter < this->half_period;
+    case BLINK_ON:
+       return this->blink_counter < this->half_period;
 
-    case BLINK_ON_1: case BLINK_ON_2: case BLINK_ON_3:
-    case BLINK_ON_4: case BLINK_ON_5: case BLINK_ON_6: return blink_1_6_test(effect);
+    case BLINK_ON_1:
+    case BLINK_ON_2:
+    case BLINK_ON_3:
+    case BLINK_ON_4:
+    case BLINK_ON_5:
+    case BLINK_ON_6:
+      return blink_1_6_test(effect);
 
-    case BLINK_ON_A: case BLINK_ON_B:                  return blink_a_b_test(effect);
+    case BLINK_ON_A:
+    case BLINK_ON_B:
+      return blink_a_b_test(effect);
   }
 }
 #endif

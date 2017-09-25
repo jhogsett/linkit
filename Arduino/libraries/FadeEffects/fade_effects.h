@@ -33,13 +33,15 @@ class FadeEffects
   int fade_counter;
 };
 
-void FadeEffects::begin(float fade_rate = DEFAULT_FADE_RATE, int fade_period = DEFAULT_FADE_PERIOD){
+void FadeEffects::begin(float fade_rate = DEFAULT_FADE_RATE, int fade_period = DEFAULT_FADE_PERIOD)
+{
   this->fade_rate = fade_rate;
   this->fade_period = fade_period;
   reset();
 }
 
-void FadeEffects::reset(){
+void FadeEffects::reset()
+{
   fade_counter = 0;
 }
 
