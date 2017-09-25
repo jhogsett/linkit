@@ -1363,7 +1363,34 @@ def specs():
 # RANDOM POSITION
 ########################################################################
   if group("random postion"):                                                                                                            
-    pending_test("random position")                                                                                                                                                                                                         
+    test("it sets a random position within the current width")                                                                                                                                                                                                         
+
+    # use a macro to process the ramndom postion and place a color
+    command_str("0:set:5:win:rps:rnd:flu:rst")    
+
+    expect_buffer("0,20:run", 0, 10, "10,20,0,20,0,20,20,10,0,20,10,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
+
+    ## the test region starts at zero because when it doesn't find a position it returns zero
+
+    test("it sets a random position only where empty")
+
+    # use a macro to process the ramndom postion and place a color
+    command_str("0:set:4:win:-1:rps:wht:flu:rst")
+
+    expect_buffer("2:dgr:2:blk:0,10:run", 0, 5, "20,20,20,20,20,20,5,5,5,5,5,5,0,0,0")
+
+    test("it sets a random position only where not empty")
+
+    # use a macro to process the ramndom postion and place a color
+    command_str("0:set:4:win:-2:rps:wht:flu:rst")
+
+    expect_buffer("2:blk:2:dgr:0,10:run", 0, 5, "20,20,20,20,20,20,0,0,0,0,0,0,0,0,0")
+
+    test("doesn't get stuck if there are no empty spots")
+    expect_buffer("pnk:flo:-1:rps:wht", 0, 2, "20,20,20,20,0,10")
+
+    test("doesn't get stuck if there are no non-empty spots")
+    expect_buffer("-2:rps:wht", 0, 2, "20,20,20,0,0,0")
 
 
 ########################################################################
