@@ -900,40 +900,20 @@ def specs():
     test("it floods using the same color not another random color")
     expect_buffer("rnd:flo", 0, 2, "15,20,0,15,20,0")
 
-    test("it sets a random color and sets the effect to repeat with random colors")
-    expect_buffer("1:rnd", 0, 1, "15,20,0")                                                                                        
-    expect_effect("1:rnd", 0, 1, "1")  
-
-    test("it repeats using a different color")
-    expect_buffer("1:rnd:rep", 0, 2, "20,0,20,15,20,0")
-
-    test("it floods using a different color each time")                                                                                                                                                      
-    if num_leds == 90:  
-      expect_buffer("1:rnd:flo", 0, 3, "15,20,0,20,0,20,10,0,20") 
-    elif num_leds == 100 or num_leds == 200:
-      expect_buffer("1:rnd:flo", 0, 3, "15,20,0,0,20,20,0,10,20")
-    elif num_leds == 44:
-      expect_buffer("1:rnd:flo", 0, 3, "15,20,0,0,20,20,0,10,20")
-    else:
-      expect_buffer("1:rnd:flo", 0, 3, "15,20,0,20,0,20,10,0,20")
-
-    test("the repeated colors get repeated effects")
-    expect_effect("1:rnd:rep:rep", 0, 3, "1,1,1") 
+    test("it sets a random color and sets no effect")
+    expect_buffer("1:rnd", 0, 1, "20,0,20")                                                                                        
+    expect_effect("1:rnd", 0, 1, "0")  
 
     test("the flooded colors get no effect set")                          
-    expect_effect("1:rnd:flo", 0, 3, "1,0,0")    
+    expect_effect("1:rnd:flo", 0, 3, "0,0,0")    
 
-    test("it sets a random color and sets the effect to repeat with random colors+effects")                                                                                                                          
-    expect_buffer("2:rnd", 0, 1, "15,20,0")                                                                                                                                                                    
-    expect_effect("2:rnd", 0, 1, "2") 
-
-    test("it repeats using a different color and different effect")                                                                                                                                                               
-    expect_buffer("2:rnd:rep", 0, 2, "10,0,20,15,20,0")                                                                                                              
-    expect_effect("2:rnd:rep", 0, 2, "17,2")  
+    test("it sets a random color and sets a random effect")                                                                                                                          
+    expect_buffer("1:rnd:2:rnd:2:rnd", 0, 3, "0,10,20,0,0,20,20,0,20")                                                                                                                                                                    
+    expect_effect("1:rnd:2:rnd:2:rnd", 0, 3, "0,17,15") 
 
     test("it floods using a different color each time")                                                 
     if num_leds == 90:
-      expect_buffer("2:rnd:flo", 0, 3, "15,20,0,20,0,20,20,20,0")                                                                                                                                          
+      expect_buffer("2:rnd:flo", 0, 3, "10,0,20,10,0,20,10,0,20")                                                                                                                                          
     elif num_leds == 100 or num_leds == 200:
       expect_buffer("2:rnd:flo", 0, 3, "15,20,0,0,20,20,20,20,0")
     elif num_leds == 44:
@@ -941,14 +921,24 @@ def specs():
     else:
       expect_buffer("2:rnd:flo", 0, 3, "15,20,0,20,0,20,20,20,0")
 
-    test("the flooded colors get random effects set")                                     
-    expect_effect("2:rnd:flo", 0, 3, "2,0,17") 
-
-    test("the repeated colors get random effects set")                                                                                                                                                            
-    expect_effect("2:rnd:rep:2:rnd:rep", 0, 5, "17,2,20,2,0")                                                                                                                                                        
-
     test("it places a random color from the palette")
-    expect_buffer("3:rnd", 0, 1, "15,20,0")
+    expect_buffer("3:rnd", 0, 1, "20,0,20")
+
+    test("it places multiple versions of the same random color and no effect")
+    expect_buffer("rnd:0,5:rnd", 0, 7, "20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,15,20,0,0,0,0")
+    expect_effect("rnd:0,5:rnd", 0, 7, "0,0,0,0,0,0,0")
+
+    test("it places multiple random colors and no effects")
+    expect_buffer("rnd:1,5:rnd", 0, 7, "0,20,20,0,10,20,0,0,20,20,20,0,10,0,20,15,20,0,0,0,0")
+    expect_effect("rnd:1,5:rnd", 0, 7, "0,0,0,0,0,0,0")
+
+    test("it places multiple random colors with random effects")
+    expect_buffer("rnd:2,5:rnd", 0, 7, "20,0,15,20,10,0,0,10,20,0,10,20,20,20,0,15,20,0,0,0,0")
+    expect_effect("rnd:2,5:rnd", 0, 7, "0,20,15,18,20,17,0")
+
+    test("it places multiple random palette colors and no effects")
+    expect_buffer("rnd:3,5:rnd", 0, 7, "0,20,20,0,10,20,0,0,20,20,20,0,10,0,20,15,20,0,0,0,0")
+    expect_effect("rnd:3,5:rnd", 0, 7, "0,0,0,0,0,0,0")
 
 
 ########################################################################
