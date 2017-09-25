@@ -1,3 +1,5 @@
+// SECOND ARG TO RND: the count, to avoid having to use repeat
+
 // multiple displays specs
 
 // should push_rgb unscale to the configured default brightness or a standard brightness, like the 0-20 color standard

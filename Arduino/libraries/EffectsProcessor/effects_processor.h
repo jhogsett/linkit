@@ -11,9 +11,6 @@
 
 #define LEAVE_EFFECT -1
 #define NO_EFFECT 0
-#define RANDOM0 0
-#define RANDOM1 1
-#define RANDOM2 2
 #define RANDOM_EFFECTS 11
 
 class EffectsProcessor

@@ -102,7 +102,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break; 
  
     case CMD_RANDOM: 
-      do_random(arg0); 
+      do_random(arg0, arg1); 
       break; 
     
     case CMD_BLEND: 

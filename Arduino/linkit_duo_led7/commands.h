@@ -39,6 +39,7 @@ class Commands
   static Scheduler scheduler;
 
   private:
+  
   void pause(byte type);
   void resume(byte type);
   void pause_effects();
@@ -53,7 +54,7 @@ class Commands
   void do_crossfade();
   void do_wipe();
   void do_flood();
-  void do_random(byte type);
+  void do_random(byte type, int times);
   void do_mirror();
   void do_copy(byte size, int times, byte zoom);
   void do_repeat(byte times);
@@ -132,23 +133,47 @@ Scheduler Commands::scheduler;
 Commands * Commands::me;
 
 #ifdef USE_AUTO_BRIGHTNESS
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects, Sequencer *sequencer){
+void Commands::begin(
+  Buffer *buffer, 
+  Render *renderer, 
+  EffectsProcessor *effects_processor, 
+  byte default_brightness, 
+  byte visible_led_count, 
+  AutoBrightnessBase *auto_brightness, 
+  CommandProcessor *command_processor, 
+  BlinkEffects *blink_effects, 
+  BreatheEffects *breathe_effects, 
+  FadeEffects *fade_effects, 
+  Sequencer *sequencer)
+{
 #else
-void Commands::begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects, Sequencer *sequencer){
+void Commands::begin(
+  Buffer *buffer, 
+  Render *renderer, 
+  EffectsProcessor *effects_processor, 
+  byte default_brightness, 
+  byte visible_led_count, 
+  CommandProcessor *command_processor, 
+  BlinkEffects *blink_effects, 
+  BreatheEffects *breathe_effects, 
+  FadeEffects *fade_effects, 
+  Sequencer *sequencer)
+{
 #endif
-  this->me = this;
-  this->buffer = buffer;
-  this->renderer = renderer;
-  this->effects_processor = effects_processor;
+  this->me                 = this;
+  this->buffer             = buffer;
+  this->renderer           = renderer;
+  this->effects_processor  = effects_processor;
   this->default_brightness = default_brightness;
-  this->visible_led_count = visible_led_count;
-  this->command_processor = command_processor;
-  this->blink_effects = blink_effects;
-  this->breathe_effects = breathe_effects;
-  this->sequencer = sequencer;
-  this->fade_effects = fade_effects;
+  this->visible_led_count  = visible_led_count;
+  this->command_processor  = command_processor;
+  this->blink_effects      = blink_effects;
+  this->breathe_effects    = breathe_effects;
+  this->sequencer          = sequencer;
+  this->fade_effects       = fade_effects;
+
 #ifdef USE_AUTO_BRIGHTNESS
-  this->auto_brightness = auto_brightness;
+  this->auto_brightness    = auto_brightness;
 #endif
 
   macros.begin(command_processor, &Commands::dispatch_function);
@@ -173,13 +198,11 @@ void Commands::pause(byte type = PAUSE_ALL)
 {
   switch(type)
   {
-    case PAUSE_ALL:
-      pause_effects();
-      pause_schedules();
-      break;
     case PAUSE_EFFECTS:
       pause_effects();
       break;
+    case PAUSE_ALL:
+      pause_effects();
     case PAUSE_SCHEDULES:
       pause_schedules();
       break;
@@ -271,7 +294,6 @@ void Commands::do_blend(byte strength)
 
   byte offset = buffer->get_offset();
   rgb_color * buf = &buffer->get_buffer()[offset];
-//  rgb_color * buf2 = &buffer->get_buffer()[offset + 1];
 
   *buf = ColorMath::blend_colors(*buf, *(buf+1), strength / 100.0);
   *(buf+1) = *buf;
@@ -286,10 +308,11 @@ void Commands::do_blend(byte strength)
 // -2:adj - quarters the brightness
 
 // only works properly when used immediately after placing a standard color
-void Commands::do_max(){
+void Commands::do_max()
+{
   byte offset = buffer->get_offset();
-  rgb_color * buf = buffer->get_buffer();
-  buf[offset] = ColorMath::scale_color(buf[offset], MAX_BRIGHTNESS_PERCENT / 100.0);
+  rgb_color * buf = &buffer->get_buffer()[offset];
+  *buf = ColorMath::scale_color(*buf, MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
 void Commands::do_dim(){
@@ -308,22 +331,27 @@ void Commands::do_bright(){
   buf->blue = buf->blue << 1;
 }
 
-void Commands::do_fade(){
+void Commands::do_fade()
+{
   buffer->erase();
   do_crossfade();
 }
 
-void Commands::do_crossfade(){
+void Commands::do_crossfade()
+{
   rgb_color * render_buffer = buffer->get_render_buffer();
   byte steps = ColorMath::crossfade_steps();
-  for(byte i = 0; i <= steps; i++){
+
+  for(byte i = 0; i <= steps; i++)
+  {
     buffer->cross_fade(i);
     buffer->display_buffer(render_buffer);
     delay(CROSSFADE_DELAY);
   }
 }
 
-void Commands::do_flood(){
+void Commands::do_flood()
+{
   byte offset = buffer->get_offset();
   byte window = buffer->get_window();
 
@@ -331,50 +359,54 @@ void Commands::do_flood(){
   if((window - offset) < 2)
     return;
   
-  rgb_color * buf = buffer->get_buffer();
-  byte * effects = buffer->get_effects_buffer();
-
   byte start;
   byte end_;
   byte source;
-  if(buffer->get_reverse()){
+
+  if(buffer->get_reverse())
+  {
     source = buffer->get_window() - 1;
     start = offset;
     end_ = window - 1;
-  } else {
+  } 
+  else 
+  {
     source = buffer->get_offset();
     start = offset + 1;
     end_ = window;
   }
 
+  rgb_color * buf = buffer->get_buffer();
+  byte * effects = buffer->get_effects_buffer();
   rgb_color color = buf[source];
   byte effect = effects[source];
-
   buf += start;
   effects += start;
 
-  if(effect != RANDOM1 && effect != RANDOM2){
+//  if(effect != RANDOM1 && effect != RANDOM2)
+//   {
     for(byte i = start; i < end_; i++){
       *buf = color;
       *effects = effect;    
       buf++;
       effects++;
     }
-  } else {
-    // this could be further optimized but this type of 
-    // flooding isn't used often
-    bool random_effect = effect == RANDOM2;
-    for(byte i = start; i < end_; i++){
-      *buf = ColorMath::random_color();
-      if(random_effect)
-        *effects = EffectsProcessor::random_effect();
-      else
-        *effects = NO_EFFECT;
-
-      buf++;
-      effects++;
-    }
-  }
+//   } 
+//  else 
+//  {
+//    // this could be further optimized but this type of flooding isn't used often
+//    bool random_effect = effect == RANDOM2;
+//    for(byte i = start; i < end_; i++){
+//      *buf = ColorMath::random_color();
+//      if(random_effect)
+//        *effects = EffectsProcessor::random_effect();
+//      else
+//        *effects = NO_EFFECT;
+//
+//      buf++;
+//      effects++;
+//    }
+//  }
 }
 
 #define RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT 0
@@ -387,44 +419,59 @@ void Commands::do_flood(){
 // 1: like #0 but will flood and repeat with random colors 
 // 2: like #1 but will also set random effects
 // others: b&w palette, all colors, all colors including blk
-void Commands::do_random(byte type){
-  type = (type < 0) ? 0 : type;
+void Commands::do_random(byte type, int times)
+{
+  type = max(0, type);
+  times = max(1, times);
+  rgb_color color = ColorMath::random_color();
+  byte * effect = &buffer->get_effects_buffer()[buffer->get_offset()];
+  bool random_effects = type == RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS;
+  
+  for(int i = 0; i < times; i++)
+  {
+    *effect = random_effects ? EffectsProcessor::random_effect() : NO_EFFECT;
+    switch(type)
+    {
+      case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT:
+        buffer->push_color(color);
+        break;
+      
+      case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS:
+      case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT: 
+        buffer->push_color(ColorMath::random_color());
+        break;
 
-  byte effect;
-  switch(type){
-    case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT:
-    case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT:
-    case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS: 
-      effect = RANDOM0 + (type - RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT); 
-      break;
-
-    case RANDOM_COLOR_TYPE_PALETTE: 
-      buffer->push_color(Colors::random_palette_color()); 
-      return;
+      case RANDOM_COLOR_TYPE_PALETTE:
+        buffer->push_color(Colors::random_palette_color()); 
+        break;
+    }  
   }
-
-  buffer->push_color(ColorMath::random_color());
-  buffer->get_effects_buffer()[buffer->get_offset()] = effect;
 }
 
-void Commands::do_mirror(){
+void Commands::do_mirror()
+{
+  bool reverse = buffer->get_reverse();
   byte front = buffer->get_offset();
   byte back = buffer->get_window() - 1;
   byte width = buffer->get_width() / 2;
-  rgb_color * buf = buffer->get_buffer();
-  byte * effects = buffer->get_effects_buffer();
-  bool reverse = buffer->get_reverse();
 
-  for(byte i = 0; i < width; i++){
-  
-    if(reverse){
-      buf[front + i] = buf[back - i];
-      effects[front + i] = effects[back - i];
-    } else {
-      buf[back - i] = buf[front + i];
-      effects[back - i] = effects[front + i];
+  rgb_color * buf_front = &buffer->get_buffer()[front];
+  rgb_color * buf_back = &buffer->get_buffer()[back];
+  byte * effects_front = &buffer->get_effects_buffer()[front];
+  byte * effects_back = &buffer->get_effects_buffer()[back];
+
+  for(byte i = 0; i < width; i++)
+  {
+    if(reverse)
+    {
+      *(buf_front + i) = *(buf_back - i);;
+      *(effects_front + i) = *(effects_back - i);
+    } 
+    else 
+    {
+      *(buf_back - i) = *(buf_front + i);
+      *(effects_back - i) = *(effects_front + i);
     }
-  
   }
 }
 
@@ -438,7 +485,8 @@ void Commands::do_mirror(){
 //        -1 = copy the pattern to the palette buffer but don't duplicate
 //        -2 = duplicate the pattern in the palette buffer but don't copy first
 // zoom - how many pixels to draw per source pixel
-void Commands::do_copy(byte size, int times, byte zoom){
+void Commands::do_copy(byte size, int times, byte zoom)
+{
   size = max(1, size);
   zoom = max(1, zoom);
 
@@ -452,16 +500,21 @@ void Commands::do_copy(byte size, int times, byte zoom){
 
   bool copy_only = false;
   bool dupe_only = false;
+
   if(times == -1){
     // copy the pattern but don't paste it
     copy_only = true;  
-  } else if(times == -2){
+  } 
+  else if(times == -2)
+  {
     // duplicate the pattern but don't copy it first
     dupe_only = true;
     // can't pass in a specific number of times
     // 1 is better than fill because it's less restrictive
     times = 1;
-  } else if(times < 1){
+  } 
+  else if(times < 1)
+  {
     times = (buffer->get_width() / effective_size) + 1; // repeat and fill
   }
 
@@ -475,28 +528,36 @@ void Commands::do_copy(byte size, int times, byte zoom){
   if(use_palette_buffer)
     palette = Colors::get_palette();
 
-  if(!copy_only && !dupe_only){
+  if(!copy_only && !dupe_only)
+  {
     // copy the effects pattern to the buffer temporarily
-    for(byte i = 0; i < size; i++){
-      byte source = offset + i;
+    byte * peffects = &effects[offset];
+    for(byte i = 0; i < size; i++)
+    {
+      int effect = *(peffects + i);
       if(use_palette_buffer)
-        palette[i].red = effects[source];
+        palette[i].red = effect;
       else
-        render_buffer[i].red = effects[source]; 
+        render_buffer[i].red = effect; 
     }
 
     // copy the effects
-    for(byte i = 0; i < times; i++){
-      for(byte j = 0; j < size; j++){
-        for(byte k = 0; k < zoom; k++){
-          byte source = j;
-          byte dest = offset + (i * effective_size) + (j * zoom) + k;
-  
-          if(dest < window){ // prevent buffer overrun
+    for(byte i = 0; i < times; i++)
+    {
+      int size_factor = offset + (i * effective_size);
+      for(byte j = 0; j < size; j++)
+      {
+        int zoom_factor = j * zoom;
+        for(byte k = 0; k < zoom; k++)
+        {
+          byte dest = size_factor + zoom_factor + k;
+          if(dest < window) // prevent buffer overrun
+          { 
+            byte * effect = &effects[dest];
             if(use_palette_buffer)
-              effects[dest] = palette[source].red;
+              *effect = palette[j].red;
             else
-              effects[dest] = render_buffer[source].red;
+              *effect = render_buffer[j].red;
           }
         }
       }
@@ -504,31 +565,40 @@ void Commands::do_copy(byte size, int times, byte zoom){
   }
 
   // copy the color pattern to the buffer temporarily
-  if(!dupe_only){
-    for(byte i = 0; i < size; i++){
+  if(!dupe_only)
+  {
+    for(byte i = 0; i < size; i++)
+    {
       byte source = offset + i;
+      rgb_color * buff = &buf[source];
       if(use_palette_buffer)
         // uncorrect corrected color so it works in the palette for push_color()
-        palette[i] = ColorMath::correct_color(buf[source]);
+        palette[i] = ColorMath::correct_color(*buff);
       else
-        render_buffer[i] = buf[source]; 
+        render_buffer[i] = *buff; 
     }
   }
   
-  if(!copy_only){
+  if(!copy_only)
+  {
     // copy the colors
-    for(byte i = 0; i < times; i++){
-      for(byte j = 0; j < size; j++){
-        for(byte k = 0; k < zoom; k++){
-          byte source = j;
-          byte dest = offset + (i * effective_size) + (j * zoom) + k;
-    
-          if(dest < window){ // prevent buffer overrun
+    for(byte i = 0; i < times; i++)
+    {
+      int size_factor = offset + (i * effective_size) ;
+      for(byte j = 0; j < size; j++)
+      {
+        int zoom_factor = j * zoom;
+        for(byte k = 0; k < zoom; k++)
+        {
+          byte dest = size_factor + zoom_factor + k;
+          if(dest < window)
+          { // prevent buffer overrun
+            rgb_color * buff = &buf[dest];
             if(use_palette_buffer)
               // correct the uncorrected color in the palette
-              buf[dest] = ColorMath::correct_color(palette[source]);
+              *buff = ColorMath::correct_color(palette[j]);
             else
-              buf[dest] = render_buffer[source];
+              *buff = render_buffer[j];
           }
         }
       }
@@ -540,46 +610,10 @@ void Commands::do_copy(byte size, int times, byte zoom){
 // consider support a repeat of zero times (doing nothing)
 void Commands::do_repeat(byte times = 1){
   times = max(1, times);
-
-  byte offset;
-  if(buffer->get_reverse()){
-    offset = buffer->get_window() - 1;
-  } else {
-    offset = buffer->get_offset();
-  }
-  
+  byte offset = buffer->get_reverse() ? buffer->get_window() - 1 : buffer->get_offset();
+  rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
   byte effect = buffer->get_effects_buffer()[offset];
-  switch(effect){
-    case RANDOM0:
-      {
-        // repeat the same color, no effect
-        rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
-        buffer->push_color(color, times, false, NO_EFFECT);
-      }
-      break;
-    case RANDOM1:
-      {
-        // changing random color only, no random effect
-        for(byte i = 0; i < times; i++){
-          buffer->push_color(ColorMath::random_color(), 1, false, effect);
-        }
-      }
-      break;
-    case RANDOM2:
-      {
-        // changing random color and random effect
-        for(byte i = 0; i < times; i++){
-          buffer->push_color(ColorMath::random_color(), 1, false, EffectsProcessor::random_effect());
-        }
-      }
-      break;
-    default:
-      {
-        rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
-        buffer->push_color(color, times, false, effect);
-      }
-      break;
-  }
+  buffer->push_color(color, times, false, effect);
 }
 
 //void Commands::do_elastic_shift(byte count, byte max = 0){
