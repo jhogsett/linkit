@@ -63,6 +63,7 @@ class Macros
   void write_word(word * buffer, bool to_eeprom, word data);
   void determine_arg_marker(byte &arg_marker, byte &num_args);
   void set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom);
+  bool get_macro_ptr(byte macro, byte **pptr);
 };
 
 // in-memory macros
@@ -140,19 +141,8 @@ void Macros::write_word(word * buffer, bool to_eeprom, word data){
 
 // copy bytes until the end of macro marker
 void Macros::set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom){
-  bool to_eeprom;
   byte * macro_data;
-
-  if(is_memory_macro(macro))
-  {
-    macro_data = get_memory_macro(macro);
-    to_eeprom = false;
-  }
-  else
-  {
-    macro_data = get_eeprom_macro(macro);
-    to_eeprom = true;
-  }
+  bool to_eeprom = get_macro_ptr(macro, &macro_data);
 
   byte b;
   while((b = read_byte(buffer, from_eeprom)) != MACRO_END_MARKER)
@@ -180,11 +170,8 @@ void Macros::set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom){
 
 void Macros::reset_macro(byte macro){
   if(is_memory_macro(macro))
-
     get_memory_macro(macro)[0] = '\0';   // TODO should this be the macro end marker
-
   else if(is_eeprom_macro(macro))
-
     eeprom_write_byte(get_eeprom_macro(macro), MACRO_END_MARKER);
 }
 
@@ -226,20 +213,23 @@ void Macros::determine_arg_marker(byte &arg_marker, byte &num_args)
   }
 }
 
-byte Macros::set_macro(byte macro, char * commands){
-  byte * macro_buffer;
-  bool to_eeprom;
-
+bool Macros::get_macro_ptr(byte macro, byte **pptr)
+{
   if(is_eeprom_macro(macro))
   {
-    macro_buffer = get_eeprom_macro(macro);
-    to_eeprom = true;
+    *pptr = get_eeprom_macro(macro);
+    return true;
   }
   else
   {
-    macro_buffer = get_memory_macro(macro);
-    to_eeprom = false;
+    *pptr = get_memory_macro(macro);
+    return false;
   }
+}
+
+byte Macros::set_macro(byte macro, char * commands){
+  byte * macro_buffer;
+  bool to_eeprom = get_macro_ptr(macro, &macro_buffer);
 
   if(!to_eeprom && macro_buffer == NULL)
     // not a valid memory macro location
@@ -345,20 +335,9 @@ void Macros::run_macro(byte macro, int times, int delay_){
   times = max(1, times);
 
   byte * cached_macro_buffer;
-  bool from_eeprom;
-  if(is_eeprom_macro(macro))
-  {
-    cached_macro_buffer = get_eeprom_macro(macro);
-    from_eeprom = true;
-  }
-  else
-  {
-    cached_macro_buffer = get_memory_macro(macro);
-    from_eeprom = false;
- }
+  bool from_eeprom = get_macro_ptr(macro, &cached_macro_buffer);
 
   // don't pass in this macro running's arguments
-  // todo: restore previous arguments to allow passing values into macros
   command_processor->reset_args();
 
   byte * macro_buffer = cached_macro_buffer;
@@ -367,8 +346,8 @@ void Macros::run_macro(byte macro, int times, int delay_){
     return;
 
   int * sub_args = command_processor->sub_args;
-
-  for(int i = 0; i < times; i++){
+  for(int i = 0; i < times; i++)
+  {
     macro_buffer = cached_macro_buffer;
 
     byte cmd;
