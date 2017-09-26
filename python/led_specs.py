@@ -1335,7 +1335,19 @@ def specs():
       # the random color is just so there's something to see while it runs
       expect_macro("rnd:flu:0:set:" + str(x), 0, "249," + str(x) + ",255")                                                                                                                                                                                                           
 
-    pending_test("general macro tests")
+    test("a macro can be set")
+    command_str("0:set:red:wht:blu")
+    expect_buffer("0:run", 0, 3, "0,0,20,20,20,20,20,0,0")
+
+    test("a macro can be set from within another macro")
+    command_str("0:set:1:set:olv:amb:lav")
+    expect_buffer("0:run:1:run", 0, 3, "15,0,20,20,15,0,15,20,0")
+
+    test("a macro can be set from within another macro that was set from within another macro")
+    command_str("0:set:1:set:2:set:cyn:yel:mag")
+    expect_buffer("0:run:1:run:2:run", 0, 3, "20,0,20,20,20,0,0,20,20")
+
+    pending_test("more general macro tests")
 
 
 ########################################################################
