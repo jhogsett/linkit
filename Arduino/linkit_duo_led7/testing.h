@@ -13,8 +13,10 @@
 #define TEST_TYPE_DUMP_PALETTE 5
 #define TEST_TYPE_FUNCTION     6
 
-void Commands::do_test(int type, int arg1, int arg2){
-  switch(type){
+void Commands::do_test(int type, int arg1, int arg2)
+{
+  switch(type)
+  {
     case TEST_TYPE_INQUIRY:
       // arg1 - inquiry type
       // arg2 - (depends on inquiry)
@@ -71,8 +73,10 @@ void Commands::do_test(int type, int arg1, int arg2){
 
 // current offset, window, buffer, effects buffer
 
-void Commands::do_test_inquiry(byte type, int arg2){
-  switch(type){
+void Commands::do_test_inquiry(byte type, int arg2)
+{
+  switch(type)
+  {
     case TEST_INQUIRY_NUM_LEDS:
       command_processor->send_int(visible_led_count);
       break;
@@ -109,8 +113,10 @@ void Commands::do_test_inquiry(byte type, int arg2){
 #define TEST_FUNCTION_TIME_MACRO        2 // arg2 = macro to run and return the time in milliseconds
 #define TEST_FUNCTION_RANDOM_SEED       3 // arg2 > 0 = a specific random seed for testing random features (0 = random seed)
 
-void Commands::do_test_function(byte type, int arg2){
-  switch(type){
+void Commands::do_test_function(byte type, int arg2)
+{
+  switch(type)
+  {
     case TEST_FUNCTION_PROCESS_EFFECTS:
       {
         int times = max(1, arg2);
@@ -139,46 +145,54 @@ void Commands::do_test_function(byte type, int arg2){
   }  
 }
 
-void Commands::do_test_macro(byte macro_number){
+void Commands::do_test_macro(byte macro_number)
+{
   byte *position;
   byte b = macros.begin_dump_macro(macro_number, &position);
   command_processor->send_ints(b);
-  for(byte i = 0; i < NUM_MACRO_CHARS - 1; i++){
+
+  for(byte i = 0; i < NUM_MACRO_CHARS - 1; i++)
+  {
     b = macros.continue_dump_macro(macro_number, &position);            
     command_processor->send_ints(b);
   }
 }
 
-void Commands::dump_buffer_colors(rgb_color * buffer, byte start, byte count, bool correct_color){
-  for(int i = 0; i < count; i++){
+void Commands::dump_buffer_colors(rgb_color * buffer, byte start, byte count, bool correct_color)
+{
+  for(int i = 0; i < count; i++)
+  {
     rgb_color color;
-    if(correct_color){
+    if(correct_color)
       color = ColorMath::correct_color(buffer[start + i]);
-    } else {
+    else 
       color = buffer[start + i];
-    }
+
     command_processor->send_ints(color.red);
     command_processor->send_ints(color.green);
     command_processor->send_ints(color.blue);
   }
 }
 
-void Commands::do_test_buffer(byte start, byte count){
+void Commands::do_test_buffer(byte start, byte count)
+{
   dump_buffer_colors(buffer->get_buffer(), start, count);
 }
 
-void Commands::do_test_effects(byte start, byte count){
+void Commands::do_test_effects(byte start, byte count)
+{
   byte * buf = buffer->get_effects_buffer();
-  for(int i = 0; i < count; i++){
+  for(int i = 0; i < count; i++)
     command_processor->send_ints(buf[start + i]);
-  }
 }
 
-void Commands::do_test_render(byte start, byte count){
+void Commands::do_test_render(byte start, byte count)
+{
   dump_buffer_colors(buffer->get_render_buffer(), start, count);
 }
 
-void Commands::do_test_palette(byte start, byte count){
+void Commands::do_test_palette(byte start, byte count)
+{
   dump_buffer_colors(Colors::get_palette(), start, count, false);
 }
 

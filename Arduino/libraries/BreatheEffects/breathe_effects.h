@@ -13,6 +13,7 @@
 class BreatheEffects
 {
   public:
+
   byte breathe_step = 0;
 
 #ifndef BYTE_MAP
@@ -29,6 +30,7 @@ class BreatheEffects
   void set_breathe_time(int time);
 
   private:
+
   int breathe_time = BREATHE_TIME;
   int breathe_counter = 0;
   char breathe_direction = 1;
@@ -90,37 +92,43 @@ const byte PROGMEM BreatheEffects::breathe_steps[]
   };
 #endif
 
-void BreatheEffects::begin(int breathe_time = BREATHE_TIME){
+void BreatheEffects::begin(int breathe_time = BREATHE_TIME)
+{
   this->breathe_time = breathe_time;
   reset();
 }
 
-void BreatheEffects::reset(){
+void BreatheEffects::reset()
+{
   breathe_step = 0;
   breathe_counter = 0;
   breathe_direction = 1;
 }
 
-bool BreatheEffects::process(){
+bool BreatheEffects::process()
+{
   bool should_flush = false;
-
   breathe_counter = (breathe_counter + 1) % breathe_time;
-  if(breathe_counter == 0){
+
+  if(breathe_counter == 0)
+  {
     byte next_breathe_step = breathe_step + breathe_direction;
-    if(next_breathe_step < 0 || next_breathe_step >= BREATHE_MAX_STEP){
+    if(next_breathe_step < 0 || next_breathe_step >= BREATHE_MAX_STEP)
       breathe_direction *= -1;
-    }
+
     breathe_step = breathe_step + breathe_direction;
     should_flush = true;
   }
   return should_flush;
 }
 
-bool BreatheEffects::is_handled_effect(byte effect){
+bool BreatheEffects::is_handled_effect(byte effect)
+{
   return effect == BREATHE_ON;
 }
 
-float BreatheEffects::breathe_ratio(){
+float BreatheEffects::breathe_ratio()
+{
 #ifndef BYTE_MAP
   return pgm_read_float(&breathe_steps[BREATHE_MAX_STEP - breathe_step]);
 #else
@@ -128,7 +136,8 @@ float BreatheEffects::breathe_ratio(){
 #endif
 }
 
-void BreatheEffects::set_breathe_time(int time){
+void BreatheEffects::set_breathe_time(int time)
+{
   this->breathe_time = time;
 }
 #endif

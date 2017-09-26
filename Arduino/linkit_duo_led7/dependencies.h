@@ -216,8 +216,8 @@ Zones Dependencies::zones;
 
 Sequencer Dependencies::sequencer;
 
-void Dependencies::begin(){
-
+void Dependencies::begin()
+{
   // open internal serial connection to MT7688 for receiving commands
 #ifdef REAL_ARDUINO
   Serial.begin(BAUD_RATE); 
@@ -250,13 +250,43 @@ void Dependencies::begin(){
   sequencer.begin();
 
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
-  buffer.begin(this->ledStrips, DEFAULT_BRIGHTNESS_PERCENT, config.led_count, config.visible_led_count, &this->renderer, color_buffers, render, effects_buffers, &this->zones); //, existence);
+  buffer.begin(
+    this->ledStrips, 
+    DEFAULT_BRIGHTNESS_PERCENT, 
+    config.led_count, 
+    config.visible_led_count, 
+    &this->renderer, 
+    color_buffers, 
+    render, 
+    effects_buffers, 
+    &this->zones); //, existence);
 
   // start up the commands class, passing in dependencies for the buffer interface, renderer and effects processor, values needed for rendering, display and render buffers, and effecrts
 #ifdef USE_AUTO_BRIGHTNESS
-  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->auto_brightness, &this->command_processor, &this->blink_effects, &this->breathe_effects, &this->fade_effects, &this->sequencer);
+  commands.begin(
+    &this->buffer, 
+    &this->renderer, 
+    &this->effects_processor, 
+    config.default_brightness_percent, 
+    config.visible_led_count, 
+    &this->auto_brightness, 
+    &this->command_processor, 
+    &this->blink_effects, 
+    &this->breathe_effects, 
+    &this->fade_effects, 
+    &this->sequencer);
 #else
-  commands.begin(&this->buffer, &this->renderer, &this->effects_processor, config.default_brightness_percent, config.visible_led_count, &this->command_processor, &this->blink_effects, &this->breathe_effects, &this->fade_effects, &this->sequencer);
+  commands.begin(
+    &this->buffer, 
+    &this->renderer, 
+    &this->effects_processor, 
+    config.default_brightness_percent, 
+    config.visible_led_count, 
+    &this->command_processor, 
+    &this->blink_effects, 
+    &this->breathe_effects, 
+    &this->fade_effects, 
+    &this->sequencer);
 #endif
 
   // set up the blink effects counter and states
@@ -266,13 +296,24 @@ void Dependencies::begin(){
   breathe_effects.begin(config.breathe_period);
 
   // set up the fade effect counter and state
-  fade_effects.begin(config.fade_rate, config.fade_period);
+  fade_effects.begin(
+    config.fade_rate, 
+    config.fade_period);
 
   // start up the effects processor, passing in the blink and breathe effects instances
-  effects_processor.begin(&this->buffer, &this->blink_effects, &this->breathe_effects, &this->fade_effects);
+  effects_processor.begin(
+    &this->buffer, 
+    &this->blink_effects, 
+    &this->breathe_effects, 
+    &this->fade_effects);
 
   // start up the renderer, passing in the blink and breathe effects instances, and brightness values needed for rendering
-  renderer.begin(&this->blink_effects, &this->breathe_effects, &this->fade_effects, config.default_brightness_percent, config.minimum_brightness_percent);
+  renderer.begin(
+    &this->blink_effects, 
+    &this->breathe_effects, 
+    &this->fade_effects, 
+    config.default_brightness_percent, 
+    config.minimum_brightness_percent);
 
   // set a higher-quality random seed by reading values from an unconnected analog input
   randomizer.randomize();

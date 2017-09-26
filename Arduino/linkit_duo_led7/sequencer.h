@@ -76,36 +76,20 @@ class Sequence
   int width();
  };
 
-int Sequence::width(){
+int Sequence::width()
+{
   return this->max - this->low;    
 }
   
-void Sequence::begin(){
+void Sequence::begin()
+{
   set(DEFAULT_TYPE, DEFAULT_LOW, DEFAULT_HIGH);
   this->reset();
 }
 
-void Sequence::set(byte type, int low, int high){
+void Sequence::set(byte type, int low, int high)
+{
   this->type = type;
-
-//  this->low = low;
-//  this->max = high - 1;
-//  
-//  this->previous = this->low;
-//
-//  switch(this->type){
-//    case SEQUENCE_WHEEL_COSINE:
-//    case SEQUENCE_SWING_COSINE:
-//    case SEQUENCE_WHEEL_SINE:
-//    case SEQUENCE_SWING_SINE:
-//      this->factor = COSINE_RANGE / this->width();
-//      break;
-//    case SEQUENCE_WHEEL_POWER:
-//    case SEQUENCE_SWING_POWER:
-//      this->factor = PowerEase::ease_range() / this->width();
-//      break;
-//  }
-
   this->set_limit(low, high);
   this->reset();
 }
@@ -114,13 +98,15 @@ void Sequence::set_limit(int low, int high){
   this->low = low;
   this->max = high - 1;
 
-  switch(this->type){
+  switch(this->type)
+  {
     case SEQUENCE_WHEEL_COSINE:
     case SEQUENCE_SWING_COSINE:
     case SEQUENCE_WHEEL_SINE:
     case SEQUENCE_SWING_SINE:
       this->factor = COSINE_RANGE / this->width();
       break;
+  
     case SEQUENCE_WHEEL_POWER:
     case SEQUENCE_SWING_POWER:
       this->factor = PowerEase::ease_range() / this->width();
@@ -128,12 +114,14 @@ void Sequence::set_limit(int low, int high){
   }
 }
 
-void Sequence::fix_current(){
+void Sequence::fix_current()
+{
   this->current = max(this->low, this->current);
   this->current = min(this->max, this->current);
 }
 
-void Sequence::reset(){
+void Sequence::reset()
+{
   this->current = this->low;
   this->previous = this->low;
   this->prev_computed = this->low;
@@ -149,25 +137,31 @@ void Sequence::reset(){
 #define ADVANCE_NEW_LOW  -6
 
 // can advancement be a byte?
-int Sequence::next(int advancement, int step){ // step or macro
-  
-  if(step == 0)
+int Sequence::next(int advancement, int step) // step or macro
+{
+   if(step == 0)
     step = 1;
 
-  switch(advancement){
+  switch(advancement)
+  {
     case ADVANCE_RESET:
       this->reset();
       return this->current;
+
     case ADVANCE_OPPOSITE:
       return (this->max - this->current) + this->low;
+ 
     case ADVANCE_CURRENT:
       return this->current;
+ 
     case ADVANCE_NEXT:
       return this->increment(step);
+ 
     case ADVANCE_NEW_HIGH:
       this->set_limit(this->low, step);
       this->fix_current();
       return this->current;
+ 
     case ADVANCE_NEW_LOW:
       this->set_limit(step, this->max + 1);
       this->fix_current();
@@ -175,25 +169,44 @@ int Sequence::next(int advancement, int step){ // step or macro
   }
 }
 
-int Sequence::increment(int step){
+int Sequence::increment(int step)
+{
   this->previous = this->current;
 
-  switch(this->type){
-    case SEQUENCE_WHEEL:        return this->increment_wheel(step);
-    case SEQUENCE_SWING:        return this->increment_swing(step);
-    case SEQUENCE_WHEEL_COSINE: return this->increment_wheel_cosine(step);
-    case SEQUENCE_SWING_COSINE: return this->increment_swing_cosine(step);
-    case SEQUENCE_WHEEL_SINE:   return this->increment_wheel_sine(step);
-    case SEQUENCE_SWING_SINE:   return this->increment_swing_sine(step);
-    case SEQUENCE_WHEEL_POWER:  return this->increment_wheel_power(step);
-    case SEQUENCE_SWING_POWER:  return this->increment_swing_power(step);
+  switch(this->type)
+  {
+    case SEQUENCE_WHEEL:        
+       return this->increment_wheel(step);
+       
+    case SEQUENCE_SWING:        
+      return this->increment_swing(step);
+ 
+    case SEQUENCE_WHEEL_COSINE: 
+      return this->increment_wheel_cosine(step);
+      
+    case SEQUENCE_SWING_COSINE: 
+      return this->increment_swing_cosine(step);
+    
+    case SEQUENCE_WHEEL_SINE:   
+      return this->increment_wheel_sine(step);
+    
+    case SEQUENCE_SWING_SINE:   
+      return this->increment_swing_sine(step);
+    
+    case SEQUENCE_WHEEL_POWER:  
+      return this->increment_wheel_power(step);
+    
+    case SEQUENCE_SWING_POWER:  
+      return this->increment_swing_power(step);
   }
 }
 
-int Sequence::increment_wheel(int step){
+int Sequence::increment_wheel(int step)
+{
   this->current += step;
 
-  if(this->current > this->max){
+  if(this->current > this->max)
+  {
     int step_carry = step - (this->current - this->max);
     this->current = this->low + step_carry;    
   }
@@ -201,76 +214,94 @@ int Sequence::increment_wheel(int step){
   return this->current;
 }
 
-int Sequence::increment_swing(int step){
-  switch(this->state){
+int Sequence::increment_swing(int step)
+{
+  switch(this->state)
+  {
     case STATE_NORMAL:
       return increment_swing_normal(step);
+
     case STATE_REVERSE:
       return increment_swing_reverse(step);
   }
 }
 
-int Sequence::increment_swing_normal(int step){
+int Sequence::increment_swing_normal(int step)
+{
   this->current += step;
   
-  if(this->current > this->max){
+  if(this->current > this->max)
+  {
     int step_reflect = this->current - this->max;
     this->current = this->max - step_reflect;
     this->state = STATE_REVERSE;
   }
+
   return this->current;
 }
 
-int Sequence::increment_swing_reverse(int step){
+int Sequence::increment_swing_reverse(int step)
+{
   this->current -= step;
 
-  if(this->current < this->low){
+  if(this->current < this->low)
+  {
     int step_reflect = this->low - this->current;
     this->current = this->low + step_reflect;
     this->state = STATE_NORMAL;
   }
+  
   return this->current;
 }
 
-int Sequence::increment_wheel_cosine(int step){
+int Sequence::increment_wheel_cosine(int step)
+{
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
   return this->low + (this->width() * ColorMath::get_cosine(spread_position));
 }
 
-int Sequence::increment_swing_cosine(int step){
+int Sequence::increment_swing_cosine(int step)
+{
   increment_swing(step);
   byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
   return this->low + (this->width() * ColorMath::get_cosine(spread_position));
 }
 
-int Sequence::increment_wheel_sine(int step){
+int Sequence::increment_wheel_sine(int step)
+{
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
   return this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
-int Sequence::increment_swing_sine(int step){
+int Sequence::increment_swing_sine(int step)
+{
   increment_swing(step);
   byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
   return this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
-int Sequence::increment_wheel_power(int step){
+int Sequence::increment_wheel_power(int step)
+{
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
   return this->low + (this->width() * PowerEase::get_ease(spread_position));
 }
 
 // TODO the sequence is not symmetrical forward and back so when coming back need to treat it oppositely
-int Sequence::increment_swing_power(int step){
+int Sequence::increment_swing_power(int step)
+{
   increment_swing(step);
 //  byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
   byte spread_position;
-  if(state == STATE_NORMAL){
+  if(state == STATE_NORMAL)
+  {
     // current-low = progress toward end
     spread_position = (this->current - this->low) * this->factor;
-  } else {
+  } 
+  else 
+  {
     // width - (current-low) = progress toward start 
 
     // this needs rework - power ease data oriented toward forward going animation
@@ -292,19 +323,23 @@ int Sequence::increment_swing_power(int step){
   return this->low + (this->width() * PowerEase::get_ease(spread_position));
 }
 
-int Sequence::current_position(){
+int Sequence::current_position()
+{
   return this->current;
 }
 
-int Sequence::previous_position(){
+int Sequence::previous_position()
+{
   return this->previous;
 }
 
-int Sequence::previous_computed(){
+int Sequence::previous_computed()
+{
   return this->prev_computed;
 }
 
-void Sequence::set_previous_computed(int position){
+void Sequence::set_previous_computed(int position)
+{
   this->prev_computed = position;  
 }
 
@@ -333,38 +368,45 @@ class Sequencer
 
 Sequence Sequencer::sequences[NUM_SEQUENCERS];  
 
-void Sequencer::begin(){
+void Sequencer::begin()
+{
   // set default sequences
-  for(int i = 0; i < NUM_SEQUENCERS; i++){
+  for(int i = 0; i < NUM_SEQUENCERS; i++)
     sequences[i].begin();
-  }
 }
 
-void Sequencer::set(int sequencer, byte type, int low, int high){
+void Sequencer::set(int sequencer, byte type, int low, int high)
+{
   sequences[sequencer].set(type, low, high);
 }
 
-void Sequencer::reset(int sequencer){
+void Sequencer::reset(int sequencer)
+{
   sequences[sequencer].reset();
 }
 
-int Sequencer::next(int sequencer, int advancement, int step){
+int Sequencer::next(int sequencer, int advancement, int step)
+{
   return sequences[sequencer].next(advancement, step);  
 }
 
-int Sequencer::current(int sequencer){
+int Sequencer::current(int sequencer)
+{
   return sequences[sequencer].current_position();  
 }
 
-int Sequencer::previous(int sequencer){
+int Sequencer::previous(int sequencer)
+{
   return sequences[sequencer].previous_position();  
 }
 
-int Sequencer::previous_computed(int sequencer){
+int Sequencer::previous_computed(int sequencer)
+{
   return sequences[sequencer].previous_computed();
 }
 
-void Sequencer::set_previous_computed(int sequencer, int position){
+void Sequencer::set_previous_computed(int sequencer, int position)
+{
   sequences[sequencer].set_previous_computed(position);  
 }
 

@@ -78,10 +78,10 @@ class Colors
 };
 
 rgb_color Colors::return_color = {0,0,0};
-
 rgb_color Colors::palette[NUM_PALETTE_COLORS];
 
-const rgb_color * const Colors::get_color(byte c){
+const rgb_color * const Colors::get_color(byte c)
+{
   void *p = (void*)pgm_read_word(&(bytes_array[c]));
   return_color.red =   pgm_read_byte(p + 0);
   return_color.green = pgm_read_byte(p + 1);
@@ -93,10 +93,10 @@ rgb_color Colors::random_palette_color(){
   return palette[random(NUM_PALETTE_COLORS)];
 }
 
-void Colors::reset_palette(){
-  for(byte i = 0; i < NPRETTY_COLORS; i++){
+void Colors::reset_palette()
+{
+  for(byte i = 0; i < NPRETTY_COLORS; i++)
     palette[i] = *Colors::get_color(i);
-  }
 }
 
 // from https://forum.arduino.cc/index.php?topic=345964.0
@@ -116,8 +116,10 @@ void Colors::shuffle_palette()
 // create a complimentary color by inverting the values
 // within the 0 - BRIGHTNESS_DIVISOR range, since that
 // represents the entire pre-rendered color definition
-rgb_color Colors::complimentary_color(rgb_color color){
-  return (rgb_color){
+rgb_color Colors::complimentary_color(rgb_color color)
+{
+  return (rgb_color)
+  {
     BRIGHTNESS_DIVISOR - color.red,
     BRIGHTNESS_DIVISOR - color.green,
     BRIGHTNESS_DIVISOR - color.blue
@@ -131,7 +133,10 @@ rgb_color Colors::complimentary_color(rgb_color color){
 void Colors::compliment_pairs()
 {
   for(byte i = 0; i < NUM_PALETTE_COLORS; i += 2)
-    palette[i+1] = complimentary_color(palette[i]);
+  {
+    rgb_color *pal = &palette[i];
+    *(pal + 1) = complimentary_color(*pal);
+  }
 }
 
 // create a random palette of complimentary color pairs
@@ -142,10 +147,13 @@ void Colors::random_compliment_pairs()
   compliment_pairs();
 }
 
-// todo: dry
-void Colors::compliment_palette(){
-  for(byte i = 0; i < NUM_PALETTE_COLORS; i ++)
-    palette[i] = complimentary_color(palette[i]);
+void Colors::compliment_palette()
+{
+  for(byte i = 0; i < NUM_PALETTE_COLORS; i++)
+  {
+    rgb_color *pal = &palette[i];
+    *pal = complimentary_color(*pal);
+  }
 }
 
 // times - number of rotations
@@ -159,19 +167,28 @@ void Colors::rotate_palette(byte times, byte limit, bool down){
   }
   limit--;
 
-  if(down == true){
-    for(byte t = 0; t < times; t++){
+  if(down == true)
+  {
+    for(byte t = 0; t < times; t++)
+    {
       rgb_color carry_color = palette[0];
-      for(byte i = 0; i < limit; i++){
-        palette[i] = palette[i + 1];
+      for(byte i = 0; i < limit; i++)
+      {
+        rgb_color *pal = &palette[i];
+        *pal = *(pal + 1);
       }
       palette[limit] = carry_color;
     }
-  } else {
-    for(byte t = 0; t < times; t++){
+  }
+  else
+  {
+    for(byte t = 0; t < times; t++)
+    {
       rgb_color carry_color = palette[limit];
-      for(byte i = limit; i > 0; i--){
-        palette[i] = palette[i - 1];
+      for(byte i = limit; i > 0; i--)
+      {
+        rgb_color *pal = &palette[i];
+        *pal = *(pal - 1);
       }
       palette[0] = carry_color;
     }
@@ -179,18 +196,22 @@ void Colors::rotate_palette(byte times, byte limit, bool down){
 }
 
 // todo: dry
-void Colors::reverse_palette(){
+void Colors::reverse_palette()
+{
   byte max = NUM_PALETTE_COLORS - 1;
   byte limit = NUM_PALETTE_COLORS / 2;
-  for(byte i = 0; i < limit; i++){
-    byte swap = max - i;
-    rgb_color carry_color = palette[i];
-    palette[i] = palette[swap];
-    palette[swap] = carry_color;
+  for(byte i = 0; i < limit; i++)
+  {
+    rgb_color *pal = &palette[i];
+    rgb_color *swap = &palette[max - i];
+    rgb_color carry_color = *pal;
+    *pal = *swap;
+    *swap = carry_color;
   }
 }
 
-rgb_color * Colors::get_palette(){
+rgb_color * Colors::get_palette()
+{
   return palette;
 }
 
