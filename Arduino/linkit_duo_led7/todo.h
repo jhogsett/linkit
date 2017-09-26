@@ -1,3 +1,5 @@
+// allow the rnd command to fill the available LEDs of the width
+
 // SECOND ARG TO RND: the count, to avoid having to use repeat
 
 // multiple displays specs
