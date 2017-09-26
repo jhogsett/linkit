@@ -37,8 +37,6 @@ class Macros
   byte set_macro(byte macro, char * commands);
   byte set_macro_from_serial(byte macro);
   void run_macro(byte macro, int times = 1, int delay_ = 0);
-  void reset_macro(byte macro);
-  void reset_all_macros();
 
 #ifdef TEST_FRAMEWORK
   byte begin_dump_macro(byte macro, byte **position);
@@ -166,19 +164,6 @@ void Macros::set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom){
     }
   }
   write_byte(macro_data, to_eeprom, MACRO_END_MARKER);
-}
-
-void Macros::reset_macro(byte macro){
-  if(is_memory_macro(macro))
-    get_memory_macro(macro)[0] = '\0';   // TODO should this be the macro end marker
-  else if(is_eeprom_macro(macro))
-    eeprom_write_byte(get_eeprom_macro(macro), MACRO_END_MARKER);
-}
-
-void Macros::reset_all_macros()
-{
-  for(byte i = 0; i < NUM_MACROS; i++)
-    reset_macro(i);
 }
 
 void Macros::determine_arg_marker(byte &arg_marker, byte &num_args)
