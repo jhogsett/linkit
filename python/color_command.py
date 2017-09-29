@@ -4,23 +4,27 @@ import serial
 import time
 import sys
 
-response_wait = 0.5
+response_wait = 0.1
 s = None                        
 
 def flush_input():              
   s.flushInput()  
 
+def flush_output():
+  s.flushOutput()
+
 def wait_for_ack():
   time.sleep(response_wait)
   while s.inWaiting() <= 0:
     pass
-#  time.sleep(response_wait)
+  time.sleep(response_wait)
   while s.inWaiting() > 0:
     print s.read(s.inWaiting()),
   print
 
 def command(cmd_text):
   s.write((cmd_text + ':').encode())   
+#  print (cmd_text + ':').encode()
   wait_for_ack()
 
 def setup(): 
@@ -44,6 +48,7 @@ def loop():
     else:
      command(cmd)
      last_cmd = cmd
+    flush_output();
 
   except EOFError:
     sys.exit("\nExiting...\n")
