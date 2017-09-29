@@ -37,9 +37,10 @@ def command(cmd_text):
   wait_for_ack()
 
 def handle_command(cmd_text):
-  command(":::pau:pau")
+  #command(":::pau:pau")
+  command(":::")
   command(cmd_text)
-  command("cnt")
+  #command("cnt")
 
 # Bind to the server address
 sock.bind(server_address)
