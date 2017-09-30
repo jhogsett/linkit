@@ -18,13 +18,21 @@ sock.settimeout(0.2)
 ttl = struct.pack('b', 1)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 
+global sequence
+sequence = 0
+
 try:
   if len(sys.argv) > 1:
     message = sys.argv[1]
 
-    # Send data to the multicast group
-    print >>sys.stderr, 'sending "%s"' % message
-    sent = sock.sendto(message, multicast_group)
+    times = 1
+    if len(sys.argv) > 2:
+      times = int(sys.argv[2])
+
+    for n in range(0, times):
+      # Send data to the multicast group
+      print >>sys.stderr, 'sending "%s"' % message
+      sent = sock.sendto(message, multicast_group)
 
 #  # Look for responses from all recipients
 #  while True:
