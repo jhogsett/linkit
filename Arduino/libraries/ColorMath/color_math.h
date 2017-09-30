@@ -275,7 +275,7 @@ byte ColorMath::crossfade_steps()
 
 float ColorMath::crossfade_step_value(byte step)
 {
-#ifdef USE_BYTE_CROSSFADE_STEPS
+#if defined(USE_BYTE_CROSSFADE_STEPS) || defined(USE_ALT_BYTE_CROSSFADE_STEPS)
   return pgm_read_byte(&crossfade[step]) / 255.0;
 #else
   return pgm_read_float(&crossfade[step]);

@@ -286,6 +286,10 @@
     
         * ^D
 
+    _Tip:_ If you get the error `/var/run/utmp: No such file or directory` when quitting screen, do the following:
+    
+        * touch /var/run/utmp
+
 1. Getting a simple CGI script running
 
         * vim /www/cgi-bin/test.cgi

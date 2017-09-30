@@ -397,10 +397,16 @@ void Commands::do_flood()
 // 1: like #0 but will flood and repeat with random colors 
 // 2: like #1 but will also set random effects
 // others: b&w palette, all colors, all colors including blk
+// if times = -1, it fills the current width
 void Commands::do_random(byte type, int times)
 {
   type = max(0, type);
-  times = max(1, times);
+
+  if(times == -1)
+    times = buffer->get_width();
+  else
+    times = max(1, times);
+
   rgb_color color = ColorMath::random_color();
   byte * effect = &buffer->get_effects_buffer()[buffer->get_offset()];
   bool random_effects = type == RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS;
