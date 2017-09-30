@@ -1,439 +1,281 @@
-// allow the rnd command to fill the available LEDs of the width
+/* multicasting */
+// to make reliable
+//    number each request; ignore numbers already seen
+//    determine how to reissue the command in case some didn't see it
+// command prompt for multiple commands
+// on command, show which ones acknowledged
+      // the device name should come back
+// add new arg to http_command.py that issues multicast (or another flag to make it broadcast)
+// don't wait forever for ack because it could conflict with http_command or a python app
+// switch to list groups
+// select specific test #
+// could remember watermark by sender ip address
+// could have watermark apply for a short time only, just to prevent near duplicates
 
-// SECOND ARG TO RND: the count, to avoid having to use repeat
 
-// multiple displays specs
 
-// should push_rgb unscale to the configured default brightness or a standard brightness, like the 0-20 color standard
 
-// int-based crossfade could be smoother, like breathing is smooth
 
-/* there are independent settings for sphere that cause tests to fail
-  Failures:
-  @ 847 2,3,4:sbl:era:flu -2,3,4 +3,2,4
-  @ 971 wht:max:flu -153,153,153 +255,255,255
-  @ 1364 10,20,30:sto:4,5,6:0:rcl:rgb:flu -5,10,15 +3,6,9
-  @ 1367 10,20,30:sto:4,5,6:40:rcl:rgb:flu -5,20,10 +3,12,6
-  @ 1370 10,20,30:sto:4,5,6:40,50:rcl:rgb:flu -5,20,26 +3,12,15
-
-  PROBABLY DEFAULT BRIGHTNESS
-   
- */
-
-// dump accum results quitting specs early
-// have a way to spit out results while running
-
-// blend could work over a numnber of pixels
-
-// set exit code from led_specs depending on failures or not
-
-// what does changing number of displays affect program memory
-
-// use the high bit of the effect byte to signal that the rgb.red color represents a palette color index
-// at render time, the palette color is pulled and inserted
-// could have a series of palette colors spread out and continuously modulate them
-//   could use red to refer to main color, then grn and blu to refer to alternate colors for a color rotating blink
-
+/* new features */
+ // use the high bit of the effect byte to signal that the rgb.red color represents a palette color index
+      // .green and .blue can then be used for things like alternating and rotating colors, or effects with per-pixel parameters
+      // could have a series of palette colors in various places, some reused, and continuously modulate them
 // super pixels
-// for 2d strips, it sets several leds with fade off ends
-// for 3d displays, it sets a circle with fade off edges
-
+      // for 2d strips, it sets several leds with fade off ends
+      // for 3d displays, it sets a circle (with fade off edges?)
 // calibrate timing setting by use testing timer to compare
-
-// cache some things when rendering, for instance, the states for each blink effect, the breathe step, so they're not computed constantly
-
-
-// backtick to run command in color_command; also up arrow for previous commands
-
-
-// working example of passing params to a macro
-//command: 0:set:rcl:pos:red:flo:flu:rst
-//6k
-//command: stp
-//k
-//command: 10,20:sto:0:run
-//k
-//command:
-
-// tests: display time it took to run them
-
-// negative testing: ensure things out of bounds don't crash
-
-// need to reset blink period after testing
-
-// crash annunciator switching from wheel with next window to wheel wit position only 
-
-// have a sequencer that runs to one side, stops, and has to be triggered to continue to the other side
-
-// allow setting the current value of a sequencer (to allow multiple ones running that are offset from each other)
-
-// make sure sequence parameters can be changed without resetting
-
-
-// documentation to wiki
-
-// goals: 
-// sequence crawling from zone to zone (triggers) 
-// move a sequencing zone back and forth slowly (value safety upon arbitrary changes)
-// something speeding up and slowing down (should be able to adjust schedule timing without it resetting)
-
-
-// test could highlight differences between strings to reduce need to manually diff them 
-
-
-
-// for palette rotation, maybe specify how many colors to involve in rotation, such as 6
-
-
-// for dynamically changing scheduler timing, make sure changing the time can be done without reseting it
-
-// could have an arg command that does various stuff
-// examples:
-//   0:arg - restore previous arg0
-//   1:arg - restore previous arg0, arg1
-//   2:arg - 
-
-// maybe keep math, argument manipulation/recovery separate for simplicity
-
-// what are the useful combinations of argument manipulation?
-// arg0 = saved arg0, also arg1=arg0 first
-// arg1 = saved arg0
-// arg2 = saved arg0
-
-// maybe: 
-// 0:arg (upshift)   - arg2 = arg1, arg1 = arg0, arg0 = accum
-// 1:arg (downshift) - accum = arg0, arg0 = arg1, arg1 = arg2, arg2 = 0
-
-// use case: need to supply arg0 and arg1 to change color sequence
-// need to supply varying arg0 and arg1
-//   get the first arg0 - 0:seq  (at this point arg0 receives the next seq #0)
-//   get the second arg0 - 1:seq (on "1" argument, accum receives arg0; on "seq" arg0 receives next seq #1
-//   shift the arguments up - arg (at this point arg2 receives arg1, arg1 receives arg0, arg0 receives = accum)
-
-
-// could have sto and rcl
-// 0:sto saves arg0,arg1,arg2
-// 1:sto saves arg0
-// 2:sto saves arg1
-// 4:sto saves arg2
-// 7:sto saves arg0,arg1,arg2
-// 0:rcl restores arg0,arg1,arg2
-// 1:rcl restores arg0
-// 2:rcl restores arg1
-// 4:rcl restores arg2
-// 7:rcl restores arg0,arg1,arg2
-// PROBLEM: sto and rcl can't take arguments in order to prevent contamination
-
-
-// when running a macro, like 0:run, could leave arg1 and arg2, then set arg0 = accum, in this way the macro running arg is hidden and arguments can be passed in to the macro
-
-
-// sto could always store all three arguments, then an argument can be passed to rcl to restore a specific argument using accum to keep arg0
-// could do something much simpler:
-//   sto: just saves arg0 to accum
-//   rcl: just restores arg1 from accum
-
-
-
-// can the wheel sequence be switched in direction?
-
-// could have 8-bit versions of sequencers for speed
-
-
+      // could be part of the start-up procedure
+// now that sto and rcl are settled and args can be passed into macros, are there math opertions that would be handy on the accumulators?
 // need triggers, want the cosine swing and wheel to trigger other ones
 //   also need one-time action sequencers
-//   could set trigger macros per type of sequencer
-
+//   could set trigger macros per type of sequencer (they may need different numbers of macros)
 // trigger idea: when filling up and ran out of open positions
-
-// to sequence hsl color sweep starting angle, need the output of the sequencer to be in arg1 wit arg0 being a fixed value
-// --> maybe reverse the arguments? might be more likely to sequence the starting angle instead of the step angle
-
-// sequencer will leave value in arg0, how to get it into arg1?
-// another sequencer type?
-
-// arg command: shifts args up and puts values in arg0
-// for instnace: existing values are 1,2,3, then 120:arg, now they're 120,1,2
-// 120,5:arg would produce 120,5,1
-
-
-// rep doesn't seem to be repeating effects
-
-// replace getters/settings with C macros
-
-// rst should not set display back to zero
-
 // introduce setting for "primary" and "secondary" display so the particular display can be changed in real time outside of running program
-
-// could expand rev command into insertion/operation mode and add things like: xor-remixed position insertion, other insertion modes
-
-// ideas for reducing code footprint
-// remove getters/settings and use variables directly (maybe with a special naming convention so they stand out)
-// remove the individual color commands and use the palette only
-// cache dereferenced array element pointers
-// remove commands that are effecively the same like rep and cpy (keep cpy)
-// remove overly-protective guard code
-// move additional settings to the cfg command
-// remove low-use commands/features
-// segment features so they can be enabled/disabled easily
-// DRY up the blink code
-// remove the range of blink commands and set with an argument
-// combine the various switch statements in dispatch command back to single switch 
-// could switch the test code in/out 
-// remove all floating point constants / math
-// pass a pointer to dependencies instead of passing individual arguments if/where possible
-// convert setters/getters into macros
-
-
-// modify clr to reset config to defaults
-
-// a mode when doing random position: only even, or only odd, or only mod N
-
-
-// -1,0:pal could do random palette color, -1,5:pal do random within first 5 colors
-
-
-// for sequencers, use simple byte versions of the range fits 0-255 for speed
-
+      // so I can softswitch wearables between external and built-in display
 // need to be able to manipulate arguments
-// example: quantize (to allow position offsets)
-// also: combine two separate random numbers into arg0, arg1
-
-
-// ----- IDEAS --------------------------------------------------------------
-// could build upon macros to form the concept of apps
-// apps:
-// - have a way to start up
-// - have a way to shut down
-// - perhaps other common behaviors
-
-// could have an effect that runs a macro at render time to do whatever it wants, with the rendering pixel as the current window
-// - this could be very slow
-// - perhaps call the macro one time per scan line rather than per incidence of effect in buffer
-//
-// - example of use: 
-//   - could have a dynamic display without needing to have a macro running all the time
-// --> beginning of rendering could be a trigger
-
-// palette: shift, rotate, sweeps that modify existing palette
-
-
-
-
-
-// ------ COLORS --------------------------------------------------------------
-// add a 15,15,15 gray
-// add high pressure sodium vapor lamp
-
-// water other recognizable colors are common?
-// xenon white
-// argon purple
-// green light green
-// yelllow light amber
-
-// add remaining 5's colors (they may be took dark)
-
-
-
-// cfg command - signal to reset to default config value
-
-
-
-// shf: need to rotate and transform palette in various ways
-
-// what if arg1 was the # of steps taken, or the number skipped, and that could be transformed to allow filling gaps
-
+      // example: quantize (to allow position offsets)
+      // also: combine two separate random numbers into arg0, arg1 (can be done now with rcl I think)
 // triggers:
-// run a macro each time a sequence has an event (events: start (wheel), start, mid-way (swing))
-// how would this work?
-//   one trigger per sequencer (so, 6)
-//   triggers are built into sequencers, not separate (though a different command is used to set them up)
-//   set a trigger: t,s,m:trg 
-//     t=trigger number
-//     s=sequence number, if s is -1, the trigger is cleared
-//     m=macro number, for two-event sequences (swing) it calls this macro and m+1 
-//   each sequence incrementer will fire the trigger at bounding events
-//   the trigger will then call the macro(s)
-
-// the color commands could be a shortcut to colors in the initial palette instead of fixed values
-
-// hardware triggers, such as button presses, will be called something else, like Actions
-
+      // run a macro each time a sequence has an event (events: start (wheel), start, mid-way (swing))
+      // how would this work?
+      //   one trigger per sequencer (so, 6)
+      //   triggers are built into sequencers, not separate (though a different command is used to set them up)
+      //   set a trigger: t,s,m:trg 
+      //     t=trigger number
+      //     s=sequence number, if s is -1, the trigger is cleared
+      //     m=macro number, for two-event sequences (swing) it calls this macro and m+1 
+      //   each sequence incrementer will fire the trigger at bounding events
+      //   the trigger will then call the macro(s)
 // other sequencers:
-// brownian motion
-// power ease
-// seeded random
-// gravity bounce
-// ones useful in 2D such as triangle wave, spirograph, Lissajous curves
-
-// when using sine sequencer, have a way to fill in missing pixels (missing due to skipping over them in order to speed up)
-// -- would need a sequencer that knew how to draw pixels and fill them in
-//      have a way for sequencer to accept a macro to run to do the drawing, this is like a trigger
-//      it could call the same memory macro as its sequence number, to avoid passing the macro #
-//
-
-// maybe alternate between blink, breathe and fade processing to allow scheduling more often
-
-// upon sequencing, leave in arg0 a count of the number of skipped (black) pixels, so a macro could use 'rpt' to fill in  
-
-// maybe rst should clear the arguments
-// this is for cases where arg0 is optionally left with a value other than zero after some operation
-
-
-// specs need to account for swapped colors on strands
-
-// may be able to save space by storing crossfade and ease fractions as an 8-bit values n/255
-// -- may allow using integer math instead of floating point math
-
-
-// divide blink wheel by blink period, for instnace 5999 / 1000 to get 0 through 5, 
-//   store that figure and only display blink if it matches effect blink number
-
+      // brownian motion
+      // power ease
+      // seeded random
+      // gravity bounce
+      // ones useful in 3D such as triangle wave, spirograph, Lissajous curves
 // command to run a range of macros, like 20,29:rmm runs macros 20 through 29 in order
-
-// 0,255,255:hsl at 100:lev is less bright than red at 100:lev (hsl brightness compensation problem?)
-
-// palette, need to change brightness up/down, distribute HSL colors various ways
-
 // allow setting a seed value for random number generation
 // -- would have to be a private seed (feed value back as seed?) to have a repeatable sequence
-
-// more colors: argon, neon, xenon, sodium
-
-// need a way to set a sequence relatively, like to cover a zone
-
-// need a way to pause background effects but keep schedules running
-
-// ability to set current sequence value to a random number in range
-
-// opposite value doesn't seem to work proper except starting a zero
-
-// ignore out of range sequencer numbers
-
-// need a way to reset all sequncers (-1:seq?)
-
-// need to be able to link sequencers (triggers?)
-
 // have the ability to set drawing mode: overwrite, add, etc.
-
 // concept of "objects"
 // - hidden/shown
 // - moved around
 // - could be as simple as offset + window + color & effect
 // - could be a complex pattern like a bell curve of lit leds around a center point
-
-// rng means random number generator, could have a sequential number generator
-// 10:seq - sequences numbers 0 - 9 then repeats
-// 10:5:set - sequences numbers 5 - 9 then repeats
-// 10:5:1:set - sequences numbers 5 - 9, then 8 -6, then repeat
-//
-// need to be able to have multiple sequencers
-// 10:seq - sequences numbers 0 - 9 for sequencer #0 then repeats
-// 10:1:seq - sequences numbers 0 - 9 for sequencer #1 then repeats
-// 10:2:5:seq - sequences numbers 5 - 9 for sequencer #0 then repeats
-// 10:osc - oscillates numbers 0 - 9, then 8 - 1, for oscillator #0, then repeats
-// 10:1:osc - same but for osc #1
-// 10:2:5:osc - sequences 5 - 9, then 8 -6 for #2 then repeats
-//
-// might be better if arg0 is the seq/osc #
-// then, a call like 1,10:seq sets up a sequencer for 0-9, then a call like 1:seq uses it (1,10:seq would also user it? or would reset it?)
-//
-// for seq might want a way to stop rather than repeat
-//
-// could have types: sequence once, sequence circular, sequence oscillatory
-
-// simplest sng
-// 10:sng
-// 0:sng (arg0 is now zero)
-// 0:sng (arg0 is now one) ...
-
-
-// need to ensure not getting same random color twice in a row (will make things prettier)
-
-
-
-
-////
-// 
-// sqi, sqj, sqk
-// 
-// -1,0,1000:sqi - set to range 0-999, repeating
-// 0:sqi - get the next number
-// 1:sqi - get the current number
-// 2:sqi - get the previous number (for erasure)
-// -2:sqi - reset to the start of the current range
-// -1:sqi - reset to the default range (0 - # LEDs)
-// j & k are the same, usable at the same time
-// 
-// sqx, sqy, sqz
-// 
-// -1,0,1000:sqx - set to range 0-999, then 998-1, repeating
-// 
-// y & z are the same, usable at the same time
-//
-// to bounce a ball in 1D in full width
-// 0:set:-1:sqx
-// 1:set:sqx:off:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // rearrange config into device profiles
-
-// running a macro destroys the arguments
-// -- it could be more helpful if it restored the previous arguments so arguments could be passed into macros
-// -- could have a command that recovers the previous args
-
 // replace color feature
-
-// effect: the color value refers to a palette position not an RGB value
-//   this would also allow for 16 extra bits of effects data
-//     for instance fading into a color
-
-// where possible, special mode ints should be positive so they can be randomized
-
-// for red/green swapped led strands, the carry color comes back flipped
-
-// cpy needs to overlap the end
-
 // the infinite loop protection could also be a trigger, when all full or all empty
 // triggers could be a set of slots that get set to a macro to run when triggers
-
 // could have certain commands that end the macro under certain conditions
+     // quit if ... 
+// could have conditional/switch to call multiple macros
+// for zones, have several configurations that can be chosen in real time by device type
 
-// the fade problem is when running from within a schedule. Running a macro N times from another macro works from the command line
-// the fade counter only decides when to automatically flush, not the rate at which fading happens; repeated renders will automatically fade the buffer color
-// the multi-run from the command line is spectacular, why is not applying the fade at the same rate?
 
-// optimize BlinkEffects::process()
 
+
+
+
+/* modify existing commands */
+// blend could work over a numnber of pixels
+// allow the rnd command to fill the available LEDs of the width
+// have a sequencer that runs to one side, stops, and has to be triggered to continue to the other side
+// allow setting the current value of a sequencer (to allow multiple ones running that are offset from each other)
+// for palette rotation, maybe specify how many colors to involve in rotation, such as 6
+// could expand rev command into insertion/operation mode and add things like: xor-remixed position insertion, other interesting insertion modes
+// modify clr to reset config to defaults
+// a mode when doing random position: only even, or only odd, or only mod N
+// -1,0:pal could do random palette color, -1,5:pal do random within first 5 colors
+// cfg command - signal to reset to default config value (for any of the configs)
+// shf: need to rotate and transform palette in various ways
+// the color commands could always be a shortcut to colors in the palette instead of fixed values
+// need a way to set a sequence relatively, like to cover a zone
+// ability to set current sequence value to a random number in range
+// need a way to reset all sequncers (-1:seq?)
+// need to be able to link sequencers (triggers?)
 // a form of rotate that automatically shifts in carry color
+// could have a non-blinking blink, just display the dim color, for background decoration
+// vesions of mirror and flip that blend the colors
+// would be nice to flood by adding instead of replacing colors, maybe an effect that governs how the color gets placed (whether it adds or overwrites)
 
+
+
+
+
+/* changes to consider */
+// should push_rgb unscale to the configured default brightness or a standard brightness, like the 0-20 color standard
+
+
+
+
+/* testing */
+// negative testing: ensure things out of bounds don't crash
+// rerun the test suite on various devices; there are some device-specific spec failures
+// multiple displays specs
+// dump accum results quitting specs early
+// have a way to spit out results while running
+// set exit code from led_specs depending on failures or not
+// tests: display time it took to run them
+// need to reset blink period after testing
+// test could highlight differences between strings to reduce need to manually diff them 
+
+
+
+
+/* troubleshooting */
+// why does changing number of displays affect program memory (any structures in progmem?)
+// crash annunciator switching from wheel with next window to wheel wit position only 
+// make sure sequence parameters can be changed while running without resetting and without negative effects
+// for dynamically changing scheduler timing, make sure changing the time can be done without reseting it
+// can the wheel sequence be switched in direction?
+// sequencer will leave value in arg0, how to get it into arg1?
+      // another sequencer type?
+// rst should not set display back to zero
+// does an empty command, ":", clear arguments?
+// 0,255,255:hsl at 100:lev is less bright than red at 100:lev (hsl brightness compensation problem?)
+// opposite value doesn't seem to work proper except starting a zero
+// ignore out of range sequencer numbers
+// need to ensure not getting same random color twice in a row (will make things prettier)
+// where possible, special mode ints should be positive so they can be randomized
+// for red/green swapped led strands, the carry color comes back flipped
+// cpy needs to overlap the end (for proper fill)
+// the fade problem is when running from within a schedule. Running a macro N times from another macro works from the command line
+// the multi-run from the command line is spectacular, why is not applying the fade at the same rate?
+// when setting position and placing a rubber stamp, it only places one pixel (which is expected)
+      // need a way to expand the window to easily place the whole stamp
+      // for instance, -6:win could mean to expand the current window +6
+// need a way to pause, and then restore the previous continued state, for instance, without effects
+
+
+
+
+
+/* performance */
+// cache some things when rendering, for instance, the states for each blink effect, the breathe step, so they're not computed constantly
+// share code between palette and buffer rotation
+      // maybe allow any buffer operation on the palette
+// could have 8-bit versions of sequencers for speed
+// ideas for reducing code footprint
+      // remove commands that are effecively the same like rep and cpy (keep cpy)
+      // remove overly-protective guard code
+      // move additional settings to the cfg command
+      // segment features so they can be enabled/disabled easily
+      // remove all floating point constants / math
+      // pass a pointer to dependencies instead of passing individual arguments if/where possible
+// maybe alternate between blink, breathe and fade processing to allow scheduling more often
+// move mechanical buffer operations like mirror to Buffer class
+
+
+
+
+
+/* python */
+// backtick to run command in color_command; also up arrow for previous commands
+
+
+
+/* documentation */
+// working example of passing params to a macro
+        // command: 0:set:rcl:pos:red:flo:flu:rst
+        // command: stp
+        // command: 10,20:sto:0:run
+// documentation to wiki
+// hardware triggers, such as button presses, will be called something else, like Actions
+// the fade counter only decides when to automatically flush, not the rate at which fading happens; repeated renders will automatically fade the buffer color
+
+
+
+
+
+/* visual goals */
+// sequence crawling from zone to zone (triggers) 
+// move a sequencing zone back and forth slowly (value safety upon arbitrary changes)
+// something speeding up and slowing down (should be able to adjust schedule timing without it resetting)
+// shooting star problem
+      // need to continuously advance the position and place the latest color at the leading edge
+// would be cool to somehow do mapping where the zone rotations on radius8 could be done on the opposite axis
+// with mapping in place you should be able to apply rotations to rows and colums, in fact multiple rows and columns
+      // it's possible that when mapping is in place, there's no such thing as zones
+      // unmapped pixels just would be ignored
+      // the expectation is it can be treated as an X x Y grid
+      // radius8: w16 x h16
+      // sphere: w10 x h17
+      // disc (cylinder): w6 x h32 (this could simplify some effects on the projector)
+      // disc mapping
+      // col 6: full 0-31                 01234567890123456789012345678901 
+      // col 5: 0-23 interpolated to 0-31 01223455678890112344567789001233
+      // col 4: 0-15 interpolated to 0-31 00112233445566778899001122334455
+      // col 3: 0-11 interpolated to 0-31 00011222333445556667788899900111
+      // col 2: 0-7 interpolated to 0-31  00001111222233334444555566667777
+      // col 1: 0 interpolated to 0-31    00000000000000000000000000000000
+      // mapping would need to be done at the buffer level
+      // pos = map(x,y)
+      // x,y:pos 
+      // if a second argument is provided, it could mean  use x,y mapping
+      // in the case of the zero default, the x positions would still be valid positions
+      // need to implement mapping for radius8 & sphere
+
+
+
+
+
+
+/* ideas */
+// could build upon macros to form the concept of apps
+      // apps:
+      // - have a way to start up
+      // - have a way to shut down
+      // - perhaps other common behaviors
+// could have an effect that runs a macro at render time to do whatever it wants, with the rendering pixel as the current window
+      // - this could be very slow
+      // - perhaps call the macro one time per scan line rather than per incidence of effect in buffer
+      // - example of use: 
+      //   - could have a dynamic display without needing to have a macro running all the time
+      // --> beginning of rendering could be a trigger
 // how to simplify switching?
 //    ::process_commands_P(F("19:stm:-1:sch:30000,19,20:sch:17:run"));
 //    ::process_commands_P(F("20:stm:-1:sch:60000,19,21:sch:18:run"));
 //    ::process_commands_P(F("21:stm:-1:sch:60000,19,19:sch:23:run"));
+ // could have a special form of run that sequences a series of arg[0] values
+ // 3,10,5:eun = run macro three for each value from 5 to 10 
+// or 10,3,5:run - allowing the count to be random
+// 20:run - runs macro #0 20 times, with arg0 from 0-19
+// 20,1:run = runs macro #1 20 times
+// 20,2,5:run = runs macro 2 15 times, from 5 to 19
+// how would I draw a line?
+      // 3,4:pos - to set the starting position
+      // 10,11:lin - sets the ending position
+      //  but what would it do next?
+      // idea: 10,11,7:lin - sets the ending position, and calls macro 7 for each distinct point
 
-// shooting star problem
-// need to continuously advance the position and place the latest color at the leading edge
-// could have a special form of run that sequences a series of arg[0] values
-// 3,10,5:seq = run macro three for each value from 5 to 10 
-// or 10,3,5:seq - allowing the count to be random
-// 20:seq - runs macro #0 20 times, with arg0 from 0-19
-// 20,1:seq = runs macro #1 20 times
-// 20,2,5:seq = runs macro 2 15 times, from 5 to 19
+
+
+
+
+
+
+
+/* new colors */
+// add a 15,15,15 gray
+// water other recognizable colors are common?
+      // xenon white
+      // argon purple
+      // green light green
+      // yelllow light amber
+// add remaining 5's colors (they may be took dark)
+
+
+
+
+
+
+
+
+
+
+
+
 // could have an advance command that sets the position to the next position
+
 // shooting star would be
 // 5:set:wht:brt:brt:sfd:flu
 // rps - random starting position
@@ -441,78 +283,11 @@
 // 20,1,5:rng - random # between 1 and 19 with arg1 = 5
 // seq - sequence arg0 from 0 to n-1 and run macro 5 each time
 
-// could have a non-blinking blink, just display the dim color, for background decoration
 
 // need a way to clear carry color or not set it during a buffer shift
 
 // apply ease animation timing to rotations
 
-// when setting position and placing a rubber stamp, it only places one pixel (which is expected)
-// need a way to expand the window to easily place the whole stamp
-// for instance, -6:win could mean to expand the current window +6
-
-// would be cool to somehow do mappying where the zone rotations on radius8 could be done on the opposite axis
-// with mapping in place you should be able to apply rotations to rows and colums, in fact multiple rows and columns
-// it's possible that when mapping is in place, there's no such thing as zones
-// unmapped pixels just would be ignored
-// the expectation is it can be treated as an X x Y grid
-// radius8: w16 x h16
-// sphere: w10 x h17
-// disc (cylinder): w6 x h32 (this could simplify some effects on the projector)
-// disc mapping
-// col 6: full 0-31                 01234567890123456789012345678901 
-// col 5: 0-23 interpolated to 0-31 01223455678890112344567789001233
-// col 4: 0-15 interpolated to 0-31 00112233445566778899001122334455
-// col 3: 0-11 interpolated to 0-31 00011222333445556667788899900111
-// col 2: 0-7 interpolated to 0-31  00001111222233334444555566667777
-// col 1: 0 interpolated to 0-31    00000000000000000000000000000000
-// mapping would need to be done at the buffer level
-// pos = map(x,y)
-// x,y:pos 
-// if a second argument is provided, it could mean  use x,y mapping
-// in the case of the zero default, the x positions would still be valid positions
-// need to implement mapping for radius8 & sphere
-
-// how would I draw a line?
-// 3,4:pos - to set the starting position
-// 10,11:lin - sets the ending position
-//  but what would it do next?
-// idea: 10,11,7:lin - sets the ending position, and calls macro 7 for each distinct point
-
-// vesions of mirror and flip that blend the colors
-
-// for zones, have several configurations that can be chosen in real time by device type
-
-// move mechanical buffer operations like mirror to Buffer class
-
-
-
-
-
-
-
-
-
-
-// be able to set the fade rate, to four digits, 0.9999 would be 9999:sfr
-
-// need a dbg or tst command
-// 0:tst - returns current display buffer data over serial
-// 1:tst - returns current render buffer
-// 2:tst - returns contents of macros
-// 3:tst - last received command
-// etc 
-
-// 20,10:rng:psh:30,20:rng
-//           psh pushes arg0 to arg1, and arg1 to arg2
-
-// 3:rnd = random palette color 
-
-// have a way of generating palette colors
-// one hue, many lightnesses
-// one lightness, many hues, varying step angle
-
-// would be nice to flood by adding instead of replacing colors, maybe an effect that governs how the color gets placed (whether it adds or overwrites)
 
 // want to generate x, y
 // fr0: for new arg0 = arg1-1 to arg0 
