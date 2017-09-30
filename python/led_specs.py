@@ -348,27 +348,36 @@ def expect_macro(command_, macro, expected):
   count = len(expected)
   expect_equal(str_[:count], expected)
 
-def expect_buffer(command_, start, count, expected, flush = True, slow = False):
+def expect_buffer(command_, start, count, expected, flush = True, slow = False, positive = True):
   if flush:
     command_ += ":flu"
   command(command_)
   str_ = command_str("2," + str(start) + "," + str(count) + ":tst", slow)                                 
-  expect_equal(str_[:-1], expected)
+  if positive:
+    expect_equal(str_[:-1], expected)
+  else:
+    expect_not_equal(str_[:-1], expected)
 
-def expect_render(command_, start, count, expected, flush = True, slow = False):
+def expect_render(command_, start, count, expected, flush = True, slow = False, positive = True):
   if flush:
     command_ += ":flu"               
   command(command_)                                                
   str_ = command_str("3," + str(start) + "," + str(count) + ":tst", slow)
-  expect_equal(str_[:-1], expected)                                
-                                                                   
-def expect_effect(command_, start, count, expected, flush = True, slow = False):               
+  if positive:
+    expect_equal(str_[:-1], expected)                                
+  else:
+    expect_not_equal(str_[:-1], expected)
+                                                                 
+def expect_effect(command_, start, count, expected, flush = True, slow = False, positive = True):               
   if flush:
     command_ += ":flu"
   command(command_)
   str_ = command_str("4," + str(start) + "," + str(count) + ":tst", slow)
-  expect_equal(str_[:-1], expected)                                
-                                                                   
+  if positive:
+    expect_equal(str_[:-1], expected)                                
+  else:
+    expect_not_equal(str_[:-1], expected)
+                                                                 
 def expect_palette(command_, start, count, expected, positive=True):               
   display_width = num_leds / palette_size                                                                                                                         
   display_command = ":" + str(palette_size) + ",-2," + str(display_width) + ":cpy:flu"  
@@ -424,6 +433,7 @@ def expect_empty_render(command_, start, count):
   command(command_)
   str_ = command_str("3," + str(start) + "," + str(count) + ":tst", True)
   expect_equal(str_[:-1], expected[:-1])
+
 
 # -----------------------------------------------------------------------------
 # --- helper functions ---
@@ -939,6 +949,12 @@ def specs():
     test("it places multiple random palette colors and no effects")
     expect_buffer("rnd:3,5:rnd", 0, 7, "0,20,20,0,10,20,0,0,20,20,20,0,10,0,20,15,20,0,0,0,0")
     expect_effect("rnd:3,5:rnd", 0, 7, "0,0,0,0,0,0,0")
+
+    test("it places random colors, filling the number of LEDs")
+    neg_expected = "0,0,0"
+#    for n in range(0, num_leds):
+#      neg_expected = neg_expected + "0,0,0,"
+    expect_buffer("1,-1:rnd", num_leds - 1, 1, "0,0,0", True, True, False)
 
 
 ########################################################################

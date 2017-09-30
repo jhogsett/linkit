@@ -1,0 +1,20 @@
+#!/bin/sh /etc/rc.common
+
+SCRIPT_NAME="LED Multicast Receiver"
+SCRIPT_PGM="udp_command.py"
+SCRIPT_PATH="/root/udp_command.py"
+#LOG_FILE="/root/dev/linkit/python/udp_command.log"
+LOG_FILE="/dev/null"
+
+START=98
+STOP=50
+
+start() {
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}
+
+stop() {
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PGM`
+}
