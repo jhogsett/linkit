@@ -1,3 +1,6 @@
+// need to be able to pause and the continue as-was, not enable everything
+
+
 /* multicasting */
 // to make reliable
 //    number each request; ignore numbers already seen
@@ -11,9 +14,9 @@
 // select specific test #
 // could remember watermark by sender ip address
 // could have watermark apply for a short time only, just to prevent near duplicates
-
-
-
+// maybe use random # or uuid instead, applies only for a few seconds
+// could send "heard from" IPs in duplicate messages, and those would ignore if found
+// have them communicate and split the rainbow
 
 
 /* new features */
@@ -69,6 +72,7 @@
      // quit if ... 
 // could have conditional/switch to call multiple macros
 // for zones, have several configurations that can be chosen in real time by device type
+// need command to set offset and window from arg0, arg1
 
 
 
@@ -96,6 +100,7 @@
 // could have a non-blinking blink, just display the dim color, for background decoration
 // vesions of mirror and flip that blend the colors
 // would be nice to flood by adding instead of replacing colors, maybe an effect that governs how the color gets placed (whether it adds or overwrites)
+// could have an advance command that sets the position to the next position
 
 
 
@@ -144,6 +149,10 @@
       // need a way to expand the window to easily place the whole stamp
       // for instance, -6:win could mean to expand the current window +6
 // need a way to pause, and then restore the previous continued state, for instance, without effects
+// need a way to clear carry color or not set it during a buffer shift
+// slow fade doesn't work when running a macro repeatedly like 1000,0:run. It works when running it manually over serial.
+
+
 
 
 
@@ -170,6 +179,8 @@
 
 /* python */
 // backtick to run command in color_command; also up arrow for previous commands
+
+
 
 
 
@@ -213,6 +224,18 @@
       // if a second argument is provided, it could mean  use x,y mapping
       // in the case of the zero default, the x positions would still be valid positions
       // need to implement mapping for radius8 & sphere
+// shooting star would be
+// 5:set:wht:brt:brt:sfd:flu
+// rps - random starting position
+// 2:rng:rev - random direction
+// 20,1,5:rng - random # between 1 and 19 with arg1 = 5
+// seq - sequence arg0 from 0 to n-1 and run macro 5 each time
+// apply ease animation timing to rotations
+// blast through a random section
+// pick a random starting position in current width
+// pick a random ending position, in the going direction, up to the end of the current width
+// -- could have a command that chooses a random range in current width going in current direction
+//      -x:rps
 
 
 
@@ -246,7 +269,10 @@
       // 10,11:lin - sets the ending position
       //  but what would it do next?
       // idea: 10,11,7:lin - sets the ending position, and calls macro 7 for each distinct point
-
+// idea: per-zone settable settings that affect rendering
+// - brightness, black level, direction, palette offset
+// - when you set certain values, they stick to the zone you're on
+// ability to pause the writing to the display (but not pause rendering; would allow for quiet testing)
 
 
 
@@ -266,61 +292,6 @@
 
 
 
-
-
-
-
-
-
-
-
-// could have an advance command that sets the position to the next position
-
-// shooting star would be
-// 5:set:wht:brt:brt:sfd:flu
-// rps - random starting position
-// 2:rng:rev - random direction
-// 20,1,5:rng - random # between 1 and 19 with arg1 = 5
-// seq - sequence arg0 from 0 to n-1 and run macro 5 each time
-
-
-// need a way to clear carry color or not set it during a buffer shift
-
-// apply ease animation timing to rotations
-
-
-// want to generate x, y
-// fr0: for new arg0 = arg1-1 to arg0 
-//   pass through arg2 as arg1
-//   for each cycle 
-//     need an int to store value
-//     increment value
-//     set arg0 to value
-// fr1: for new arg1 = arg0 to arg2 exclusive
-
-// for command could be x,y,z:for
-// x = start, y = end, z = macro to run passing in arg0
-
-// set red at each position
-// 90,0:fr0:pos:red
-
-// blast through a random section
-// pick a random starting position in current width
-// pick a random ending position, in the going direction, up to the end of the current width
-// -- could have a command that chooses a random range in current width going in current direction
-//      -x:rps
-
-// need command to set offset and window from arg0, arg1
-
-// simpler form of 'for' - calls macro for each pixel in the current window, setting position to just that pixel, moving according to reverse flag
-
-// would pop/push args be helpful?
-
-// slow fade doesn't work when running a macro repeatedly like 1000,0:run. It works when running it manually over serial.
-
-// idea: per-zone settable settings that affect rendering
-// - brightness, black level, direction, 
-// - when you set certain values, they stick to the zone you're on
 
 // repeat command doesn't work in reverse
 

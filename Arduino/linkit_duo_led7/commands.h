@@ -41,11 +41,11 @@ class Commands
   private:
   
   void pause(byte type);
-  void resume(byte type);
-  void pause_effects();
-  void pause_schedules();
-  void resume_effects();
-  void resume_schedules();
+  void resume(int type);
+  void pause_effects(bool paused);
+  void pause_schedules(bool paused);
+  void restore_paused_state();
+  void save_paused_state();
   rgb_color * offset_buffer();
   void do_blend(byte strength);
   void do_max();
@@ -117,6 +117,8 @@ class Commands
   BreatheEffects *breathe_effects;
   bool effects_paused = false;
   bool schedules_paused = false;
+  bool effects_were_paused = false;
+  bool schedules_were_paused = false;
   byte default_brightness;
   byte visible_led_count;
   static Macros macros;
@@ -191,7 +193,10 @@ bool Commands::dispatch_function(int cmd, byte *dispatch_data)
 #define PAUSE_ALL        0
 #define PAUSE_EFFECTS    1
 #define PAUSE_SCHEDULES  2
-#define RESUME_ALL       0
+
+// change to resume as was
+#define RESUME_ALL      -1 
+#define RESUME_AS_WAS    0 
 #define RESUME_EFFECTS   1
 #define RESUME_SCHEDULES 2
 
@@ -199,52 +204,63 @@ void Commands::pause(byte type = PAUSE_ALL)
 {
   switch(type)
   {
+    case PAUSE_ALL:
+      save_paused_state();
+      pause_effects(true);
+      pause_schedules(true);
+      break;
+
     case PAUSE_EFFECTS:
-      pause_effects();
+      pause_effects(true);
       break;
       
-    case PAUSE_ALL:
-      pause_effects();
     case PAUSE_SCHEDULES:
-      pause_schedules();
+      pause_schedules(true);
       break;
   }
 }
 
-void Commands::pause_effects()
-{
-  effects_paused = true;
-}
-
-void Commands::pause_schedules()
-{
-  schedules_paused = true;
-}
-
-void Commands::resume(byte type = RESUME_ALL)
+void Commands::resume(int type = RESUME_AS_WAS)
 {
   switch(type)
   {
-    case RESUME_EFFECTS:
-      resume_effects();
+    case RESUME_ALL:
+      pause_effects(false);
+      pause_schedules(false);
       break;
 
-    case RESUME_ALL:
-      resume_effects();
+    case RESUME_AS_WAS:
+      restore_paused_state();
+      break;
+
+    case RESUME_EFFECTS:
+      pause_effects(false);
+      break;
+
     case RESUME_SCHEDULES:
-      resume_schedules();
+      pause_schedules(false);
       break;
   }
 }
 
-void Commands::resume_effects()
-{
-  effects_paused = false;
+void Commands::save_paused_state(){
+  this->effects_were_paused = this->effects_paused;
+  this->schedules_were_paused = this->schedules_paused;  
 }
 
-void Commands::resume_schedules()
+void Commands::restore_paused_state(){
+  pause_effects(this->effects_were_paused);
+  pause_schedules(this->schedules_were_paused);
+}
+
+void Commands::pause_effects(bool paused)
 {
-  schedules_paused = false;
+  effects_paused = paused;
+}
+
+void Commands::pause_schedules(bool paused)
+{
+  schedules_paused = paused;
 }
 
 void Commands::set_display(byte display)
