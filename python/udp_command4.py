@@ -47,8 +47,7 @@ def flush_output():
 def wait_for_ack():
     time.sleep(response_wait)
     while s.inWaiting() <= 0:
-        print '-',   
- 
+        pass
     time.sleep(response_wait)
     while s.inWaiting() > 0:
         print s.read(s.inWaiting()),
@@ -83,27 +82,27 @@ def handle_command(cmd_text):
         watermark = 0
     print >>sys.stderr, 'issuing command...'
 
-    command(":::" + cmd)
+    command(":::pau:pau")
+    command(cmd + ":cnt:cnt")
     flush_output();
 
 multicast_group = '224.3.29.71'
 server_address = ('', 10000)
 
-# Create the socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-# Bind to the server address
-sock.bind(server_address)
-
-# Tell the operating system to add the socket to the multicast group on all interfaces.
-group = socket.inet_aton(multicast_group)
-mreq = struct.pack('4sL', group, socket.INADDR_ANY)
-sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-
-sock.setblocking(0)
-
 # Receive/respond loop
 while True:
+    # Create the socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    # Bind to the server address
+    sock.bind(server_address)
+
+    # Tell the operating system to add the socket to the multicast group on all interfaces.
+    group = socket.inet_aton(multicast_group)
+    mreq = struct.pack('4sL', group, socket.INADDR_ANY)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+
+    sock.setblocking(0)
 
     try:
         print >>sys.stderr, '\nwaiting 10s to receive message...'
@@ -119,6 +118,7 @@ while True:
             print >>sys.stderr, 'sending acknowledgement to', address
             sock.sendto('ack', address)
 
+        sock.close()
     except EOFError:
         sys.exit("\ngoodbye.\n")
     except KeyboardInterrupt:
