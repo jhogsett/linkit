@@ -27,8 +27,11 @@
 // 200-LED overhead
 // #define RADIUS8
 
-// 93-LED projector or platform
+// 93-LED projector
 // #define PROJECTOR
+
+// 93-LED platform
+// #define PLATFORM
 
 // 44-LED Wearable and Hard Hat
 // #define WEARABLE_AND_HARDHAT
@@ -118,6 +121,15 @@
 #define ANIM_LED_COUNT 93
 #define ZONES_DISC
 #define DEFAULT_BRIGHTNESS_PERCENT 100
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
+#endif
+
+#ifdef PLATFORM
+#define USE_1_DISPLAYS
+#define ANIM_LED_COUNT 93
+#define ZONES_DISC
+#define DEFAULT_BRIGHTNESS_PERCENT 25
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 150
 #endif
