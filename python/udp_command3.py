@@ -5,11 +5,19 @@ import struct
 import sys
 import serial
 import time
+import select
+
+timeout_in_seconds = 10
+multicast_group = '224.3.29.71'
+server_address = ('', 10000)
 
 global s
 s = serial.Serial("/dev/ttyS0", 115200)
 
 response_wait = 0.1
+
+# Create the socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 def flush_input():
   s.flushInput()
@@ -73,16 +81,21 @@ group = socket.inet_aton(multicast_group)
 mreq = struct.pack('4sL', group, socket.INADDR_ANY)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
+sock.setblocking(0)
+
 # Receive/respond loop
 while True:
-    print >>sys.stderr, '\nwaiting to receive message'
-    data, address = sock.recvfrom(1024)
+
+    print >>sys.stderr, '\nwaiting 10s to receive message...'
+    ready = select.select([sock], [], [], timeout_in_seconds)
+    if ready[0]:
+        data, address = sock.recvfrom(1024)
     
-    print >>sys.stderr, 'received %s bytes from %s' % (len(data), address)
-    print >>sys.stderr, data
+        print >>sys.stderr, 'received %s bytes from %s' % (len(data), address)
+        print >>sys.stderr, data
 
-    handle_command(data)
+        handle_command(data)
 
-    print >>sys.stderr, 'sending acknowledgement to', address
-    sock.sendto('ack', address)
+        print >>sys.stderr, 'sending acknowledgement to', address
+        sock.sendto('ack', address)
 
