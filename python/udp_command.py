@@ -82,8 +82,8 @@ def handle_command(cmd_text):
         watermark = 0
     print >>sys.stderr, 'issuing command...'
 
-    command(":::pau:pau")
-    command(cmd + ":cnt:cnt")
+    command(":::3:pau:3:pau")
+    command("3:cnt:" + cmd)
     flush_output();
 
 multicast_group = multicast_group_ip

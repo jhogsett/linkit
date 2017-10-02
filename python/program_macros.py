@@ -176,7 +176,7 @@ def apollo_macros():
   set_macro(11, "clr:100,13:sch:10000,14:sch", 13) 
   
   # swinging random colors                                               
-  set_macro(10, "clr:30:run:25:run", 0)                  
+  set_macro(10, "clr:1:pau:30:run:25:run", 0)                  
                                                  
   set_macro(13, "-1:rps:1:rnd:sfd:flu:rst", 10)    
   set_macro(14, "15,15:run:500:del", 10)           
