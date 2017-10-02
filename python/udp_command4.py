@@ -30,7 +30,7 @@ parser.add_argument("-t", "--timeout", type=int, dest="timeout", default=10,    
 
 args = parser.parse_args()
 verbose_mode = args.verbose
-multicast_group = args.ipaddr
+multicast_group_ip = args.ipaddr
 server_port = args.port
 timeout_in_seconds = args.timeout
 server_address = ('', server_port)
@@ -86,8 +86,15 @@ def handle_command(cmd_text):
     command(cmd + ":cnt:cnt")
     flush_output();
 
-multicast_group = '224.3.29.71'
-server_address = ('', 10000)
+multicast_group = multicast_group_ip
+server_address = ('', server_port)
+
+print tc.magenta("\n" + app_description + "\n")
+if verbose_mode:
+    print tc.yellow("verbose mode")
+print tc.cyan("multicast group IP: ") + tc.green(multicast_group_ip)
+print tc.cyan("server port: ") + tc.green(str(server_port))
+print tc.cyan("receiving period: ") + tc.green(str(timeout_in_seconds))
 
 # Receive/respond loop
 while True:
@@ -105,7 +112,7 @@ while True:
     sock.setblocking(0)
 
     try:
-        print >>sys.stderr, '\nwaiting 10s to receive message...'
+        print >>sys.stderr, '\nwaiting ' + str(timeout_in_seconds) + 's to receive message...'
         ready = select.select([sock], [], [], timeout_in_seconds)
         if ready[0]:
             data, address = sock.recvfrom(1024)
