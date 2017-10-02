@@ -6,4 +6,5 @@ rsync -ut /Media/SD-P1/dev/linkit/python/images/* /root/images/
 rsync -ut /Media/SD-P1/dev/linkit/python/circleci7.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/color_command.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/udp_command.* /root
+rsync -ut /Media/SD-P1/dev/linkit/python/terminal_colors.* /root
 
