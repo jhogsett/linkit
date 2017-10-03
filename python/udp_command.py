@@ -82,7 +82,7 @@ def handle_command(cmd_text):
         watermark = 0
     print >>sys.stderr, 'issuing command...'
 
-    command(":::3:pau:3:pau")
+    command(":::3:pau")
     command("3:cnt:" + cmd)
     flush_output();
 
