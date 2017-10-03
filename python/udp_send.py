@@ -20,7 +20,7 @@ parser.add_argument("-v", "--verbose",              dest="verbose", action='stor
 parser.add_argument("-i", "--ipaddr",               dest="ipaddr",  default='224.3.29.71', help='multicast group IP address (224.3.29.71)')
 parser.add_argument("-p", "--port",     type=int,   dest="port",    default=10000,         help='multicast port (10000)')
 parser.add_argument("-t", "--timeout",  type=float, dest="timeout", default=0.5,           help='socket in seconds (0.5)')
-parser.add_argument("-n", "--numtimes", type=int,   dest="times",   default=1,             help='number of times to issue command (1)')
+parser.add_argument("-n", "--numtimes", type=int,   dest="times",   default=3,             help='number of times to issue command (3)')
 parser.add_argument("-k", "--nokeys",               dest="nokeys",  action='store_true',   help='disables keys sent for dupe detection (False)')
 
 args = parser.parse_args()
