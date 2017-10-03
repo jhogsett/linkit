@@ -50,51 +50,62 @@ def wait_for_ack():
         pass
     time.sleep(response_wait)
     while s.inWaiting() > 0:
-        print s.read(s.inWaiting()),
-    print
+        received = s.read(s.inWaiting())
+        if verbose_mode:
+            print received
+
+    if verbose_mode:
+        print
 
 def command(cmd_text):
     s.write((cmd_text + ':').encode())
     wait_for_ack()
 
-global watermark
-watermark = 0
+global keylist 
+keylist = []
+numkeys = 20
 
 def handle_command(cmd_text):
-    global watermark
-    new_watermark = 0
+    global keylist
 
     cmd = ""
+    key = ""
     if ";" in cmd_text:
-        sequence, cmd = cmd_text.split(";")
-        try:
-            new_watermark = int(sequence)
-            if new_watermark > 0 and new_watermark <= watermark:
-                print >>sys.stderr, 'skipping duplicate command'
-                return    
-            watermark = new_watermark
-        except ValueError:
-            # if not a number, reset watermark and issue command
-            watermark = 0
+        key, cmd = cmd_text.split(";")
+
+        if key in keylist:
+            if verbose_mode:
+                print >>sys.stderr, tc.red('skipping duplicate command')
+            return
+
+        keylist.append(key)
+        keylist = keylist[-numkeys:]
     else:
-       # no sequence number, issue command and reset watermark
+        # no key, always issue command
+        key = "no key"
         cmd = cmd_text
         watermark = 0
-    print >>sys.stderr, 'issuing command...'
 
+    if verbose_mode:
+        print >>sys.stderr, tc.yellow("command: ") + tc.white(cmd) + tc.red(" (key: " + key + ")")
+    else:
+        print >>sys.stderr, tc.yellow("command: ") + tc.white(cmd)
     command(":::3:pau")
-    command("3:cnt:" + cmd)
+    command(":::3:cnt:" + cmd)
     flush_output();
 
 multicast_group = multicast_group_ip
 server_address = ('', server_port)
+client_name = socket.getfqdn()
 
 print tc.magenta("\n" + app_description + "\n")
 if verbose_mode:
     print tc.yellow("verbose mode")
+print tc.cyan("client name: ") + tc.green(client_name)
 print tc.cyan("multicast group IP: ") + tc.green(multicast_group_ip)
 print tc.cyan("server port: ") + tc.green(str(server_port))
-print tc.cyan("receiving period: ") + tc.green(str(timeout_in_seconds))
+print tc.cyan("receiving period: ") + tc.green(str(timeout_in_seconds) + "s")
+print
 
 # Receive/respond loop
 while True:
@@ -112,17 +123,19 @@ while True:
     sock.setblocking(0)
 
     try:
-        print >>sys.stderr, '\nwaiting ' + str(timeout_in_seconds) + 's to receive message...'
+        if verbose_mode:
+            print >>sys.stderr, '\nwaiting ' + str(timeout_in_seconds) + 's to receive message...'
         ready = select.select([sock], [], [], timeout_in_seconds)
         if ready[0]:
             data, address = sock.recvfrom(1024)
     
-            print >>sys.stderr, 'received %s bytes from %s' % (len(data), address)
-            print >>sys.stderr, data
+            if verbose_mode:
+            	print >>sys.stderr, tc.green('received %s bytes from %s' % (len(data), address))
 
             handle_command(data)
 
-            print >>sys.stderr, 'sending acknowledgement to', address
+            if verbose_mode:
+                print >>sys.stderr, tc.cyan('sending acknowledgement to ' + str(address))
             sock.sendto('ack', address)
 
         sock.close()
