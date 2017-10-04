@@ -6,6 +6,7 @@
 #include "config.h"
 #include "zone_defs.h"
 #include "sequencer.h"
+#include "map_defs.h"
 
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
@@ -125,6 +126,7 @@ class Commands
   static Commands * me;
   Sequencer *sequencer;
   FadeEffects *fade_effects;
+  Maps maps;
   
 #ifdef USE_AUTO_BRIGHTNESS
   AutoBrightnessBase *auto_brightness;
@@ -181,6 +183,10 @@ void Commands::begin(
 
   macros.begin(command_processor, &Commands::dispatch_function);
   scheduler.begin(&macros);
+
+  maps.begin((const byte*)map_rows);
+
+  this->default_brightness = maps.get_led(5, 7);
 }
 
 #include "event_loop.h"
@@ -193,19 +199,19 @@ bool Commands::dispatch_function(int cmd, byte *dispatch_data)
 #define PAUSE_ALL        0
 #define PAUSE_EFFECTS    1
 #define PAUSE_SCHEDULES  2
+#define PAUSE_PUSH       3
 
 // change to resume as was
-#define RESUME_ALL      -1 
-#define RESUME_AS_WAS    0 
+#define RESUME_ALL       0 
 #define RESUME_EFFECTS   1
 #define RESUME_SCHEDULES 2
+#define RESUME_POP       3 
 
 void Commands::pause(byte type = PAUSE_ALL)
 {
   switch(type)
   {
     case PAUSE_ALL:
-      save_paused_state();
       pause_effects(true);
       pause_schedules(true);
       break;
@@ -217,20 +223,22 @@ void Commands::pause(byte type = PAUSE_ALL)
     case PAUSE_SCHEDULES:
       pause_schedules(true);
       break;
+
+    case PAUSE_PUSH:
+      save_paused_state();
+      pause_effects(true);
+      pause_schedules(true);
+      break;
   }
 }
 
-void Commands::resume(int type = RESUME_AS_WAS)
+void Commands::resume(int type = RESUME_ALL)
 {
   switch(type)
   {
     case RESUME_ALL:
       pause_effects(false);
       pause_schedules(false);
-      break;
-
-    case RESUME_AS_WAS:
-      restore_paused_state();
       break;
 
     case RESUME_EFFECTS:
@@ -240,6 +248,11 @@ void Commands::resume(int type = RESUME_AS_WAS)
     case RESUME_SCHEDULES:
       pause_schedules(false);
       break;
+
+    case RESUME_POP:
+      restore_paused_state();
+      break;
+
   }
 }
 
