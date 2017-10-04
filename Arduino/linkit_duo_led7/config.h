@@ -16,10 +16,13 @@
 // #define LED_STRIP_72
 
 // single 90-LED strip
-#define LED_STRIP_90
+// #define LED_STRIP_90
+
+// single 140-LED strip
+// #define LED_STRIP_144
 
 // single 90-LED strip in Apollo
-// #define APOLLO_DISPLAY
+#define APOLLO_DISPLAY
 
 // 100-LED sphere
 // #define SPHERE
@@ -80,6 +83,15 @@
 #define USE_1_DISPLAYS
 #define ANIM_LED_COUNT 90
 #define ZONES_90_LEDS
+#define DEFAULT_BRIGHTNESS_PERCENT 15
+#define BLINK_PERIOD 1500
+#define BREATHE_PERIOD 100
+#endif
+
+#ifdef LED_STRIP_144
+#define USE_1_DISPLAYS
+#define ANIM_LED_COUNT 144
+#define ZONES_144_LEDS
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #define BLINK_PERIOD 1500
 #define BREATHE_PERIOD 100
