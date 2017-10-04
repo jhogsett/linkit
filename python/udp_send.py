@@ -8,20 +8,23 @@ import argparse
 import time
 
 app_description = "LED Multicast Sender v.0.0 10-1-2017"
-timeout_in_seconds = 0.5
-multicast_group_ip = '224.3.29.71'
-multicast_port = 10000
-response_wait = 0.1
-verbose_mode = False
+
+#timeout_in_seconds = 0.5
+#multicast_group_ip = '224.3.29.71'
+#multicast_port = 10000
+#response_wait = 0.5
+#verbose_mode = False
+#msg_delay = 0.2
 
 parser = argparse.ArgumentParser(description=app_description)
 parser.add_argument("command",                      nargs='?',      default=None,          help='command to send & exit (optional)')
 parser.add_argument("-v", "--verbose",              dest="verbose", action='store_true',   help='display verbose info (False)')
 parser.add_argument("-i", "--ipaddr",               dest="ipaddr",  default='224.3.29.71', help='multicast group IP address (224.3.29.71)')
 parser.add_argument("-p", "--port",     type=int,   dest="port",    default=10000,         help='multicast port (10000)')
-parser.add_argument("-t", "--timeout",  type=float, dest="timeout", default=0.5,           help='socket in seconds (0.5)')
-parser.add_argument("-n", "--numtimes", type=int,   dest="times",   default=3,             help='number of times to issue command (3)')
+parser.add_argument("-t", "--timeout",  type=float, dest="timeout", default=0.5,           help='timeout time waiting for responses (seconds) (0.5)')
+parser.add_argument("-n", "--numtimes", type=int,   dest="times",   default=5,             help='number of times to issue command (5)')
 parser.add_argument("-k", "--nokeys",               dest="nokeys",  action='store_true',   help='disables keys sent for dupe detection (False)')
+parser.add_argument("-d", "--delay",    type=float, dest="delay",   default=0.2,           help='delay between duplicate messages (seconds) (0.1)')
 
 args = parser.parse_args()
 command = args.command
@@ -32,6 +35,7 @@ timeout_in_seconds = args.timeout
 multicast_group = (multicast_group_ip, multicast_port)
 num_times = args.times
 no_keys = args.nokeys
+msg_delay = args.delay
 
 # Create the datagram socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -56,6 +60,7 @@ print tc.cyan("multicast port: ") + tc.green(str(multicast_port))
 print tc.cyan("reply timeout: ") + tc.green(str(timeout_in_seconds) + "s")
 print tc.cyan("sends per message: ") + tc.green(str(num_times))
 print tc.cyan("sending keys: ") + tc.green(str(no_keys == False))
+print tc.cyan("message delay: ") + tc.green(str(msg_delay))
 print
 
 def add_key(command):
@@ -69,6 +74,7 @@ def send_message(message, times):
 	if verbose_mode:        
             print >>sys.stderr, tc.green('sending "%s"' % message)
         sent = sock.sendto(message, multicast_group)
+        time.sleep(msg_delay)
 
     # Look for responses from all recipients
     while True:

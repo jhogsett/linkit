@@ -65,7 +65,11 @@ global keylist
 keylist = []
 numkeys = 20
 
+
 def handle_command(cmd_text):
+    """
+    returns false if this was a duplicate command
+    """
     global keylist
 
     cmd = ""
@@ -76,7 +80,7 @@ def handle_command(cmd_text):
         if key in keylist:
             if verbose_mode:
                 print >>sys.stderr, tc.red('skipping duplicate command')
-            return
+            return False
 
         keylist.append(key)
         keylist = keylist[-numkeys:]
@@ -93,6 +97,7 @@ def handle_command(cmd_text):
     command(":::3:pau")
     command(":::3:cnt:" + cmd)
     flush_output();
+    return True
 
 multicast_group = multicast_group_ip
 server_address = ('', server_port)
@@ -132,11 +137,12 @@ while True:
             if verbose_mode:
             	print >>sys.stderr, tc.green('received %s bytes from %s' % (len(data), address))
 
-            handle_command(data)
+            should_ack = handle_command(data)
 
-            if verbose_mode:
-                print >>sys.stderr, tc.cyan('sending acknowledgement to ' + str(address))
-            sock.sendto('ack', address)
+            if should_ack:
+                if verbose_mode:
+                    print >>sys.stderr, tc.cyan('sending acknowledgement to ' + str(address))
+                sock.sendto('ack', address)
 
         sock.close()
     except EOFError:
