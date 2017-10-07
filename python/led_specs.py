@@ -928,6 +928,8 @@ def specs():
       expect_buffer("2:rnd:flo", 0, 3, "15,20,0,0,20,20,20,20,0")
     elif num_leds == 44:
       expect_buffer("2:rnd:flo", 0, 3, "15,20,0,0,20,20,20,20,0")
+    elif num_leds == 144:
+       expect_buffer("2:rnd:flo", 0, 3, "10,0,20,10,0,20,10,0,20")
     else:
       expect_buffer("2:rnd:flo", 0, 3, "15,20,0,20,0,20,20,20,0")
 
