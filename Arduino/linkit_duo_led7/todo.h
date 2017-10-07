@@ -1,3 +1,20 @@
+// can't figure out how to pass two arguments into a macro and using them separately
+
+// have a way to choose random colors including black and materials
+
+// in verose mode, show the commands being transmnitted
+
+// first needed trigger: run a macro when the breathing level becomes black, so the color can be changed on each breath
+// it's just some defines for types of events, like breath == off, or blink == off, infinite loop broken out of, etc.
+//  then each just points to a position in a byte array of macro numbers to run in response to the trigger
+
+// from a sequence get just the direction, 1 or -1, to allow stepping something else  
+
+// allow setting default effect (for instnace to save having to set a slow fade on every case)
+
+// try again a command to wait for blink counter = 0 (or all off instead?)
+
+
 // when rendering with dynamic palette colors, could temporarily pre-render the palette colors to avoid doing the math for every case
 
 // max brightness
@@ -7,8 +24,9 @@
 // use a back off algorithm for the repeated sends
   // can that be done in a thread?
 
+// for button presses, need pin-in command that leaves 0 or 1 as arg0
 
-
+// tests: determine if mapping is enabled (so it's tested only on x,y displays)
 
 
 /* multicasting */
@@ -196,7 +214,7 @@
 // maybe alternate between blink, breathe and fade processing to allow scheduling more often
 // move mechanical buffer operations like mirror to Buffer class
 // maybe making some pointers const would save memory
-
+// immediately assume it's not a command if the string is not three chars (to save command look up time when it's just arguments)
 
 
 

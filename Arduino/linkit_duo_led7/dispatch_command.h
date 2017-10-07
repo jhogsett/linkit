@@ -201,7 +201,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
 #endif
 
     case CMD_XYPOSITION:
-      do_xy_position(arg0, arg1);
+ #ifdef USE_MAPPING
+     do_xy_position(arg0, arg1);
+#endif
       break;
   
     case CMD_CFADE: 

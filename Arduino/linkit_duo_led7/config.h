@@ -10,10 +10,10 @@
 ///////////////////////////
 
 // single 144-LED strip
-// #define LED_STRIP_144
+//#define LED_STRIP_144
 
 // 36-LED annunciator
-// #define ANNUNCIATOR
+#define ANNUNCIATOR
 
 // wearable and 36-LED annunciator
 // #define WEARABLE_AND_ANNUNCIATOR
@@ -31,7 +31,7 @@
 // #define SPHERE
 
 // 200-LED overhead
-#define RADIUS8
+// #define RADIUS8
 
 // 93-LED projector
 // #define PROJECTOR
@@ -198,7 +198,7 @@
 #ifdef ANNUNCIATOR
 #define ANIM_LED_COUNT 36
 #define ZONES_ANNUNCIATOR
-#define DEFAULT_BRIGHTNESS_PERCENT 25
+#define DEFAULT_BRIGHTNESS_PERCENT 33
 #define BLINK_PERIOD 2000
 #define BREATHE_PERIOD 125
 #endif

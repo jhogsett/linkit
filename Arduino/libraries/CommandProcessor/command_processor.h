@@ -16,9 +16,7 @@ class CommandProcessor
   char str[MAX_STRING_LENGTH];
 
   int sub_args[NUM_SUB_ARGS];
-  int accumulator0 = 0;
-  int accumulator1 = 0;
-  int accumulator2 = 0;
+  int accumulators[NUM_SUB_ARGS];
 
   const char * const *commands;
 
@@ -43,6 +41,7 @@ class CommandProcessor
   void send_int(int value);
   void send_ints(int value);
   void send_str(char * value);
+  byte get_num_args() { return NUM_SUB_ARGS; }
 
   private:
 
@@ -55,6 +54,11 @@ void CommandProcessor::begin(HardwareSerial *serial, const char* const *commands
   this->commands = commands;
   this->num_commands = num_commands;
   this->serial = serial;
+
+  for(int i = 0; i < NUM_SUB_ARGS; i++){
+    sub_args[i] = 0;
+    accumulators[i] = 0;
+  }
 
   // force a command acknowledgement to wake up any script that may be halted
   // waiting for a character to be sent due to a new Arduino sketch being uploaded
