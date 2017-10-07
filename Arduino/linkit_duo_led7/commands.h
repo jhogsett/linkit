@@ -126,7 +126,9 @@ class Commands
   static Commands * me;
   Sequencer *sequencer;
   FadeEffects *fade_effects;
+#ifdef USE_MAPPING
   Maps maps;
+#endif
   
 #ifdef USE_AUTO_BRIGHTNESS
   AutoBrightnessBase *auto_brightness;
@@ -184,9 +186,11 @@ void Commands::begin(
   macros.begin(command_processor, &Commands::dispatch_function);
   scheduler.begin(&macros);
 
+#ifdef USE_MAPPING
   maps.begin((const byte*)map_rows);
+#endif
 
-  this->default_brightness = maps.get_led(5, 7);
+  //this->default_brightness = maps.get_led(5, 7);
 }
 
 #include "event_loop.h"

@@ -1,4 +1,9 @@
+// max brightness
 
+// trippy form of circleci with cosine sweeps
+
+// use a back off algorithm for the repeated sends
+  // can that be done in a thread?
 
 
 
@@ -188,7 +193,7 @@
       // pass a pointer to dependencies instead of passing individual arguments if/where possible
 // maybe alternate between blink, breathe and fade processing to allow scheduling more often
 // move mechanical buffer operations like mirror to Buffer class
-
+// maybe making some pointers const would save memory
 
 
 

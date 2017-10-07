@@ -1,7 +1,7 @@
 #ifndef MAP_DEFS_H
 #define MAP_DEFS_H
 
-//#ifdef RADIUS8
+#ifdef RADIUS8_MAPPING
 
 #define NUM_ROWS 16
 #define NUM_COLS 16
@@ -28,8 +28,9 @@ const byte* const map_rows[] PROGMEM = {
   map_row_01, map_row_02, map_row_03, map_row_04, map_row_05, map_row_06, map_row_07, map_row_08,  
   map_row_09, map_row_10, map_row_11, map_row_12, map_row_13, map_row_14, map_row_15, map_row_16
 };
-//#endif
+#endif
 
+#ifdef USE_MAPPING
 class Maps
 {
   public:
@@ -61,5 +62,6 @@ byte Maps::get_col(byte col, byte* row_P){
   return pgm_read_byte(&row_P[col]);
 }
 
+#endif
 #endif
 
