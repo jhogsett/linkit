@@ -9,13 +9,6 @@ import time
 
 app_description = "LED Multicast Sender v.0.0 10-1-2017"
 
-#timeout_in_seconds = 0.5
-#multicast_group_ip = '224.3.29.71'
-#multicast_port = 10000
-#response_wait = 0.5
-#verbose_mode = False
-#msg_delay = 0.2
-
 parser = argparse.ArgumentParser(description=app_description)
 parser.add_argument("command",                      nargs='?',      default=None,          help='command to send & exit (optional)')
 parser.add_argument("-v", "--verbose",              dest="verbose", action='store_true',   help='display verbose info (False)')
@@ -74,7 +67,7 @@ def send_message(message, times):
 	if verbose_mode:        
             print >>sys.stderr, tc.green('sending "%s"' % message)
         sent = sock.sendto(message, multicast_group)
-        time.sleep(msg_delay)
+        time.sleep(msg_delay * (n + 1))
 
     # Look for responses from all recipients
     while True:
