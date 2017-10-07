@@ -1,3 +1,5 @@
+// when rendering with dynamic palette colors, could temporarily pre-render the palette colors to avoid doing the math for every case
+
 // max brightness
 
 // trippy form of circleci with cosine sweeps

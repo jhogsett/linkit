@@ -8,8 +8,9 @@
 #include <power_ease.h>
 
 #define CROSSFADE_STEPS   20
-#define NUM_COSINES       13
-#define COSINE_RANGE    12.0
+#define NUM_COSINES       25
+#define NUM_SINES         25
+#define COSINE_RANGE    24.0
 
 #define COLOR_SCALE_FACTOR (255.0 / BRIGHTNESS_DIVISOR)
 
@@ -48,11 +49,13 @@ class ColorMath
 #endif
 
   static const float PROGMEM cosines[NUM_COSINES];
+  static const float PROGMEM sines[NUM_COSINES];
 
   static byte blend_component(byte component1, byte component2, float strength);
   static byte crossfade_component(byte step, byte component1, byte component2);
 
   static float read_cosine_array(byte step);
+  static float read_sine_array(byte step);
 };
 
 bool ColorMath::swap_r_and_g;
@@ -163,6 +166,7 @@ const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
 /* ruby code
   steps = 24
   cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+  sines = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
 only elements 0-12 are needed of cosines array to compute both sine and cosine values
 */
 const float PROGMEM ColorMath::cosines[NUM_COSINES]
@@ -179,7 +183,48 @@ const float PROGMEM ColorMath::cosines[NUM_COSINES]
     0.853553390593274,
     0.933012701892219,
     0.982962913144534,
-    1.0
+    1.0,
+    0.982962913144534,
+    0.933012701892219,
+    0.853553390593274,
+    0.75,
+    0.62940952255126,
+    0.5,
+    0.37059047744874,
+    0.25,
+    0.146446609406726,
+    0.066987298107781,
+    0.017037086855466,
+    0.0
+};
+
+const float PROGMEM ColorMath::sines[NUM_SINES]
+= {
+    0.5,
+    0.37059047744874,
+    0.25,
+    0.146446609406726,
+    0.066987298107781,
+    0.017037086855466,
+    0.0,
+    0.017037086855466,
+    0.066987298107781,
+    0.146446609406726,
+    0.25,
+    0.37059047744874,
+    0.5,
+    0.62940952255126,
+    0.75,
+    0.853553390593274,
+    0.933012701892219,
+    0.982962913144534,
+    1.0,
+    0.982962913144534,
+    0.933012701892219,
+    0.853553390593274,
+    0.75,
+    0.62940952255126,
+    0.5
 };
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
@@ -354,17 +399,31 @@ float ColorMath::read_cosine_array(byte step)
   return pgm_read_float(&cosines[step]);
 }
 
-// steps 0-24
-float ColorMath::get_cosine(byte step)
+float ColorMath::read_sine_array(byte step)
 {
-  if(step >= 0 && step <= 12)
-    return read_cosine_array(step);
-  else
-    return read_cosine_array(25 - step);
+  return pgm_read_float(&sines[step]);
 }
 
 // steps 0-24
-float ColorMath::get_sine(byte step){
+float ColorMath::get_cosine(byte step)
+{
+  return read_cosine_array(step);
+
+//  if(step >= 0 && step <= 12)
+//    return read_cosine_array(step);
+//  else
+//    return read_cosine_array(25 - step);
+}
+
+// steps 0-24
+float ColorMath::get_sine(byte step)
+{
+  return read_sine_array(step);
+
+//  if(step >= 0 && step <= 12)
+//    return read_sine_array(step);
+//  else
+//    return read_sine_array(25 - step);
 //  if(step >= 0 && step <= 6){
 //    return read_cosine_array(step + 6);
 //  } else if(step >= 7 && step <= 18){
@@ -372,7 +431,7 @@ float ColorMath::get_sine(byte step){
 //  } else {
 //    return read_cosine_array(step - 18);
 //  }
-  return get_cosine((step + 6) % 24);
+//  return get_cosine((step + 6) % 24);
 }
 
 #endif
