@@ -10,7 +10,7 @@
 ///////////////////////////
 
 // single 144-LED strip
-#define LED_STRIP_144
+// #define LED_STRIP_144
 
 // 36-LED annunciator
 // #define ANNUNCIATOR
@@ -31,7 +31,7 @@
 // #define SPHERE
 
 // 200-LED overhead
-// #define RADIUS8
+#define RADIUS8
 
 // 93-LED projector
 // #define PROJECTOR

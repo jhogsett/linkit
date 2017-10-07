@@ -75,8 +75,8 @@
 #define CMD_FADE         67
 #define CMD_WIPE         68
 #define CMD_ANIM_ROTATE  69
-#define CMD_PSHIFT       70
-#define CMD_PSHIFTO      71
+#define CMD_PSHIFTO      70
+#define CMD_XYPOSITION   71
 #define CMD_CFADE        72
 #define CMD_TEST         73
 #define CMD_CONFIGURE    74
@@ -177,8 +177,8 @@ const char cmd_066[] PROGMEM = "lev";
 const char cmd_067[] PROGMEM = "fad";
 const char cmd_068[] PROGMEM = "wip";
 const char cmd_069[] PROGMEM = "art";
-const char cmd_070[] PROGMEM = "psh";
-const char cmd_071[] PROGMEM = "pso";
+const char cmd_070[] PROGMEM = "pso";
+const char cmd_071[] PROGMEM = "xyp";
 const char cmd_072[] PROGMEM = "cfa";
 const char cmd_073[] PROGMEM = "tst";
 const char cmd_074[] PROGMEM = "cfg";

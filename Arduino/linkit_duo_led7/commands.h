@@ -6,7 +6,10 @@
 #include "config.h"
 #include "zone_defs.h"
 #include "sequencer.h"
+
+#ifdef USE_MAPPING
 #include "map_defs.h"
+#endif
 
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
@@ -97,6 +100,7 @@ class Commands
   void do_recall(int arg0, int arg1, int arg2);
   void dispatch_effect(byte cmd);
   void displatch_color(byte cmd, int arg0, int arg1);
+  void do_xy_position(byte arg0, byte arg1);
 
 #ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
@@ -187,7 +191,7 @@ void Commands::begin(
   scheduler.begin(&macros);
 
 #ifdef USE_MAPPING
-  maps.begin((const byte*)map_rows);
+  maps.begin(map_rows);
 #endif
 
   //this->default_brightness = maps.get_led(5, 7);
@@ -1272,6 +1276,13 @@ void Commands::do_recall(int arg0, int arg1, int arg2)
     
   // always set the new arg0 from accumulator0
   command_processor->sub_args[0] = command_processor->accumulator0;
+}
+
+void Commands::do_xy_position(byte arg0, byte arg1)
+{
+  byte led = maps.get_led(arg0, arg1); 
+  if(led != Maps::INVALID_POS) 
+    set_position(led);
 }
 
 #include "dispatch_command.h"
