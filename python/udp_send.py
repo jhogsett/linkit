@@ -9,22 +9,15 @@ import time
 
 app_description = "LED Multicast Sender v.0.0 10-1-2017"
 
-#timeout_in_seconds = 0.5
-#multicast_group_ip = '224.3.29.71'
-#multicast_port = 10000
-#response_wait = 0.5
-#verbose_mode = False
-#msg_delay = 0.2
-
 parser = argparse.ArgumentParser(description=app_description)
 parser.add_argument("command",                      nargs='?',      default=None,          help='command to send & exit (optional)')
 parser.add_argument("-v", "--verbose",              dest="verbose", action='store_true',   help='display verbose info (False)')
 parser.add_argument("-i", "--ipaddr",               dest="ipaddr",  default='224.3.29.71', help='multicast group IP address (224.3.29.71)')
 parser.add_argument("-p", "--port",     type=int,   dest="port",    default=10000,         help='multicast port (10000)')
-parser.add_argument("-t", "--timeout",  type=float, dest="timeout", default=0.5,           help='timeout time waiting for responses (seconds) (0.5)')
+parser.add_argument("-t", "--timeout",  type=float, dest="timeout", default=0.1,           help='timeout time waiting for responses (seconds) (0.1)')
 parser.add_argument("-n", "--numtimes", type=int,   dest="times",   default=5,             help='number of times to issue command (5)')
 parser.add_argument("-k", "--nokeys",               dest="nokeys",  action='store_true',   help='disables keys sent for dupe detection (False)')
-parser.add_argument("-d", "--delay",    type=float, dest="delay",   default=0.2,           help='delay between duplicate messages (seconds) (0.1)')
+parser.add_argument("-d", "--delay",    type=float, dest="delay",   default=0.1,           help='delay between duplicate messages (seconds) (0.1)')
 
 args = parser.parse_args()
 command = args.command
@@ -74,18 +67,17 @@ def send_message(message, times):
 	if verbose_mode:        
             print >>sys.stderr, tc.green('sending "%s"' % message)
         sent = sock.sendto(message, multicast_group)
-        time.sleep(msg_delay)
 
-    # Look for responses from all recipients
-    while True:
-        try:
-            data, server = sock.recvfrom(16)
-        except socket.timeout:
-            #print >>sys.stderr, 'timed out, no more responses'
-            break
-        else:
-            if verbose_mode:
-                print >>sys.stderr, tc.red('received "%s" from %s' % (data, server))
+        if verbose_mode:
+            while True:
+                try:
+                    data, server = sock.recvfrom(16)
+                except socket.timeout:
+                    break
+                else:
+                    print >>sys.stderr, tc.red('received "%s" from %s' % (data, server))
+
+        time.sleep(msg_delay * (2 ** n))
 
 if command != None:
     send_message(command, num_times)

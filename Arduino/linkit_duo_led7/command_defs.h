@@ -75,22 +75,22 @@
 #define CMD_FADE         67
 #define CMD_WIPE         68
 #define CMD_ANIM_ROTATE  69
-#define CMD_PSHIFT       70
-#define CMD_PSHIFTO      71
-#define CMD_CFADE        72
-#define CMD_TEST         73
-#define CMD_CONFIGURE    74
-#define CMD_PINON        75
-#define CMD_PINOFF       76
-#define CMD_SCHEDULE     77
-#define CMD_CARRY        78
-#define CMD_SET_MACRO    79
-#define CMD_RUN_MACRO    80
-#define CMD_DELAY        81
-#define CMD_STOP         82
-#define CMD_RANDOM_NUM   83
-#define CMD_POSITION     84
-#define CMD_RPOSITION    85
+#define CMD_PSHIFTO      70
+#define CMD_CFADE        71
+#define CMD_TEST         72
+#define CMD_CONFIGURE    73
+#define CMD_PINON        74
+#define CMD_PINOFF       75
+#define CMD_SCHEDULE     76
+#define CMD_CARRY        77
+#define CMD_SET_MACRO    78
+#define CMD_RUN_MACRO    79
+#define CMD_DELAY        80
+#define CMD_STOP         81
+#define CMD_RANDOM_NUM   82
+#define CMD_POSITION     83
+#define CMD_RPOSITION    84
+#define CMD_XYPOSITION   85
 #define CMD_PALETTE      86
 #define CMD_SHUFFLE      87
 #define CMD_SETBLACK     88
@@ -177,38 +177,38 @@ const char cmd_066[] PROGMEM = "lev";
 const char cmd_067[] PROGMEM = "fad";
 const char cmd_068[] PROGMEM = "wip";
 const char cmd_069[] PROGMEM = "art";
-const char cmd_070[] PROGMEM = "psh";
-const char cmd_071[] PROGMEM = "pso";
-const char cmd_072[] PROGMEM = "cfa";
-const char cmd_073[] PROGMEM = "tst";
-const char cmd_074[] PROGMEM = "cfg";
-const char cmd_075[] PROGMEM = "pon";
-const char cmd_076[] PROGMEM = "pof";
-const char cmd_077[] PROGMEM = "sch";
-const char cmd_078[] PROGMEM = "car";
-const char cmd_079[] PROGMEM = "set";
-const char cmd_080[] PROGMEM = "run";
-const char cmd_081[] PROGMEM = "del";
-const char cmd_082[] PROGMEM = "stp";
-const char cmd_083[] PROGMEM = "rng";
-const char cmd_084[] PROGMEM = "pos";
-const char cmd_085[] PROGMEM = "rps";
-const char cmd_086[] PROGMEM = "pal";
-const char cmd_087[] PROGMEM = "shf";
-const char cmd_088[] PROGMEM = "sbl";
-const char cmd_089[] PROGMEM = "seq";
-const char cmd_090[] PROGMEM = "sqs";
-const char cmd_091[] PROGMEM = "swc";
-const char cmd_092[] PROGMEM = "ssc";
-const char cmd_093[] PROGMEM = "sws";
-const char cmd_094[] PROGMEM = "sss";
-const char cmd_095[] PROGMEM = "swp";
-const char cmd_096[] PROGMEM = "ssp";
-const char cmd_097[] PROGMEM = "snw";
-const char cmd_098[] PROGMEM = "snm";
-const char cmd_099[] PROGMEM = "csh";
-const char cmd_100[] PROGMEM = "css";
-const char cmd_101[] PROGMEM = "csl";
+const char cmd_070[] PROGMEM = "pso";
+const char cmd_071[] PROGMEM = "cfa";
+const char cmd_072[] PROGMEM = "tst";
+const char cmd_073[] PROGMEM = "cfg";
+const char cmd_074[] PROGMEM = "pon";
+const char cmd_075[] PROGMEM = "pof";
+const char cmd_076[] PROGMEM = "sch";
+const char cmd_077[] PROGMEM = "car";
+const char cmd_078[] PROGMEM = "set";
+const char cmd_079[] PROGMEM = "run";
+const char cmd_080[] PROGMEM = "del";
+const char cmd_081[] PROGMEM = "stp";
+const char cmd_082[] PROGMEM = "rng";
+const char cmd_083[] PROGMEM = "pos"; // set position (, width)
+const char cmd_084[] PROGMEM = "rps"; // random position within current window
+const char cmd_085[] PROGMEM = "xyp"; // x,y position
+const char cmd_086[] PROGMEM = "pal"; // palette color
+const char cmd_087[] PROGMEM = "shf"; // shuffle/reset palette
+const char cmd_088[] PROGMEM = "sbl"; // set black level
+const char cmd_089[] PROGMEM = "seq"; // wheel
+const char cmd_090[] PROGMEM = "sqs"; // swing
+const char cmd_091[] PROGMEM = "swc"; // wheel cosine
+const char cmd_092[] PROGMEM = "ssc"; // swing cosine
+const char cmd_093[] PROGMEM = "sws"; // wheel sine
+const char cmd_094[] PROGMEM = "sss"; // swing sine
+const char cmd_095[] PROGMEM = "swp"; // wheel power
+const char cmd_096[] PROGMEM = "ssp"; // swing power
+const char cmd_097[] PROGMEM = "snw"; // sequence next window
+const char cmd_098[] PROGMEM = "snm"; // sequence next macro (future)
+const char cmd_099[] PROGMEM = "csh"; // color sequence by hue
+const char cmd_100[] PROGMEM = "css"; // color sequence by saturation
+const char cmd_101[] PROGMEM = "csl"; // color sequence by lightness
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
