@@ -7,6 +7,10 @@
 #include "zone_defs.h"
 #include "sequencer.h"
 
+#ifdef USE_MAPPING
+#include "map_defs.h"
+#endif
+
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
 #define BRIGHT_BRIGHTNESS_PERCENT (default_brightness * 2)
@@ -96,6 +100,7 @@ class Commands
   void do_recall(int arg0, int arg1, int arg2);
   void dispatch_effect(byte cmd);
   void displatch_color(byte cmd, int arg0, int arg1);
+  void do_xy_position(byte arg0, byte arg1);
 
 #ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
@@ -106,6 +111,7 @@ class Commands
   void do_test_render(byte start, byte count);
   void do_test_palette(byte start, byte count);
   void do_test_function(byte type, int arg2);
+  void do_test_accumulators();
   void dump_buffer_colors(rgb_color * buffer, byte start, byte count, bool correct_color = true);
 #endif
 
@@ -125,6 +131,9 @@ class Commands
   static Commands * me;
   Sequencer *sequencer;
   FadeEffects *fade_effects;
+#ifdef USE_MAPPING
+  Maps maps;
+#endif
   
 #ifdef USE_AUTO_BRIGHTNESS
   AutoBrightnessBase *auto_brightness;
@@ -181,6 +190,12 @@ void Commands::begin(
 
   macros.begin(command_processor, &Commands::dispatch_function);
   scheduler.begin(&macros);
+
+#ifdef USE_MAPPING
+  maps.begin(map_rows);
+#endif
+
+  //this->default_brightness = maps.get_led(5, 7);
 }
 
 #include "event_loop.h"
@@ -193,19 +208,19 @@ bool Commands::dispatch_function(int cmd, byte *dispatch_data)
 #define PAUSE_ALL        0
 #define PAUSE_EFFECTS    1
 #define PAUSE_SCHEDULES  2
+#define PAUSE_PUSH       3
 
 // change to resume as was
-#define RESUME_ALL      -1 
-#define RESUME_AS_WAS    0 
+#define RESUME_ALL       0 
 #define RESUME_EFFECTS   1
 #define RESUME_SCHEDULES 2
+#define RESUME_POP       3 
 
 void Commands::pause(byte type = PAUSE_ALL)
 {
   switch(type)
   {
     case PAUSE_ALL:
-      save_paused_state();
       pause_effects(true);
       pause_schedules(true);
       break;
@@ -217,20 +232,22 @@ void Commands::pause(byte type = PAUSE_ALL)
     case PAUSE_SCHEDULES:
       pause_schedules(true);
       break;
+
+    case PAUSE_PUSH:
+      save_paused_state();
+      pause_effects(true);
+      pause_schedules(true);
+      break;
   }
 }
 
-void Commands::resume(int type = RESUME_AS_WAS)
+void Commands::resume(int type = RESUME_ALL)
 {
   switch(type)
   {
     case RESUME_ALL:
       pause_effects(false);
       pause_schedules(false);
-      break;
-
-    case RESUME_AS_WAS:
-      restore_paused_state();
       break;
 
     case RESUME_EFFECTS:
@@ -240,6 +257,11 @@ void Commands::resume(int type = RESUME_AS_WAS)
     case RESUME_SCHEDULES:
       pause_schedules(false);
       break;
+
+    case RESUME_POP:
+      restore_paused_state();
+      break;
+
   }
 }
 
@@ -1003,25 +1025,30 @@ void Commands::do_next_window(int arg0, int arg1, int arg2)
   command_processor->sub_args[1] = width;
 }
 
-#define CONFIG_SETBLINKP   0
-#define CONFIG_SETBREATHET 1
-#define CONFIG_SETFADERATE 2
+#define CONFIG_SET_BLINK_PERIOD   0
+#define CONFIG_SET_BREATHE_TIME   1
+#define CONFIG_SET_FADE_RATE      2
+#define CONFIG_SET_DEFAULT_EFFECT 3
 
 // arg0 setting to configure
 // arg1 value to set (0 = default)
 void Commands::do_configure(int arg0, int arg1, int arg2)
 {
   switch(arg0){
-    case CONFIG_SETBLINKP:
+    case CONFIG_SET_BLINK_PERIOD:
       blink_effects->set_blink_period(arg1 == 0 ? BLINK_PERIOD : arg1);
       break;
 
-    case CONFIG_SETBREATHET:
+    case CONFIG_SET_BREATHE_TIME:
       breathe_effects->set_breathe_time(arg1 == 0 ? BREATHE_PERIOD : arg1);
       break;
 
-    case CONFIG_SETFADERATE:
+    case CONFIG_SET_FADE_RATE:
       set_fade_rate(arg1);
+      break;
+
+    case CONFIG_SET_DEFAULT_EFFECT:
+      buffer->set_default_effect(arg1);
       break;
   }
 }
@@ -1226,36 +1253,74 @@ void Commands::set_black_level(int arg0, int arg1, int arg2)
 
 void Commands::do_store(int arg0, int arg1, int arg2)
 {
-  command_processor->accumulator0 = arg0;
-  command_processor->accumulator1 = arg1;
-  command_processor->accumulator2 = arg2;
+  byte nargs = command_processor->get_num_args();
+  int *accumulators = command_processor->accumulators;
+  int *sub_args = command_processor->sub_args;
+
+  for(int i = 0; i < nargs; i++){
+    accumulators[i] = sub_args[i];  
+  }
 }
 
-// arg0 = 0: restore all arguments from the accumulators
-// arg0 != 0 and arg1 = 0: arg0->arg1 acc0->arg0 acc1->arg2
-// arg0 != 0 and arg1 != 0: arg1->arg2 arg0->arg1 acco->arg0
+// arg0 = 0                             : (no argument supplied)       restore all arguments from the accumulators
+
+// arg0 != 0 and arg1  = 0              : (only one argument supplied) arg0=acc0    arg1=arg0    arg2=acc1
+
+// arg0 != 0 and arg1 != 0              : (two arguments supplied) 
+//                                      :   arg1 shifts -> arg2, arg0 shifts -> arg1 
+//                                      :   arg0 gets set based on arg2
+//                                      :   arg2 = 0 - arg0 = accumulator0
+//                                      :   arg2 = 1 - arg1 = accumulator1
+//                                      :   arg2 = 2 - arg2 = accumulator2
 void Commands::do_recall(int arg0, int arg1, int arg2)
 {
-  if(arg0 != 0)
-  {
-    if(arg1 != 0) 
-        // two args supplied, shift second argument to third
-        command_processor->sub_args[2] = arg1;
-      else 
-        // one arg supplied, shift arg1 accumulator to third arg 
-        command_processor->sub_args[2] = command_processor->accumulator1;
+  int *accumulators = command_processor->accumulators;
+  int *sub_args = command_processor->sub_args;
 
-      // one or two args supplied, shift the first to the second
-      command_processor->sub_args[1] = arg0;
-    } else {
-      // no arguments supplied, fill second and third arguments from accumulators 1 and 2
-      command_processor->sub_args[1] = command_processor->accumulator1;
-      command_processor->sub_args[2] = command_processor->accumulator2;
+  // no arguments supplied, restore all arguments
+  if(arg0 == 0)
+  {
+      byte nargs = command_processor->get_num_args();
+      for(int i = 0; i < nargs; i++)
+        sub_args[i] = accumulators[i];
+  }
+
+  // one or more arguments supplied  
+  else
+  {
+    // incoming arg0 gets shifts to arg1 in each case
+    sub_args[1] = arg0;
+
+      // only one argument supplied
+    if(arg1 == 0)
+    {
+      // set arg0 and arg2 from accumulator 0 and 2
+      sub_args[0] = accumulators[0];
+      sub_args[2] = accumulators[1];
     }
-    
-  // always set the new arg0 from accumulator0
-  command_processor->sub_args[0] = command_processor->accumulator0;
+    else
+    {
+      // two or three arguments supplied  
+      // arg2 always gets set from arg1
+      sub_args[2] = arg1;
+
+      // only 0, 1 and 2 are valid
+      arg2 = max(0, min(2, arg2));
+      sub_args[0] = accumulators[arg2];
+    } 
+  }
 }
+
+#ifdef USE_MAPPING
+void Commands::do_xy_position(byte arg0, byte arg1)
+{
+  byte led = maps.get_led(arg0, arg1); 
+  if(led != Maps::INVALID_POS){
+    buffer->set_zone(0);
+    set_position(led);
+  }
+}
+#endif
 
 #include "dispatch_command.h"
 

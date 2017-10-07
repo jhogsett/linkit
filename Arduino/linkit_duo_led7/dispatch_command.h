@@ -188,17 +188,23 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
   
 #ifdef USE_POWER_SHIFT
-    case CMD_PSHIFT: 
-      do_power_shift(arg0); 
-      break;
+//    case CMD_PSHIFT: 
+//      do_power_shift(arg0); 
+//      break;
     case CMD_PSHIFTO: 
       do_power_shift_object(arg0, arg1); 
       break;
 #else
-    case CMD_PSHIFT: 
+//    case CMD_PSHIFT: 
     case CMD_PSHIFTO: 
       break;
 #endif
+
+    case CMD_XYPOSITION:
+ #ifdef USE_MAPPING
+     do_xy_position(arg0, arg1);
+#endif
+      break;
   
     case CMD_CFADE: 
       do_crossfade(); 
