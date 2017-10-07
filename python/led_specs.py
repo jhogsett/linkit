@@ -170,12 +170,16 @@ def reset_standard_fade_rate():
 def reset_standard_palette():
   return "1:shf"
 
+def reset_default_effect():
+  return "3,0:cfg"
+
 def pre_test_reset():
   command = ""
   command += reset_device() + ":"
   command += reset_standard_seed() + ":"
   command += reset_standard_fade_rate() + ":"
-  command += reset_standard_palette() 
+  command += reset_standard_palette() + ":"
+  command += reset_default_effect() 
   command_str(command)
 
 def do_reset_device():
@@ -434,6 +438,16 @@ def expect_empty_render(command_, start, count):
   str_ = command_str("3," + str(start) + "," + str(count) + ":tst", True)
   expect_equal(str_[:-1], expected[:-1])
 
+def expect_arguments(command_, expected, flush = True, positive = True):
+  if flush:
+    command_ += ":flu"
+  command(command_)
+  str_ = command_str("7:tst")
+  if positive:
+    expect_equal(str_[:-1], expected)
+  else:
+    expect_not_equal(str_[:-1], expected)
+
 
 # -----------------------------------------------------------------------------
 # --- helper functions ---
@@ -494,6 +508,10 @@ def specs():
     for i in range(0, len(test_colors.effects)):
       expect_effect("rnd:" + test_colors.effects[i][0] + ":flu", 0, 1, test_colors.effects[i][1])
 
+    test("it sets random effects")
+    expect_effect("rnd:efr", 0, 1, "20")
+    expect_effect("rnd:efr", 0, 1, "15")
+    expect_effect("rnd:efr", 0, 1, "12")
 
 ########################################################################
 # PUSHING MULTIPLE COLORS
@@ -929,6 +947,8 @@ def specs():
     elif num_leds == 44:
       expect_buffer("2:rnd:flo", 0, 3, "15,20,0,0,20,20,20,20,0")
     elif num_leds == 144:
+       expect_buffer("2:rnd:flo", 0, 3, "10,0,20,10,0,20,10,0,20")
+    elif num_leds == 36:
        expect_buffer("2:rnd:flo", 0, 3, "10,0,20,10,0,20,10,0,20")
     else:
       expect_buffer("2:rnd:flo", 0, 3, "15,20,0,20,0,20,20,20,0")
@@ -1535,50 +1555,43 @@ def specs():
 # Store & Recall
 ########################################################################
   if group("storing and recalling arguments"):
-    # args passed to rcl are selectively shifted up
-    # recall without argument just sets arg0
-    # if 1 arg, arg0->arg1, accum0->arg0
-    # if 2 arg, arg1->arg2, arg0->arg1, accum0->arg0
+    # arg0 = 0                             : (no argument supplied)       restore all arguments from the accumulators
+    # arg0 != 0 and arg1  = 0              : (only one argument supplied) arg0=acc0    arg1=arg0    arg2=acc1
+    # arg0 != 0 and arg1 != 0              : (two arguments supplied) 
+    #                                      :   arg1 shifts -> arg2, arg0 shifts -> arg1 
+    #                                      :   arg0 gets set based on arg2
+    #                                      :   arg2 = 0 - arg0 = accumulator0
+    #                                      :   arg2 = 1 - arg1 = accumulator1
+    #                                      :   arg2 = 2 - arg2 = accumulator2
 
-    # the stored rgb values are first modified to adapt to brightness
+    test("can store and recall arguments")
+    expect_arguments("1,2,3:sto:4,5,6:0:rcl:sto", "1,2,3")
 
-    test("it stores arg0 and recalls as arg0, shifting arg0 to arg1")
-    expect_buffer("2:sto:5:rcl:pos:red:flo:rst:", 0, 8, "0,0,0,0,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,0,0,0")
-                                  
-    test("with no arguments it recalls all arguments from accumulators")
-    if default_brightness == 20:
-      expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "5,10,15")
-    elif default_brightness == 25:
-      expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "3,6,9")
-    elif default_brightness == 10:
-      expect_buffer("10,20,30:sto:4,5,6:0:rcl:rgb", 0, 1, "7,15,23")
+    test("can store and recall empty arguments")
+    expect_arguments("0:sto:4,5,6:0:rcl:sto", "0,0,0")
 
-    test("with one argument, it shifts that argument to arg1, recalls arg0 from accumulator0 and sets arg2 from accumulator1")
-    if default_brightness == 20:
-      expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "5,20,10")
-    elif default_brightness == 25:
-      expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "3,12,6")
-    elif default_brightness == 10:
-      expect_buffer("10,20,30:sto:4,5,6:40:rcl:rgb", 0, 1, "7,31,15")
+    test("when one argument is supplied, it is shifted to arg1, arg0 is filled from accumulator 0, and arg2 is filled from accumulator1")
+    expect_arguments("1,2,3:sto:4:rcl:sto", "1,4,2")
 
-    test("with two arguments, it shifts second arg to arg2, shifts first arg to arg1, sets arg0 from accumulator0")
-    if default_brightness == 20:
-      expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "5,20,26")
-    elif default_brightness == 25:
-      expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "3,12,15")
-    elif default_brightness == 10:
-      expect_buffer("10,20,30:sto:4,5,6:40,50:rcl:rgb", 0, 1, "7,31,39")                                  
+    test("when two/three arguments are supplied, they are shifted to arg1 and arg2, and arg0 is set from an accumulator based on the third argument")
+    expect_arguments("1,2,3:sto:4,5,0:rcl:sto", "1,4,5") 
+    expect_arguments("1,2,3:sto:4,5,1:rcl:sto", "2,4,5")                                                  
+    expect_arguments("1,2,3:sto:4,5,2:rcl:sto", "3,4,5")
 
-                                                                       
+                     
 ########################################################################
 # Configuring
 ########################################################################
   if group("setting configuration values"):
+
     test("the fade rate can be reset to the default")
     expect_int("2,1000:cfg:0,8:tst", 1000)
     default = command_int("0,7:tst")
     expect_int("2,0:cfg:0,8:tst", default)
 
+    test("the effect can be set to a default value")
+    command_str("3,20:cfg")
+    expect_effect("red:flu", 0, 1, "20")
 
 ########################################################################                     
 ########################################################################                     
@@ -1613,6 +1626,7 @@ def loop():
   show_success = 0.5 + (success_count * num_leds / total)
   show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
   show_pending = 0.5 + (num_pending * num_leds / total)
+  pre_test_reset()
   command_str("rst:era:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
   # do_reset_device();
   command_str(str(show_success) + ",1:grn") 
