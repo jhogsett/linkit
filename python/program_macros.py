@@ -125,18 +125,18 @@ def annunciator_macros():
   #set_macro(16, "0,13,0:ssc:1,25,12:ssc", 0)
   #set_macro(17, "2,37,24:ssc", 0)
 
-  #set_macro(16, "0,13,0:sqs:1,25,12:sqs", 0)
-  #set_macro(17, "2,37,24:sqs", 0)
+  #set_macro(16, "0,12,0:sqs:1,24,12:sqs", 0)
+  #set_macro(17, "2,36,24:sqs", 0)
 
   set_macro(16, "0,12,0:seq:1,24,12:seq", 0)
   set_macro(17, "2,36,24:seq", 0)
 
   # set up all sequences and a quick fade rate
-  set_macro(18, "16:run:17:run:3,8000:cfg", 0)
+  set_macro(18, "16:run:17:run:2,8000:cfg", 0)
 
   # set up each each display macro schedule
-  #set_macro(19, "145,13:sch:150,14:sch", 0)
-  #set_macro(20, "155,15:sch", 0)
+  #set_macro(19, "250,13:sch:300,14:sch", 0)
+  #set_macro(20, "350,15:sch", 0)
 
   # set up each each display macro schedule
   set_macro(19, "147,13:sch:150,14:sch", 0)
