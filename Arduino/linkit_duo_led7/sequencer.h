@@ -261,18 +261,18 @@ int Sequence::increment_wheel_cosine(int step)
   return this->low + (this->width() * ColorMath::get_cosine(spread_position));
 }
 
-int Sequence::increment_swing_cosine(int step)
-{
-  increment_swing(step);
-  byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
-  return this->low + (this->width() * ColorMath::get_cosine(spread_position));
-}
-
 int Sequence::increment_wheel_sine(int step)
 {
   increment_wheel(step);
   byte spread_position = (this->current - this->low) * this->factor;
   return this->low + (this->width() * ColorMath::get_sine(spread_position));
+}
+
+int Sequence::increment_swing_cosine(int step)
+{
+  increment_swing(step);
+  byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
+  return this->low + (this->width() * ColorMath::get_cosine(spread_position));
 }
 
 int Sequence::increment_swing_sine(int step)

@@ -9,13 +9,15 @@
 #include <breathe_effects.h>
 #include <fade_effects.h>
 
-#define LEAVE_EFFECT -1
+//#define LEAVE_EFFECT -1
+
 #define NO_EFFECT 0
 #define RANDOM_EFFECTS 11
 
 class EffectsProcessor
 {
   public:
+
   const static byte random_effects[RANDOM_EFFECTS];
   Buffer *buffer;
   BlinkEffects *blink_effects;

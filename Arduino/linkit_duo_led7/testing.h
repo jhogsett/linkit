@@ -12,6 +12,7 @@
 #define TEST_TYPE_DUMP_EFFECTS 4
 #define TEST_TYPE_DUMP_PALETTE 5
 #define TEST_TYPE_FUNCTION     6
+#define TEST_TYPE_DUMP_ACCUMS  7
 
 void Commands::do_test(int type, int arg1, int arg2)
 {
@@ -49,6 +50,9 @@ void Commands::do_test(int type, int arg1, int arg2)
       // arg2 - (depends on function)
       do_test_function(arg1, arg2);
       break;
+    case TEST_TYPE_DUMP_ACCUMS:
+      do_test_accumulators();
+      break;
   }
 }
 
@@ -63,6 +67,7 @@ void Commands::do_test(int type, int arg1, int arg2)
 #define TEST_INQUIRY_REVERSE            6
 #define TEST_INQUIRY_DEFAULT_FADE_RATE  7
 #define TEST_INQUIRY_FADE_RATE          8
+#define TEST_INQUIRY_MAPPING_ENABLED    9
  
 // #define TEST_INQUIRY_WIDTH              1
 //#define TEST_INQUIRY_DEVICENAME   4
@@ -105,6 +110,12 @@ void Commands::do_test_inquiry(byte type, int arg2)
     case TEST_INQUIRY_FADE_RATE:
       command_processor->send_int(int(fade_effects->get_fade_rate() * 10000));
       break;
+    case TEST_INQUIRY_MAPPING_ENABLED:
+#ifdef USE_MAPPING
+      command_processor->send_int(1);
+#else
+      command_processor->send_int(0);
+#endif
     }  
 }
 
@@ -194,6 +205,12 @@ void Commands::do_test_render(byte start, byte count)
 void Commands::do_test_palette(byte start, byte count)
 {
   dump_buffer_colors(Colors::get_palette(), start, count, false);
+}
+
+void Commands::do_test_accumulators(){
+  byte nargs = command_processor->get_num_args();
+  for(int i = 0; i < nargs; i++)
+    command_processor->send_ints(command_processor->accumulators[i]);
 }
 
 #endif

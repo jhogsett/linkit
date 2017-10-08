@@ -9,6 +9,12 @@
 // device profile selection
 ///////////////////////////
 
+// single 144-LED strip
+//#define LED_STRIP_144
+
+// 36-LED annunciator
+#define ANNUNCIATOR
+
 // wearable and 36-LED annunciator
 // #define WEARABLE_AND_ANNUNCIATOR
 
@@ -16,7 +22,7 @@
 // #define LED_STRIP_72
 
 // single 90-LED strip
-#define LED_STRIP_90
+// #define LED_STRIP_90
 
 // single 90-LED strip in Apollo
 // #define APOLLO_DISPLAY
@@ -85,6 +91,15 @@
 #define BREATHE_PERIOD 100
 #endif
 
+#ifdef LED_STRIP_144
+#define USE_1_DISPLAYS
+#define ANIM_LED_COUNT 144
+#define ZONES_144_LEDS
+#define DEFAULT_BRIGHTNESS_PERCENT 15
+#define BLINK_PERIOD 1500
+#define BREATHE_PERIOD 100
+#endif
+
 #ifdef APOLLO_DISPLAY
 #define USE_1_DISPLAYS
 #define ANIM_LED_COUNT 90
@@ -114,6 +129,8 @@
 #define FADE_RATE 0.925
 #define NUM_MEMORY_MACROS 2
 #define NUM_SEQUENCERS 2
+#define USE_MAPPING
+#define RADIUS8_MAPPING
 #endif
 
 #ifdef PROJECTOR
@@ -174,6 +191,14 @@
 #define ANIM_LED_COUNT 36
 #define ZONES_ANNUNCIATOR
 #define DEFAULT_BRIGHTNESS_PERCENT 25
+#define BLINK_PERIOD 2000
+#define BREATHE_PERIOD 125
+#endif
+
+#ifdef ANNUNCIATOR
+#define ANIM_LED_COUNT 36
+#define ZONES_ANNUNCIATOR
+#define DEFAULT_BRIGHTNESS_PERCENT 33
 #define BLINK_PERIOD 2000
 #define BREATHE_PERIOD 125
 #endif
