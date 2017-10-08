@@ -5,9 +5,8 @@
 #include <render.h>
 #include <zones.h>
 
-#define LEAVE_EFFECT -1
+#define DEFAULT_EFFECT 127
 #define NO_EFFECT 0
-
 #define OVERRIDE_OFF -1
 
 class Buffer
@@ -50,13 +49,16 @@ class Buffer
   void reset_black_level();
   rgb_color black;
   int get_default_brightness();
+  void set_default_effect(byte effect);
 
   // todo: is there an alternative to storing all these pointers?
   private:
+
+  static rgb_color *render;
+
   PololuLedStripBase **ledStrips;
   byte current_display;
   rgb_color **buffers;
-  static rgb_color *render;
   byte **effects_buffers;
   float default_brightness_scale;
   Render *renderer;
@@ -70,6 +72,8 @@ class Buffer
   Zones *zones;
   byte current_zone = 0;
   bool reverse = false;
+
+  byte default_effect = NO_EFFECT;
 
   void shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse);
 };
@@ -178,14 +182,15 @@ void Buffer::rotate()
 
 void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse = false)
 {
+  max -= 1;
   if(reverse)
   {
     this->carry_color = buffer[start];
     this->carry_effect = effects[start];
 
+//    max -= 1;
     rgb_color * buf = buffer + start;
     byte * eff = effects + start;
-    max -= 1;
 
     for(byte i = start; i < max; i++)
     {
@@ -200,10 +205,10 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
     this->carry_color = buffer[max - 1];
     this->carry_effect = effects[max - 1];
 
-    max -= 1;
-    start += 1;
+//    max -= 1;
     rgb_color * buf = buffer + max;
     byte * eff = effects + max;
+    start += 1;
 
     for(byte i = max; i >= start; i--){
       *buf = *(buf - 1);
@@ -215,10 +220,13 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
 }
 
 // todo: only need to shift buffer multiple times if displaying (otherwise, shift the whole amount)
-void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = NO_EFFECT, byte max = 0, byte start = 0)
+void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = DEFAULT_EFFECT, byte max = 0, byte start = 0)
 {
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
+
+  if(effect == DEFAULT_EFFECT)
+    effect = this->default_effect;
 
   max = (max == 0) ? get_window() : max;
   start = (start == 0) ? get_offset() : start;
@@ -243,7 +251,6 @@ void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, b
     shift_buffer(buffer, effects, max, start, this->reverse);
     *buf = color;
     *eff = effect;
-    
     if(display)
       render_display();
   }
@@ -396,6 +403,10 @@ void Buffer::reset_black_level()
 int Buffer::get_default_brightness()
 {
   return (int)(this->default_brightness_scale * 100.0);
+}
+
+void Buffer::set_default_effect(byte effect){
+  this->default_effect = effect;
 }
 
 // to do: support either orientation

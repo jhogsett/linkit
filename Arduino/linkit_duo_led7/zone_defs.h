@@ -13,6 +13,18 @@
 const byte PROGMEM zone_offsets[NUM_ZONES]= {   0,    0, 12, 24,       0, 6,  12, 18, 24, 30 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 36,   12, 24, 36,       6, 12, 18, 24, 30, 36 };
 
+#elif defined(ZONES_144_LEDS)
+#define NUM_ZONES 12
+#define FINE_ZONES 6 //                               6 zones of 24               2 halves  3 thirds
+const byte PROGMEM zone_offsets[NUM_ZONES]= {  0,      0, 24, 48, 72,  96, 120,    0,  72,     0, 48,  96 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 144,   24, 48, 72, 96, 120, 144,   72, 144,    48, 96, 144 };
+
+//#elif defined(ZONES_144_LEDS)
+//#define NUM_ZONES 16
+//#define FINE_ZONES 8 //                              8 eighths                                 halves     quarters
+//const byte PROGMEM zone_offsets[NUM_ZONES] = {   0,   0, 18, 36, 54, 72,  90, 108, 126,         0,  72,     36,  0, 36,  72, 108 };
+//const byte PROGMEM zone_windows[NUM_ZONES] = { 144,  18, 36, 54, 72, 90, 108, 126, 144,        72, 144,    108, 36, 72, 108, 144 };
+
 #elif defined(ZONES_90_LEDS)
 #define NUM_ZONES 12
 #define FINE_ZONES 6 //                              6 zones of 15             2 halves  3 thirds

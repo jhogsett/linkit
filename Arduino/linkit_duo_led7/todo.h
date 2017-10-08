@@ -1,22 +1,46 @@
-// need to be able to pause and the continue as-was, not enable everything
+// can't figure out how to pass two arguments into a macro and using them separately
+
+// have a way to choose random colors including black and materials
+
+// in verose mode, show the commands being transmnitted
+
+// first needed trigger: run a macro when the breathing level becomes black, so the color can be changed on each breath
+// it's just some defines for types of events, like breath == off, or blink == off, infinite loop broken out of, etc.
+//  then each just points to a position in a byte array of macro numbers to run in response to the trigger
+
+// from a sequence get just the direction, 1 or -1, to allow stepping something else  
+
+// allow setting default effect (for instnace to save having to set a slow fade on every case)
+
+// try again a command to wait for blink counter = 0 (or all off instead?)
+
+
+// when rendering with dynamic palette colors, could temporarily pre-render the palette colors to avoid doing the math for every case
+
+// max brightness
+
+// trippy form of circleci with cosine sweeps
+
+// use a back off algorithm for the repeated sends
+  // can that be done in a thread?
+
+// for button presses, need pin-in command that leaves 0 or 1 as arg0
+
+// tests: determine if mapping is enabled (so it's tested only on x,y displays)
 
 
 /* multicasting */
-// to make reliable
-//    number each request; ignore numbers already seen
-//    determine how to reissue the command in case some didn't see it
-// command prompt for multiple commands
 // on command, show which ones acknowledged
       // the device name should come back
 // add new arg to http_command.py that issues multicast (or another flag to make it broadcast)
-// don't wait forever for ack because it could conflict with http_command or a python app
-// switch to list groups
-// select specific test #
-// could remember watermark by sender ip address
-// could have watermark apply for a short time only, just to prevent near duplicates
-// maybe use random # or uuid instead, applies only for a few seconds
-// could send "heard from" IPs in duplicate messages, and those would ignore if found
+// don't wait forever for ack from arduino because it could conflict with http_command or a python app
 // have them communicate and split the rainbow
+  // they could elect a leader, and count the number of members
+// add way to run system command on all devices
+  // add message type (along with new machine type, machine name, existing key)
+// could have device types and names and send selective multicast messages
+// a form of run that assumes it was a one-off executable not still running, like runonce=
+
 
 
 /* new features */
@@ -73,6 +97,15 @@
 // could have conditional/switch to call multiple macros
 // for zones, have several configurations that can be chosen in real time by device type
 // need command to set offset and window from arg0, arg1
+// need to be able to choose a set of random numbers, and share them across macros
+//   palette could be used for this - could hold three arguments worth of random numbers
+// need to be able to have a white flash but then resume the previous color/effect
+// - maybe reverts when the luminosity matches so it seems to fade out
+// - could have a trigger that could detect the end of fading out; macro would need to know the position
+// - there could be a standard after-fade color (default black) 
+// could have a random macro command
+// 0,2,5:rnm = randomly run 0, 1 or 2, with 5 as arg0
+// would be nice to be able to measure the *current usage* via an analog pin
 
 
 
@@ -122,6 +155,8 @@
 // tests: display time it took to run them
 // need to reset blink period after testing
 // test could highlight differences between strings to reduce need to manually diff them 
+// switch to list groups
+// select specific test #
 
 
 
@@ -151,6 +186,12 @@
 // need a way to pause, and then restore the previous continued state, for instance, without effects
 // need a way to clear carry color or not set it during a buffer shift
 // slow fade doesn't work when running a macro repeatedly like 1000,0:run. It works when running it manually over serial.
+// 0:set:20,0,0:rgb:0,20,0:rgb:0,0,20:rgb:flu
+// this resutls in red, followed by two blacks
+//    maybe args getting reset at wrong time
+// if macro run more often than fade period, no fading at all happens
+// visual representation of eeprom memory
+// wasn't able to schedule macro #0
 
 
 
@@ -172,8 +213,8 @@
       // pass a pointer to dependencies instead of passing individual arguments if/where possible
 // maybe alternate between blink, breathe and fade processing to allow scheduling more often
 // move mechanical buffer operations like mirror to Buffer class
-
-
+// maybe making some pointers const would save memory
+// immediately assume it's not a command if the string is not three chars (to save command look up time when it's just arguments)
 
 
 
@@ -273,6 +314,14 @@
 // - brightness, black level, direction, palette offset
 // - when you set certain values, they stick to the zone you're on
 // ability to pause the writing to the display (but not pause rendering; would allow for quiet testing)
+// could have commands that take the rest of the input and do something with them iteratively, like an instant macro
+// 9:mac:commands:commands -> would run the commands 9 times
+// this could save macro space for one-off special repeat functions
+// 9,100:mac:commands -> would run the commands 9 times with 100ms delay between each
+// could have conditional macro running
+// arg0 = 0 or 1
+// arg1 = macro to run if 1
+// arg2 = macro to run if 0
 
 
 
@@ -293,81 +342,9 @@
 
 
 
-// repeat command doesn't work in reverse
 
-// have soem kind of auto-incrementor  
 
-// 0:set:20,0,0:rgb:0,20,0:rgb:0,0,20:rgb:flu
-// this resutls in red, followed by two blacks
-//    maybe args getting reset at wrong time
 
-// need to be able to choose a set of random numbers, and share them across macros
-//   palette could be used for this - could hold three arguments worth of random numbers
-
-// if macro run more often than fade period, no fading at all happens
-
-// command to restore pre-programmed macros
-
-// would be nice to be able to measure the current usage via an analog pin
-
-// need to be able to have a white flash but then resume the previous color/effect
-// - maybe reverts when the luminosity matches so it seems to fade out
-// - could have a trigger that could detect the end of fading out; macro would need to know the position
-// - there could be a standard after-fade color (default black) 
-
-// could have a random macro command
-// 0,2,5:rnm = randomly run 0, 1 or 2, with 5 as arg0
-
-// would be nice if running a macro preserved the original args
-
-// need a command to dump out all the macros
-
-// could have commands that take the rest of the input and do something with them iteratively, like an instant macro
-// 9:mac:commands:commands -> would run the commands 9 times
-// this could save macro space for one-off special repeat functions
-// 9,100:mac:commands -> would run the commands 9 times with 100ms delay between each
-
-// could have conditional macro running
-// arg0 = 0 or 1
-// arg1 = macro to run if 1
-// arg2 = macro to run if 0
-
-// passing two random numbers
-// 10,5:rng - now arg0 = number between 5-9 in arg0
-// 100,50:rng - now arg0 = number between 50-99 and accum = previous arg0
-// could do:
-
-// shift command:
-// moves accum->arg0, arg0->arg1, arg1->arg2, arg2->accum
-// would this help?
-// want to do random rotation speed
-// need 0=times, 1=1 to show, 2=steps
-//   50:rng:    
-//   now a random number of times is in arg0
-//   3,1:rng
-//   now a random number of steps is in arg0 and times in the accumulator
-// accum=times
-// arg0=steps
-
-// arg could do:
-// accum->arg0
-// arg0->arg1
-// but need arg0 to go to arg2
-
-// need arg0 to be times
-// need arg1 to be 1
-// need arg2 to be steps
-
-// arg could do
-// rotate args0-2 N times forward (0->1, 1->2, 2->0), then swap arg0 with accumulator 
-
-// arg could:
-// preserve the arguments present
-// swap accum with 
-
-//:arg            :rot
-
-// visual representation of eeprom memory
 
 // have virtual colors that always point to a position in the palette
 // how? colors are stored as RGB
