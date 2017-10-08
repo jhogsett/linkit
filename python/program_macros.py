@@ -176,7 +176,7 @@ def apollo_macros():
   set_macro(11, "clr:100,13:sch:10000,14:sch", 13) 
   
   # swinging random colors                                               
-  set_macro(10, "clr:1:pau:30:run:25:run", 0)                  
+  set_macro(10, "clr:1:pau:2,8000:cfg:30:run:25:run", 0)                  
                                                  
   set_macro(13, "-1:rps:1:rnd:sfd:flu:rst", 10)    
   set_macro(14, "15,15:run:500:del", 10)           
@@ -196,23 +196,15 @@ def apollo_macros():
   set_macro(35, "4:snw:pos:4:pal:sfd:flo:rst", 10)                   
   set_macro(36, "5:snw:pos:5:pal:sfd:flo:rst", 10)           
                                                                  
-#  set_macro(37, "0,16,0:ssc:1,31,15:ssc", 14)           
-#  set_macro(38, "2,46,30:ssc:3,61,45:ssc", 16)                  
-#  set_macro(39, "4,76,60:ssc:5,91,75:ssc", 16)          
-
-  set_macro(37, "0,25,0:ssc:1,49,24:ssc", 14)
-  set_macro(38, "2,73,48:ssc:3,97,72:ssc", 16)
-  set_macro(39, "4,121,96:ssc:5,144,120:ssc", 16)
+  set_macro(37, "0,16,0:ssc:1,31,15:ssc", 14)           
+  set_macro(38, "2,46,30:ssc:3,61,45:ssc", 16)                  
+  set_macro(39, "4,76,60:ssc:5,91,75:ssc", 16)          
 
   set_macro(40, "37:run:38:run:39:run", 9)    
                                                       
-#  set_macro(41, "21,31:sch:22,32:sch", 12)             
-#  set_macro(42, "23,33:sch:24,34:sch", 12)                     
-#  set_macro(43, "25,35:sch:26,36:sch", 12)                     
-
-  set_macro(41, "11,31:sch:12,32:sch", 12)
-  set_macro(42, "13,33:sch:14,34:sch", 12)
-  set_macro(43, "15,35:sch:16,36:sch", 12)
+  set_macro(41, "150,31:sch:151,32:sch", 12)             
+  set_macro(42, "152,33:sch:153,34:sch", 12)                     
+  set_macro(43, "154,35:sch:155,36:sch", 12)                     
 
   set_macro(44, "41:run:42:run:43:run", 9)                    
                                                               
@@ -254,15 +246,15 @@ def apollo144_macros():
   set_macro(35, "4:snw:pos:4:pal:sfd:flo:rst", 10)
   set_macro(36, "5:snw:pos:5:pal:sfd:flo:rst", 10)
 
-  set_macro(37, "0,25,0:ssc:1,49,24:ssc", 14)
-  set_macro(38, "2,73,48:ssc:3,97,72:ssc", 16)
-  set_macro(39, "4,121,96:ssc:5,144,120:ssc", 16)
+  set_macro(37, "0,25,0:sws:1,49,24:sws", 14)
+  set_macro(38, "2,73,48:sws:3,97,72:sws", 16)
+  set_macro(39, "4,121,96:sws:5,144,120:sws", 16)
 
   set_macro(40, "37:run:38:run:39:run", 9)
 
-  set_macro(41, "11,31:sch:12,32:sch", 12)
-  set_macro(42, "13,33:sch:14,34:sch", 12)
-  set_macro(43, "15,35:sch:16,36:sch", 12)
+  set_macro(41, "21,31:sch:22,32:sch", 12)
+  set_macro(42, "23,33:sch:24,34:sch", 12)
+  set_macro(43, "25,35:sch:26,36:sch", 12)
 
   set_macro(44, "41:run:42:run:43:run", 9)
 
