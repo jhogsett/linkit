@@ -9,11 +9,14 @@
 // device profile selection
 ///////////////////////////
 
+// 150-LED Outfit
+#define OUTFIT
+
 // single 144-LED strip
-//#define LED_STRIP_144
+// #define LED_STRIP_144
 
 // 36-LED annunciator
-#define ANNUNCIATOR
+// #define ANNUNCIATOR
 
 // wearable and 36-LED annunciator
 // #define WEARABLE_AND_ANNUNCIATOR
@@ -113,6 +116,7 @@
 
 #ifdef SPHERE
 #define USE_1_DISPLAYS
+#define SWAP_REDGREEN
 #define ANIM_LED_COUNT 100
 #define ZONES_SPHERE
 #define DEFAULT_BRIGHTNESS_PERCENT 25
@@ -122,6 +126,7 @@
 
 #ifdef RADIUS8
 #define USE_1_DISPLAYS
+#define SWAP_REDGREEN
 #define ANIM_LED_COUNT 200
 #define ZONES_RADIUS8
 #define BLINK_PERIOD 1000
@@ -131,6 +136,15 @@
 #define NUM_SEQUENCERS 2
 #define USE_MAPPING
 #define RADIUS8_MAPPING
+#endif
+
+#ifdef OUTFIT
+#define USE_1_DISPLAYS
+#define ANIM_LED_COUNT 150
+#define ZONES_OUTFIT
+#define BLINK_PERIOD 1000
+#define BREATHE_PERIOD 80
+#define FADE_RATE 0.925
 #endif
 
 #ifdef PROJECTOR
@@ -161,6 +175,7 @@
 #endif
 
 #ifdef WEARABLE_AND_HARDHAT
+#define SWAP_REDGREEN
 #define WEARABLE_TYPE2
 #define ANIM_LED_COUNT 44
 #define ZONES_HARDHAT
