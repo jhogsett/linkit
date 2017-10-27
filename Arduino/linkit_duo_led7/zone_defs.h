@@ -19,11 +19,11 @@ const byte PROGMEM zone_windows[NUM_ZONES] = { 36,   12, 24, 36,       6, 12, 18
 const byte PROGMEM zone_offsets[NUM_ZONES]= {  0,      0, 24, 48, 72,  96, 120,    0,  72,     0, 48,  96 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 144,   24, 48, 72, 96, 120, 144,   72, 144,    48, 96, 144 };
 
-//#elif defined(ZONES_144_LEDS)
-//#define NUM_ZONES 16
-//#define FINE_ZONES 8 //                              8 eighths                                 halves     quarters
-//const byte PROGMEM zone_offsets[NUM_ZONES] = {   0,   0, 18, 36, 54, 72,  90, 108, 126,         0,  72,     36,  0, 36,  72, 108 };
-//const byte PROGMEM zone_windows[NUM_ZONES] = { 144,  18, 36, 54, 72, 90, 108, 126, 144,        72, 144,    108, 36, 72, 108, 144 };
+#elif defined(ZONES_OUTFIT)
+#define NUM_ZONES 57
+#define FINE_ZONES 4 //                               left & right coat & pants     coat   pants     50 zones of 3
+const byte PROGMEM zone_offsets[NUM_ZONES]= {  0,      0, 39,  78, 114,             0,      78,      0, 3, 6,  9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87, 90, 93, 96,  99, 102, 105, 108, 111, 114, 117, 120, 123, 126, 129, 132, 135, 138, 141, 144, 147};
+const byte PROGMEM zone_windows[NUM_ZONES] = { 150,   39, 78, 114, 150,             78,    150,      3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84, 87, 90, 93, 96, 99, 102, 105, 108, 111, 114, 117, 120, 123, 126, 129, 132, 135, 138, 141, 144, 147, 150};
 
 #elif defined(ZONES_90_LEDS)
 #define NUM_ZONES 12

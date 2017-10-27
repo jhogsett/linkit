@@ -239,7 +239,7 @@ void Dependencies::begin()
 
   // start up the color math class
   // false = don't swap red & green
-#if defined(STRAND1) || defined(STRAND2) || defined(RADIUS8) || defined(SPHERE) || defined(WEARABLE_AND_HARDHAT)
+#ifdef SWAP_REDGREEN
   ColorMath::begin(true);
 #else  
   ColorMath::begin(false);
