@@ -143,8 +143,8 @@
 #define ANIM_LED_COUNT 150
 #define ZONES_OUTFIT
 #define BLINK_PERIOD 1000
-#define BREATHE_PERIOD 80
-#define FADE_RATE 0.925
+#define BREATHE_PERIOD 60
+#define FADE_RATE 0.875
 #endif
 
 #ifdef PROJECTOR
