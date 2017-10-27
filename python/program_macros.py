@@ -283,9 +283,9 @@ def threeway_macros():
   set_macro(17, "fad:50,15:sch:20000,14:sch", 0);
   set_macro(18, "fad:50,16:sch", 0);
     
-  set_macro(19, "-1:sch:60000,19,20:sch:17:run", 0);
-  set_macro(20, "-1:sch:60000,19,21:sch:18:run", 0);
-  set_macro(21, "-1:sch:60000,19,19:sch:23:run", 0);
+  set_macro(19, "-1:sch:20000,19,20:sch:17:run", 0);
+  set_macro(20, "-1:sch:20000,19,21:sch:18:run", 0);
+  set_macro(21, "-1:sch:20000,19,19:sch:23:run", 0);
 
   set_macro(22, "-3:rng:zon:art:flu:rst", 0);
   set_macro(23, "fad:2:rnd:flo:flu:50,22:sch", 0);
