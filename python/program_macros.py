@@ -276,7 +276,7 @@ def threeway_macros():
   set_macro(11, "wht:brt:brt:flo:flu:30:del", 0);
   set_macro(12, "rnd:brt:brt:sfd:flo:flu", 0);
   set_macro(13, "11:run:12:run", 0);
-  set_macro(14, "13:run:20000,10000,14:rng:sch", 0);
+  set_macro(14, "13:run:20000,5000,14:rng:sch", 0);
     
   set_macro(15, "rps:wht:brt:brt:sfd:rst", 0);
   set_macro(16, "rps:1:rnd:sfd:flu:rst", 0);
@@ -288,7 +288,7 @@ def threeway_macros():
   set_macro(21, "-1:sch:20000,19,19:sch:23:run", 0);
 
   set_macro(22, "-3:rng:zon:art:flu:rst", 0);
-  set_macro(23, "fad:2:rnd:flo:flu:50,22:sch", 0);
+  set_macro(23, "fad:2,-1:rnd:flu:50,22:sch", 0);
 
 def oneway_macros():
   print tc.cyan("one way macros\n")
