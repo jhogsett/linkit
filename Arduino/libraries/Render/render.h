@@ -92,11 +92,11 @@ rgb_color Render::get_default(rgb_color color, byte effect)
 
 rgb_color Render::render(rgb_color *color, byte effect)
 {
-                         if(effect == STATIC_ON) { return get_default(get_static());   } else
-    if(blink_effects->is_handled_effect(effect)) { return get_blink(*color, effect);   } else
-  if(breathe_effects->is_handled_effect(effect)) { return get_breathe(*color);         } else
-     if(fade_effects->is_handled_effect(effect)) { return get_fade(color, effect);     } else
-                                                 { return get_default(*color, effect); }
+                       if((effect & NOT_DYNAMIC_COLOR) == STATIC_ON) { return get_default(get_static());   } else
+    if(blink_effects->is_handled_effect(effect & NOT_DYNAMIC_COLOR)) { return get_blink(*color, effect);   } else
+  if(breathe_effects->is_handled_effect(effect & NOT_DYNAMIC_COLOR)) { return get_breathe(*color);         } else
+     if(fade_effects->is_handled_effect(effect & NOT_DYNAMIC_COLOR)) { return get_fade(color, effect);     } else
+                                                                     { return get_default(*color, effect); }
 }
 
 rgb_color Render::fast_render(rgb_color color, byte _effect)
