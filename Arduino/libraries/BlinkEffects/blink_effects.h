@@ -15,10 +15,10 @@
 // blink group a-b (1/2)
 #define BLINK_ON_A 18
 #define BLINK_ON_B 19
-#define BLINK_ON_D 20
+#define BLINK_ON_D 20 // dynamic blink, a=primary color, b=secondary color
 
 #define BLINK_MIN BLINK_ON
-#define BLINK_MAX BLINK_ON_B
+#define BLINK_MAX BLINK_ON_D
 
 #define MAX_BLINK_SEGMENTS 6
 #define DEFAULT_BLINK_PERIOD 1500
@@ -38,6 +38,7 @@ class BlinkEffects
 
   bool blink_1_6_test(byte effect);
   bool blink_a_b_test(byte effect);
+  bool blink_d_test(byte effect);
 
   int blink_period = DEFAULT_BLINK_PERIOD;
   int blink_counter = 0;
@@ -104,6 +105,13 @@ bool BlinkEffects::blink_a_b_test(byte effect)
   }
 }
 
+// a=primary color, b=secondary color
+bool BlinkEffects::blink_d_test(byte effect)
+{
+  int quarter_period = this->half_period / 2;
+  return this->half_counter < quarter_period;
+}
+
 bool BlinkEffects::blink_on(byte effect)
 {
   switch(effect){
@@ -121,6 +129,9 @@ bool BlinkEffects::blink_on(byte effect)
     case BLINK_ON_A:
     case BLINK_ON_B:
       return blink_a_b_test(effect);
+
+    case BLINK_ON_D:
+      return blink_d_test(effect);
   }
 }
 #endif

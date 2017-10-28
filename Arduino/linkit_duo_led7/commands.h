@@ -101,6 +101,8 @@ class Commands
   void dispatch_effect(byte cmd);
   void displatch_color(byte cmd, int arg0, int arg1);
   void do_xy_position(byte arg0, byte arg1);
+  void do_dynamic_color(byte arg0, byte arg1, byte arg2);
+
 
 #ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
@@ -1315,6 +1317,14 @@ void Commands::do_recall(int arg0, int arg1, int arg2)
       sub_args[0] = accumulators[arg2];
     } 
   }
+}
+
+// arg0 the color.red value for primary color
+// arg1 the color.green value for secondary color
+// arg2 the color.blue value for rendering type
+void Commands::do_dynamic_color(byte arg0, byte arg1, byte arg2){
+  rgb_color data = {arg0, arg1, arg2};
+  buffer->push_color(data, 1, false, DYNAMIC_COLOR, 0, 0, false);
 }
 
 #ifdef USE_MAPPING

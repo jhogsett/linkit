@@ -14,8 +14,8 @@
 #define NO_EFFECT 0
 #define RANDOM_EFFECTS 11
 
-#define DYNAMIC_EFFECT 0x80
-#define NOT_DYNAMIC_EFFECT 0x7f
+#define DYNAMIC_COLOR 0x80
+#define NOT_DYNAMIC_COLOR 0x7f
 
 class EffectsProcessor
 {
@@ -51,7 +51,7 @@ void EffectsProcessor::begin(Buffer *buffer, BlinkEffects *blink_effects, Breath
 void EffectsProcessor::start_effect(byte effect)
 {
   byte existing = buffer->get_effects_buffer()[buffer->get_offset()];
-  buffer->get_effects_buffer()[buffer->get_offset()] = (existing & DYNAMIC_EFFECT) | (effect & NOT_DYNAMIC_EFFECT);
+  buffer->get_effects_buffer()[buffer->get_offset()] = (existing & DYNAMIC_COLOR) | (effect & NOT_DYNAMIC_COLOR);
 }
 
 void EffectsProcessor::start_blinking_r()
