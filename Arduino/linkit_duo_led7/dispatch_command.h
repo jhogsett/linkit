@@ -131,6 +131,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_BLINK6: 
     case CMD_BLINKA: 
     case CMD_BLINKB: 
+    case CMD_BLINKD:
     case CMD_BREATHE: 
     case CMD_SLOW_FADE: 
     case CMD_FAST_FADE: 
@@ -302,6 +303,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   case CMD_CLR_SEQ_LIT:
     do_color_sequence(COLOR_SEQUENCE_HUE + (cmd - CMD_CLR_SEQ_HUE), arg0, arg1, arg2); 
     break;
+
+  case CMD_DYN_COLOR:
+    break;
+    
   }
   
   if(reset_args)

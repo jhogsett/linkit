@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS    101
+#define NUM_COMMANDS    103
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
@@ -61,52 +61,54 @@
 #define CMD_BLINK6       53
 #define CMD_BLINKA       54
 #define CMD_BLINKB       55
-#define CMD_BREATHE      56
-#define CMD_SLOW_FADE    57
-#define CMD_FAST_FADE    58
-#define CMD_BLINKR       59
-#define CMD_EFFECTR      60
-#define CMD_STORE        61 
-#define CMD_RECALL       62
-#define CMD_PAUSE        63
-#define CMD_CONTINUE     64
-#define CMD_CLEAR        65
-#define CMD_LEVEL        66
-#define CMD_FADE         67
-#define CMD_WIPE         68
-#define CMD_ANIM_ROTATE  69
-#define CMD_PSHIFTO      70
-#define CMD_CFADE        71
-#define CMD_TEST         72
-#define CMD_CONFIGURE    73
-#define CMD_PINON        74
-#define CMD_PINOFF       75
-#define CMD_SCHEDULE     76
-#define CMD_CARRY        77
-#define CMD_SET_MACRO    78
-#define CMD_RUN_MACRO    79
-#define CMD_DELAY        80
-#define CMD_STOP         81
-#define CMD_RANDOM_NUM   82
-#define CMD_POSITION     83
-#define CMD_RPOSITION    84
-#define CMD_XYPOSITION   85
-#define CMD_PALETTE      86
-#define CMD_SHUFFLE      87
-#define CMD_SETBLACK     88
-#define CMD_SEQ_WHEEL    89
-#define CMD_SEQ_SWING    90
-#define CMD_SEQ_WHLCO    91
-#define CMD_SEQ_SWGCO    92
-#define CMD_SEQ_WHLSN    93
-#define CMD_SEQ_SWGSN    94
-#define CMD_SEQ_WHLPW    95
-#define CMD_SEQ_SWGPW    96
-#define CMD_SEQ_NEXTW    97
-#define CMD_SEQ_NEXTM    98
-#define CMD_CLR_SEQ_HUE  99
-#define CMD_CLR_SEQ_SAT 100
-#define CMD_CLR_SEQ_LIT 101
+#define CMD_BLINKD       56
+#define CMD_BREATHE      57
+#define CMD_SLOW_FADE    58
+#define CMD_FAST_FADE    59
+#define CMD_BLINKR       60
+#define CMD_EFFECTR      61
+#define CMD_STORE        62 
+#define CMD_RECALL       63
+#define CMD_PAUSE        64
+#define CMD_CONTINUE     65
+#define CMD_CLEAR        66
+#define CMD_LEVEL        67
+#define CMD_FADE         68
+#define CMD_WIPE         69
+#define CMD_ANIM_ROTATE  70
+#define CMD_PSHIFTO      71
+#define CMD_CFADE        72
+#define CMD_TEST         73
+#define CMD_CONFIGURE    74
+#define CMD_PINON        75
+#define CMD_PINOFF       76
+#define CMD_SCHEDULE     77
+#define CMD_CARRY        78
+#define CMD_SET_MACRO    79
+#define CMD_RUN_MACRO    80
+#define CMD_DELAY        81
+#define CMD_STOP         82
+#define CMD_RANDOM_NUM   83
+#define CMD_POSITION     84
+#define CMD_RPOSITION    85
+#define CMD_XYPOSITION   86
+#define CMD_PALETTE      87
+#define CMD_SHUFFLE      88
+#define CMD_SETBLACK     89
+#define CMD_SEQ_WHEEL    90
+#define CMD_SEQ_SWING    91
+#define CMD_SEQ_WHLCO    92
+#define CMD_SEQ_SWGCO    93
+#define CMD_SEQ_WHLSN    94
+#define CMD_SEQ_SWGSN    95
+#define CMD_SEQ_WHLPW    96
+#define CMD_SEQ_SWGPW    97
+#define CMD_SEQ_NEXTW    98
+#define CMD_SEQ_NEXTM    99
+#define CMD_CLR_SEQ_HUE 100
+#define CMD_CLR_SEQ_SAT 101
+#define CMD_CLR_SEQ_LIT 102
+#define CMD_DYN_COLOR   103
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "rst";
@@ -163,52 +165,54 @@ const char cmd_052[] PROGMEM = "bl5";
 const char cmd_053[] PROGMEM = "bl6";
 const char cmd_054[] PROGMEM = "bla";
 const char cmd_055[] PROGMEM = "blb";
-const char cmd_056[] PROGMEM = "bre";
-const char cmd_057[] PROGMEM = "sfd";
-const char cmd_058[] PROGMEM = "ffd";
-const char cmd_059[] PROGMEM = "blr";
-const char cmd_060[] PROGMEM = "efr";
-const char cmd_061[] PROGMEM = "sto";
-const char cmd_062[] PROGMEM = "rcl";
-const char cmd_063[] PROGMEM = "pau";
-const char cmd_064[] PROGMEM = "cnt";
-const char cmd_065[] PROGMEM = "clr";
-const char cmd_066[] PROGMEM = "lev";
-const char cmd_067[] PROGMEM = "fad";
-const char cmd_068[] PROGMEM = "wip";
-const char cmd_069[] PROGMEM = "art";
-const char cmd_070[] PROGMEM = "pso";
-const char cmd_071[] PROGMEM = "cfa";
-const char cmd_072[] PROGMEM = "tst";
-const char cmd_073[] PROGMEM = "cfg";
-const char cmd_074[] PROGMEM = "pon";
-const char cmd_075[] PROGMEM = "pof";
-const char cmd_076[] PROGMEM = "sch";
-const char cmd_077[] PROGMEM = "car";
-const char cmd_078[] PROGMEM = "set";
-const char cmd_079[] PROGMEM = "run";
-const char cmd_080[] PROGMEM = "del";
-const char cmd_081[] PROGMEM = "stp";
-const char cmd_082[] PROGMEM = "rng";
-const char cmd_083[] PROGMEM = "pos"; // set position (, width)
-const char cmd_084[] PROGMEM = "rps"; // random position within current window
-const char cmd_085[] PROGMEM = "xyp"; // x,y position
-const char cmd_086[] PROGMEM = "pal"; // palette color
-const char cmd_087[] PROGMEM = "shf"; // shuffle/reset palette
-const char cmd_088[] PROGMEM = "sbl"; // set black level
-const char cmd_089[] PROGMEM = "seq"; // wheel
-const char cmd_090[] PROGMEM = "sqs"; // swing
-const char cmd_091[] PROGMEM = "swc"; // wheel cosine
-const char cmd_092[] PROGMEM = "ssc"; // swing cosine
-const char cmd_093[] PROGMEM = "sws"; // wheel sine
-const char cmd_094[] PROGMEM = "sss"; // swing sine
-const char cmd_095[] PROGMEM = "swp"; // wheel power
-const char cmd_096[] PROGMEM = "ssp"; // swing power
-const char cmd_097[] PROGMEM = "snw"; // sequence next window
-const char cmd_098[] PROGMEM = "snm"; // sequence next macro (future)
-const char cmd_099[] PROGMEM = "csh"; // color sequence by hue
-const char cmd_100[] PROGMEM = "css"; // color sequence by saturation
-const char cmd_101[] PROGMEM = "csl"; // color sequence by lightness
+const char cmd_056[] PROGMEM = "bld";
+const char cmd_057[] PROGMEM = "bre";
+const char cmd_058[] PROGMEM = "sfd";
+const char cmd_059[] PROGMEM = "ffd";
+const char cmd_060[] PROGMEM = "blr";
+const char cmd_061[] PROGMEM = "efr";
+const char cmd_062[] PROGMEM = "sto";
+const char cmd_063[] PROGMEM = "rcl";
+const char cmd_064[] PROGMEM = "pau";
+const char cmd_065[] PROGMEM = "cnt";
+const char cmd_066[] PROGMEM = "clr";
+const char cmd_067[] PROGMEM = "lev";
+const char cmd_068[] PROGMEM = "fad";
+const char cmd_069[] PROGMEM = "wip";
+const char cmd_070[] PROGMEM = "art";
+const char cmd_071[] PROGMEM = "pso";
+const char cmd_072[] PROGMEM = "cfa";
+const char cmd_073[] PROGMEM = "tst";
+const char cmd_074[] PROGMEM = "cfg";
+const char cmd_075[] PROGMEM = "pon";
+const char cmd_076[] PROGMEM = "pof";
+const char cmd_077[] PROGMEM = "sch";
+const char cmd_078[] PROGMEM = "car";
+const char cmd_079[] PROGMEM = "set";
+const char cmd_080[] PROGMEM = "run";
+const char cmd_081[] PROGMEM = "del";
+const char cmd_082[] PROGMEM = "stp";
+const char cmd_083[] PROGMEM = "rng";
+const char cmd_084[] PROGMEM = "pos"; // set position (, width)
+const char cmd_085[] PROGMEM = "rps"; // random position within current window
+const char cmd_086[] PROGMEM = "xyp"; // x,y position
+const char cmd_087[] PROGMEM = "pal"; // palette color
+const char cmd_088[] PROGMEM = "shf"; // shuffle/reset palette
+const char cmd_089[] PROGMEM = "sbl"; // set black level
+const char cmd_090[] PROGMEM = "seq"; // wheel
+const char cmd_091[] PROGMEM = "sqs"; // swing
+const char cmd_092[] PROGMEM = "swc"; // wheel cosine
+const char cmd_093[] PROGMEM = "ssc"; // swing cosine
+const char cmd_094[] PROGMEM = "sws"; // wheel sine
+const char cmd_095[] PROGMEM = "sss"; // swing sine
+const char cmd_096[] PROGMEM = "swp"; // wheel power
+const char cmd_097[] PROGMEM = "ssp"; // swing power
+const char cmd_098[] PROGMEM = "snw"; // sequence next window
+const char cmd_099[] PROGMEM = "snm"; // sequence next macro (future)
+const char cmd_100[] PROGMEM = "csh"; // color sequence by hue
+const char cmd_101[] PROGMEM = "css"; // color sequence by saturation
+const char cmd_102[] PROGMEM = "csl"; // color sequence by lightness
+const char cmd_103[] PROGMEM = "dyn"; // dynamic color rendering
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
@@ -221,7 +225,7 @@ const char* const command_strings[] PROGMEM = {
    cmd_071, cmd_072, cmd_073, cmd_074, cmd_075, cmd_076, cmd_077, cmd_078, cmd_079, cmd_080,
    cmd_081, cmd_082, cmd_083, cmd_084, cmd_085, cmd_086, cmd_087, cmd_088, cmd_089, cmd_090,
    cmd_091, cmd_092, cmd_093, cmd_094, cmd_095, cmd_096, cmd_097, cmd_098, cmd_099, cmd_100,
-   cmd_101
+   cmd_101, cmd_102, cmd_103
 };
 
 #endif

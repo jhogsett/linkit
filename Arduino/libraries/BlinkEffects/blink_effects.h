@@ -15,6 +15,7 @@
 // blink group a-b (1/2)
 #define BLINK_ON_A 18
 #define BLINK_ON_B 19
+#define BLINK_ON_D 20
 
 #define BLINK_MIN BLINK_ON
 #define BLINK_MAX BLINK_ON_B
