@@ -10,10 +10,10 @@
 ///////////////////////////
 
 // 150-LED Outfit
-#define OUTFIT
+// #define OUTFIT
 
 // single 144-LED strip
-// #define LED_STRIP_144
+#define LED_STRIP_144
 
 // 36-LED annunciator
 // #define ANNUNCIATOR

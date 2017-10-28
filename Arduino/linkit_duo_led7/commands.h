@@ -451,6 +451,7 @@ void Commands::do_random(byte type, int times)
   
   for(int i = 0; i < times; i++)
   {
+    // this won't clobber dynamic effects marker accidentally because this is an overwrite
     *effect = random_effects ? EffectsProcessor::random_effect() : NO_EFFECT;
     switch(type)
     {
@@ -470,6 +471,7 @@ void Commands::do_random(byte type, int times)
   }
 }
 
+// this won't clobber dynamic effects because this is a copy operation
 void Commands::do_mirror()
 {
   bool reverse = buffer->get_reverse();
@@ -507,6 +509,8 @@ void Commands::do_mirror()
 //        -1 = copy the pattern to the palette buffer but don't duplicate
 //        -2 = duplicate the pattern in the palette buffer but don't copy first
 // zoom - how many pixels to draw per source pixel
+
+// this won't clobber dynamic effect marker becauwe this is a copy operation
 void Commands::do_copy(byte size, int times, byte zoom)
 {
   size = max(1, size);
@@ -630,6 +634,8 @@ void Commands::do_copy(byte size, int times, byte zoom)
 
 // to do fix re: reverse (fixed?)
 // consider support a repeat of zero times (doing nothing)
+
+// this won't clobber dynamic effects marker because this is a copy operation
 void Commands::do_repeat(byte times = 1){
   times = max(1, times);
   byte offset = buffer->get_reverse() ? buffer->get_window() - 1 : buffer->get_offset();

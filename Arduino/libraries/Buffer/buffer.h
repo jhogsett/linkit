@@ -125,7 +125,6 @@ void Buffer::render_display()
 
 void Buffer::erase(bool display = false)
 {
-  //@@@
   byte offset = get_offset();
   byte window = get_window();
   rgb_color * buf = buffers[current_display];
@@ -145,7 +144,6 @@ void Buffer::erase(bool display = false)
 
 void Buffer::cross_fade(byte step)
 {
-  //@@@
   byte offset = get_offset();
   byte window = get_window();
   rgb_color *buffer = buffers[current_display];
