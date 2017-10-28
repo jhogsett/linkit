@@ -499,7 +499,7 @@ def specs():
     expect_effect("org:bli", 0, 1, "11")
 
     test("it places an alternate effect in the effects buffer")
-    expect_effect("org:bre:flu", 0, 1, "20")
+    expect_effect("org:bre:flu", 0, 1, "21")
 
     test("it places multiple effects in the effects buffer")
     expect_effect("blu:bla:grn:blb", 0, 2, "19,18")
@@ -509,7 +509,7 @@ def specs():
       expect_effect("rnd:" + test_colors.effects[i][0] + ":flu", 0, 1, test_colors.effects[i][1])
 
     test("it sets random effects")
-    expect_effect("rnd:efr", 0, 1, "20")
+    expect_effect("rnd:efr", 0, 1, "21")
     expect_effect("rnd:efr", 0, 1, "15")
     expect_effect("rnd:efr", 0, 1, "12")
 
@@ -714,12 +714,12 @@ def specs():
     expect_buffer(str(palette_size) + ",-2:cpy", 0, palette_size, standard_palette, True, True)
 
     test("it copies the effects too when using palette memory")
-    expect_effect("wht:bre:1,2:cpy", 0, 3, "20,20,0")
+    expect_effect("wht:bre:1,2:cpy", 0, 3, "21,21,0")
 
     test("it copies the effects too when using render memory")
     expected_effect = ""
     for n in range(0, palette_size + 1):
-      expected_effect += "20,"
+      expected_effect += "21,"
     expected_effect += "0"
     expect_effect("dgr:bre:" + str(palette_size) + ":rep:flu:" + str(palette_size + 1) + ",1:cpy", 0, palette_size + 2, expected_effect)
 
@@ -964,7 +964,7 @@ def specs():
 
     test("it places multiple random colors with random effects")
     expect_buffer("rnd:2,5:rnd", 0, 7, "20,0,15,20,10,0,0,10,20,0,10,20,20,20,0,15,20,0,0,0,0")
-    expect_effect("rnd:2,5:rnd", 0, 7, "0,20,15,18,20,17,0")
+    expect_effect("rnd:2,5:rnd", 0, 7, "0,21,15,18,21,17,0")
 
     test("it places multiple random palette colors and no effects")
     expect_buffer("rnd:3,5:rnd", 0, 7, "0,20,20,0,10,20,0,0,20,20,20,0,10,0,20,15,20,0,0,0,0")
