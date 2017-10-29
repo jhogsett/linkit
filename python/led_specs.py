@@ -1591,6 +1591,76 @@ def specs():
     command_str("3,20:cfg")
     expect_effect("red:flu", 0, 1, "20")
 
+
+########################################################################
+# Dynamic Color Placement
+########################################################################
+  if group("setting dynamic colors"):
+
+    test("a palette color can be placed dynamically")
+    expect_buffer("5:dyn", 0, 1, "5,0,0")
+
+    test("a different palette color can be placed dynamically")
+    expect_buffer("11:dyn", 0, 1, "11,0,0")
+
+    test("a primary and a secondary palette color can be placed dynamically")
+    expect_buffer("3,12:dyn", 0, 1, "3,12,0")
+
+    test("colors and a rendering hint can be placed")
+    # there are current no hints, so any value is ignored
+    expect_buffer("4,9,1:dyn", 0, 1, "4,9,1")
+
+
+
+
+
+
+########################################################################
+# Dynamic Color Rendering
+########################################################################
+  if group("dynamic color rendering"):
+
+    test("a dynamically placed color can be rendered")
+    expect_render("2:dyn", 0, 1, "51,51,0")
+
+    test("a different dynamically placed color can be rendered")
+    expect_render("10:dyn", 0, 1, "0,51,25")
+
+    test("shuffling the palette causes the rendered colors to change")
+    expect_render("0:dyn:1:dyn:2:dyn:3:dyn:4:dyn:5:dyn", 0, 6, "25,0,51,0,0,51,0,51,0,51,51,0,51,25,0,51,0,0")    
+    expect_render("shf:0:dyn:1:dyn:2:dyn:3:dyn:4:dyn:5:dyn", 0, 6,"51,51,0,0,25,51,0,51,0,0,0,51,38,51,0,51,25,0")
+
+
+
+
+
+########################################################################
+# Dynamic Color Effects
+########################################################################
+  if group("setting dynamic color effects"):
+
+    test("dynamic blink")
+    # set blink period to minimum value
+    command_str("0,6:cfg")
+    # set a macro to advance the blink period
+    command_str("0:set:6:tst:flu")
+
+    # place alternating dynamic colors
+    command_str("0,4:dyn:bld")
+
+    # simulate a half blink period
+    expect_render("0,3:run", 0, 1, "0,0,51", False)
+
+    # simulate a full blink period
+    expect_render("0,6:run", 0, 1, "51,0,0", False)
+
+
+
+
+
+
+
+
 ########################################################################                     
 ########################################################################                     
  
