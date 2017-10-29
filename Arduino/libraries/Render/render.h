@@ -31,7 +31,7 @@ class Render
   float default_brightness_scale;
   float minimum_brightness_scale;
 
-  rgb_color get_blink(rgb_color color, byte effect);
+  rgb_color get_blink(rgb_color color, rgb_color render_color, byte effect);
   rgb_color get_breathe(rgb_color color);
   rgb_color get_static();
   rgb_color get_default(rgb_color, byte effect = NO_EFFECT);
@@ -51,13 +51,13 @@ void Render::begin(BlinkEffects *blink_effects, BreatheEffects *breathe_effects,
 }
 
 // todo: move to blink class?
-rgb_color Render::get_blink(rgb_color color, byte effect)
+rgb_color Render::get_blink(rgb_color color, rgb_color render_color, byte effect)
 {
   if((effect & NOT_DYNAMIC_COLOR) == BLINK_ON_D){
-    byte color_index = blink_effects->blink_on(effect & NOT_DYNAMIC_COLOR) ? color.red : color.green;
-    return ColorMath::scale_color(Colors::get_palette()[min(color_index, NUM_PALETTE_COLORS-1)], default_brightness_scale);
+    byte color_index = min((blink_effects->blink_on(BLINK_ON_D) ? color.red : color.green), NUM_PALETTE_COLORS-1);
+    return ColorMath::scale_color(Colors::get_palette()[color_index], default_brightness_scale);
   } else {
-    return ColorMath::scale_color(color, blink_effects->blink_on(effect & NOT_DYNAMIC_COLOR) ? default_brightness_scale : minimum_brightness_scale);
+    return ColorMath::scale_color(render_color, blink_effects->blink_on(effect & NOT_DYNAMIC_COLOR) ? default_brightness_scale : minimum_brightness_scale);
   }
 }
 
@@ -81,22 +81,30 @@ rgb_color Render::get_static()
 // default_brightness_scale is 0.0 - 1.0
 rgb_color Render::get_default(rgb_color color, byte effect)
 {
-  rgb_color render_color;
-  if(effect & DYNAMIC_COLOR)
-    render_color = Colors::get_palette()[min(color.red, NUM_PALETTE_COLORS-1)];
-  else
-    render_color = color;
-
-  return ColorMath::scale_color(render_color, default_brightness_scale);
+  return ColorMath::scale_color(color, default_brightness_scale);
 }
 
 rgb_color Render::render(rgb_color *color, byte effect)
 {
-                       if((effect & NOT_DYNAMIC_COLOR) == STATIC_ON) { return get_default(get_static());   } else
-    if(blink_effects->is_handled_effect(effect & NOT_DYNAMIC_COLOR)) { return get_blink(*color, effect);   } else
-  if(breathe_effects->is_handled_effect(effect & NOT_DYNAMIC_COLOR)) { return get_breathe(*color);         } else
-     if(fade_effects->is_handled_effect(effect & NOT_DYNAMIC_COLOR)) { return get_fade(color, effect);     } else
-                                                                     { return get_default(*color, effect); }
+  if((effect & NOT_DYNAMIC_COLOR) == STATIC_ON)
+    return get_default(get_static());
+
+  if(fade_effects->is_handled_effect(effect & NOT_DYNAMIC_COLOR))
+    return get_fade(color, effect);
+
+  rgb_color render_color;
+  if(effect & DYNAMIC_COLOR)
+    render_color = Colors::get_palette()[min(color->red, NUM_PALETTE_COLORS-1)];
+  else
+    render_color = *color;
+
+  if(blink_effects->is_handled_effect(effect & NOT_DYNAMIC_COLOR))
+    return get_blink(*color, render_color, effect);
+
+  if(breathe_effects->is_handled_effect(effect & NOT_DYNAMIC_COLOR))
+    return get_breathe(render_color);
+
+  return get_default(render_color, effect);
 }
 
 rgb_color Render::fast_render(rgb_color color, byte _effect)
