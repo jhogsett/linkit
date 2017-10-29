@@ -1640,8 +1640,10 @@ def specs():
   if group("setting dynamic color effects"):
 
     test("dynamic blink")
+
     # set blink period to minimum value
     command_str("0,6:cfg")
+
     # set a macro to advance the blink period
     command_str("0:set:6:tst:flu")
 
@@ -1657,6 +1659,31 @@ def specs():
 
 
 
+
+
+
+########################################################################
+# Dynamic Color Handling
+########################################################################
+  if group("setting dynamic color effects"):
+
+    test("should be able to copy dynamic colors")
+    expect_buffer("12:dyn:1,2:cpy", 0, 2, "12,0,0,12,0,0")
+
+    test("should be able to copy dynamic color marker")
+    expect_effect("12:dyn:1,2:cpy", 0, 2, "128,128")
+
+    test("should be able to copy dynamic colors with zooming")
+    expect_buffer("12:dyn:1,2,2:cpy", 0, 4, "12,0,0,12,0,0,12,0,0,12,0,0")
+  
+    test("should be able to copy dynamic color marker with zooming")
+    expect_effect("12:dyn:1,2,2:cpy", 0, 4, "128,128,128,128")
+
+    test("copied dynamic color should render properly")
+    expect_render("8:dyn:1,2:cpy", 0, 2, "0,25,51,0,25,51")
+
+    test("copied dynamic color with zooming should render properly")
+    expect_render("12:dyn:1,2,2:cpy", 0, 4, "51,38,0,51,38,0,51,38,0,51,38,0")
 
 
 
