@@ -919,7 +919,7 @@ int Commands::random_num(int max, int min)
     }
     while(protection++ <= width);
     
-    return 0; // todo: could return random instead
+    return random(min, max);
   } 
   else 
     return random(min, max);  
