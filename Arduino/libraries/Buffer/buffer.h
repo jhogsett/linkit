@@ -17,7 +17,7 @@ class Buffer
   void display_buffer(rgb_color * pbuffer);
   void render_display();
   void erase(bool display);
-  void push_color(rgb_color color, byte times, bool display, byte effect, byte max, byte start);
+  void push_color(rgb_color color, byte times, bool display, byte effect, byte max, byte start, bool color_correction);
   void push_rgb_color(byte red, byte green, byte blue);
   void push_hsl_color(int hue, int sat, int lit);
   void push_carry_color();
@@ -125,7 +125,6 @@ void Buffer::render_display()
 
 void Buffer::erase(bool display = false)
 {
-  //@@@
   byte offset = get_offset();
   byte window = get_window();
   rgb_color * buf = buffers[current_display];
@@ -145,7 +144,6 @@ void Buffer::erase(bool display = false)
 
 void Buffer::cross_fade(byte step)
 {
-  //@@@
   byte offset = get_offset();
   byte window = get_window();
   rgb_color *buffer = buffers[current_display];
@@ -220,7 +218,7 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
 }
 
 // todo: only need to shift buffer multiple times if displaying (otherwise, shift the whole amount)
-void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = DEFAULT_EFFECT, byte max = 0, byte start = 0)
+void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = DEFAULT_EFFECT, byte max = 0, byte start = 0, bool color_correction = true)
 {
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
@@ -231,7 +229,9 @@ void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, b
   max = (max == 0) ? get_window() : max;
   start = (start == 0) ? get_offset() : start;
   times = max(1, times);
-  color = ColorMath ::correct_color(color);
+
+  if(color_correction)
+    color = ColorMath ::correct_color(color);
 
   rgb_color * buf;
   byte * eff;

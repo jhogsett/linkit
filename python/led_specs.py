@@ -499,7 +499,7 @@ def specs():
     expect_effect("org:bli", 0, 1, "11")
 
     test("it places an alternate effect in the effects buffer")
-    expect_effect("org:bre:flu", 0, 1, "20")
+    expect_effect("org:bre:flu", 0, 1, "21")
 
     test("it places multiple effects in the effects buffer")
     expect_effect("blu:bla:grn:blb", 0, 2, "19,18")
@@ -509,7 +509,7 @@ def specs():
       expect_effect("rnd:" + test_colors.effects[i][0] + ":flu", 0, 1, test_colors.effects[i][1])
 
     test("it sets random effects")
-    expect_effect("rnd:efr", 0, 1, "20")
+    expect_effect("rnd:efr", 0, 1, "21")
     expect_effect("rnd:efr", 0, 1, "15")
     expect_effect("rnd:efr", 0, 1, "12")
 
@@ -714,12 +714,12 @@ def specs():
     expect_buffer(str(palette_size) + ",-2:cpy", 0, palette_size, standard_palette, True, True)
 
     test("it copies the effects too when using palette memory")
-    expect_effect("wht:bre:1,2:cpy", 0, 3, "20,20,0")
+    expect_effect("wht:bre:1,2:cpy", 0, 3, "21,21,0")
 
     test("it copies the effects too when using render memory")
     expected_effect = ""
     for n in range(0, palette_size + 1):
-      expected_effect += "20,"
+      expected_effect += "21,"
     expected_effect += "0"
     expect_effect("dgr:bre:" + str(palette_size) + ":rep:flu:" + str(palette_size + 1) + ",1:cpy", 0, palette_size + 2, expected_effect)
 
@@ -964,7 +964,7 @@ def specs():
 
     test("it places multiple random colors with random effects")
     expect_buffer("rnd:2,5:rnd", 0, 7, "20,0,15,20,10,0,0,10,20,0,10,20,20,20,0,15,20,0,0,0,0")
-    expect_effect("rnd:2,5:rnd", 0, 7, "0,20,15,18,20,17,0")
+    expect_effect("rnd:2,5:rnd", 0, 7, "0,21,15,18,21,17,0")
 
     test("it places multiple random palette colors and no effects")
     expect_buffer("rnd:3,5:rnd", 0, 7, "0,20,20,0,10,20,0,0,20,20,20,0,10,0,20,15,20,0,0,0,0")
@@ -1590,6 +1590,103 @@ def specs():
     test("the effect can be set to a default value")
     command_str("3,20:cfg")
     expect_effect("red:flu", 0, 1, "20")
+
+
+########################################################################
+# Dynamic Color Placement
+########################################################################
+  if group("setting dynamic colors"):
+
+    test("a palette color can be placed dynamically")
+    expect_buffer("5:dyn", 0, 1, "5,0,0")
+
+    test("a different palette color can be placed dynamically")
+    expect_buffer("11:dyn", 0, 1, "11,0,0")
+
+    test("a primary and a secondary palette color can be placed dynamically")
+    expect_buffer("3,12:dyn", 0, 1, "3,12,0")
+
+    test("colors and a rendering hint can be placed")
+    # there are current no hints, so any value is ignored
+    expect_buffer("4,9,1:dyn", 0, 1, "4,9,1")
+
+
+
+
+
+
+########################################################################
+# Dynamic Color Rendering
+########################################################################
+  if group("dynamic color rendering"):
+
+    test("a dynamically placed color can be rendered")
+    expect_render("2:dyn", 0, 1, "51,51,0")
+
+    test("a different dynamically placed color can be rendered")
+    expect_render("10:dyn", 0, 1, "0,51,25")
+
+    test("shuffling the palette causes the rendered colors to change")
+    expect_render("0:dyn:1:dyn:2:dyn:3:dyn:4:dyn:5:dyn", 0, 6, "25,0,51,0,0,51,0,51,0,51,51,0,51,25,0,51,0,0")    
+    expect_render("shf:0:dyn:1:dyn:2:dyn:3:dyn:4:dyn:5:dyn", 0, 6,"51,51,0,0,25,51,0,51,0,0,0,51,38,51,0,51,25,0")
+
+
+
+
+
+########################################################################
+# Dynamic Color Effects
+########################################################################
+  if group("setting dynamic color effects"):
+
+    test("dynamic blink")
+
+    # set blink period to minimum value
+    command_str("0,6:cfg")
+
+    # set a macro to advance the blink period
+    command_str("0:set:6:tst:flu")
+
+    # place alternating dynamic colors
+    command_str("0,4:dyn:bld")
+
+    # simulate a half blink period
+    expect_render("0,3:run", 0, 1, "0,0,51", False)
+
+    # simulate a full blink period
+    expect_render("0,6:run", 0, 1, "51,0,0", False)
+
+
+
+
+
+
+
+########################################################################
+# Dynamic Color Handling
+########################################################################
+  if group("setting dynamic color effects"):
+
+    test("should be able to copy dynamic colors")
+    expect_buffer("12:dyn:1,2:cpy", 0, 2, "12,0,0,12,0,0")
+
+    test("should be able to copy dynamic color marker")
+    expect_effect("12:dyn:1,2:cpy", 0, 2, "128,128")
+
+    test("should be able to copy dynamic colors with zooming")
+    expect_buffer("12:dyn:1,2,2:cpy", 0, 4, "12,0,0,12,0,0,12,0,0,12,0,0")
+  
+    test("should be able to copy dynamic color marker with zooming")
+    expect_effect("12:dyn:1,2,2:cpy", 0, 4, "128,128,128,128")
+
+    test("copied dynamic color should render properly")
+    expect_render("8:dyn:1,2:cpy", 0, 2, "0,25,51,0,25,51")
+
+    test("copied dynamic color with zooming should render properly")
+    expect_render("12:dyn:1,2,2:cpy", 0, 4, "51,38,0,51,38,0,51,38,0,51,38,0")
+
+
+
 
 ########################################################################                     
 ########################################################################                     

@@ -104,6 +104,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_RANDOM: 
       do_random(arg0, arg1); 
       break; 
+
+    case CMD_DYN_COLOR:
+      do_dynamic_color(arg0, arg1, arg2);
+      break;
     
     case CMD_BLEND: 
       do_blend(arg0); 
@@ -131,6 +135,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_BLINK6: 
     case CMD_BLINKA: 
     case CMD_BLINKB: 
+    case CMD_BLINKD:
     case CMD_BREATHE: 
     case CMD_SLOW_FADE: 
     case CMD_FAST_FADE: 
