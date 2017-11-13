@@ -47,59 +47,63 @@
         $('#maintabs a[href="' + hash + '"]').tab('show');
       });
     </script>
-    
     <div class="tab-content">
-
       <div id="main" class="tab-pane fade in active">
         <h3>Main</h3>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=clr#main">Clear</a></div>
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+stp#MAIN">All Stop</a></div>
           <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=stp#main">Stop</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=cnt#main">Cont</a></div>
-            <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=-1:sch#main">Stop Sch</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+cnt:10:run#main">All Start</a></div>
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=-1:sch#main">Stop Sch</a></div>
         </div>
         <div class="row row-margin">
           <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=0:lev:flu#main">Auto %</a></div>
           <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=stop#main">Stop App</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=1:lev:flu#main">1%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=2:lev:flu#main">2%</a></div>
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?cmd=cnt:10:run#main">Start 10</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=2:lev:flu#main">2%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=5:lev:flu#main">5%</a></div>
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?cmd=cnt:11:run#main">Start 11</a></div>
         </div>
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=5:lev:flu#main">5%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=20:lev:flu#main">20%</a></div>
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?cmd=cnt:12:run#main">Start 12</a></div>
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=50:lev:flu#main">50%</a></div>
+          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:wht:flo#cast">Cool White</a></div>
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=70:lev:flo#main">70%</a></div>
+          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:tun:flo#cast">Warm White</a></div>
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=100:lev:flu#main">100%</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:sod:flo#cast">Sodium Vapor</a></div>
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=clr#main">Clear</a></div>
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=13:pon#main">Fan On</a></div>
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=cnt#main">Cont</a></div>
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=13:pof#main">Fan Off</a></div>
+        </div>    
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=1:lev:flu#main">1%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=33:lev:flu#main">33%</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=10:lev:flu#main">10%</a></div>
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?cmd=cnt:13:run#main">Start 13</a></div>
-        </div>                    
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=20:lev:flu#main">20%</a></div>
-          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?run=udp_send.py+clr:wht:flo#cast">Cool White</a></div>
         </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=33:lev:flu#main">33%</a></div>
-          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?run=udp_send.py+clr:tun:flo#cast">Warm White</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=50:lev:flu#main">50%</a></div>
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=udp_send.py+clr:sod:flo#cast">Sodium Vapor</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=70:lev:flo#main">70%</a></div>
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=13:pon#main">Fan On</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=100:lev:flu#main">100%</a></div>
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=13:pof#main">Fan Off</a></div>
-        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">
+        </div>
       </div>
 
       <div id="apps" class="tab-pane fade">
@@ -564,73 +568,73 @@
       <div id="cast" class="tab-pane fade in">
         <h3>Cast</h3>
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=udp_send.py+stp#cast">All Stop</a></div>
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=udp_send.py+clr#cast">All Clear</a></div>
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+stp#cast">All Stop</a></div>
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr#cast">All Clear</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?run=udp_send.py+clr:wht:flo#cast">Cool White</a></div>
-          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?run=udp_send.py+clr:tun:flo#cast">Warm White</a></div>
+          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:wht:flo#cast">Cool White</a></div>
+          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:tun:flo#cast">Warm White</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=udp_send.py+clr:sod:flo#cast">Sodium Vapor</a></div>
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=udp_send.py+clr:neo:flo#cast">Neon Gas</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:sod:flo#cast">Sodium Vapor</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:neo:flo#cast">Neon Gas</a></div>
         </div>
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=udp_send.py+cnt:10:run#cast">All Start 10</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?run=udp_send.py+0:lev:flu#cast">All Auto %</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+cnt:10:run#cast">All Start 10</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+0:lev:flu#cast">All Auto %</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=udp_send.py+cnt:11:run#cast">All Start 11</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?run=udp_send.py+1:lev:flu#cast">All 1%</a></div>    
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+cnt:11:run#cast">All Start 11</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+1:lev:flu#cast">All 1%</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=udp_send.py+cnt:12:run#cast">All Start 12</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?run=udp_send.py+2:lev:flu#cast">All 2%</a></div>    
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+cnt:12:run#cast">All Start 12</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+2:lev:flu#cast">All 2%</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=udp_send.py+cnt:13:run#cast">All Start 13</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?run=udp_send.py+5:lev:flu#cast">All 5%</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+cnt:13:run#cast">All Start 13</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+5:lev:flu#cast">All 5%</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?run=udp_send.py+10:lev:flu#cast">All 10%</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?run=udp_send.py+20:lev:flu#cast">All 20%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+10:lev:flu#cast">All 10%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+20:lev:flu#cast">All 20%</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?run=udp_send.py+33:lev:flu#cast">All 33%</a></div>
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=udp_send.py+50:lev:flu#cast">All 50%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+33:lev:flu#cast">All 33%</a></div>
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+50:lev:flu#cast">All 50%</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=udp_send.py+70:lev:flu#cast">All 70%</a></div>
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=udp_send.py+100:lev:flu#cast">All 100%</a></div>
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+70:lev:flu#cast">All 70%</a></div>
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+100:lev:flu#cast">All 100%</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-2"><a class="btn btn-red btn-lg btn-block" role="button" href="/command?run=udp_send.py+red:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-orange btn-lg btn-block" role="button" href="/command?run=udp_send.py+org:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-yellow btn-lg btn-block" role="button" href="/command?run=udp_send.py+yel:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-green btn-lg btn-block" role="button" href="/command?run=udp_send.py+grn:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-blue btn-lg btn-block" role="button" href="/command?run=udp_send.py+blu:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-purple btn-lg btn-block" role="button" href="/command?run=udp_send.py+pur:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-red btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+red:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-orange btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+org:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-yellow btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+yel:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-green btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+grn:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-blue btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+blu:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-purple btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+pur:flo#cast">&nbsp;</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-2"><a class="btn btn-pink btn-lg btn-block" role="button" href="/command?run=udp_send.py+pnk:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-magenta btn-lg btn-block" role="button" href="/command?run=udp_send.py+mag:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-ltgreen btn-lg btn-block" role="button" href="/command?run=udp_send.py+lgr:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-seafoam btn-lg btn-block" role="button" href="/command?run=udp_send.py+sea:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-ltblue btn-lg btn-block" role="button" href="/command?run=udp_send.py+lbl:flo#cast">&nbsp;</a></div>
-          <div class="col-xs-2"><a class="btn btn-cyan btn-lg btn-block" role="button" href="/command?run=udp_send.py+cyn:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-pink btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+pnk:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-magenta btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+mag:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-ltgreen btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+lgr:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-seafoam btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+sea:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-ltblue btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+lbl:flo#cast">&nbsp;</a></div>
+          <div class="col-xs-2"><a class="btn btn-cyan btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+cyn:flo#cast">&nbsp;</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=udp_send.py+red:org:yel:grn:blu:pur:6,0:cpy:flu#cast">Rainbow</a></div>
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=udp_send.py+sta:flo:flu#cast">Static</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+red:org:yel:grn:blu:pur:6,0:cpy:flu#cast">Rainbow</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+sta:flo:flu#cast">Static</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=udp_send.py+0,-1:rnd:flu#cast">Random</a></div>
-          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=udp_send.py+1,-1:rnd:flu#cast">Diff</a></div>
-          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=udp_send.py+2,-1:rnd:flu#cast">FX</a></div>
+          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+0,-1:rnd:flu#cast">Random</a></div>
+          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+1,-1:rnd:flu#cast">Diff</a></div>
+          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+2,-1:rnd:flu#cast">FX</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=13:pon#cast">Fan On</a></div>
-          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=13:pof#cast">Fan Off</a></div>
+          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=runonce=udp_send.py+13:pon#cast">Fan On</a></div>
+          <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=runonce=udp_send.py+13:pof#cast">Fan Off</a></div>
         </div>
       </div>
     </div>
