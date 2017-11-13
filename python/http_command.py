@@ -44,14 +44,18 @@ def command(cmd_text):
 class Handler(BaseHTTPRequestHandler):
   global last_run, last_run_full, host_name, host_ip
 
-  def run_app(self, app):
+  def run_app(self, app, track=True):
     global last_run, last_run_full    
     if app != 'stop':                      
       run = base_path + app + ' &'         
       self.log('running: ' + run)               
-      call(run, shell=True)  
-      last_run_full = app
-      last_run = app.split()[0]
+      call(run, shell=True)
+      if track:
+        last_run_full = app
+        last_run = app.split()[0]
+      else:
+        last_run_full = ''
+        last_run = ''
     else:
       last_run_full = ''
       last_run = ''
@@ -143,6 +147,9 @@ class Handler(BaseHTTPRequestHandler):
       if 'run' in args:
         self.kill_last_app() 
         self.run_app(args['run'][0])
+
+      if 'runonce' in args:
+        self.run_app(args['runonce'][0], False)
 
       if 'sys' in args:
         for sys in args['sys']:
