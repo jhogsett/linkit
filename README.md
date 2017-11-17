@@ -328,6 +328,10 @@
 
 #### Quick Start
 
+SSH into the device
+
+    ssh root@mylinkit.local
+
 Set up dev link to SD card
 
     cd /Media/SD-P1
@@ -351,11 +355,13 @@ _Add your key and save the file_
 
 Fix Git in various ways
 
-    echo "#!/bin/sh" > ~/.gitssh.sh
-    echo "dbclient -y -i ~/.ssh/id_rsa $*" >> ~/.gitssh.sh
-    chmod +x ~/.gitssh.sh
-    echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
-        
+```bash
+echo "#!/bin/sh" > ~/.gitssh.sh
+echo "dbclient -y -i ~/.ssh/id_rsa $*" >> ~/.gitssh.sh
+chmod +x ~/.gitssh.sh
+echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
+```       
+       
 _NOTE: if this doesn't work, check your copying and pasting (check that \$\* is $*)_
     
     git config --global user.email "{YOUR EMAIL}"
@@ -423,6 +429,34 @@ stop() {
     chmod +x http_command
     ./http_command enable
     ./http_command start
+
+Add the udp_command start-up
+
+    cd /etc/init.d
+    vim udp_command
+
+```bash
+#!/bin/sh /etc/rc.common
+
+SCRIPT_NAME="LED Multicast Receiver"
+SCRIPT_PGM="udp_command.py"
+SCRIPT_PATH="/root/udp_command.py"
+#LOG_FILE="/root/dev/linkit/python/udp_command.log"
+LOG_FILE="/dev/null"
+
+START=98
+STOP=50
+
+start() {
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}
+
+stop() {
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PGM`
+}
+```
 
 ----
 
