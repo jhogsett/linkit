@@ -458,6 +458,11 @@ stop() {
 }
 ```
 
+
+    chmod +x udp_command
+    ./udp_command enable
+    ./udp_command start
+
 ----
 
 #### TODO
