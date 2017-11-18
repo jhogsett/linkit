@@ -1241,7 +1241,7 @@ def specs():
     expect_buffer("0:off:10:win:red:grn:blu:6:blk:wht:rot", 0, 10, "20,0,0,20,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,20,0")
 
     test("it carries the correct color to the insertion point in reverse")
-    expect_buffer("0:off:10:win:rev:red:grn:blu:6:blk:wht:rot", 0, 10, "0,0,20,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,20,20,20,0,0")
+    expect_buffer("0:off:10:win:1:rev:red:grn:blu:6:blk:wht:rot", 0, 10, "0,20,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,20,20,20,0,0")
 
 
 ########################################################################
