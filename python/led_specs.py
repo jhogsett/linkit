@@ -199,7 +199,15 @@ def group(description):
   group_number = group_number + 1
   num_groups += 1
   group_description = description
-  if (group_number_only == 0 and group_name_only == "") or group_number_only == group_number or group_name_only.lower() in description.lower():
+  if group_number_only == 0 and group_name_only == "":
+    if verbose_mode:
+      print group_message(),
+    return True
+  if group_number_only == group_number:
+    if verbose_mode:
+      print group_message(),
+    return True
+  if group_name_only != "" and group_name_only.lower() in description.lower():
     if verbose_mode:
       print group_message(),
     return True
@@ -1228,6 +1236,12 @@ def specs():
 
     test("it rotates multiple times in reverse in the current window")
     expect_buffer("0:off:5:win:blu:1:rev:2:rot", 0, 5, "0,0,0,0,0,0,0,0,0,0,0,20,0,0,0")                                                                                                                                                                                                           
+
+    test("it carries the correct color to the insertion point")
+    expect_buffer("0:off:10:win:red:grn:blu:6:blk:wht:rot", 0, 10, "20,0,0,20,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,20,0")
+
+    test("it carries the correct color to the insertion point in reverse")
+    expect_buffer("0:off:10:win:rev:red:grn:blu:6:blk:wht:rot", 0, 10, "0,0,20,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,20,20,20,0,0")
 
 
 ########################################################################
