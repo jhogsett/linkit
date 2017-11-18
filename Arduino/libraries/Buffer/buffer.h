@@ -180,13 +180,13 @@ void Buffer::rotate()
 
 void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse = false)
 {
-  max -= 1;
+//  max -= 1;
   if(reverse)
   {
     this->carry_color = buffer[start];
     this->carry_effect = effects[start];
 
-//    max -= 1;
+    max -= 1;
     rgb_color * buf = buffer + start;
     byte * eff = effects + start;
 
@@ -203,7 +203,7 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
     this->carry_color = buffer[max - 1];
     this->carry_effect = effects[max - 1];
 
-//    max -= 1;
+    max -= 1;
     rgb_color * buf = buffer + max;
     byte * eff = effects + max;
     start += 1;

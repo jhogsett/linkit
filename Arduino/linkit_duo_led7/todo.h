@@ -1,3 +1,15 @@
+// for led spec way to search for group by name
+
+
+
+// hardware:
+// radius8 - fix pixel; add linkit
+// projector2 - add linkit
+
+
+
+// add test for color correction when using dynamnic colors
+
 // units that have sensors could broadcast info, like the current temperature or light level
 
 
@@ -122,7 +134,9 @@
 // would be nice to be able to measure the *current usage* via an analog pin
 // have a way to add/subtract color
 // super slow fade "decay"
-
+//have a schedule that gets triggered upon a carry being set, could automatically wired together two zones
+//-- could have other kinds of triggers
+// have a non-blocking delay -- it just checks a running counter
 
 
 
@@ -153,7 +167,7 @@
 // other inputs to rnd: choose one of any of the available colors, choose one of the b&w colors
 // flip command to reverse all bits in current zone
 // third arg to "rng" could be the quantization ("2" means all even values, "3" means all multiples of 3)
-
+// add time delay param to animated rotation
 
 
 
@@ -253,6 +267,7 @@
 // can delays in macros be made non-blocking?
 // should be able to rerun the last set of commands with an automatic macro
 // maybe have a special schedule that can run even if paused, would allow pausing and unpausing automatically
+//-- figure out when to automatically reset blink period to default, like on clear
 
 
 
@@ -389,6 +404,7 @@
 // modulo could be used to toggle:
 // 2:rng:1:add:2:mod
 // remix
+// add reboot command
 
 
 
@@ -419,21 +435,10 @@
 
 
 
-// "safe" colors for car
-
-
-
-
-
-
 /* 
 
-add reboot command
 
-have a schedule that gets triggered upon a carry being set, could automatically wired together two zones
--- could have other kinds of triggers
 
--- figure out when to automatically reset blink period to default, like on clear
 
 also: set an analog value on a pin
 */

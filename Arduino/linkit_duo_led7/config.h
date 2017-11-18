@@ -9,11 +9,8 @@
 // device profile selection
 ///////////////////////////
 
-// 150-LED Outfit
-// #define OUTFIT
-
 // single 144-LED strip
-#define LED_STRIP_144
+// #define LED_STRIP_144
 
 // 36-LED annunciator
 // #define ANNUNCIATOR
@@ -52,7 +49,10 @@
 // #define WEARABLE_8
 
 // 19-LED Mini Disc
-// #define MINI_DISC_19
+#define MINI_DISC_19
+
+// 150-LED Outfit
+// #define OUTFIT
 
 //////////////////////////////
 // devices profile definitions
@@ -143,8 +143,9 @@
 #define ANIM_LED_COUNT 150
 #define ZONES_OUTFIT
 #define BLINK_PERIOD 1000
-#define BREATHE_PERIOD 60
-#define FADE_RATE 0.875
+#define BREATHE_PERIOD 40
+#define FADE_RATE 0.825
+#define DEFAULT_BRIGHTNESS_PERCENT 20
 #endif
 
 #ifdef PROJECTOR
@@ -172,6 +173,8 @@
 #define FADE_RATE 0.925
 #define FADE_PERIOD 400
 #define ZONES_MINI_DISC
+#define BLINK_PERIOD 12000
+#define BREATHE_PERIOD 1000
 #endif
 
 #ifdef WEARABLE_AND_HARDHAT
