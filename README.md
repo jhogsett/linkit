@@ -463,6 +463,16 @@ stop() {
     ./udp_command enable
     ./udp_command start
 
+Add your ssh key for eash log-in
+
+    vim /etc/dropbear/authorized_keys
+
+Install the Screen utility
+
+    opkg update
+    opkg install screen
+
+
 ----
 
 #### TODO
