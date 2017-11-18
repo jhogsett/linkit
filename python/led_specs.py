@@ -54,7 +54,7 @@ alternate_seed = 2
 group_line_number = 0
 verbose_mode = False
 verbose_test_outcome = ""
-
+group_name_only = ""
 
 # -----------------------------------------------------------------------------
 # --- Serial I/O ---
@@ -121,13 +121,15 @@ def command_str(cmd_text, slow = False):
 # --- Setup ---
 
 def setup(): 
-  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode 
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only 
 
   parser = argparse.ArgumentParser(description=app_description)
-  parser.add_argument("-g", "--group", type=int, dest="group", default=0)
-  parser.add_argument("-v", "--verbose", dest="verbose", action='store_true')
+  parser.add_argument("-g", "--group",     type=int, dest="group",     default=0)
+  parser.add_argument("-n", "--groupname",           dest="groupname", default="")
+  parser.add_argument("-v", "--verbose",             dest="verbose",   action='store_true')
   args = parser.parse_args()
   group_number_only = args.group
+  group_name_only = args.groupname
   verbose_mode = args.verbose
 
   s = serial.Serial("/dev/ttyS0", 115200) 
@@ -197,7 +199,7 @@ def group(description):
   group_number = group_number + 1
   num_groups += 1
   group_description = description
-  if group_number_only == 0 or group_number_only == group_number:
+  if (group_number_only == 0 and group_name_only == "") or group_number_only == group_number or group_name_only.lower() in description.lower():
     if verbose_mode:
       print group_message(),
     return True
