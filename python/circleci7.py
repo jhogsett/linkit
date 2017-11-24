@@ -100,8 +100,7 @@ def setup():
   time.sleep(0.1)
   flush_input()
   command(":::")
-  command("pau:pau")
-  command("clr:pau")
+  command(":::stp:stp")
 
   if len(sys.argv) > 2:
     command(sys.argv[2])
@@ -142,7 +141,8 @@ def loop():
     r = r.text.encode('utf-8')
     j = json.loads(r)
 
-    command(":::pau");
+    command(":::");
+    command(":::stp:stp");
 
     insert_count = 0                                                                  
     for x in range(0, get_job_limit()):                
@@ -203,7 +203,7 @@ def loop():
           color_command('unrecognized')                
       spacer()  
 
-    command("flu:cnt")
+    command("flu:1,cnt")
     time.sleep(request_frequency)
 
   except requests.exceptions.ConnectionError:
