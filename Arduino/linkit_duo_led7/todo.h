@@ -1,5 +1,15 @@
-// for led spec way to search for group by name
 
+
+
+// to compute HSL lightness to match standard color brightness:
+// 0,4:tst - get brightness percent
+// lightness-max = (255 * (brightness percent / 100)) + 1
+//command: 0,4:tst
+//15k
+//command: era:grn:120,255,38:hsl:2,0,2:tst
+//0,19,0,0,20,0,k
+//command: era:grn:120,255,39:hsl:2,0,2:tst
+//0,20,0,0,20,0,k
 
 
 // hardware:
@@ -8,51 +18,12 @@
 
 
 
+
+/* specs */
 // add test for color correction when using dynamnic colors
-
-// units that have sensors could broadcast info, like the current temperature or light level
-
-
-// need simple way to make decisions
-  // for example n,12,13 returns 13 if n==0 otherwise 12 (or semantically might be better as n,0th,1st so if n==0 it's 12 and if n==1 its 13
-
-// designate pin #13 as the "fan" pin
-  // add to the brightness setting code to turn the fan on over a certain brightness level
-  
-
-// add links to program macros
-
-// would be nice to do something graphicallty once linux is running
-
-// can't figure out how to pass two arguments into a macro and using them separately
-
-// have a way to choose random colors including black and materials
-
-// in verose mode, show the commands being transmnitted
-
-// first needed trigger: run a macro when the breathing level becomes black, so the color can be changed on each breath
-// it's just some defines for types of events, like breath == off, or blink == off, infinite loop broken out of, etc.
-//  then each just points to a position in a byte array of macro numbers to run in response to the trigger
-
-// from a sequence get just the direction, 1 or -1, to allow stepping something else  
-
-// allow setting default effect (for instnace to save having to set a slow fade on every case)
-
-// try again a command to wait for blink counter = 0 (or all off instead?)
-
-
-// when rendering with dynamic palette colors, could temporarily pre-render the palette colors to avoid doing the math for every case
-
-// max brightness
-
-// trippy form of circleci with cosine sweeps
-
-// use a back off algorithm for the repeated sends
-  // can that be done in a thread?
-
-// for button presses, need pin-in command that leaves 0 or 1 as arg0
-
 // tests: determine if mapping is enabled (so it's tested only on x,y displays)
+
+
 
 
 /* multicasting */
@@ -66,28 +37,36 @@
   // add message type (along with new machine type, machine name, existing key)
 // could have device types and names and send selective multicast messages
 // a form of run that assumes it was a one-off executable not still running, like runonce=
+// use a back off algorithm for the repeated sends
+  // can that be done in a thread?
+
+
 
 
 
 /* new features */
- // use the high bit of the effect byte to signal that the rgb.red color represents a palette color index
-      // .green and .blue can then be used for things like alternating and rotating colors, or effects with per-pixel parameters
-      // could have a series of palette colors in various places, some reused, and continuously modulate them
+
 // super pixels
       // for 2d strips, it sets several leds with fade off ends
       // for 3d displays, it sets a circle (with fade off edges?)
+
 // calibrate timing setting by use testing timer to compare
       // could be part of the start-up procedure
+
 // now that sto and rcl are settled and args can be passed into macros, are there math opertions that would be handy on the accumulators?
-// need triggers, want the cosine swing and wheel to trigger other ones
-//   also need one-time action sequencers
-//   could set trigger macros per type of sequencer (they may need different numbers of macros)
-// trigger idea: when filling up and ran out of open positions
-// introduce setting for "primary" and "secondary" display so the particular display can be changed in real time outside of running program
-      // so I can softswitch wearables between external and built-in display
 // need to be able to manipulate arguments
       // example: quantize (to allow position offsets)
       // also: combine two separate random numbers into arg0, arg1 (can be done now with rcl I think)
+
+
+//   also need one-time action sequencers
+
+// introduce setting for "primary" and "secondary" display so the particular display can be changed in real time outside of running program
+      // so I can softswitch wearables between external and built-in display
+
+// need triggers, want the cosine swing and wheel to trigger other ones
+//   could set trigger macros per type of sequencer (they may need different numbers of macros)
+// trigger idea: when filling up and ran out of open positions
 // triggers:
       // run a macro each time a sequence has an event (events: start (wheel), start, mid-way (swing))
       // how would this work?
@@ -99,15 +78,17 @@
       //     m=macro number, for two-event sequences (swing) it calls this macro and m+1 
       //   each sequence incrementer will fire the trigger at bounding events
       //   the trigger will then call the macro(s)
+
 // other sequencers:
       // brownian motion
       // power ease
       // seeded random
       // gravity bounce
       // ones useful in 3D such as triangle wave, spirograph, Lissajous curves
+
 // command to run a range of macros, like 20,29:rmm runs macros 20 through 29 in order
-// allow setting a seed value for random number generation
-// -- would have to be a private seed (feed value back as seed?) to have a repeatable sequence
+  // -- would have to be a private seed (feed value back as seed?) to have a repeatable sequence
+
 // have the ability to set drawing mode: overwrite, add, etc.
 // concept of "objects"
 // - hidden/shown
@@ -137,6 +118,42 @@
 //have a schedule that gets triggered upon a carry being set, could automatically wired together two zones
 //-- could have other kinds of triggers
 // have a non-blocking delay -- it just checks a running counter
+// also: set an analog value on a pin
+// show/hide by zone
+// re-randomization on repeat/copy/mirror, etc.
+// new effects
+////////////////////
+// strobe, like blink but goes from normal to high instead of from low to normal to do the blinking
+// flash -- flashes bright white 1 or 3 times
+// lightning 
+// new commands
+////////////////////
+// hide / show
+// move command for placement, like:
+//    red:57:move
+// swap command like move (or instead of)
+// shutter / slide in / slide out / random change / etc. transitions
+// after pause, allow breathing and blinking to come to a halt first
+// reverse, inverse mirror
+// full frame animation in/out using back buffer
+// shooting up
+// transition: all leds get sucked into one LED position
+// being able to specify a number of times and whether to animate for any color push
+// pretty wifi output
+// logging
+// wifi mode change
+// need simple way to make decisions
+  // for example n,12,13 returns 13 if n==0 otherwise 12 (or semantically might be better as n,0th,1st so if n==0 it's 12 and if n==1 its 13
+// add links to program macros
+// first needed trigger: run a macro when the breathing level becomes black, so the color can be changed on each breath
+// it's just some defines for types of events, like breath == off, or blink == off, infinite loop broken out of, etc.
+//  then each just points to a position in a byte array of macro numbers to run in response to the trigger
+// allow setting default effect (for instnace to save having to set a slow fade on every case)
+// try again a command to wait for blink counter = 0 (or all off instead?)
+// for button presses, need pin-in command that leaves 0 or 1 as arg0
+
+
+
 
 
 
@@ -168,6 +185,7 @@
 // flip command to reverse all bits in current zone
 // third arg to "rng" could be the quantization ("2" means all even values, "3" means all multiples of 3)
 // add time delay param to animated rotation
+// need palette color to be able to pull from whole list of 25 standard colors
 
 
 
@@ -225,6 +243,12 @@
 // if macro run more often than fade period, no fading at all happens
 // visual representation of eeprom memory
 // wasn't able to schedule macro #0
+// setting blink period to zero didn't reset to default
+// if paused, bre effect renders black, causing probems transitioning between animations and breathing (blink renders ok)
+// problems with offset and window
+// pshifto - starts at [0]
+// can't figure out how to pass two arguments into a macro and using them separately
+
 
 
 
@@ -268,6 +292,22 @@
 // should be able to rerun the last set of commands with an automatic macro
 // maybe have a special schedule that can run even if paused, would allow pausing and unpausing automatically
 //-- figure out when to automatically reset blink period to default, like on clear
+// need to be able to set offset override to zero (case: a zone is selected and want to override with the value zero)
+// send a different acknowledgement code when first started up, so the script can detect and refresh (for instance, an uppercase K)
+// see if auto brigtness needs to use that ram for its buffer
+// quit the crossfade early if things stop changing, for faster switch between similar colors
+// randomly scheduled macro
+// 0:set:rnd:500:rng:sch (it could stop itself)
+// 5:set:2:rng:rev:rnd:flu:500,1,5:rng:sch:rst (can't stop itself and also not macro #0)
+// to simplify macros
+// rps combine 0:rng:pos into a random position command
+// rzn combine -2,-2,rng:zon into a random fine zone command
+// combine 2:rng:rev into a random reversal command
+// a way to simplify random scheduling such as 500,1,5:rng:sch
+// designate pin #13 as the "fan" pin
+  // add to the brightness setting code to turn the fan on over a certain brightness level
+ // when rendering with dynamic palette colors, could temporarily pre-render the palette colors to avoid doing the math for every case
+ // max brightness
 
 
 
@@ -283,6 +323,37 @@
 // allow stop command to accept a program name so I can stop something 
 // that had been run over ssh
 // sparkle: specify width of segments and gaps
+// for wearable, have both ways to launch circleci7
+// add autobrightness to circleci7
+// add a command line switch to turn off logging for circleci7
+// html: have links to other pages on same device, and other devices
+// python:
+// ci-skip build status is "not_run"
+// fade based on build time
+// change refresh rate based on time of day (afterhours it doesn't need to check that often)
+// show something if the data hasn't updated in a long time
+// show something if the data has been unchanged for some time, like after hours
+// brief flash, or something, to alert to a new (green?) build
+// some way to visually tell which are changes from a little while ago (like the fading yellow highlight on web pages)
+// should time out after a while if the ACK is not received and just assume it, could be the Arduino side was reset 
+/*python: 
+if there's no new builds, display an alternate low power version
+- dim for all the colors
+- breathing and blinking still happen normally
+seems like it would be better to let the arduino handle the low power rendering so the python script isn't in charge of an effect.
+lowpower command means:
+ - could be: normal display effects, but all-but-one LEDs are blacked out (or not rendered).
+ - the position rendered would vary slowly and go low-high (not back and forth)
+ opposite name? normal
+ flush can call the alternate low-power rendering 
+// Python: also show the high power mode if any of the statuses change*/
+// need to close a running app before starting circleci
+// need to stop circleci if running an app
+// would be nice to do something graphicallty once linux is running
+// in verose mode, show the commands being transmnitted
+// trippy form of circleci with cosine sweeps
+
+
 
 
 
@@ -354,6 +425,37 @@
  * each animation pass sequences all crossfade steps spread across the same numnber of leds
  * 
  */
+/* glasses
+high tech color choices (green rings with spaced out single reds looks high tech)
+Movements that appear Borg-like
+  one eye, radar/clock-ish constantly moving 
+  other eye, occasional rotation, varying direction and duration
+  sides - some back and forth, and blinking
+  occasional fast spinning or bright flashing
+figure-8
+the cops
+ggggggg*/
+/* car lights ideas
+fast flashing colors
+slow crossfading colors
+nighttime sleeping
+cron job to turn on and off in the middle of the night
+random lengths of colors
+very slow/occasional blinking / deterrent
+multiple rotating zones
+short white burst like once a minute
+kitt kar like back and forth
+  with hsl color*/
+// add color groups
+// strobe / flash
+// random flashes more like a mechanical blinking light
+// b&w static, flame
+// invert hue, swing hue, back and forth between two arbitrary colors, rgb cube
+/// have a way to choose random colors including black and materials
+// from a sequence get just the direction, 1 or -1, to allow stepping something else  
+// need a fade from black
+//    maybe invert the otherwise fade to black color (subtract from color standard of 20)
+
 
 
 
@@ -405,6 +507,7 @@
 // 2:rng:1:add:2:mod
 // remix
 // add reboot command
+// units that have sensors could broadcast info, like the current temperature or light level
 
 
 
@@ -426,208 +529,4 @@
 
 
 
-
-
-
-
-
-
-
-
-
-/* 
-
-
-
-
-also: set an analog value on a pin
-*/
-
-// setting blink period to zero didn't reset to default
-
-// html needs all the commands shortened
-
-// show/hide by zone
-
-/* glasses
-
-high tech color choices (green rings with spaced out single reds looks high tech)
-Movements that appear Borg-like
-  one eye, radar/clock-ish constantly moving 
-  other eye, occasional rotation, varying direction and duration
-  sides - some back and forth, and blinking
-  occasional fast spinning or bright flashing
-figure-8
-the cops
-ggggggg
-
-*/
-
-/* car lights ideas
-
-fast flashing colors
-slow crossfading colors
-nighttime sleeping
-cron job to turn on and off in the middle of the night
-random lengths of colors
-very slow/occasional blinking / deterrent
-multiple rotating zones
-short white burst like once a minute
-kitt kar like back and forth
-  with hsl color
-  */
-
-/*
-
-  custom blink:
-
-  on period
-  off period
-
-  if the entire period is 6000 ticks
-    3000/3000 would be a slow on/off blink
-    1/1 would be the fastest possible blinking
-    1000/6000 would be a blink for 1/6 of the period
-    1000/3000 would be two blinks each for 1/6 of the period
-    100/6000 would be a short flash at the start of the period
-  
-
- */
-
-// if paused, bre effect renders black, causing probems transitioning between animations and breathing (blink renders ok)
-
-// for wearable, have both ways to launch circleci7
-
-// add autobrightness to circleci7
-
-// add a command line switch to turn off logging for circleci7
-
-// need to be able to set offset override to zero (case: a zone is selected and want to override with the value zero)
-
-// re-randomization on repeat/copy/mirror, etc.
-
-// send a different acknowledgement code when first started up, so the script can detect and refresh (for instance, an uppercase K)
-
-// html: have links to other pages on same device, and other devices
-
-// problems with offset and window
-// pshifto - starts at [0]
-
-// clean up
-/////////////////////
-
-// store blink states as bits not bools
-
-// see if auto brigtness needs to use that ram for its buffer
-
-
-// new effects
-////////////////////
-
-// strobe, like blink but goes from normal to high instead of from low to normal to do the blinking
-
-// flash -- flashes bright white 1 or 3 times
-
-// lightning 
-
-// add color groups
-
-
-
-
-// new commands
-////////////////////
-
-// hide / show
-
-// move command for placement, like:
-//    red:57:move
-
-// swap command like move (or instead of)
-
-// shutter / slide in / slide out / random change / etc. transitions
-
-// synchronize effects each time the low power led positions changes
-// after pause, allow breathing and blinking to come to a halt first
-
-// reverse, inverse mirror
-// strobe / flash
-
-// random flashes more like a mechanical blinking light
-
-// rainbow colors incremental, or continuously changing
-
-// full frame animation in/out using back buffer
-
-// b&w static, flame
-
-// invert hue, swing hue, back and forth between two arbitrary colors, rgb cube
-
-// shooting up
-
-// transition: all leds get sucked into one LED position
-
-// new hardware features
-
-// command to set an analog output to a particular value
-
-// python:
-// ci-skip build status is "not_run"
-// fade based on build time
-// change refresh rate based on time of day (afterhours it doesn't need to check that often)
-// show something if the data hasn't updated in a long time
-// show something if the data has been unchanged for some time, like after hours
-// brief flash, or something, to alert to a new (green?) build
-// some way to visually tell which are changes from a little while ago (like the fading yellow highlight on web pages)
-
-// should time out after a while if the ACK is not received and just assume it, could be the Arduino side was reset 
-
-// quit the crossfade early if things stop changing, for faster switch between similar colors
-
-/*
-
-python: 
-
-if there's no new builds, display an alternate low power version
-- dim for all the colors
-- breathing and blinking still happen normally
-
-seems like it would be better to let the arduino handle the low power rendering so the python script isn't in charge of an effect.
-
-lowpower command means:
-
- - could be: normal display effects, but all-but-one LEDs are blacked out (or not rendered).
- - the position rendered would vary slowly and go low-high (not back and forth)
-
- opposite name? normal
-
- flush can call the alternate low-power rendering 
-
-// Python: also show the high power mode if any of the statuses change
-
- 
-
-*/
-
-// need to close a running app before starting circleci
-// need to stop circleci if running an app
-
-
-
-
-// randomly scheduled macro
-// 0:set:rnd:500:rng:sch (it could stop itself)
-// 5:set:2:rng:rev:rnd:flu:500,1,5:rng:sch:rst (can't stop itself and also not macro #0)
-
-// to simplify macros
-// rps combine 0:rng:pos into a random position command
-// rzn combine -2,-2,rng:zon into a random fine zone command
-// combine 2:rng:rev into a random reversal command
-// a way to simplify random scheduling such as 500,1,5:rng:sch
-// being able to specify a number of times and whether to animate for any color push
-
-
-// pretty wifi output
-// logging
-// wifi mode change
 

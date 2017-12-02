@@ -94,7 +94,7 @@ rgb_color Render::render(rgb_color *color, byte effect)
 
   rgb_color render_color;
   if(effect & DYNAMIC_COLOR)
-    render_color = Colors::get_palette()[min(color->red, NUM_PALETTE_COLORS-1)];
+    render_color = ColorMath ::correct_color(Colors::get_palette()[min(color->red, NUM_PALETTE_COLORS-1)]);
   else
     render_color = *color;
 
