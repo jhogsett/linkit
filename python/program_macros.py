@@ -165,6 +165,49 @@ def annunciator_macros():
 
 
 
+def annunciator_macros2():
+  print tc.cyan("annunciator macros:\n")
+
+  # m
+  set_macro(10, "-1:sch:23:run", 0)
+  set_macro(11, "-1:sch:22:run", 0)
+
+  # sequence each display
+  set_macro(13, "0:seq:pos:0:pal:sfd:flo:rst", 0)
+  set_macro(14, "1:seq:pos:1:pal:sfd:flo:rst", 0)
+  set_macro(15, "2:seq:pos:2:pal:sfd:flo:rst:flu", 0)
+
+  # set up each sequencer
+  set_macro(16, "0,18,0:seq:1,36,18:seq", 0)
+  set_macro(17, "2,54,36:seq", 0)
+
+  # set up all sequences and a quick fade rate
+  set_macro(18, "16:run:17:run:2,8750:cfg", 0)
+
+  # set up each each display macro schedule
+  set_macro(19, "147,13:sch:150,14:sch", 0)
+  set_macro(20, "153,15:sch", 0)
+
+  # set up all display macro schedules
+  set_macro(21, "19:run:20:run", 0)
+
+  # start up random color change power swingers
+  set_macro(22, "1:pau:18:run:21:run:31:run", 0)
+
+  # start up hue sequence swingers
+  set_macro(23, "1:pau:18:run:21:run:32:run", 0)
+
+  # set up shuffler
+  set_macro(30, "shf", 1)
+
+  # set shuffler schedule
+  set_macro(31, "13000,30:sch", 0)
+
+  # set up sequencing hues
+  set_macro(32, "3,360:seq:500,33:sch", 0)
+
+  set_macro(33, "3,0,1:seq:sto:45:rcl:csh", 0)
+
 
 def apollo_macros(): 
   print tc.cyan("apollo macros:\n")
@@ -312,6 +355,8 @@ def loop():
       oneway_macros()
     elif sys.argv[1] == "annunciator":
       annunciator_macros()
+    elif sys.argv[1] == "annunciator2":
+      annunciator_macros2()
     elif sys.argv[1] == "monument":
       monument_macros()
     elif sys.argv[1] == "apollo144":
