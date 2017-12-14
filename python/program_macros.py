@@ -206,7 +206,7 @@ def annunciator_macros2():
   # set up sequencing hues
   set_macro(32, "3,360:seq:150,33:sch", 0)
 
-  set_macro(33, "3,0,1:seq:sto:45:rcl:csh", 0)
+  set_macro(33, "3,0,1:seq:sto:90:rcl:csh", 0)
 
 
 def apollo_macros(): 
