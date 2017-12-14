@@ -185,8 +185,8 @@ def annunciator_macros2():
   set_macro(18, "16:run:17:run:2,8750:cfg", 0)
 
   # set up each each display macro schedule
-  set_macro(19, "147,13:sch:150,14:sch", 0)
-  set_macro(20, "153,15:sch", 0)
+  set_macro(19, "39,13:sch:40,14:sch", 0)
+  set_macro(20, "41,15:sch", 0)
 
   # set up all display macro schedules
   set_macro(21, "19:run:20:run", 0)
@@ -204,7 +204,7 @@ def annunciator_macros2():
   set_macro(31, "13000,30:sch", 0)
 
   # set up sequencing hues
-  set_macro(32, "3,360:seq:500,33:sch", 0)
+  set_macro(32, "3,360:seq:150,33:sch", 0)
 
   set_macro(33, "3,0,1:seq:sto:45:rcl:csh", 0)
 
