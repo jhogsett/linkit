@@ -328,6 +328,12 @@
 
 #### Quick Start
 
+Connect to the device
+
+    * look for a Linkit... wifi hotspot after the chip finishes booting
+    * connect to it
+    * load http://mylinkit.local in the browser to confirm connectivity
+
 SSH into the device
 
     ssh root@mylinkit.local
@@ -381,6 +387,15 @@ _for root user:_
 
     vim /root/.profile
     export KEY={CircirCI Key}
+
+Switch the device to station mode and connect it to your wifi network
+
+    * go to http://mylinkit.local
+    * log in
+    * choose Network
+    * choose Station Mode
+    * Select your WiFi hotspot and enter the passphrase
+    * restart the chip
 
 Prepare to sync files between the SD card and the root directory
 
@@ -462,10 +477,6 @@ stop() {
     chmod +x udp_command
     ./udp_command enable
     ./udp_command start
-
-Add your ssh key for eash log-in
-
-    vim /etc/dropbear/authorized_keys
 
 Install the Screen utility
 
