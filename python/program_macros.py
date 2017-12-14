@@ -209,7 +209,7 @@ def apollo_macros():
   set_macro(44, "41:run:42:run:43:run", 9)                    
                                                               
   # set_macro(45, "shf", 1)                                   
-  # set_macro(46, "700,45:sch", 6)   
+  # set_macro(46, "700,90:sch", 6)   
   set_macro(46, "0,45:sch", 0)
 
   set_macro(25, "6,360:seq:100,26:sch", 0)
