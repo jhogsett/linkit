@@ -142,7 +142,7 @@ def loop():
     j = json.loads(r)
 
     command(":::");
-    command(":::stp:stp");
+    command(":::pau:pau");
 
     insert_count = 0                                                                  
     for x in range(0, get_job_limit()):                
@@ -203,7 +203,7 @@ def loop():
           color_command('unrecognized')                
       spacer()  
 
-    command("flu:1,cnt")
+    command("flu:1:cnt")
     time.sleep(request_frequency)
 
   except requests.exceptions.ConnectionError:

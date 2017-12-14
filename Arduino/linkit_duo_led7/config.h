@@ -13,7 +13,7 @@
 // #define LED_STRIP_144
 
 // 36-LED annunciator
-// #define ANNUNCIATOR
+#define ANNUNCIATOR
 
 // wearable and 36-LED annunciator
 // #define WEARABLE_AND_ANNUNCIATOR
@@ -49,7 +49,7 @@
 // #define WEARABLE_8
 
 // 19-LED Mini Disc
-#define MINI_DISC_19
+// #define MINI_DISC_19
 
 // 150-LED Outfit
 // #define OUTFIT
@@ -218,7 +218,7 @@
 #define ZONES_ANNUNCIATOR
 #define DEFAULT_BRIGHTNESS_PERCENT 33
 #define BLINK_PERIOD 2000
-#define BREATHE_PERIOD 125
+#define BREATHE_PERIOD 250
 #endif
 
 // first wearable: internal is pin 12
