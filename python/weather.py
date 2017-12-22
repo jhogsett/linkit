@@ -147,6 +147,18 @@ def daily_temp_max(data):
 def daily_temp(data):
     return daily_main(data)["temp"]
 
+def daily_city(data):
+    return data["name"]
+
+def daily_coord(data):
+    return data["coord"]
+
+def daily_lat(data):
+    return daily_coord(data)["lat"]
+
+def daily_lon(data):
+    return daily_coord(data)["lon"] 
+
 def format_unix_timestamp(ts):
     ts = int(ts) - (timezone_offset * 60 * 60)
     return format_datetime(datetime.datetime.fromtimestamp(ts))
@@ -169,6 +181,9 @@ def report_footer():
 
 def report_weather(data):
     report_header()
+    print weather_entry("City", daily_city(data))
+    print weather_entry("Latitude", daily_lat(data))
+    print weather_entry("Longitude", daily_lon(data))
     print weather_entry("Local Time", format_unix_timestamp(int(current_time())))
     print weather_entry("Data As Of", format_unix_timestamp(int(daily_timestamp(data))))
     print weather_entry("Visibility", daily_visibility(data))
