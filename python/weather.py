@@ -129,6 +129,9 @@ def daily_timestamp(data):
 def daily_visibility(data):
     return data["visibility"]
 
+def daily_weather(data):
+    return data["weather"][0]
+
 def daily_sunrise(data):
     return daily_sys(data)["sunrise"]
 
@@ -168,6 +171,15 @@ def daily_lat(data):
 def daily_lon(data):
     return daily_coord(data)["lon"] 
 
+def daily_description(data):
+    return daily_weather(data)["description"]
+
+def daily_conditions(data):
+    return daily_weather(data)["main"]
+
+def daily_id(data):
+    return daily_weather(data)["id"]
+
 def format_unix_timestamp(ts):
     ts = int(ts) - (timezone_offset * 60 * 60)
     return format_datetime(datetime.datetime.fromtimestamp(ts))
@@ -202,6 +214,9 @@ def report_weather(data):
     print weather_entry("Temp Min", daily_temp_min(data))
     print weather_entry("Temp Max", daily_temp_max(data))
     print weather_entry("Temp", daily_temp(data))
+    print weather_entry("Description", daily_description(data))
+    print weather_entry("Conditions", daily_conditions(data))
+    print weather_entry("Cond ID", daily_id(data))
     report_footer()
 
 def get_daily_data():
