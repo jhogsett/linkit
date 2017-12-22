@@ -20,7 +20,7 @@ import datetime
 #logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 #logging.info("Circleci7.py started")
 
-global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset
+global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay
 app_description = None
 verbose_mode = None
 api_key = None
@@ -28,13 +28,14 @@ zip_code = None
 update_freq = None
 retry_delay = None
 timezone_offset = None
+min_api_delay = None
 
 def initialize():
     global app_description
     app_description = "LED Weather Forecaster v.0.0 12-21-2017"
 
 def get_options():
-    global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset
+    global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("-v", "--verbose", dest="verbose", action='store_true', help='display verbose info (False)')
     parser.add_argument("-k", "--apikey", dest="apikey", help="openweathermap.org api key")
@@ -42,6 +43,7 @@ def get_options():
     parser.add_argument("-f", "--update_frequency", type=int, dest="update_freq", default=900, help="update freqency (seconds) (900)")
     parser.add_argument("-d", "--retry_delay", type=int, dest="retry_delay", default=5, help="connection retry delay (seconds) (5)")
     parser.add_argument("-t", "--timezone_offset", type=int, dest="timezone_offset", default=8, help="timezone offset from UTC (hours) (8)")
+    parser.add_argument("-m", "--min_api_delay", type=int, dest="min_api_delay", default=1, help="minimum api call delay (seconds) (1)")
     args = parser.parse_args()
     verbose_mode = args.verbose
     api_key = args.apikey
@@ -49,6 +51,7 @@ def get_options():
     update_freq = args.update_freq
     retry_delay = args.retry_delay
     timezone_offset = args.timezone_offset
+    min_api_delay = args.min_api_delay
 
 def report_error(message):
     print tc.red(message)
@@ -87,6 +90,7 @@ def introduction():
     report_verbose(intro_entry("API Key", api_key))
     report_verbose(intro_entry("Retry Delay", retry_delay))
     report_verbose(intro_entry("Timezone Offset", timezone_offset))
+    report_verbose(intro_entry("Minimum API Delay", min_api_delay))
     report_verbose()
 
     data = get_daily_data()
@@ -106,6 +110,8 @@ def retrieve_data(url):
     request = requests.get(url)
     request = request.text.encode('utf-8')
     json_data = json.loads(request)
+    report_verbose("api delay...")
+    time.sleep(min_api_delay)
     return json_data
 
 def daily_main(data):
@@ -207,6 +213,16 @@ def get_daily_data():
         report_json(data)    
     return data
 
+def get_forecast_data():
+    url = get_forecast_url()
+    report_verbose("requesting: %s" % url)
+    data = retrieve_data(url)
+    report_verbose("received data:")
+    if verbose_mode:
+        report_json(data)
+    return data
+
+
 def setup():
     initialize()
     get_options()
@@ -216,6 +232,22 @@ def setup():
 
 def loop():
     report_weather(get_daily_data())
+    data = get_forecast_data()
+    list = data["list"]
+    count = len(list)    
+    for x in range(0,count):
+        entry = list[x]
+        dt = entry["dt"]
+        main = entry["main"]
+        wind = entry["wind"]
+        print weather_entry("Date/Time", format_unix_timestamp(int(dt))),
+        print weather_entry(" Pressure", main["pressure"]),
+        print weather_entry(" Temp", main["temp"]),
+        print weather_entry(" Temp Min", main["temp_min"]),
+        print weather_entry(" Temp Max", main["temp_max"]),
+        print weather_entry(" Humidity", main["humidity"]),
+        print weather_entry(" Wind Speed", wind["speed"]),
+        print weather_entry(" Wind Direction", wind["deg"])
 
 if __name__ == '__main__':
     setup()
