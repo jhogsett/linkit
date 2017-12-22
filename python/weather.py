@@ -89,9 +89,12 @@ def introduction():
     report_verbose(intro_entry("Timezone Offset", timezone_offset))
     report_verbose()
 
+    data = get_daily_data()
+    report_info(intro_entry("City", daily_city(data)))
+    report_info(intro_entry("Latitude", daily_lat(data)))
+    report_info(intro_entry("Longitude", daily_lon(data)))
     report_info(intro_entry("Zip Code", zip_code))
     report_info(intro_entry("Update Frequency", update_freq))
-    print
 
 def get_daily_url():
     return "http://api.openweathermap.org/data/2.5/weather?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
@@ -181,9 +184,6 @@ def report_footer():
 
 def report_weather(data):
     report_header()
-    print weather_entry("City", daily_city(data))
-    print weather_entry("Latitude", daily_lat(data))
-    print weather_entry("Longitude", daily_lon(data))
     print weather_entry("Local Time", format_unix_timestamp(int(current_time())))
     print weather_entry("Data As Of", format_unix_timestamp(int(daily_timestamp(data))))
     print weather_entry("Visibility", daily_visibility(data))
@@ -197,8 +197,15 @@ def report_weather(data):
     print weather_entry("Temp Max", daily_temp_max(data))
     print weather_entry("Temp", daily_temp(data))
     report_footer()
-    
 
+def get_daily_data():
+    url = get_daily_url()
+    report_verbose("requesting: %s" % url)
+    data = retrieve_data(url)
+    report_verbose("received data:")
+    if verbose_mode:
+        report_json(data)    
+    return data
 
 def setup():
     initialize()
@@ -208,13 +215,7 @@ def setup():
     introduction()
 
 def loop():
-    url = get_daily_url()
-    report_verbose("requesting: %s" % url)
-    data = retrieve_data(url)
-    report_verbose("received data:")
-    if verbose_mode:
-        report_json(data)
-    report_weather(data)
+    report_weather(get_daily_data())
 
 if __name__ == '__main__':
     setup()
