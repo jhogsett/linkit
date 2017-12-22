@@ -49,6 +49,16 @@ def get_options():
 def report_error(message):
     print tc.red(message)
 
+def report_info(message):
+    print tc.white(message)
+
+def report_verbose(message):
+    if verbose_mode:
+        print tc.yellow(message)
+
+def report_json(json):
+    print tc.green(str(json))
+
 # returns True if they're valid
 def validate_options():
     errors = False
@@ -65,12 +75,11 @@ def validate_options():
 
 def introduction():
     print tc.magenta("\n" + app_description + "\n")
-    if verbose_mode:
-        print tc.yellow("verbose mode")
-        print tc.cyan("api key: ") + tc.green(api_key)
-        print tc.cyan("retry delay: ") + tc.green(str(retry_delay))
-    print tc.cyan("zip code: ") + tc.green(zip_code)
-    print tc.cyan("update frequency (seconds): ") + tc.green(str(update_freq))
+    report_verbose("verbose mode")
+    report_verbose("api key: %s" % api_key)
+    report_verbose("retry delay: %s" % str(retry_delay))
+    report_info("zip code: %s" % zip_code)
+    report_info("update frequency (seconds): %s" % str(update_freq))
     print
 
 def get_daily_url():
@@ -79,8 +88,8 @@ def get_daily_url():
 def get_forecast_url():
     return "http://api.openweathermap.org/data/2.5/forecast?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
 
-def retrieve_data():
-    request = requests.get(get_url())
+def retrieve_data(url):
+    request = requests.get(url)
     request = request.text.encode('utf-8')
     json_data = json.loads(request)
     return json_data
@@ -93,19 +102,22 @@ def setup():
     introduction()
 
 def loop():
-    print "do something"
-
+    url = get_daily_url()
+    report_verbose("requesting: %s" % url)
+    data = retrieve_data(url)
+    report_verbose("received data:")
+    if verbose_mode:
+        report_json(data)
 
 if __name__ == '__main__':
     setup()
     while True:
         try:
             loop()
-            if verbose_mode:
-                print tc.yellow("pausing until next update")
+            report_verbose("pausing until next update")
             time.sleep(update_freq)
         except requests.exceptions.ConnectionError:
-            print tc.red("connection error - retrying")
+            report_error("connection error - retrying")
             time.sleep(retry_delay)
         except KeyboardInterrupt:
             sys.exit("\nExiting...\n")
