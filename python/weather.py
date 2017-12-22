@@ -240,14 +240,20 @@ def loop():
         dt = entry["dt"]
         main = entry["main"]
         wind = entry["wind"]
+        clouds = entry["clouds"]
+        weather = entry["weather"][0]
         print weather_entry("Date/Time", format_unix_timestamp(int(dt))),
         print weather_entry(" Pressure", main["pressure"]),
         print weather_entry(" Temp", main["temp"]),
         print weather_entry(" Temp Min", main["temp_min"]),
         print weather_entry(" Temp Max", main["temp_max"]),
         print weather_entry(" Humidity", main["humidity"]),
-        print weather_entry(" Wind Speed", wind["speed"]),
-        print weather_entry(" Wind Direction", wind["deg"])
+        print weather_entry(" Wind Spd", wind["speed"]),
+        print weather_entry(" Wind Dir", wind["deg"]),
+        print weather_entry(" Clouds", clouds["all"]),
+        print weather_entry(" ID", weather["id"]),
+        print weather_entry(" Main", weather["main"]),
+        print weather_entry(" Description", weather["description"])
 
 if __name__ == '__main__':
     setup()
