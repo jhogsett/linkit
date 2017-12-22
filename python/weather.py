@@ -237,6 +237,77 @@ def get_forecast_data():
         report_json(data)
     return data
 
+def forecast_list(data):
+    return data["list"]
+
+def forecast_count(data):
+    return len(forecast_list(data))
+
+def forecast_entry(data, entry):
+    return forecast_list(data)[int(entry)]
+
+def forecast_timestamp(data, entry):
+    return forecast_entry(data, entry)["dt"]
+
+def forecast_main(data, entry):
+    return forecast_entry(data, entry)["main"]
+
+def forecast_wind(data, entry):
+    return forecast_entry(data, entry)["wind"]
+
+def forecast_clouds(data, entry):
+    return forecast_entry(data, entry)["clouds"]
+
+def forecast_weather(data, entry):
+    return forecast_entry(data, entry)["weather"][0]
+
+def forecast_pressure(data, entry):
+    return forecast_main(data, entry)["pressure"]
+
+def forecast_temp(data, entry):
+    return forecast_main(data, entry)["temp"]
+
+def forecast_temp_min(data, entry):
+    return forecast_main(data, entry)["temp_min"]
+
+def forecast_temp_max(data, entry):
+    return forecast_main(data, entry)["temp_max"]
+
+def forecast_humidity(data, entry):
+    return forecast_main(data, entry)["humidity"]
+
+def forecast_wind_speed(data, entry):
+    return forecast_wind(data, entry)["speed"]
+
+def forecast_wind_direction(data, entry):
+    return forecast_wind(data, entry)["deg"]
+
+def forecast_cloudinesss(data, entry):
+    return forecast_clouds(data, entry)["all"]
+
+def forecast_description(data, entry):
+    return forecast_weather(data, entry)["description"]
+
+def forecast_conditions(data, entry):
+    return forecast_weather(data, entry)["main"]
+
+def forecast_cond_id(data, entry):
+    return forecast_weather(data, entry)["id"]
+
+def report_forecast(data):
+    for x in range(0, forecast_count(data)):
+        print weather_entry("Date/Time", format_unix_timestamp(int(forecast_timestamp(data, x)))),
+        print weather_entry(" Pressure", forecast_pressure(data, x)),
+        print weather_entry(" Temp", forecast_temp(data, x)),
+        print weather_entry(" Temp Min", forecast_temp_min(data, x)),
+        print weather_entry(" Temp Max", forecast_temp_max(data, x)),
+        print weather_entry(" Humidity", forecast_humidity(data, x)),
+        print weather_entry(" Wind Spd", forecast_wind_speed(data, x)),
+        print weather_entry(" Wind Dir", forecast_wind_direction(data, x)),
+        print weather_entry(" Clouds", forecast_cloudinesss(data, x)),
+        print weather_entry(" Cond ID", forecast_cond_id(data, x)),
+        print weather_entry(" Conditions", forecast_conditions(data, x)),
+        print weather_entry(" Description", forecast_description(data, x))        
 
 def setup():
     initialize()
@@ -247,28 +318,9 @@ def setup():
 
 def loop():
     report_weather(get_daily_data())
-    data = get_forecast_data()
-    list = data["list"]
-    count = len(list)    
-    for x in range(0,count):
-        entry = list[x]
-        dt = entry["dt"]
-        main = entry["main"]
-        wind = entry["wind"]
-        clouds = entry["clouds"]
-        weather = entry["weather"][0]
-        print weather_entry("Date/Time", format_unix_timestamp(int(dt))),
-        print weather_entry(" Pressure", main["pressure"]),
-        print weather_entry(" Temp", main["temp"]),
-        print weather_entry(" Temp Min", main["temp_min"]),
-        print weather_entry(" Temp Max", main["temp_max"]),
-        print weather_entry(" Humidity", main["humidity"]),
-        print weather_entry(" Wind Spd", wind["speed"]),
-        print weather_entry(" Wind Dir", wind["deg"]),
-        print weather_entry(" Clouds", clouds["all"]),
-        print weather_entry(" ID", weather["id"]),
-        print weather_entry(" Main", weather["main"]),
-        print weather_entry(" Description", weather["description"])
+    report_forecast(get_forecast_data())
+
+
 
 if __name__ == '__main__':
     setup()
