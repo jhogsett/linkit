@@ -20,32 +20,35 @@ import datetime
 #logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 #logging.info("Circleci7.py started")
 
-global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay
+global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset
 app_description = None
 verbose_mode = None
 api_key = None
 zip_code = None
 update_freq = None
 retry_delay = None
+timezone_offset = None
 
 def initialize():
     global app_description
     app_description = "LED Weather Forecaster v.0.0 12-21-2017"
 
 def get_options():
-    global verbose_mode, api_key, zip_code, update_freq, retry_delay
+    global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("-v", "--verbose", dest="verbose", action='store_true', help='display verbose info (False)')
     parser.add_argument("-k", "--apikey", dest="apikey", help="openweathermap.org api key")
     parser.add_argument("-z", "--zipcode", dest="zipcode", help="local postal zip code")
     parser.add_argument("-f", "--update_frequency", type=int, dest="update_freq", default=900, help="update freqency (seconds) (900)")
     parser.add_argument("-d", "--retry_delay", type=int, dest="retry_delay", default=5, help="connection retry delay (seconds) (5)")
+    parser.add_argument("-t", "--timezone_offset", type=int, dest="timezone_offset", default=8, help="timezone offset from UTC (hours) (8)")
     args = parser.parse_args()
     verbose_mode = args.verbose
     api_key = args.apikey
     zip_code = args.zipcode
     update_freq = args.update_freq
     retry_delay = args.retry_delay
+    timezone_offset = args.timezone_offset
 
 def report_error(message):
     print tc.red(message)
@@ -53,7 +56,7 @@ def report_error(message):
 def report_info(message):
     print tc.white(message)
 
-def report_verbose(message):
+def report_verbose(message=""):
     if verbose_mode:
         print tc.yellow(message)
 
@@ -74,13 +77,20 @@ def validate_options():
         report_error("update frequency must be positive")
     return not errors
 
+def intro_entry(key, value):
+    return tc.white(key) + ": " + tc.green(str(value))
+
 def introduction():
     print tc.magenta("\n" + app_description + "\n")
+
     report_verbose("verbose mode")
-    report_verbose("api key: %s" % api_key)
-    report_verbose("retry delay: %s" % str(retry_delay))
-    report_info("zip code: %s" % zip_code)
-    report_info("update frequency (seconds): %s" % str(update_freq))
+    report_verbose(intro_entry("API Key", api_key))
+    report_verbose(intro_entry("Retry Delay", retry_delay))
+    report_verbose(intro_entry("Timezone Offset", timezone_offset))
+    report_verbose()
+
+    report_info(intro_entry("Zip Code", zip_code))
+    report_info(intro_entry("Update Frequency", update_freq))
     print
 
 def get_daily_url():
@@ -128,7 +138,7 @@ def daily_pressure(data):
 def daily_humidity(data):
     return daily_main(data)["humidity"]
 
-def daily_temo_min(data):
+def daily_temp_min(data):
     return daily_main(data)["temp_min"]
 
 def daily_temp_max(data):
@@ -138,14 +148,41 @@ def daily_temp(data):
     return daily_main(data)["temp"]
 
 def format_unix_timestamp(ts):
+    ts = int(ts) - (timezone_offset * 60 * 60)
     return format_datetime(datetime.datetime.fromtimestamp(ts))
 
 def format_datetime(dt):
-    return dt.strftime('%Y-%m-%d %H:%M:%S')
+    return dt.strftime('%A %Y-%m-%d %I:%M:%S %p')
+
+def weather_entry(key, value):
+    return tc.green(key) + ": " + tc.cyan(str(value))
+
+def current_time():
+    dt = datetime.datetime.now()
+    return(int(time.mktime(dt.timetuple())))
+
+def report_header():
+    print "\n----------------------------------------------------"
+
+def report_footer():
+    print
 
 def report_weather(data):
-    print tc.green("Timestamp: ") + tc.cyan(format_unix_timestamp(int(daily_timestamp(data))))
-
+    report_header()
+    print weather_entry("Local Time", format_unix_timestamp(int(current_time())))
+    print weather_entry("Data As Of", format_unix_timestamp(int(daily_timestamp(data))))
+    print weather_entry("Visibility", daily_visibility(data))
+    print weather_entry("Sunrise", format_unix_timestamp(int(daily_sunrise(data))))
+    print weather_entry("Sunset", format_unix_timestamp(int(daily_sunset(data))))
+    print weather_entry("Wind Speed", daily_wind_speed(data))
+    print weather_entry("Wind Direction", daily_wind_deg(data))
+    print weather_entry("Pressure", daily_pressure(data))
+    print weather_entry("Hunidity", daily_humidity(data))
+    print weather_entry("Temp Min", daily_temp_min(data))
+    print weather_entry("Temp Max", daily_temp_max(data))
+    print weather_entry("Temp", daily_temp(data))
+    report_footer()
+    
 
 
 def setup():
