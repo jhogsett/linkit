@@ -11,6 +11,7 @@ import os
 import sys
 import terminal_colors as tc
 import argparse
+import datetime
 
 #script_path = os.getcwd()
 #log_path = script_path + "/circleci.log"
@@ -94,6 +95,59 @@ def retrieve_data(url):
     json_data = json.loads(request)
     return json_data
 
+def daily_main(data):
+    return data["main"]
+
+def daily_sys(data):
+    return data["sys"]
+
+def daily_wind(data):
+    return data["wind"]
+
+def daily_timestamp(data):
+    return data["dt"]
+
+def daily_visibility(data):
+    return data["visibility"]
+
+def daily_sunrise(data):
+    return daily_sys(data)["sunrise"]
+
+def daily_sunset(data):
+    return daily_sys(data)["sunset"]
+
+def daily_wind_speed(data):
+    return daily_wind(data)["speed"]
+
+def daily_wind_deg(data):
+    return daily_wind(data)["deg"]
+
+def daily_pressure(data):
+    return daily_main(data)["pressure"]
+
+def daily_humidity(data):
+    return daily_main(data)["humidity"]
+
+def daily_temo_min(data):
+    return daily_main(data)["temp_min"]
+
+def daily_temp_max(data):
+    return daily_main(data)["temp_max"]
+
+def daily_temp(data):
+    return daily_main(data)["temp"]
+
+def format_unix_timestamp(ts):
+    return format_datetime(datetime.datetime.fromtimestamp(ts))
+
+def format_datetime(dt):
+    return dt.strftime('%Y-%m-%d %H:%M:%S')
+
+def report_weather(data):
+    print tc.green("Timestamp: ") + tc.cyan(format_unix_timestamp(int(daily_timestamp(data))))
+
+
+
 def setup():
     initialize()
     get_options()
@@ -108,6 +162,7 @@ def loop():
     report_verbose("received data:")
     if verbose_mode:
         report_json(data)
+    report_weather(data)
 
 if __name__ == '__main__':
     setup()
