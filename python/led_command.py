@@ -3,18 +3,24 @@ import serial
 import time
 
 response_wait = 0.1
-global s, verbose_mode
+global s, verbose_mode, cmd
 s = None
 verbose_mode = False
-max_command_buffer = 60
+cmd = ""
+max_command_max = 30
 
 def begin(verbose=False):
     global s,verbose_mode
     s = serial.Serial("/dev/ttyS0", 115200)
     verbose_mode = verbose
+    flush_output()
+    flush_input()
 
 def flush_input():
     s.flushInput()
+
+def flush_output():
+    s.flushOutput()
 
 def wait_for_ack():
     while s.inWaiting() <= 0:
@@ -100,16 +106,16 @@ def get_num_leds():
 #def get_mapping_enabled():
 #    return get_device_config(9)
 
-	
-
-
-
-
-
-
-
-
-
-
-
+def push_command(cmd_text=None):
+    global cmd
+    # without argument, send accumulated command if any
+    if cmd_text == None:
+        if len(cmd) > 0:
+            command(cmd)
+            cmd = ""
+        return
+    cmd = cmd + cmd_text
+    if len(cmd) > max_command_max:
+        command(cmd)
+        cmd = ""
 

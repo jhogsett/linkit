@@ -58,7 +58,8 @@ def initialize():
     if not validate_options():
         sys.exit("\nExiting...\n")
     lc.begin(verbose_mode)
-    num_leds = lc.get_num_leds()
+    #num_leds = lc.get_num_leds()
+    lc.command("::pau:cnt")
 
 def report_error(message):
     print tc.red(message)
@@ -187,9 +188,15 @@ def daily_conditions(data):
 def daily_id(data):
     return daily_weather(data)["id"]
 
+def tine_zone_timestamp(ts):
+    return int(ts) - (timezone_offset * 60 * 60)
+
+def get_datetime(ts):
+    ts = tine_zone_timestamp(ts)
+    return datetime.datetime.fromtimestamp(ts)
+
 def format_unix_timestamp(ts):
-    ts = int(ts) - (timezone_offset * 60 * 60)
-    return format_datetime(datetime.datetime.fromtimestamp(ts))
+    return format_datetime(get_datetime(ts))
 
 def format_datetime(dt):
     return dt.strftime('%A %Y-%m-%d %I:%M:%S %p')
@@ -316,31 +323,79 @@ def report_forecast(data):
         print weather_entry(" Conditions", forecast_conditions(data, x)),
         print weather_entry(" Description", forecast_description(data, x))        
 
-def setup_palette():
-    lc.command("1:shf")
+#def setup_palette():
+#    lc.command("1:shf")
 
 def begin_display_sequence():
-    lc.command(":::pau:pau")
+    lc.command("::pau")
 
 def end_display_sequence():
-    lc.command("cnt:cnt:flu")
+    lc.command("cnt")
 
 def send_forecast_conditions(data):
-    spacer = "blk"
-    begin_display_sequence()
+    num_slots = 6
+    num_segments = 8
+    slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+    day_index = -1
+    segment_index = 0
+    current_day = None
+
+    lc.push_command("era:")
     count = forecast_count(data)
-    cmd = "era:"
+    # data is pushed oldest first
     for x in xrange(count - 1, -1, -1):
         condition = forecast_cond_id(data, x)
-        style = wc.weather_conditions[int(condition)]
-        cmd = cmd + style + ":" + style + ":" + spacer + ":"
-        if len(cmd) > lc.max_command_buffer:
-            lc.command(cmd[:-1])
-            cmd = ""
-    if len(cmd) > 0:
-        lc.command(cmd[:-1])
-    end_display_sequence()
+        timestamp = get_datetime(forecast_timestamp(data, x))
+        entry_day = timestamp.day
+        if entry_day != current_day:
+            day_index += 1
+            segment_index = 0
+            current_day = entry_day
+        slots[day_index][segment_index] = condition
+        segment_index += 1            
 
+    filler_data = "blk:blk:"
+    day_spacer = "red:red:"
+    spacer = ""
+
+    # the first slot is the oldest data, its filler segments need to go first
+    # so the data will need to be shifted
+
+    # count number of filled and enpty slots
+    count_of_filled = 0
+    for y in range(num_segments):
+        if slots[0][y] != None:
+            count_of_filled += 1
+    need_to_fill = num_segments - count_of_filled
+
+    # shift back the filled segments
+    for y in range(count_of_filled):
+        slots[0][y + need_to_fill] = slots[0][y]
+    
+    # add fillers for the non-filled segments
+    for y in range(need_to_fill):
+        slots[0][y] = 0
+
+    # the last slot is the newest data, its filler segments go at the end
+    last_slot = num_slots - 1
+    for y in range(num_segments):
+        if slots[last_slot][y] == None:
+            slots[last_slot][y] = 0
+
+    begin_display_sequence()
+    for x in range(num_slots):
+        lc.push_command(day_spacer)        
+        for y in range(num_segments):
+            condition = slots[x][y]
+            if condition == 0:
+                lc.push_command(filler_data)
+            else:
+                style = wc.weather_conditions[int(condition)]
+                lc.push_command(style + ":" + style + ":" + spacer)                
+    lc.push_command(day_spacer)
+    lc.push_command()
+    end_display_sequence()
+    lc.flush_output()
 
 
 
