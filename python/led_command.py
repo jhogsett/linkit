@@ -27,8 +27,9 @@ def wait_for_ack():
         pass
     time.sleep(response_wait);
     while s.inWaiting() > 0:
-        print s.read(s.inWaiting()),
-    print
+        s.read(s.inWaiting())
+#        print s.read(s.inWaiting()),
+#    print
 
 def wait_for_int():
     while s.inWaiting() <= 0:

@@ -1,5 +1,9 @@
 
 weather_conditions = { 
+0: "",		    # segment spacer
+1: "blk",           # segment filler
+2: "red",           # day spacer
+
 # storm
 200: "pur",         # thunderstorm with light rain
 210: "pur",         # light thunderstorm

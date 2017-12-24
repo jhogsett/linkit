@@ -21,7 +21,7 @@ import led_command as lc
 #logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 #logging.info("Circleci7.py started")
 
-global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds
+global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds, suppress_spew
 app_description = None
 verbose_mode = None
 api_key = None
@@ -31,17 +31,19 @@ retry_delay = None
 timezone_offset = None
 min_api_delay = None
 num_leds = None
+suppress_spew = None
 
 def get_options():
-    global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay
+    global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, suppress_spew
     parser = argparse.ArgumentParser(description=app_description)
-    parser.add_argument("-v", "--verbose", dest="verbose", action='store_true', help='display verbose info (False)')
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-k", "--apikey", dest="apikey", help="openweathermap.org api key")
     parser.add_argument("-z", "--zipcode", dest="zipcode", help="local postal zip code")
     parser.add_argument("-f", "--update_frequency", type=int, dest="update_freq", default=900, help="update freqency (seconds) (900)")
     parser.add_argument("-d", "--retry_delay", type=int, dest="retry_delay", default=5, help="connection retry delay (seconds) (5)")
     parser.add_argument("-t", "--timezone_offset", type=int, dest="timezone_offset", default=8, help="timezone offset from UTC (hours) (8)")
     parser.add_argument("-m", "--min_api_delay", type=int, dest="min_api_delay", default=1, help="minimum api call delay (seconds) (1)")
+    parser.add_argument("-s", "--suppress_spew", dest="suppress_spew", action="store_true", help="supress period data display (False)")
     args = parser.parse_args()
     verbose_mode = args.verbose
     api_key = args.apikey
@@ -50,6 +52,7 @@ def get_options():
     retry_delay = args.retry_delay
     timezone_offset = args.timezone_offset
     min_api_delay = args.min_api_delay
+    suppress_spew = args.suppress_spew
 
 def initialize():
     global app_description, num_leds
@@ -332,6 +335,20 @@ def begin_display_sequence():
 def end_display_sequence():
     lc.command("cnt")
 
+def count_filled(array):
+    count_of_filled = 0
+    for x in range(len(array)):
+        if array[x] != None:
+            count_of_filled += 1
+    return count_of_filled
+
+# True if filler only
+def is_empty(array):
+    for x in range(len(array)):
+        if array[x] !=1:
+            return False
+    return True
+
 def send_forecast_conditions(data):
     num_slots = 6
     num_segments = 8
@@ -340,7 +357,6 @@ def send_forecast_conditions(data):
     segment_index = 0
     current_day = None
 
-    lc.push_command("era:")
     count = forecast_count(data)
     # data is pushed oldest first
     for x in xrange(count - 1, -1, -1):
@@ -354,18 +370,13 @@ def send_forecast_conditions(data):
         slots[day_index][segment_index] = condition
         segment_index += 1            
 
-    filler_data = "blk:blk:"
-    day_spacer = "red:red:"
-    spacer = ""
+    last_slot = num_slots - 1
 
     # the first slot is the oldest data, its filler segments need to go first
     # so the data will need to be shifted
 
     # count number of filled and enpty slots
-    count_of_filled = 0
-    for y in range(num_segments):
-        if slots[0][y] != None:
-            count_of_filled += 1
+    count_of_filled = count_filled(slots[0])
     need_to_fill = num_segments - count_of_filled
 
     # shift back the filled segments
@@ -374,15 +385,32 @@ def send_forecast_conditions(data):
     
     # add fillers for the non-filled segments
     for y in range(need_to_fill):
-        slots[0][y] = 0
+        slots[0][y] = 1
 
     # the last slot is the newest data, its filler segments go at the end
-    last_slot = num_slots - 1
     for y in range(num_segments):
         if slots[last_slot][y] == None:
-            slots[last_slot][y] = 0
+            slots[last_slot][y] = 1
+
+    # if the most recent day slot is totally empty, shift all days down
+    # so that the most recent day isn't fully empty
+    if is_empty(slots[last_slot]):
+        for y in xrange(last_slot, 0, -1):
+            slots[y] = slots[y-1]
+        slots[0] = [1 for x in range(num_segments)]
+
+#    spacer = wc.weather_conditions[0] + ":"
+    filler_data = wc.weather_conditions[1] + ":"
+    day_spacer = wc.weather_conditions[2] + ":"
+
+#    spacer = spacer + spacer
+    filler_data = filler_data + filler_data
+    day_spacer = day_spacer + day_spacer
 
     begin_display_sequence()
+    lc.push_command("era:")
+    lc.push_command("rnd:rnd:blk:")
+
     for x in range(num_slots):
         lc.push_command(day_spacer)        
         for y in range(num_segments):
@@ -391,8 +419,9 @@ def send_forecast_conditions(data):
                 lc.push_command(filler_data)
             else:
                 style = wc.weather_conditions[int(condition)]
-                lc.push_command(style + ":" + style + ":" + spacer)                
+                lc.push_command(style + ":" + style + ":") # + spacer)                
     lc.push_command(day_spacer)
+    lc.push_command("blk:rnd:rnd:")
     lc.push_command()
     end_display_sequence()
     lc.flush_output()
@@ -407,8 +436,9 @@ def loop():
     daily_data = get_daily_data()
     forecast_data = get_forecast_data()
 
-    report_weather(daily_data)
-    report_forecast(forecast_data)
+    if not suppress_spew:
+        report_weather(daily_data)
+        report_forecast(forecast_data)
 
     send_forecast_conditions(forecast_data)
 
