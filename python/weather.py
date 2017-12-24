@@ -359,6 +359,8 @@ def send_forecast_conditions(data):
     day_index = -1
     segment_index = 0
     current_day = None
+    weekdays = [None for i in range(num_slots)]
+    week_slots = [[1 for i in range(8)] for i in range(7)]
 
     count = forecast_count(data)
     # data is pushed oldest first
@@ -370,6 +372,7 @@ def send_forecast_conditions(data):
             day_index += 1
             segment_index = 0
             current_day = entry_day
+            weekdays[day_index] = timestamp.weekday()
         slots[day_index][segment_index] = condition
         segment_index += 1            
 
@@ -395,12 +398,12 @@ def send_forecast_conditions(data):
         if slots[last_slot][y] == None:
             slots[last_slot][y] = 1
 
-    # if the most recent day slot is totally empty, shift all days down
-    # so that the most recent day isn't fully empty
-    if is_empty(slots[last_slot]):
-        for y in xrange(last_slot, 0, -1):
-            slots[y] = slots[y-1]
-        slots[0] = [1 for x in range(num_segments)]
+#    # if the most recent day slot is totally empty, shift all days down
+#    # so that the most recent day isn't fully empty
+#    if is_empty(slots[last_slot]):
+#        for y in xrange(last_slot, 0, -1):
+#            slots[y] = slots[y-1]
+#        slots[0] = [1 for x in range(num_segments)]
 
 #    spacer = wc.weather_conditions[0] + ":"
     filler_data = wc.weather_conditions[1] + ":"
@@ -408,25 +411,54 @@ def send_forecast_conditions(data):
 
 #    spacer = spacer + spacer
     filler_data = filler_data + filler_data
-    day_spacer = day_spacer + day_spacer
+    day_spacer = day_spacer + day_spacer + day_spacer + day_spacer
+
+#    print slots
+
+    # fill MTWTFSS week for familiar display
+    for x in range(num_slots):
+        weekday = weekdays[x]
+        week_slots[weekday] = slots[x]
+
+#    print weekdays
+#    print week_slots
 
     begin_display_sequence()
     lc.push_command("era:")
-    lc.push_command("rnd:rnd:blk:")
-
-    for x in range(num_slots):
-        lc.push_command(day_spacer)        
+#    lc.push_command("rnd:rnd:blk:")
+#    lc.push_command(day_spacer)
+    for x in xrange(7 -1, -1, -1):
+        # shift so sunday is on the left
+        weekday_index = (x - 1) % 7
+        lc.push_command(day_spacer)
         for y in range(num_segments):
-            condition = slots[x][y]
+            condition = week_slots[weekday_index][y]
             if condition == 0:
                 lc.push_command(filler_data)
             else:
                 style = wc.weather_conditions[int(condition)]
-                lc.push_command(style + ":" + style + ":") # + spacer)                
+                lc.push_command(style + ":" + style + ":") # + spacer)
     lc.push_command(day_spacer)
-    lc.push_command("blk:rnd:rnd:")
+#    lc.push_command("blk:rnd:rnd:")
     lc.push_command()
     end_display_sequence()
+
+#    begin_display_sequence()
+#    lc.push_command("era:")
+#    lc.push_command("rnd:rnd:blk:")
+#    for x in range(num_slots):
+#        lc.push_command(day_spacer)        
+#        for y in range(num_segments):
+#            condition = slots[x][y]
+#            if condition == 0:
+#                lc.push_command(filler_data)
+#            else:
+#                style = wc.weather_conditions[int(condition)]
+#                lc.push_command(style + ":" + style + ":") # + spacer)                
+#    lc.push_command(day_spacer)
+#    lc.push_command("blk:rnd:rnd:")
+#    lc.push_command()
+#    end_display_sequence()
 
 
 

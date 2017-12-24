@@ -2,7 +2,11 @@
 weather_conditions = { 
 0: "",		    # segment spacer
 1: "blk",           # segment filler
-2: "red:dim:bre",   # day spacer
+2: "red:dim:bre",   # conditions day spacer
+3: "olv:dim:bre",   # temperature day spacer
+4: "pnk:dim:bre",   # humidity day spacer
+5: "sea:dim:bre",   # wind speed day spacer
+6: "tur:dim:bre",   # cloudiness
 
 # storm
 200: "pur:dim",     # thunderstorm with light rain
