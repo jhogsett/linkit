@@ -8,10 +8,11 @@ import sys
 #import logging
 import os
 #import traceback
-import sys
 import terminal_colors as tc
 import argparse
 import datetime
+import weather_conditions as wc
+import led_command as lc
 
 #script_path = os.getcwd()
 #log_path = script_path + "/circleci.log"
@@ -20,7 +21,7 @@ import datetime
 #logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 #logging.info("Circleci7.py started")
 
-global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay
+global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds
 app_description = None
 verbose_mode = None
 api_key = None
@@ -29,10 +30,13 @@ update_freq = None
 retry_delay = None
 timezone_offset = None
 min_api_delay = None
+num_leds = None
 
 def initialize():
-    global app_description
+    global app_description, num_leds
     app_description = "LED Weather Forecaster v.0.0 12-21-2017"
+    lc.begin()
+    num_leds = lc.get_num_leds()
 
 def get_options():
     global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay
@@ -309,6 +313,29 @@ def report_forecast(data):
         print weather_entry(" Conditions", forecast_conditions(data, x)),
         print weather_entry(" Description", forecast_description(data, x))        
 
+def begin_display_sequence():
+    lc.command(":::pau:pau")
+
+def end_display_sequence():
+    lc.command("cnt:cnt")
+
+def send_forecast_conditions(data):
+    spacer = "blk"
+    cmd = "era:"
+    for x in range(0, forecast_count(data)):
+        condition = forecast_cond_id(data, x)
+        style = wc.weather_conditions[int(condition)]
+        cmd = cmd + style + ":" + style + ":" + spacer + ":"
+    cmd = cmd + "flu"
+    begin_display_sequence()
+    lc.command(cmd)
+    end_display_sequence()
+
+
+
+
+
+
 def setup():
     initialize()
     get_options()
@@ -317,10 +344,13 @@ def setup():
     introduction()
 
 def loop():
-    report_weather(get_daily_data())
-    report_forecast(get_forecast_data())
+    daily_data = get_daily_data()
+    forecast_data = get_forecast_data()
 
+    report_weather(daily_data)
+    report_forecast(forecast_data)
 
+    send_forecast_conditions(forecast_data)
 
 if __name__ == '__main__':
     setup()
