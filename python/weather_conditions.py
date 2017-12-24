@@ -2,14 +2,14 @@
 weather_conditions = { 
 0: "",		    # segment spacer
 1: "blk",           # segment filler
-2: "red",           # day spacer
+2: "red:dim:bre",   # day spacer
 
 # storm
-200: "pur",         # thunderstorm with light rain
-210: "pur",         # light thunderstorm
-230: "pur",         # thunderstorm with light drizzle
-201: "pur:bre",     # thunderstorm with rain
-211: "pur:bre",     # thunderstorm
+200: "pur:dim",     # thunderstorm with light rain
+210: "pur:dim",     # light thunderstorm
+230: "pur:dim",     # thunderstorm with light drizzle
+201: "pur",         # thunderstorm with rain
+211: "pur",         # thunderstorm
 221: "pur:bre",     # ragged thunderstorm
 231: "pur:bre",     # thunderstorm with drizzle
 202: "pur:bli",     # thunderstorm with heavy rain
@@ -17,10 +17,10 @@ weather_conditions = {
 232: "pur:bli",     # thunderstorm with heavy drizzle
 
 # drizzle
-300: "cyn",         # light intensity drizzle
-310: "cyn",         # light intensity drizzle rain
-301: "cyn:bre",     # drizzle
-311: "cyn:bre",     # drizzle rain
+300: "cyn:dim",     # light intensity drizzle
+310: "cyn:dim",     # light intensity drizzle rain
+301: "cyn",         # drizzle
+311: "cyn",         # drizzle rain
 321: "cyn:bre",     # shower drizzle
 302: "cyn:bli",     # heavy intensity drizzle
 312: "cyn:bli",     # heavy intensity drizzle rain
@@ -28,12 +28,12 @@ weather_conditions = {
 314: "cyn:bli",     # heavy shower rain and drizzle
 
 # rain
-500: "grn",         # light rain
-520: "grn",         # light intensity shower rain
-501: "grn:bre",     # moderate rain
-511: "grn:bre",     # freezing rain
+500: "grn:dim",     # light rain
+520: "grn:dim",     # light intensity shower rain
+501: "grn",         # moderate rain
+511: "grn",         # freezing rain
 521: "grn:bre",     # shower rain
-531: "grn:bre",     # ragged shower rain
+531: "grn:bew",     # ragged shower rain
 502: "grn:bli",     # heavy intensity rain
 522: "grn:bli",     # heavy intensity shower rain
 503: "grn:bla",     # very heavy rain
@@ -52,7 +52,7 @@ weather_conditions = {
 622: "wht:bli",     # heavy shower snow
 
 # haze
-701: "org",         # mist
+701: "org:dim",     # mist
 711: "org",         # smoke
 721: "org",         # haze
 731: "org:bre",     # sand, dust whirls
@@ -64,27 +64,27 @@ weather_conditions = {
 781: "0,1:dyn:bld", # tornado
 
 # clear
-800: "blu",         # clear
+800: "yel:dim",     # clear
 
 # clouds
-801: "lbl",         # few clouds
-802: "dgr:dim",     # scattered clouds
+801: "lbl:dim",     # few clouds
+802: "gry",         # scattered clouds
 803: "dgr",         # broken clouds
-804: "gry",         # overcast clouds
+804: "dgr:dim",     # overcast clouds
 
 # wind
-951: "yel",         # calm
-952: "yel",         # light breeze
-953: "yel:bre",     # gentle breeze
-954: "yel:bre",     # moderate breeze
-955: "yel:bre",     # fresh breeze
-956: "yel:bli",     # strong breeze
-957: "yel:bli",     # high wind, near gale
-958: "yel:bli",     # gale
-959: "yel:bla",     # severe gale
-960: "yel:bla",     # storm
-961: "0,2:dyn:bld", # violent storm
-962: "0,2:dyn:bld", # hurricane
+951: "blu:dim",     # calm
+952: "blu:dim",     # light breeze
+953: "blu:dim",     # gentle breeze
+954: "blu",         # moderate breeze
+955: "blu",         # fresh breeze
+956: "blu:bre",     # strong breeze
+957: "blu:bre",     # high wind, near gale
+958: "blu:bli",     # gale
+959: "blu:bla",     # severe gale
+960: "blu:bla",     # storm
+961: "0,4:dyn:bld", # violent storm
+962: "0,4:dyn:bld", # hurricane
 
 # extreme
 900: "7,2:dyn:bld", # tornado

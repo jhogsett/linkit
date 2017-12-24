@@ -331,9 +331,12 @@ def report_forecast(data):
 
 def begin_display_sequence():
     lc.command("::pau")
+    lc.command("::pau")
+    lc.flush_output()
 
 def end_display_sequence():
     lc.command("cnt")
+    lc.flush_output()
 
 def count_filled(array):
     count_of_filled = 0
@@ -424,7 +427,6 @@ def send_forecast_conditions(data):
     lc.push_command("blk:rnd:rnd:")
     lc.push_command()
     end_display_sequence()
-    lc.flush_output()
 
 
 
