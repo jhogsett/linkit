@@ -1,16 +1,16 @@
 
 weather_conditions = { 
 # storm
-200: "blu",         # thunderstorm with light rain
-210: "blu",         # light thunderstorm
-230: "blu",         # thunderstorm with light drizzle
-201: "blu:bre",     # thunderstorm with rain
-211: "blu:bre",     # thunderstorm
-221: "blu:bre",     # ragged thunderstorm
-231: "blu:bre",     # thunderstorm with drizzle
-202: "blu:bli",     # thunderstorm with heavy rain
-212: "blu:bli",     # heavy thunderstorm
-232: "blu:bli",     # thunderstorm with heavy drizzle
+200: "pur",         # thunderstorm with light rain
+210: "pur",         # light thunderstorm
+230: "pur",         # thunderstorm with light drizzle
+201: "pur:bre",     # thunderstorm with rain
+211: "pur:bre",     # thunderstorm
+221: "pur:bre",     # ragged thunderstorm
+231: "pur:bre",     # thunderstorm with drizzle
+202: "pur:bli",     # thunderstorm with heavy rain
+212: "pur:bli",     # heavy thunderstorm
+232: "pur:bli",     # thunderstorm with heavy drizzle
 
 # drizzle
 300: "cyn",         # light intensity drizzle
@@ -60,13 +60,13 @@ weather_conditions = {
 781: "0,1:dyn:bld", # tornado
 
 # clear
-800: "pur",         # clear
+800: "blu",         # clear
 
 # clouds
-801: "gry",         # few clouds
-802: "gry:bre",     # scattered clouds
-803: "gry:bli",     # broken clouds
-804: "gry:bla",     # overcast clouds
+801: "lbl",         # few clouds
+802: "dgr:dim",     # scattered clouds
+803: "dgr",         # broken clouds
+804: "gry",         # overcast clouds
 
 # wind
 951: "yel",         # calm
@@ -83,12 +83,12 @@ weather_conditions = {
 962: "0,2:dyn:bld", # hurricane
 
 # extreme
-900: "6,2:dyn:bld", # tornado
-901: "6,4:dyn:bld", # tropical storm
-902: "6,1:dyn:bld", # hurricane
-903: "6,7:dyn:bld", # cold
-904: "6,5:dyn:bld", # hot
-905: "6,8:dyn:bld", # windy
-906: "6,0:dyn:bld"  # hail
+900: "7,2:dyn:bld", # tornado
+901: "7,4:dyn:bld", # tropical storm
+902: "7,1:dyn:bld", # hurricane
+903: "7,6:dyn:bld", # cold
+904: "7,5:dyn:bld", # hot
+905: "7,8:dyn:bld", # windy
+906: "7,0:dyn:bld"  # hail
 }
 

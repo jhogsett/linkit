@@ -32,12 +32,6 @@ timezone_offset = None
 min_api_delay = None
 num_leds = None
 
-def initialize():
-    global app_description, num_leds
-    app_description = "LED Weather Forecaster v.0.0 12-21-2017"
-    lc.begin()
-    num_leds = lc.get_num_leds()
-
 def get_options():
     global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay
     parser = argparse.ArgumentParser(description=app_description)
@@ -56,6 +50,15 @@ def get_options():
     retry_delay = args.retry_delay
     timezone_offset = args.timezone_offset
     min_api_delay = args.min_api_delay
+
+def initialize():
+    global app_description, num_leds
+    app_description = "LED Weather Forecaster v.0.0 12-21-2017"
+    get_options()
+    if not validate_options():
+        sys.exit("\nExiting...\n")
+    lc.begin(verbose_mode)
+    num_leds = lc.get_num_leds()
 
 def report_error(message):
     print tc.red(message)
@@ -313,34 +316,36 @@ def report_forecast(data):
         print weather_entry(" Conditions", forecast_conditions(data, x)),
         print weather_entry(" Description", forecast_description(data, x))        
 
+def setup_palette():
+    lc.command("1:shf")
+
 def begin_display_sequence():
     lc.command(":::pau:pau")
 
 def end_display_sequence():
-    lc.command("cnt:cnt")
+    lc.command("cnt:cnt:flu")
 
 def send_forecast_conditions(data):
     spacer = "blk"
+    begin_display_sequence()
+    count = forecast_count(data)
     cmd = "era:"
-    for x in range(0, forecast_count(data)):
+    for x in xrange(count - 1, -1, -1):
         condition = forecast_cond_id(data, x)
         style = wc.weather_conditions[int(condition)]
         cmd = cmd + style + ":" + style + ":" + spacer + ":"
-    cmd = cmd + "flu"
-    begin_display_sequence()
-    lc.command(cmd)
+        if len(cmd) > lc.max_command_buffer:
+            lc.command(cmd[:-1])
+            cmd = ""
+    if len(cmd) > 0:
+        lc.command(cmd[:-1])
     end_display_sequence()
-
-
 
 
 
 
 def setup():
     initialize()
-    get_options()
-    if not validate_options():
-        sys.exit("\nExiting...\n")
     introduction()
 
 def loop():

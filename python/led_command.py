@@ -3,12 +3,15 @@ import serial
 import time
 
 response_wait = 0.1
-global s
+global s, verbose_mode
 s = None
+verbose_mode = False
+max_command_buffer = 60
 
-def begin():
-    global s
+def begin(verbose=False):
+    global s,verbose_mode
     s = serial.Serial("/dev/ttyS0", 115200)
+    verbose_mode = verbose
 
 def flush_input():
     s.flushInput()
@@ -43,16 +46,21 @@ def wait_for_str():
         str = str + s.read(s.inWaiting())
     return str[:-1]
 
-def command(cmd_text):
+def send_command(cmd_text):
+    if verbose_mode:
+        print "sending: " + cmd_text
     s.write((cmd_text + ':').encode())
+
+def command(cmd_text):
+    send_command(cmd_text)
     wait_for_ack()
 
 def command_int(cmd_text):
-    s.write((cmd_text + ':').encode())
+    send_command(cmd_text)
     return wait_for_int()
 
 def command_str(cmd_text):
-    s.write((cmd_text + ':').encode())
+    send_command(cmd_text)
     return wait_for_str()
 
 def write(text):
