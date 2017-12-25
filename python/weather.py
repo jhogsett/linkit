@@ -21,7 +21,7 @@ import led_command as lc
 #logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 #logging.info("Circleci7.py started")
 
-global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds, suppress_spew
+global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds, suppress_spew, default_lightness
 app_description = None
 verbose_mode = None
 api_key = None
@@ -32,6 +32,7 @@ timezone_offset = None
 min_api_delay = None
 num_leds = None
 suppress_spew = None
+default_lightness = None
 
 def get_options():
     global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, suppress_spew
@@ -55,15 +56,17 @@ def get_options():
     suppress_spew = args.suppress_spew
 
 def initialize():
-    global app_description, num_leds
+    global app_description, num_leds, default_lightness
     app_description = "LED Weather Forecaster v.0.0 12-21-2017"
     get_options()
     if not validate_options():
         sys.exit("\nExiting...\n")
     lc.begin(verbose_mode)
-    #num_leds = lc.get_num_leds()
     lc.command("::pau")
-    lc.command("::pau:era:flu:cnt")
+    lc.command("::pau:era:flu")
+    num_leds = lc.get_num_leds()
+    default_lightness = lc.get_default_lightness()
+    lc.command("cnt")
 
 def report_error(message):
     print tc.red(message)
@@ -103,6 +106,7 @@ def introduction():
     report_verbose(intro_entry("Retry Delay", retry_delay))
     report_verbose(intro_entry("Timezone Offset", timezone_offset))
     report_verbose(intro_entry("Minimum API Delay", min_api_delay))
+    report_verbose(intro_entry("Default Lightness", default_lightness))
     report_verbose()
 
     data = get_daily_data()
@@ -111,6 +115,7 @@ def introduction():
     report_info(intro_entry("Longitude", daily_lon(data)))
     report_info(intro_entry("Zip Code", zip_code))
     report_info(intro_entry("Update Frequency", update_freq))
+    report_info(intro_entry("Number of LEDs", num_leds))
 
 def get_daily_url():
     return "http://api.openweathermap.org/data/2.5/weather?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
@@ -322,7 +327,7 @@ def report_forecast(data):
         print weather_entry(" Humidity", forecast_humidity(data, x)),
         print weather_entry(" Wind Spd", forecast_wind_speed(data, x)),
         print weather_entry(" Wind Dir", forecast_wind_direction(data, x)),
-        print weather_entry(" Clouds", forecast_cloudinesss(data, x)),
+        print weather_entry(" Clouds", forecast_cloudiness(data, x)),
         print weather_entry(" Cond ID", forecast_cond_id(data, x)),
         print weather_entry(" Conditions", forecast_conditions(data, x)),
         print weather_entry(" Description", forecast_description(data, x))        
@@ -460,9 +465,106 @@ def render_forecast_conditions():
             else:
                 week_slots[x][y] = wc.weather_conditions[int(condition)]
 
+minimum_temperature = 32
+maximum_temperature = 102
+temperature_range = maximum_temperature - minimum_temperature
+
+def render_forecast_temperature():
+    lightness = default_lightness / 2
+    map_to_weekdays(temperature_slots)
+    for x in xrange(7 -1, -1, -1):
+        for y in range(num_segments):
+            temperature = week_slots[x][y]
+            if temperature == None:
+                week_slots[x][y] = filler_data
+            else:
+                temperature = int(temperature)
+                # restrict to 32-111
+                temperature = max(minimum_temperature, temperature)
+                temperature = min(maximum_temperature-1, temperature)
+                # convert to 0-79
+                temperature -= minimum_temperature
+                # convert to 79-0 so that a lower temperature is blue
+                temperature = temperature_range - temperature
+                # convert to hue 237-0
+                hue = temperature * 3
+                week_slots[x][y] = str(hue) + ",255," + str(lightness) + ":hsl"
+
+def render_forecast_humidity():
+    lightness = default_lightness / 2
+    map_to_weekdays(humidity_slots)
+    for x in xrange(7 -1, -1, -1):
+        for y in range(num_segments):
+            humidity = week_slots[x][y]
+            if humidity == None:
+                week_slots[x][y] = filler_data
+            else:
+                humidity = int(humidity)
+                # map 0-100 humidity to 0-300 hue (last 60 degrees head back to red)
+                hue = humidity * 3
+                week_slots[x][y] = str(hue) + ",255," + str(lightness) + ":hsl"
+
+maximum_wind_speed = 30
+
+def render_forecast_wind_speed():
+    lightness = default_lightness / 2
+    map_to_weekdays(wind_speed_slots)
+    for x in xrange(7 -1, -1, -1):
+        for y in range(num_segments):
+            wind_speed = week_slots[x][y]
+            if wind_speed == None:
+                week_slots[x][y] = filler_data
+            else:
+                wind_speed = int(wind_speed)
+                if wind_speed < 1:
+                    # show nothing if there's no wind
+                    week_slots[x][y] = filler_data
+                else:
+                    # assume 0-30 MPH
+                    wind_speed = min(maximum_wind_speed, wind_speed)
+                    # map to 0-300
+                    hue = wind_speed * 10
+                    week_slots[x][y] = str(hue) + ",255," + str(lightness) + ":hsl"
+
+def render_forecast_cloudiness():
+    lightness = default_lightness / 2
+    map_to_weekdays(cloudiness_slots)
+    for x in xrange(7 -1, -1, -1):
+        for y in range(num_segments):
+            cloudiness = week_slots[x][y]
+            if cloudiness == None:
+                week_slots[x][y] = filler_data
+            else:
+                cloudiness = int(cloudiness)
+                # if there are no clouds, show nothing
+                if cloudiness < 1:
+                    week_slots[x][y] = filler_data
+                else:
+                    # map 0-100 cloudiness to 0-300 hue (last 60 degrees head back to red)
+                    hue = cloudiness * 3
+                    week_slots[x][y] = str(hue) + ",255," + str(lightness) + ":hsl"
+
 def send_forecast_conditions():
     render_forecast_conditions()
     send_week_slots(2)
+
+def send_forecast_temperature():
+    render_forecast_temperature()
+    send_week_slots(3)
+
+def send_forecast_humidity():
+    render_forecast_humidity()
+    send_week_slots(4)
+
+def send_forecast_wind_speed():
+    render_forecast_wind_speed()
+    send_week_slots(5)
+
+def send_forecast_cloudiness():
+    render_forecast_cloudiness()
+    send_week_slots(6)
+
+
 
 ############################################################################
 
@@ -470,7 +572,7 @@ def setup():
     initialize()
     introduction()
 
-num_displays = 1
+num_displays = 5
 global current_display_type
 current_display_type = 0
 
