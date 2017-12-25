@@ -62,7 +62,8 @@ def initialize():
         sys.exit("\nExiting...\n")
     lc.begin(verbose_mode)
     #num_leds = lc.get_num_leds()
-    lc.command("::pau:cnt")
+    lc.command("::pau")
+    lc.command("::pau:era:flu:cnt")
 
 def report_error(message):
     print tc.red(message)
@@ -364,8 +365,18 @@ cloudiness_slots = [[None for i in range(num_segments)] for i in range(num_slots
 weekdays = [None for i in range(num_slots)]
 week_slots = [[None for i in range(8)] for i in range(7)]
 
+def reset_forecast_data():
+    global condition_slots, temperature_slots, humidity_slots, wind_speed_slots, cloudiness_slots, weekdays, week_slots
+    condition_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+    temperature_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+    humidity_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+    wind_speed_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+    cloudiness_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+    weekdays = [None for i in range(num_slots)]
+    week_slots = [[None for i in range(8)] for i in range(7)]
+
 def analyze_forecast(data):
-    global condition_slots, temperature_slots, humidity_slots, wind_speed_slots, cloudiness_slots, weekdays, week_slots   
+    global condition_slots, temperature_slots, humidity_slots, wind_speed_slots, cloudiness_slots, weekdays
     day_index = -1
     segment_index = 0
     current_day = None
@@ -420,8 +431,8 @@ def map_to_weekdays(slots):
         week_slots[weekday] = slots[x]
 
     # shift to SMTWTFS
-    carry_slot = week_slots[7-1]
-    for x in range(7-1, 0, -1):
+    carry_slot = week_slots[6]
+    for x in range(6, 0, -1):
         week_slots[x] = week_slots[x-1]
     week_slots[0] = carry_slot
     
@@ -469,6 +480,7 @@ def loop():
         report_weather(daily_data)
         report_forecast(forecast_data)
 
+    reset_forecast_data()
     analyze_forecast(forecast_data)    
 
     if current_display_type == 0:
