@@ -75,7 +75,7 @@ def write(text):
     sys.stdout.flush()
 
 def get_device_config(config):
-    return command_str("0," + str(config) + ":tst")
+    return command_int("0," + str(config) + ":tst")
 
 def get_num_leds():
     return get_device_config(0)
@@ -106,6 +106,13 @@ def get_num_leds():
 #
 #def get_mapping_enabled():
 #    return get_device_config(9)
+
+def get_default_lightness():
+    return get_device_config(10)
+
+def get_minimum_lightness():
+    return get_device_config(11)
+
 
 def push_command(cmd_text=None):
     global cmd
