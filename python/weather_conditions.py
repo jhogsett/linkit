@@ -6,8 +6,8 @@ None: "blk",        # segment filler
 2: "red:dim:bre",   # conditions day spacer
 3: "pnk:dim:bre",   # temperature day spacer
 4: "amb:dim:bre",   # humidity day spacer
-5: "tur:dim:bre",   # wind speed day spacer
-6: "gry:dim:bre",   # cloudiness
+5: "gry:dim:bre",   # wind speed day spacer
+6: "tur:dim:bre",   # cloudiness
 
 # storm
 200: "pur:dim",     # thunderstorm with light rain
