@@ -431,9 +431,11 @@ def fixup_data():
 
 def map_to_weekdays(slots):
     # fill MTWTFSS week for familiar display
+    print weekdays
     for x in range(num_slots):
         weekday = weekdays[x]
-        week_slots[weekday] = slots[x]
+        if weekday != None:
+            week_slots[weekday] = slots[x]
 
     # shift to SMTWTFS
     carry_slot = week_slots[6]
