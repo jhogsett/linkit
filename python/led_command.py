@@ -2,7 +2,7 @@ import sys
 import serial
 import time
 
-response_wait = 0.1
+response_wait = 0.01
 global s, verbose_mode, cmd
 s = None
 verbose_mode = False
