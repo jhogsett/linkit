@@ -7,7 +7,11 @@ rsync -ut /Media/SD-P1/dev/linkit/python/circleci7.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/color_command.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/udp_command.* /root
 rsync -ut /Media/SD-P1/dev/linkit/python/terminal_colors.* /root
+rsync -ut /Media/SD-P1/dev/linkit/python/weather.* /root
+rsync -ut /Media/SD-P1/dev/linkit/python/weather_conditions.* /root
+rsync -ut /Media/SD-P1/dev/linkit/python/led_command.* /root
 #/etc/init.d/circleci restart
 /etc/init.d/http_command restart
 /etc/init.d/udp_command restart
+/etc/init.d/weather restart
 
