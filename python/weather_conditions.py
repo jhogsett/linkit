@@ -1,5 +1,6 @@
 
 weather_conditions = { 
+None: "blk",        # segment filler
 0: "",		    # segment spacer
 1: "blk",           # segment filler
 2: "red:dim:bre",   # conditions day spacer

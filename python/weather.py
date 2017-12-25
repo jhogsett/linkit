@@ -332,7 +332,7 @@ def report_forecast(data):
 
 def begin_display_sequence():
     lc.command("::pau")
-    lc.command("::pau")
+    lc.command("::pau:era")
     lc.flush_output()
 
 def end_display_sequence():
@@ -435,30 +435,34 @@ def map_to_weekdays(slots):
     for x in range(6, 0, -1):
         week_slots[x] = week_slots[x-1]
     week_slots[0] = carry_slot
-    
-def send_forecast_conditions():
-    filler_data = wc.weather_conditions[1] + ":"
-    day_spacer = wc.weather_conditions[2] + ":"
-    filler_data = filler_data + filler_data
-    day_spacer = day_spacer + day_spacer + day_spacer + day_spacer
 
-    map_to_weekdays(condition_slots)
+filler_data = wc.weather_conditions[1]
 
+def send_week_slots(day_spacer):
+    day_spacer = (wc.weather_conditions[day_spacer] + ":") * 4
     begin_display_sequence()
-    lc.push_command("era:")
     for x in xrange(7 -1, -1, -1):
         lc.push_command(day_spacer)
         for y in range(num_segments):
-            condition = week_slots[x][y]
-            if condition == None:
-                lc.push_command(filler_data)
-            else:
-                style = wc.weather_conditions[int(condition)]
-                lc.push_command(style + ":" + style + ":") # + spacer)
+            style = week_slots[x][y]
+            lc.push_command((style + ":") * 2)
     lc.push_command(day_spacer)
     lc.push_command()
     end_display_sequence()
+    
+def render_forecast_conditions():
+    map_to_weekdays(condition_slots)
+    for x in xrange(7 -1, -1, -1):
+        for y in range(num_segments):
+            condition = week_slots[x][y]
+            if condition == None:
+                week_slots[x][y] = filler_data
+            else:
+                week_slots[x][y] = wc.weather_conditions[int(condition)]
 
+def send_forecast_conditions():
+    render_forecast_conditions()
+    send_week_slots(2)
 
 ############################################################################
 
