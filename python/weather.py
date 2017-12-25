@@ -299,7 +299,7 @@ def forecast_wind_speed(data, entry):
 def forecast_wind_direction(data, entry):
     return forecast_wind(data, entry)["deg"]
 
-def forecast_cloudinesss(data, entry):
+def forecast_cloudiness(data, entry):
     return forecast_clouds(data, entry)["all"]
 
 def forecast_description(data, entry):
@@ -352,20 +352,26 @@ def is_empty(array):
             return False
     return True
 
-def send_forecast_conditions(data):
-    num_slots = 6
-    num_segments = 8
-    slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+num_slots = 6
+num_segments = 8
+
+global condition_slots, temperature_slots, humidity_slots, wind_speed_slots, cloudiness_slots, weekdays, week_slots
+condition_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+temperature_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+humidity_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+wind_speed_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+cloudiness_slots = [[None for i in range(num_segments)] for i in range(num_slots)]
+weekdays = [None for i in range(num_slots)]
+week_slots = [[None for i in range(8)] for i in range(7)]
+
+def analyze_forecast(data):
+    global condition_slots, temperature_slots, humidity_slots, wind_speed_slots, cloudiness_slots, weekdays, week_slots   
     day_index = -1
     segment_index = 0
     current_day = None
-    weekdays = [None for i in range(num_slots)]
-    week_slots = [[1 for i in range(8)] for i in range(7)]
-
     count = forecast_count(data)
     # data is pushed oldest first
     for x in xrange(count - 1, -1, -1):
-        condition = forecast_cond_id(data, x)
         timestamp = get_datetime(forecast_timestamp(data, x))
         entry_day = timestamp.day
         if entry_day != current_day:
@@ -373,100 +379,89 @@ def send_forecast_conditions(data):
             segment_index = 0
             current_day = entry_day
             weekdays[day_index] = timestamp.weekday()
-        slots[day_index][segment_index] = condition
-        segment_index += 1            
+        condition_slots[day_index][segment_index] = forecast_cond_id(data, x)
+        temperature_slots[day_index][segment_index] = forecast_temp(data, x)
+        humidity_slots[day_index][segment_index] = forecast_humidity(data, x)
+        wind_speed_slots[day_index][segment_index] = forecast_wind_speed(data, x)
+        cloudiness_slots[day_index][segment_index] = forecast_cloudiness(data, x)
+        segment_index += 1
+    fixup_data()
 
-    last_slot = num_slots - 1
+def fixup_data():
+    global condition_slots, temperature_slots, humidity_slots, wind_speed_slots, cloudiness_slots
 
     # the first slot is the oldest data, its filler segments need to go first
     # so the data will need to be shifted
 
     # count number of filled and enpty slots
-    count_of_filled = count_filled(slots[0])
+    count_of_filled = count_filled(condition_slots[0])
     need_to_fill = num_segments - count_of_filled
 
     # shift back the filled segments
     for y in range(count_of_filled):
-        slots[0][y + need_to_fill] = slots[0][y]
-    
+        condition_slots[0][y + need_to_fill] = condition_slots[0][y]
+        temperature_slots[0][y + need_to_fill] = temperature_slots[0][y]
+        humidity_slots[0][y + need_to_fill] = humidity_slots[0][y]
+        wind_speed_slots[0][y + need_to_fill] = wind_speed_slots[0][y]
+        cloudiness_slots[0][y + need_to_fill] = cloudiness_slots[0][y]
+
     # add fillers for the non-filled segments
     for y in range(need_to_fill):
-        slots[0][y] = 1
+        condition_slots[0][y] = None
+        temperature_slots[0][y] = None
+        humidity_slots[0][y] = None
+        wind_speed_slots[0][y] = None
+        cloudiness_slots[0][y] = None
 
-    # the last slot is the newest data, its filler segments go at the end
-    for y in range(num_segments):
-        if slots[last_slot][y] == None:
-            slots[last_slot][y] = 1
-
-#    # if the most recent day slot is totally empty, shift all days down
-#    # so that the most recent day isn't fully empty
-#    if is_empty(slots[last_slot]):
-#        for y in xrange(last_slot, 0, -1):
-#            slots[y] = slots[y-1]
-#        slots[0] = [1 for x in range(num_segments)]
-
-#    spacer = wc.weather_conditions[0] + ":"
-    filler_data = wc.weather_conditions[1] + ":"
-    day_spacer = wc.weather_conditions[2] + ":"
-
-#    spacer = spacer + spacer
-    filler_data = filler_data + filler_data
-    day_spacer = day_spacer + day_spacer + day_spacer + day_spacer
-
-#    print slots
-
+def map_to_weekdays(slots):
     # fill MTWTFSS week for familiar display
     for x in range(num_slots):
         weekday = weekdays[x]
         week_slots[weekday] = slots[x]
 
-#    print weekdays
-#    print week_slots
+    # shift to SMTWTFS
+    carry_slot = week_slots[7-1]
+    for x in range(7-1, 0, -1):
+        week_slots[x] = week_slots[x-1]
+    week_slots[0] = carry_slot
+    
+def send_forecast_conditions():
+    filler_data = wc.weather_conditions[1] + ":"
+    day_spacer = wc.weather_conditions[2] + ":"
+    filler_data = filler_data + filler_data
+    day_spacer = day_spacer + day_spacer + day_spacer + day_spacer
+
+    map_to_weekdays(condition_slots)
 
     begin_display_sequence()
     lc.push_command("era:")
-#    lc.push_command("rnd:rnd:blk:")
-#    lc.push_command(day_spacer)
     for x in xrange(7 -1, -1, -1):
-        # shift so sunday is on the left
-        weekday_index = (x - 1) % 7
         lc.push_command(day_spacer)
         for y in range(num_segments):
-            condition = week_slots[weekday_index][y]
-            if condition == 0:
+            condition = week_slots[x][y]
+            if condition == None:
                 lc.push_command(filler_data)
             else:
                 style = wc.weather_conditions[int(condition)]
                 lc.push_command(style + ":" + style + ":") # + spacer)
     lc.push_command(day_spacer)
-#    lc.push_command("blk:rnd:rnd:")
     lc.push_command()
     end_display_sequence()
 
-#    begin_display_sequence()
-#    lc.push_command("era:")
-#    lc.push_command("rnd:rnd:blk:")
-#    for x in range(num_slots):
-#        lc.push_command(day_spacer)        
-#        for y in range(num_segments):
-#            condition = slots[x][y]
-#            if condition == 0:
-#                lc.push_command(filler_data)
-#            else:
-#                style = wc.weather_conditions[int(condition)]
-#                lc.push_command(style + ":" + style + ":") # + spacer)                
-#    lc.push_command(day_spacer)
-#    lc.push_command("blk:rnd:rnd:")
-#    lc.push_command()
-#    end_display_sequence()
 
-
+############################################################################
 
 def setup():
     initialize()
     introduction()
 
+num_displays = 1
+global current_display_type
+current_display_type = 0
+
 def loop():
+    global current_display_type
+
     daily_data = get_daily_data()
     forecast_data = get_forecast_data()
 
@@ -474,7 +469,21 @@ def loop():
         report_weather(daily_data)
         report_forecast(forecast_data)
 
-    send_forecast_conditions(forecast_data)
+    analyze_forecast(forecast_data)    
+
+    if current_display_type == 0:
+        send_forecast_conditions()
+    if current_display_type == 1:
+        send_forecast_temperature()
+    if current_display_type == 2:
+        send_forecast_humidity()
+    if current_display_type == 3:
+        send_forecast_wind_speed()
+    if current_display_type == 4:
+        send_forecast_cloudiness()
+
+    current_display_type = (current_display_type + 1) % num_displays
+
 
 if __name__ == '__main__':
     setup()
