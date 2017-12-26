@@ -558,15 +558,18 @@ def render_forecast_wind_speed():
                 week_slots[x][y] = filler_data
             else:
                 wind_speed = int(wind_speed)
-                if wind_speed < 1:
-                    # show nothing if there's no wind
-                    week_slots[x][y] = filler_data
+                if wind_speed >= 5:
+                    week_slots[x][y] = "grn"
+                elif wind_speed >= 10:
+                    week_slots[x][y] = "org"
+                elif wind_speed >= 15:
+                    week_slots[x][y] = "yel"
+                elif wind_speed >= 20:
+                    week_slots[x][y] = "red"
+                elif wind_speed >= 25:
+                    week_slots[x][y] = "red:bla"
                 else:
-                    # assume 0-30 MPH
-                    wind_speed = min(maximum_wind_speed, wind_speed)
-                    # map to 0-300
-                    hue = wind_speed * 20
-                    week_slots[x][y] = hsl_color(hue)
+                    week_slots[x][y] = filler_data
 
 #def render_forecast_cloudiness():
 #    map_to_weekdays(cloudiness_slots)
