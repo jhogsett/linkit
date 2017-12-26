@@ -21,7 +21,7 @@ import led_command as lc
 #logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 #logging.info("Circleci7.py started")
 
-global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds, suppress_spew, default_lightnes, minimum_lightnesss
+global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds, suppress_spew, default_lightnes, minimum_lightness, double_size
 app_description = None
 verbose_mode = None
 api_key = None
@@ -34,6 +34,7 @@ num_leds = None
 suppress_spew = None
 default_lightness = None
 minimum_lightness = None
+double_size = False
 
 def get_options():
     global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, suppress_spew
@@ -57,7 +58,7 @@ def get_options():
     suppress_spew = args.suppress_spew
 
 def initialize():
-    global app_description, num_leds, default_lightness, minimum_lightness
+    global app_description, num_leds, default_lightness, minimum_lightness, double_size
     app_description = "LED Weather Forecaster v.0.0 12-21-2017"
     get_options()
     if not validate_options():
@@ -66,6 +67,8 @@ def initialize():
     lc.command("::pau")
     lc.command("::pau:era:flu")
     num_leds = lc.get_num_leds()
+    if num_leds > 72:
+        double_size = True
     default_lightness = lc.get_default_lightness()
     minimum_lightness = lc.get_minimum_lightness()
     lc.command("cnt")
@@ -457,17 +460,26 @@ def map_to_weekdays(slots):
 #    end_display_sequence()
 
 def send_week_slots(type_style):
-    day_spacer = "4:blk:"
-    type_style = wc.weather_conditions[type_style] + ":3:rep:" 
+    if double_size:
+        day_spacer = "4:blk:"
+        type_style = wc.weather_conditions[type_style] + ":rep:" 
+    else:
+        day_spacer = "2:blk:"
+        type_style = wc.weather_conditions[type_style]   
     begin_display_sequence()
+    lc.push_command(type_style + ":blk:")
     for x in xrange(7 -1, -1, -1):
-        lc.push_command(day_spacer)
+        if x < 7-1:
+            lc.push_command(day_spacer)
         for y in range(num_segments):
             style = week_slots[x][y]
-            cmd_text = (style + ":") * 2
+            if double_size:
+                cmd_text = (style + ":") * 2
+            else:
+                cmd_text = style + ":"
             lc.push_command(cmd_text)
-    lc.push_command(day_spacer)
-    lc.push_command(type_style)
+#    lc.push_command(day_spacer)
+    lc.push_command("blk:" + type_style)
     lc.push_command()
     end_display_sequence()
     
