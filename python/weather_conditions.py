@@ -3,16 +3,16 @@ weather_conditions = {
 None: "blk",        # segment filler
 0: "",		    # segment spacer
 1: "blk",           # segment filler
-2: "red:dim:bre",   # conditions day spacer
-3: "pnk:dim:bre",   # temperature day spacer
-4: "amb:dim:bre",   # humidity day spacer
-5: "gry:dim:bre",   # wind speed day spacer
-6: "tur:dim:bre",   # cloudiness
+2: "red",       # conditions day spacer
+3: "org",       # temperature day spacer
+4: "yel",       # humidity day spacer
+5: "grn",       # wind speed day spacer
+6: "blu",       # cloudiness
 
 # storm
-200: "pur:dim",     # thunderstorm with light rain
-210: "pur:dim",     # light thunderstorm
-230: "pur:dim",     # thunderstorm with light drizzle
+200: "pur",     # thunderstorm with light rain
+210: "pur",     # light thunderstorm
+230: "pur",     # thunderstorm with light drizzle
 201: "pur",         # thunderstorm with rain
 211: "pur",         # thunderstorm
 221: "pur:bre",     # ragged thunderstorm
@@ -22,8 +22,8 @@ None: "blk",        # segment filler
 232: "pur:bli",     # thunderstorm with heavy drizzle
 
 # drizzle
-300: "cyn:dim",     # light intensity drizzle
-310: "cyn:dim",     # light intensity drizzle rain
+300: "cyn",     # light intensity drizzle
+310: "cyn",     # light intensity drizzle rain
 301: "cyn",         # drizzle
 311: "cyn",         # drizzle rain
 321: "cyn:bre",     # shower drizzle
@@ -33,8 +33,8 @@ None: "blk",        # segment filler
 314: "cyn:bli",     # heavy shower rain and drizzle
 
 # rain
-500: "grn:dim",     # light rain
-520: "grn:dim",     # light intensity shower rain
+500: "grn",     # light rain
+520: "grn",     # light intensity shower rain
 501: "grn",         # moderate rain
 511: "grn",         # freezing rain
 521: "grn:bre",     # shower rain
@@ -57,7 +57,7 @@ None: "blk",        # segment filler
 622: "wht:bli",     # heavy shower snow
 
 # haze
-701: "org:dim",     # mist
+701: "org",     # mist
 711: "org",         # smoke
 721: "org",         # haze
 731: "org:bre",     # sand, dust whirls
@@ -69,18 +69,18 @@ None: "blk",        # segment filler
 781: "0,1:dyn:bld", # tornado
 
 # clear
-800: "yel:dim",     # clear
+800: "yel",     # clear
 
 # clouds
-801: "lbl:dim",     # few clouds
+801: "lbl",     # few clouds
 802: "gry",         # scattered clouds
 803: "dgr",         # broken clouds
-804: "dgr:dim",     # overcast clouds
+804: "dgr",     # overcast clouds
 
 # wind
-951: "blu:dim",     # calm
-952: "blu:dim",     # light breeze
-953: "blu:dim",     # gentle breeze
+951: "blu",     # calm
+952: "blu",     # light breeze
+953: "blu",     # gentle breeze
 954: "blu",         # moderate breeze
 955: "blu",         # fresh breeze
 956: "blu:bre",     # strong breeze

@@ -21,7 +21,7 @@ import led_command as lc
 #logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 #logging.info("Circleci7.py started")
 
-global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds, suppress_spew, default_lightness
+global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds, suppress_spew, default_lightnes, minimum_lightnesss
 app_description = None
 verbose_mode = None
 api_key = None
@@ -33,6 +33,7 @@ min_api_delay = None
 num_leds = None
 suppress_spew = None
 default_lightness = None
+minimum_lightness = None
 
 def get_options():
     global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, suppress_spew
@@ -56,7 +57,7 @@ def get_options():
     suppress_spew = args.suppress_spew
 
 def initialize():
-    global app_description, num_leds, default_lightness
+    global app_description, num_leds, default_lightness, minimum_lightness
     app_description = "LED Weather Forecaster v.0.0 12-21-2017"
     get_options()
     if not validate_options():
@@ -66,6 +67,7 @@ def initialize():
     lc.command("::pau:era:flu")
     num_leds = lc.get_num_leds()
     default_lightness = lc.get_default_lightness()
+    minimum_lightness = lc.get_minimum_lightness()
     lc.command("cnt")
 
 def report_error(message):
@@ -341,7 +343,7 @@ def begin_display_sequence():
     lc.flush_output()
 
 def end_display_sequence():
-    lc.command("cnt")
+    lc.command("flu:cnt")
     lc.flush_output()
 
 def count_filled(array):
@@ -431,7 +433,6 @@ def fixup_data():
 
 def map_to_weekdays(slots):
     # fill MTWTFSS week for familiar display
-    print weekdays
     for x in range(num_slots):
         weekday = weekdays[x]
         if weekday != None:
@@ -443,21 +444,36 @@ def map_to_weekdays(slots):
         week_slots[x] = week_slots[x-1]
     week_slots[0] = carry_slot
 
-filler_data = wc.weather_conditions[1]
+#def send_week_slots(day_spacer):
+#    day_spacer = (wc.weather_conditions[day_spacer] + ":") * 4
+#    begin_display_sequence()
+#    for x in xrange(7 -1, -1, -1):
+#        lc.push_command(day_spacer)
+#        for y in range(num_segments):
+#            style = week_slots[x][y]
+#            lc.push_command((style + ":") * 2)
+#   / lc.push_command(day_spacer)
+#    lc.push_command()
+#    end_display_sequence()
 
-def send_week_slots(day_spacer):
-    day_spacer = (wc.weather_conditions[day_spacer] + ":") * 4
+def send_week_slots(type_style):
+    day_spacer = "4:blk:"
+    type_style = wc.weather_conditions[type_style] + ":3:rep:" 
     begin_display_sequence()
     for x in xrange(7 -1, -1, -1):
         lc.push_command(day_spacer)
         for y in range(num_segments):
             style = week_slots[x][y]
-            lc.push_command((style + ":") * 2)
+            cmd_text = (style + ":") * 2
+            lc.push_command(cmd_text)
     lc.push_command(day_spacer)
+    lc.push_command(type_style)
     lc.push_command()
     end_display_sequence()
     
 def render_forecast_conditions():
+#    filler_data = "0,255," + str(minimum_lightness) + ":hsl"
+    filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     map_to_weekdays(condition_slots)
     for x in xrange(7 -1, -1, -1):
         for y in range(num_segments):
@@ -478,6 +494,8 @@ def hsl_color(hue, sat=255, lit=None):
     return str(hue) + "," + str(sat) + "," + str(lit) + ":hsl"
 
 def render_forecast_temperature():
+#    filler_data = "60,255," + str(minimum_lightness) + ":hsl"
+    filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     map_to_weekdays(temperature_slots)
     for x in xrange(7 -1, -1, -1):
         for y in range(num_segments):
@@ -511,6 +529,8 @@ def render_forecast_temperature():
 #                week_slots[x][y] = hsl_color(hue)
 
 def render_forecast_humidity():
+#    filler_data = "120,255," + str(minimum_lightness) + ":hsl"
+    filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     hue = 220 # blue less purple
     sat = 255
     map_to_weekdays(humidity_slots)
@@ -528,6 +548,8 @@ def render_forecast_humidity():
 maximum_wind_speed = 15
 
 def render_forecast_wind_speed():
+#    filler_data = "180,255," + str(minimum_lightness) + ":hsl"
+    filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     map_to_weekdays(wind_speed_slots)
     for x in xrange(7 -1, -1, -1):
         for y in range(num_segments):
@@ -578,6 +600,8 @@ def render_forecast_wind_speed():
 #                week_slots[x][y] = hsl_color(hue, sat, lit)
 
 def render_forecast_cloudiness():
+#    filler_data = "240,255," + str(minimum_lightness) + ":hsl"
+    filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     hue = 220 # blue less purple
     map_to_weekdays(cloudiness_slots)
     for x in xrange(7 -1, -1, -1):
