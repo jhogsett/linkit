@@ -3,18 +3,22 @@ import serial
 import time
 
 response_wait = 0.01
-global s, verbose_mode, cmd
+global s, verbose_mode, cmd, max_command_chars
 s = None
 verbose_mode = False
 cmd = ""
-max_command_max = 30
+max_command_chars = None
 
 def begin(verbose=False):
-    global s,verbose_mode
+    global s, verbose_mode, max_command_chars
     s = serial.Serial("/dev/ttyS0", 115200)
     verbose_mode = verbose
     flush_output()
     flush_input()
+    max_command_chars = get_max_string_length()
+    if max_command_chars == None or max_command_chars == 0:
+        raise StandardError("unable to get maximum command chars")
+    max_command_chars -= 1
 
 def flush_input():
     s.flushInput()
@@ -113,17 +117,28 @@ def get_default_lightness():
 def get_minimum_lightness():
     return get_device_config(11)
 
+def get_max_string_length():
+    return get_device_config(12)
 
 def push_command(cmd_text=None):
     global cmd
+
     # without argument, send accumulated command if any
     if cmd_text == None:
         if len(cmd) > 0:
             command(cmd)
             cmd = ""
         return
-    cmd = cmd + cmd_text
-    if len(cmd) > max_command_max:
+
+    if len(cmd_text) > max_command_chars:
+        raise StandardError("command length exceeds maximum. command: " + cmd_text + "length: " + str(len(cmd_text)) + " max length: " + str(max_command_chars))
+
+    if len(cmd) + len(cmd_text) > max_command_chars:
+        # adding new comand text would exceed maximum
+        # send the accumulated commands and clear the buffer
         command(cmd)
-        cmd = ""
+        cmd = cmd_text
+    else:
+        # add this command text to the buffer
+        cmd = cmd + cmd_text
 
