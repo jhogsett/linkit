@@ -202,11 +202,11 @@ def daily_conditions(data):
 def daily_id(data):
     return daily_weather(data)["id"]
 
-def tine_zone_timestamp(ts):
+def time_zone_timestamp(ts):
     return int(ts) - (timezone_offset * 60 * 60)
 
 def get_datetime(ts):
-    ts = tine_zone_timestamp(ts)
+    ts = time_zone_timestamp(ts)
     return datetime.datetime.fromtimestamp(ts)
 
 def format_unix_timestamp(ts):
@@ -220,7 +220,11 @@ def weather_entry(key, value):
 
 def current_time():
     dt = datetime.datetime.now()
-    return(int(time.mktime(dt.timetuple())))
+    return int(time.mktime(dt.timetuple()))
+
+def current_weekday():
+    dt = get_datetime(current_time())
+    return dt.weekday()
 
 def report_header():
     print "\n----------------------------------------------------"
@@ -473,12 +477,12 @@ def send_week_slots(type_style):
             lc.push_command(day_spacer)
         for y in range(num_segments):
             style = week_slots[x][y]
+            if ((x - 1) % 7) == current_weekday():
+                style += ":bre"
+            cmd_text = style + ":"
             if double_size:
-                cmd_text = (style + ":") * 2
-            else:
-                cmd_text = style + ":"
+                cmd_text += cmd_text
             lc.push_command(cmd_text)
-#    lc.push_command(day_spacer)
     lc.push_command("blk:" + type_style)
     lc.push_command()
     end_display_sequence()
