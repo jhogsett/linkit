@@ -42,7 +42,7 @@ def get_options():
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-k", "--apikey", dest="apikey", help="openweathermap.org api key")
     parser.add_argument("-z", "--zipcode", dest="zipcode", help="local postal zip code")
-    parser.add_argument("-f", "--update_frequency", type=int, dest="update_freq", default=900, help="update freqency (seconds) (900)")
+    parser.add_argument("-f", "--update_frequency", type=int, dest="update_freq", default=15, help="update freqency (seconds) (15)")
     parser.add_argument("-d", "--retry_delay", type=int, dest="retry_delay", default=5, help="connection retry delay (seconds) (5)")
     parser.add_argument("-t", "--timezone_offset", type=int, dest="timezone_offset", default=8, help="timezone offset from UTC (hours) (8)")
     parser.add_argument("-m", "--min_api_delay", type=int, dest="min_api_delay", default=1, help="minimum api call delay (seconds) (1)")
@@ -670,10 +670,11 @@ global current_display_type
 current_display_type = 0
 
 def loop():
-    global current_display_type
+    global current_display_type,daily_data,forecast_data
 
-    daily_data = get_daily_data()
-    forecast_data = get_forecast_data()
+    if current_display_type == 0:
+        daily_data = get_daily_data()
+        forecast_data = get_forecast_data()
 
     if not suppress_spew:
         report_weather(daily_data)
