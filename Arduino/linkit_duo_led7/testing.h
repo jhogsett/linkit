@@ -68,6 +68,11 @@ void Commands::do_test(int type, int arg1, int arg2)
 #define TEST_INQUIRY_DEFAULT_FADE_RATE  7
 #define TEST_INQUIRY_FADE_RATE          8
 #define TEST_INQUIRY_MAPPING_ENABLED    9
+#define TEST_INQUIRY_DEFAULT_LIGHTNESS 10
+#define TEST_INQUIRY_MINIMUM_LIGHTNESS 11
+#define TEST_INQUIRY_MAX_STRING_LENGTH 12
+
+// blink period, breathe period, crossfade delay, command buffer size
  
 // #define TEST_INQUIRY_WIDTH              1
 //#define TEST_INQUIRY_DEVICENAME   4
@@ -77,6 +82,18 @@ void Commands::do_test(int type, int arg1, int arg2)
 // # displays
 
 // current offset, window, buffer, effects buffer
+
+
+// to compute HSL lightness to match standard color brightness:
+// 0,4:tst - get brightness percent
+// lightness-max = (255 * (brightness percent / 100)) + 1
+//command: 0,4:tst
+//15k
+//command: era:grn:120,255,38:hsl:2,0,2:tst
+//0,19,0,0,20,0,k
+//command: era:grn:120,255,39:hsl:2,0,2:tst
+//0,20,0,0,20,0,k
+// --> have an inquiry that returns the necessary value!
 
 void Commands::do_test_inquiry(byte type, int arg2)
 {
@@ -116,6 +133,21 @@ void Commands::do_test_inquiry(byte type, int arg2)
 #else
       command_processor->send_int(0);
 #endif
+    case TEST_INQUIRY_DEFAULT_LIGHTNESS:
+      {
+        int default_lightness = (255 * (buffer->get_default_brightness() / 100.0)) + 1;
+        command_processor->send_int(default_lightness);
+      }
+      break;
+    case TEST_INQUIRY_MINIMUM_LIGHTNESS:
+      {
+        int minimum_lightness = (255 * (renderer->get_minimum_brightness() / 100.0)) + 1;
+        command_processor->send_int(minimum_lightness);
+      }
+      break;
+    case TEST_INQUIRY_MAX_STRING_LENGTH:
+        command_processor->send_int(command_processor->get_max_string_length());
+        break;
     }  
 }
 
