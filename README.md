@@ -328,6 +328,12 @@
 
 #### Quick Start
 
+Connect to the device
+
+    * look for a Linkit... wifi hotspot after the chip finishes booting
+    * connect to it
+    * load http://mylinkit.local in the browser to confirm connectivity
+
 SSH into the device
 
     ssh root@mylinkit.local
@@ -381,6 +387,16 @@ _for root user:_
 
     vim /root/.profile
     export KEY={CircirCI Key}
+    export WX_KEY={Openweathermap.org Key}
+
+Switch the device to station mode and connect it to your wifi network
+
+    * go to http://mylinkit.local
+    * log in
+    * choose Network
+    * choose Station Mode
+    * Select your WiFi hotspot and enter the passphrase
+    * restart the chip
 
 Prepare to sync files between the SD card and the root directory
 
@@ -463,9 +479,38 @@ stop() {
     ./udp_command enable
     ./udp_command start
 
-Add your ssh key for eash log-in
+Add the weather start-up
 
-    vim /etc/dropbear/authorized_keys
+    cd /etc/init.d
+    vim weather
+
+```bash
+#!/bin/sh /etc/rc.common
+
+SCRIPT_NAME="LED Weather Forecaster"
+SCRIPT_PGM="weather.py"
+SCRIPT_PATH="/root/weather.py -k d59a165785d20ad2a84f6a4a85f9a4a2 -z 94605 -f 12 -s"
+#LOG_FILE="/root/dev/linkit/python/weather.log"
+LOG_FILE="/dev/null"
+
+START=98
+STOP=50
+
+start() {
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}
+
+stop() {
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PGM`
+}
+```
+
+
+    chmod +x weather
+    ./weather enable
+    ./weather start
 
 Install the Screen utility
 

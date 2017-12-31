@@ -51,18 +51,6 @@
       <div id="main" class="tab-pane fade in active">
         <h3>Main</h3>
         <div class="row row-margin">
-          <div class="col-xs-4"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+stp#MAIN">All Stop</a></div>
-          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+cnt:10:run#main">All Start</a></div>
-          <div class="col-xs-4"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr#main">All Clear</a></div>
-        </div>
-        
-        <div class="row row-margin">
-          <div class="col-xs-4"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:wht:flo#main">All Cool</a></div>
-          <div class="col-xs-4"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:tun:flo#main">All Warm</a></div>
-          <div class="col-xs-4"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:neo:flo#main">All Neon</a></div>
-        </div>
-        
-        <div class="row row-margin">
           <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=0:lev:flu#main">Auto %</a></div>
           <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=stp#main">Stop</a></div>
         </div>
@@ -108,6 +96,16 @@
           <div class="col-xs-4"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=tun:flo:flu#main">Warm White</a></div>
           <div class="col-xs-4"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=sod:flo:flu#main">Sodium Vapor</a></div>
         </div>                                                                                                                                                                                                  
+        <div class="row row-margin">
+          <div class="col-xs-4"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+stp#MAIN">All Stop</a></div>
+          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+cnt:10:run#main">All Start</a></div>
+          <div class="col-xs-4"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr#main">All Clear</a></div>
+        </div>
+        <div class="row row-margin">
+          <div class="col-xs-4"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:wht:flo#main">All Cool</a></div>
+          <div class="col-xs-4"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:tun:flo#main">All Warm</a></div>
+          <div class="col-xs-4"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?runonce=udp_send.py+clr:neo:flo#main">All Neon</a></div>
+        </div>
       </div>
 
       <div id="apps" class="tab-pane fade">
@@ -152,8 +150,8 @@
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+90+9+1+20#apps">Dyn Rainbo 90</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+72+9+1+20#apps">Dyn Rainbo 72</a></div>
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+64+8+1+20#apps">Dyn Rainbo 64</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+56+8+1+20#apps">Dyn Rainbo 72</a></div>
         </div>
         <div class="row row-margin">
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+44+7+1+20#apps">Dyn Rainbo 44</a></div>
@@ -546,32 +544,41 @@
           <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.166:8080/command">Annunciator 10.0.0.166</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.124:8080/command">Annunciator2 10.0.0.124</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.208:8080/command">Monument 10.0.0.208</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.205:8080/command">Weather 10.0.0.205</a></div>    
         </div>                                                                                                                                                                                                  
       </div>
       
       <div id="admin" class="tab-pane fade in">
         <h3>Admin</h3>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=program_macros.py+apollo#admin">Apollo Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+apollo#admin">Apollo Program</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=program_macros.py+apollo144#admin">Apollo144 Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+apollo144#admin">Apollo144 Program</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=program_macros.py+oneway#admin">One-Way Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+oneway#admin">One-Way Program</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=program_macros.py+threeway#admin">Three-Way Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+threeway#admin">Three-Way Program</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=program_macros.py+annunciator#admin">Annunciator Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+annunciator#admin">Annunciator Program</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=program_macros.py+monument#admin">Monument Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+annunciator2#admin">Annunciator2 Program</a></div>
+        </div>
+        <div class="row row-margin">
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+monument#admin">Monument Program</a></div>
         </div>
           <div class="row row-margin">
-              <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=led_specs.py#admin">Run Test Suite</a></div>
+              <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=led_specs.py#admin">Run Test Suite</a></div>
           </div>
       </div>
       

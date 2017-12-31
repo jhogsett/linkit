@@ -1,0 +1,20 @@
+#!/bin/sh /etc/rc.common
+
+SCRIPT_NAME="LED Weather Forecaster"
+SCRIPT_PGM="weather.py"
+SCRIPT_PATH="/root/weather.py -k d59a165785d20ad2a84f6a4a85f9a4a2 -z 94605 -f 60 -s"
+#LOG_FILE="/root/dev/linkit/python/weather.log"
+LOG_FILE="/dev/null"
+
+START=98
+STOP=50
+
+start() {
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}
+
+stop() {
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PGM`
+}
