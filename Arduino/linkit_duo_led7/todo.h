@@ -1,4 +1,10 @@
-// add argument when setting macro: byte offset, would allow tigher packing of macros
+// formalize fan, having it auto on/off per brightness
+
+// dynamic breathe:
+// red = color1, green = color2, blue = 0-255 = red-green palette colors blended
+
+// six-color dynamic blink: uses palette colors 0-15 stored in rgb
+
 
 // wasn't able to use arg1 with n,-2:seq or n,-1:seq - just got nothing
 
@@ -315,6 +321,7 @@
   // add to the brightness setting code to turn the fan on over a certain brightness level
  // when rendering with dynamic palette colors, could temporarily pre-render the palette colors to avoid doing the math for every case
  // max brightness
+// add argument when setting macro: byte offset, would allow tigher packing of macros
 
 
 
