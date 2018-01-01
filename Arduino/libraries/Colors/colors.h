@@ -4,9 +4,9 @@
 #include <PololuLedStrip.h>
 
 #define NUM_COLORS 25
-#define NPRETTY_COLORS 18
+#define NPRETTY_COLORS 25
 
-#define NUM_PALETTE_COLORS NPRETTY_COLORS
+#define NUM_PALETTE_COLORS NUM_COLORS
 
 // in pre-rendered colors, 20 = the max brightness, so at 100 brightness, it would multiply
 // 20 * (255 / 20) to get 255
@@ -60,15 +60,15 @@ class Colors
   public:
   static const rgb_color * const get_color(byte c);
 
-  static rgb_color random_palette_color();
+  static rgb_color random_palette_color(bool pretty_colors_only = true);
   static void reset_palette();
-  static void shuffle_palette();
+  static void shuffle_palette(bool pretty_colors_only = true);
   static rgb_color complimentary_color(rgb_color color);
-  static void compliment_pairs();
-  static void random_compliment_pairs();
-  static void compliment_palette();
-  static void rotate_palette(byte times, byte limit, bool down = true);
-  static void reverse_palette();
+  static void compliment_pairs(bool pretty_colors_only = true);
+  static void random_compliment_pairs(bool pretty_colors_only = true);
+  static void compliment_palette(bool pretty_colors_only = true);
+  static void rotate_palette(byte times, byte limit, bool down = true, bool pretty_colors_only = true);
+  static void reverse_palette(bool pretty_colors_only = true);
   static rgb_color * get_palette();
 
   private:
@@ -89,24 +89,26 @@ const rgb_color * const Colors::get_color(byte c)
   return &return_color;
 }
 
-rgb_color Colors::random_palette_color(){
-  return palette[random(NUM_PALETTE_COLORS)];
+rgb_color Colors::random_palette_color(bool pretty_colors_only){
+  return palette[random(pretty_colors_only ? NPRETTY_COLORS : NUM_PALETTE_COLORS)];
 }
 
 void Colors::reset_palette()
 {
-  for(byte i = 0; i < NPRETTY_COLORS; i++)
+  for(byte i = 0; i < NUM_PALETTE_COLORS; i++)
     palette[i] = *Colors::get_color(i);
 }
 
 // from https://forum.arduino.cc/index.php?topic=345964.0
-void Colors::shuffle_palette()
+void Colors::shuffle_palette(bool pretty_colors_only)
 {
   byte last = 0;
   rgb_color temp = palette[last];
-  for (byte i=0; i < NUM_PALETTE_COLORS; i++)
+  byte num_colors = pretty_colors_only ? NPRETTY_COLORS : NUM_PALETTE_COLORS;
+
+  for (byte i=0; i < num_colors; i++)
   {
-    byte index = random(NUM_PALETTE_COLORS);
+    byte index = random(num_colors);
     palette[last] = palette[index];
     last = index;
   }
@@ -130,9 +132,10 @@ rgb_color Colors::complimentary_color(rgb_color color)
 
 // create pairs of complimentary colors by making each odd color
 // complimentary of the previous even color
-void Colors::compliment_pairs()
+void Colors::compliment_pairs(bool pretty_colors_only)
 {
-  for(byte i = 0; i < NUM_PALETTE_COLORS; i += 2)
+  byte num_colors = pretty_colors_only ? NPRETTY_COLORS : NUM_PALETTE_COLORS;
+  for(byte i = 0; i < num_colors; i += 2)
   {
     rgb_color *pal = &palette[i];
     *(pal + 1) = complimentary_color(*pal);
@@ -140,16 +143,17 @@ void Colors::compliment_pairs()
 }
 
 // create a random palette of complimentary color pairs
-void Colors::random_compliment_pairs()
+void Colors::random_compliment_pairs(bool pretty_colors_only)
 {
   reset_palette();
-  shuffle_palette();
-  compliment_pairs();
+  shuffle_palette(pretty_colors_only);
+  compliment_pairs(pretty_colors_only);
 }
 
-void Colors::compliment_palette()
+void Colors::compliment_palette(bool pretty_colors_only)
 {
-  for(byte i = 0; i < NUM_PALETTE_COLORS; i++)
+  byte num_colors = pretty_colors_only ? NPRETTY_COLORS : NUM_PALETTE_COLORS;
+  for(byte i = 0; i < num_colors; i++)
   {
     rgb_color *pal = &palette[i];
     *pal = complimentary_color(*pal);
@@ -159,11 +163,11 @@ void Colors::compliment_palette()
 // times - number of rotations
 // limit - how many color positions to rotate
 // down - type = rotate higher number positions toward lower ones
-void Colors::rotate_palette(byte times, byte limit, bool down){
+void Colors::rotate_palette(byte times, byte limit, bool down, bool pretty_colors_only){
   times = max(1, times);
 
   if(limit < 1){
-    limit = NUM_PALETTE_COLORS ;
+    limit = pretty_colors_only ? NPRETTY_COLORS : NUM_PALETTE_COLORS;
   }
   limit--;
 
@@ -196,10 +200,11 @@ void Colors::rotate_palette(byte times, byte limit, bool down){
 }
 
 // todo: dry
-void Colors::reverse_palette()
+void Colors::reverse_palette(bool pretty_colors_only)
 {
-  byte max = NUM_PALETTE_COLORS - 1;
-  byte limit = NUM_PALETTE_COLORS / 2;
+  byte num_colors = pretty_colors_only ? NPRETTY_COLORS : NUM_PALETTE_COLORS;
+  byte max = num_colors - 1;
+  byte limit = num_colors / 2;
   for(byte i = 0; i < limit; i++)
   {
     rgb_color *pal = &palette[i];
