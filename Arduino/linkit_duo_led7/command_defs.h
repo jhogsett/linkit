@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS    103
+#define NUM_COMMANDS    104
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
@@ -109,6 +109,7 @@
 #define CMD_CLR_SEQ_HUE 101
 #define CMD_CLR_SEQ_SAT 102
 #define CMD_CLR_SEQ_LIT 103
+#define CMD_FAN         104
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "rst";
@@ -213,6 +214,7 @@ const char cmd_100[] PROGMEM = "snm"; // sequence next macro (future)
 const char cmd_101[] PROGMEM = "csh"; // color sequence by hue
 const char cmd_102[] PROGMEM = "css"; // color sequence by saturation
 const char cmd_103[] PROGMEM = "csl"; // color sequence by lightness
+const char cmd_104[] PROGMEM = "fan";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
@@ -225,7 +227,7 @@ const char* const command_strings[] PROGMEM = {
    cmd_071, cmd_072, cmd_073, cmd_074, cmd_075, cmd_076, cmd_077, cmd_078, cmd_079, cmd_080,
    cmd_081, cmd_082, cmd_083, cmd_084, cmd_085, cmd_086, cmd_087, cmd_088, cmd_089, cmd_090,
    cmd_091, cmd_092, cmd_093, cmd_094, cmd_095, cmd_096, cmd_097, cmd_098, cmd_099, cmd_100,
-   cmd_101, cmd_102, cmd_103
+   cmd_101, cmd_102, cmd_103, cmd_104
 };
 
 #endif
