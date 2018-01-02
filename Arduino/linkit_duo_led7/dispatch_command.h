@@ -137,6 +137,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_BLINKB: 
     case CMD_BLINKD:
     case CMD_BREATHE: 
+    case CMD_BREATHE_D:
     case CMD_SLOW_FADE: 
     case CMD_FAST_FADE: 
       dispatch_effect(cmd);

@@ -1,7 +1,11 @@
 #ifndef BREATHE_EFFECTS_H
 #define BREATHE_EFFECTS_H
 
-#define BREATHE_ON 21
+#define BREATHE_ON   21
+#define BREATHE_ON_D 22
+
+#define BREATHE_MIN BREATHE_ON
+#define BREATHE_MAX BREATHE_ON_D
 
 #define BREATHE_TIME 500
 #define BREATHE_BRIGHTNESS_MAX DEFAULT_BRIGHTNESS_PERCENT
@@ -28,6 +32,7 @@ class BreatheEffects
   bool is_handled_effect(byte effect);
   float breathe_ratio();
   void set_breathe_time(int time);
+  rgb_color breathe_crossfade(rgb_color color1, rgb_color color2);
 
   private:
 
@@ -124,7 +129,7 @@ bool BreatheEffects::process()
 
 bool BreatheEffects::is_handled_effect(byte effect)
 {
-  return effect == BREATHE_ON;
+  return effect >= BREATHE_MIN && effect <= BREATHE_MAX;
 }
 
 float BreatheEffects::breathe_ratio()
@@ -134,6 +139,21 @@ float BreatheEffects::breathe_ratio()
 #else
   return pgm_read_byte(&breathe_steps[BREATHE_MAX_STEP - breathe_step]) / 255.0;
 #endif
+}
+
+rgb_color BreatheEffects::breathe_crossfade(rgb_color color1, rgb_color color2)
+{
+  rgb_color result;
+
+  // crossfade is 20 steps
+  // breathe is 22 steps
+  // use the two end steps to repeat the adjacent ones to give the native colors a bit of hang time,
+  //   and to fix the mismatch
+  byte crossfade_step = max(0, min(ColorMath::crossfade_steps(), this->breathe_step - 1));
+  result.red = ColorMath::crossfade_component_raw(crossfade_step, color1.red, color2.red);
+  result.green = ColorMath::crossfade_component_raw(crossfade_step, color1.green, color2.green);
+  result.blue = ColorMath::crossfade_component_raw(crossfade_step, color1.blue, color2.blue);
+  return result;
 }
 
 void BreatheEffects::set_breathe_time(int time)

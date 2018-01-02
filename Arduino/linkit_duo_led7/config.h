@@ -19,16 +19,16 @@
 #define LED_STRIP_144
 
 // single 72-LED strip
-//#define LED_STRIP_72
+// #define LED_STRIP_72
+
+// 36-LED annunciator
+// #define ANNUNCIATOR
 
 // 54-LED annunciator #2
 // #define ANNUNCIATOR2
 
 // 100-LED sphere
 // #define SPHERE
-
-// 36-LED annunciator
-// #define ANNUNCIATOR
 
 // 93-LED platform
 // #define PLATFORM
@@ -237,7 +237,7 @@
 #define ANIM_LED_COUNT 36
 #define ZONES_ANNUNCIATOR
 #define DEFAULT_BRIGHTNESS_PERCENT 33
-#define BLINK_PERIOD 3500
+#define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 250
 #endif
 

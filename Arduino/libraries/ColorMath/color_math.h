@@ -32,12 +32,13 @@ class ColorMath
   static rgb_color blend_colors(rgb_color color1, rgb_color color2, float strength);
   static rgb_color crossfade_colors(byte step, rgb_color color1, rgb_color color2);
   static rgb_color correct_color(rgb_color color);
-  static byte crossfade_steps();
+  static byte crossfade_steps(){ return CROSSFADE_STEPS; }
   static rgb_color complimentary_color(rgb_color color);
   static bool equal(rgb_color color1, rgb_color color2);
   static float get_cosine(byte step);
   static float get_sine(byte step);
   static float crossfade_step_value(byte step);
+  static byte crossfade_component_raw(byte step, byte component1, byte component2);
 
   private:
   static bool swap_r_and_g;
@@ -313,10 +314,10 @@ void ColorMath::begin(bool swap_r_and_g = true)
   ColorMath::swap_r_and_g = swap_r_and_g;
 }
 
-byte ColorMath::crossfade_steps()
-{
-  return CROSSFADE_STEPS;
-}
+//byte ColorMath::crossfade_steps()
+//{
+//  return CROSSFADE_STEPS;
+//}
 
 float ColorMath::crossfade_step_value(byte step)
 {
@@ -325,6 +326,13 @@ float ColorMath::crossfade_step_value(byte step)
 #else
   return pgm_read_float(&crossfade[step]);
 #endif
+}
+
+byte ColorMath::crossfade_component_raw(byte step, byte component1, byte component2)
+{
+  int newc1 = component1 * crossfade_step_value(CROSSFADE_STEPS - step);
+  int newc2 = component2 * crossfade_step_value(step);
+  return newc1 + newc2;
 }
 
 // on subsequent steps, component1 must be set to the return value of the previous step
@@ -339,9 +347,10 @@ byte ColorMath::crossfade_component(byte step, byte component1, byte component2)
     component1 = restored_c1;
   }
 
-  int newc1 = component1 * crossfade_step_value(CROSSFADE_STEPS - step);
-  int newc2 = component2 * crossfade_step_value(step);
-  return newc1 + newc2;
+  return crossfade_component_raw(step, component1, component2);
+//  int newc1 = component1 * crossfade_step_value(CROSSFADE_STEPS - step);
+//  int newc2 = component2 * crossfade_step_value(step);
+//  return newc1 + newc2;
 }
 
 //  color1 is the dominant color for strength (0.0 = all color1)

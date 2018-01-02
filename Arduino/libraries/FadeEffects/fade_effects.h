@@ -1,8 +1,8 @@
 #ifndef FADE_EFFECTS_H
 #define FADE_EFFECTS_H
 
-#define SLOW_FADE 22
-#define FAST_FADE 23
+#define SLOW_FADE 23
+#define FAST_FADE 24
 
 #define FADE_MIN SLOW_FADE
 #define FADE_MAX FAST_FADE
@@ -21,7 +21,7 @@ class FadeEffects
   rgb_color apply_fade(rgb_color color, byte effect);
   void set_fade_rate(float fade_rate);
   float get_fade_rate();
-  
+
   private:
 
   bool should_apply();

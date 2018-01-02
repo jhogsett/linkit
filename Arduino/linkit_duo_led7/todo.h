@@ -1,5 +1,3 @@
-// formalize fan, having it auto on/off per brightness
-
 // dynamic breathe:
 // red = color1, green = color2, blue = 0-255 = red-green palette colors blended
 

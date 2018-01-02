@@ -32,7 +32,7 @@ class Render
   float minimum_brightness_scale;
 
   rgb_color get_blink(rgb_color color, rgb_color render_color, byte effect, byte * cache = NULL);
-  rgb_color get_breathe(rgb_color color, float scale);
+  rgb_color get_breathe(rgb_color color, float scale, byte effect, rgb_color orig_color);
   rgb_color get_static();
   rgb_color get_default(rgb_color, byte effect = NO_EFFECT);
   rgb_color get_fade(rgb_color * color, byte effect);
@@ -66,9 +66,16 @@ rgb_color Render::get_blink(rgb_color color, rgb_color render_color, byte effect
     return ColorMath::scale_color(render_color, scale);
 }
 
-rgb_color Render::get_breathe(rgb_color color, float scale)
+rgb_color Render::get_breathe(rgb_color color, float scale, byte effect, rgb_color orig_color)
 {
-  return ColorMath::scale_color(color, scale);
+    byte effect_only = effect & NOT_DYNAMIC_COLOR;
+    if(effect_only == BREATHE_ON_D){
+      rgb_color color1 = Colors::get_palette()[orig_color.red];
+      rgb_color color2 = Colors::get_palette()[orig_color.green];
+      return this->breathe_effects->breathe_crossfade(color1, color2);
+    } else {
+      return ColorMath::scale_color(color, scale);
+    }
 }
 
 // this is a destructive rendering: the original color value is reduced
@@ -100,7 +107,7 @@ rgb_color Render::render(rgb_color *color, byte effect, byte *cache, float breat
 
   rgb_color render_color;
   if(effect & DYNAMIC_COLOR)
-    render_color = ColorMath ::correct_color(Colors::get_palette()[min(color->red, NUM_PALETTE_COLORS-1)]);
+    render_color = ColorMath::correct_color(Colors::get_palette()[min(color->red, NUM_PALETTE_COLORS-1)]);
   else
     render_color = *color;
 
@@ -108,7 +115,7 @@ rgb_color Render::render(rgb_color *color, byte effect, byte *cache, float breat
     return get_blink(*color, render_color, effect, cache);
 
   if(breathe_effects->is_handled_effect(effect_only))
-    return get_breathe(render_color, breathe_scale);
+    return get_breathe(render_color, breathe_scale, effect, *color);
 
   return get_default(render_color, effect);
 }
