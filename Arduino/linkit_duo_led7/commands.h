@@ -321,6 +321,7 @@ void Commands::set_brightness_level(byte level)
   flush_all(true);
 }
 
+// todo: optional
 // todo: allow blending over a range of leds
 // strength 1-100, 100 = all color @ offset
 // 0 == 50
@@ -350,6 +351,8 @@ rgb_color * Commands::offset_buffer()
   return &buffer->get_buffer()[buffer->get_offset()];
 }
 
+
+// todo: optional
 // only works properly when used immediately after placing a standard color
 void Commands::do_max()
 {
@@ -357,6 +360,7 @@ void Commands::do_max()
   *buf = ColorMath::scale_color(*buf, MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
+// todo: optional
 void Commands::do_dim(){
   rgb_color * buf = offset_buffer();
   buf->red = buf->red >> 1;
@@ -364,6 +368,7 @@ void Commands::do_dim(){
   buf->blue = buf->blue >> 1;
 }
 
+// todo: optional
 void Commands::do_bright(){
   rgb_color * buf = offset_buffer();
   buf->red = buf->red << 1;
@@ -371,6 +376,7 @@ void Commands::do_bright(){
   buf->blue = buf->blue << 1;
 }
 
+// todo: optional
 void Commands::do_fade()
 {
   buffer->erase();
@@ -433,10 +439,11 @@ void Commands::do_flood()
   }
 }
 
-#define RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT 0
-#define RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT 1
-#define RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS 2
-#define RANDOM_COLOR_TYPE_PALETTE           3
+#define RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT     0
+#define RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT     1
+#define RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS     2
+#define RANDOM_COLOR_TYPE_PALETTE               3
+#define RANDOM_COLOR_TYPE_DYNAMIC_COLOR_EFFECTS 4
 
 // types 
 // 0: random color with no effect
@@ -456,24 +463,41 @@ void Commands::do_random(byte type, int times)
   rgb_color color = ColorMath::random_color();
   byte * effect = &buffer->get_effects_buffer()[buffer->get_offset()];
   bool random_effects = type == RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS;
-  
+
   for(int i = 0; i < times; i++)
   {
     // this won't clobber dynamic effects marker accidentally because this is an overwrite
-    *effect = random_effects ? EffectsProcessor::random_effect() : NO_EFFECT;
+    //*effect = random_effects ? EffectsProcessor::random_effect() : NO_EFFECT;
     switch(type)
     {
       case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT:
         buffer->push_color(color);
-        break;
-      
-      case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS:
-      case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT: 
-        buffer->push_color(ColorMath::random_color());
+        *effect = NO_EFFECT;
         break;
 
+      case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS:
+        buffer->push_color(ColorMath::random_color());
+        *effect = NO_EFFECT;
+        break;
+
+      case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT: 
+        buffer->push_color(ColorMath::random_color());
+        *effect = EffectsProcessor::random_effect();
+        break;
+
+// todo: optional
       case RANDOM_COLOR_TYPE_PALETTE:
         buffer->push_color(Colors::random_palette_color()); 
+        break;
+
+// todo: optional
+      case RANDOM_COLOR_TYPE_DYNAMIC_COLOR_EFFECTS:
+        {
+          byte color1 = random(0, NUM_PALETTE_COLORS);
+          byte color2 = random(0, NUM_PALETTE_COLORS);
+          do_dynamic_color(color1, color2, 0);
+          *effect = *effect | BLINK_ON_D;
+        }
         break;
     }  
   }
@@ -690,6 +714,7 @@ void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = 
 }
 #endif
 
+// todo: optional
 void Commands::do_wipe()
 {
 #ifdef USE_POWER_EASE
@@ -783,6 +808,7 @@ void Commands::do_delay(int milliseconds)
   ::delay(milliseconds);
 }
 
+// todo: move to config
 // arg0 - 10000 = 1.0, 9999 = 0.9999
 // arg0 <= zero, reset to default
 void Commands::set_fade_rate(int arg0)
@@ -1233,34 +1259,42 @@ void Commands::do_shuffle(int arg0, int arg1, int arg2)
       Colors::reset_palette();  
       break;
 
+// todo: optional
     case SHUFFLE_COMPLIMENT_PAIRS:
       // make every odd color the complimentary color of the previous even color
       Colors::compliment_pairs();
       break;
 
+// todo: optional
     case SHUFFLE_RAND_COMP_PAIRS:
       // create a palette of random complimentary color pairs
       Colors::random_compliment_pairs();        
        break;
 
+// todo: optional
     case SHUFFLE_COMPLIMENT:
       Colors::compliment_palette();        
       break;
       
+// todo: optional
     case SHUFFLE_ROTATE_DOWN:
       Colors::rotate_palette(arg1, arg2, true);
       break;
       
+// todo: optional
     case SHUFFLE_ROTATE_UP:
       Colors::rotate_palette(arg1, arg2, false); 
       break;
       
+// todo: optional
     case SHUFFLE_REVERSE:
       Colors::reverse_palette();
       break;
   }            
 }
 
+// todo: optional
+// todo: move to config?
 void Commands::set_black_level(int arg0, int arg1, int arg2)
 {
   rgb_color black_level = {(byte)arg0, (byte)arg1, (byte)arg2};
@@ -1352,7 +1386,6 @@ void Commands::do_fan(bool fan_on, bool auto_set)
     user_fan_on = fan_on;
   }
 }
-
 
 #ifdef USE_MAPPING
 void Commands::do_xy_position(byte arg0, byte arg1)

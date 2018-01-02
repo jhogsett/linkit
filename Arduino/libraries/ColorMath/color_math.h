@@ -363,11 +363,13 @@ rgb_color ColorMath::crossfade_colors(byte step, rgb_color color1, rgb_color col
   return result;
 }
 
+// todo: optional
 byte ColorMath::blend_component(byte component1, byte component2, float strength)
 {
   return (byte)((component1 * strength) + (component2 * (1.0 - strength)));
 }
 
+// todo: optional
 //  color1 is the dominant color for strength (1.0 = all color1)
 rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2, float strength = 0.5)
 {

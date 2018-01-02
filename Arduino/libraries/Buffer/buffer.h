@@ -409,41 +409,42 @@ void Buffer::set_default_effect(byte effect){
   this->default_effect = effect;
 }
 
-// to do: support either orientation
-// to do: restrict to current zone
-// animate by shifting frame (rendering frame
-// buffer in different render buffer positions)
-void Buffer::shift(byte count, byte maxx, bool fast_render = true)
-{
-  rgb_color * buffer = buffers[current_display];
-  byte * effects = effects_buffers[current_display];
 
-  // to do: restrict to visible led count?
-
-  // this is used repeatedly during a shift animation to render the
-
-  // to do: start off offset
-  // to do: would it be faster to set each individual byte?
-  for(byte i = 0; i < count; i++)
-    this->render[i] = black;
-
-  // to do: add offset
-  for(byte i = count; i < maxx; i++)
-    if(fast_render)
-      this->render[i] = renderer->fast_render(buffer[i - count], effects[i - count]);
-    else
-      this->render[i] = renderer->render(&buffer[i - count], effects[i - count]);
-
-  display_buffer(this->render);
-}
-
-void Buffer::finalize_shift(byte count, byte max)
-{
-  // to do: restrict to current zone
-//  for(byte i = 0; i < count; i++){
-//    push_color(black, 1, false, NO_EFFECT, max);
-//  }
-  push_color(black, count, false, NO_EFFECT, max);
-}
+//// to do: support either orientation
+//// to do: restrict to current zone
+//// animate by shifting frame (rendering frame
+//// buffer in different render buffer positions)
+//void Buffer::shift(byte count, byte maxx, bool fast_render = true)
+//{
+//  rgb_color * buffer = buffers[current_display];
+//  byte * effects = effects_buffers[current_display];
+//
+//  // to do: restrict to visible led count?
+//
+//  // this is used repeatedly during a shift animation to render the
+//
+//  // to do: start off offset
+//  // to do: would it be faster to set each individual byte?
+//  for(byte i = 0; i < count; i++)
+//    this->render[i] = black;
+//
+//  // to do: add offset
+//  for(byte i = count; i < maxx; i++)
+//    if(fast_render)
+//      this->render[i] = renderer->fast_render(buffer[i - count], effects[i - count]);
+//    else
+//      this->render[i] = renderer->render(&buffer[i - count], effects[i - count]);
+//
+//  display_buffer(this->render);
+//}
+//
+//void Buffer::finalize_shift(byte count, byte max)
+//{
+//  // to do: restrict to current zone
+////  for(byte i = 0; i < count; i++){
+////    push_color(black, 1, false, NO_EFFECT, max);
+////  }
+//  push_color(black, count, false, NO_EFFECT, max);
+//}
 
 #endif
