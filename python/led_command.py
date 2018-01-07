@@ -142,3 +142,33 @@ def push_command(cmd_text=None):
         # add this command text to the buffer
         cmd = cmd + cmd_text
 
+def attention(erase=True):
+    command("::pau")
+    if erase:
+        command("::pau:era:flu")
+    else:
+        command("::pau")
+
+def set_macro(macro, macro_text, expected_bytes, debug_mode):
+    if debug_mode:
+      print "macro " + str(macro) + ": ",
+
+    bytes = command_int(str(macro) + ":set:" + macro_text)
+
+    if debug_mode:
+        print str(bytes) + " bytes"
+        print command_str("1," + str(macro) + ":tst")
+
+    else:
+        if expected_bytes > 0 and expected_bytes != bytes:
+            raise StandardError("Wrong number of bytes received for macro %" % str(macro)) 
+
+    return bytes
+
+def run_macro(macro):
+    command("cnt:%s:run" % macro)
+
+def stop_all():
+    attention()
+    command("stp")
+
