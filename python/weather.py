@@ -346,7 +346,7 @@ def report_forecast(data):
 
 def begin_display_sequence():
     lc.command("::pau")
-    lc.command("::pau:era")
+    lc.command("::pau:-1:sch:era") 
     lc.flush_output()
 
 def end_display_sequence():
@@ -510,7 +510,6 @@ def hsl_color(hue, sat=255, lit=None):
     return str(hue) + "," + str(sat) + "," + str(lit) + ":hsl"
 
 def render_forecast_temperature():
-#    filler_data = "60,255," + str(minimum_lightness) + ":hsl"
     filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     map_to_weekdays(temperature_slots)
     for x in xrange(7 -1, -1, -1):
@@ -544,11 +543,28 @@ def render_forecast_temperature():
 #                hue = humidity * 3
 #                week_slots[x][y] = hsl_color(hue)
 
+#def render_forecast_humidity():
+##    filler_data = "120,255," + str(minimum_lightness) + ":hsl"
+#    filler_data = "0,0," + str(minimum_lightness) + ":hsl"
+#    hue = 220 # blue less purple
+#    sat = 255
+#    map_to_weekdays(humidity_slots)
+#    for x in xrange(7 -1, -1, -1):
+#        for y in range(num_segments):
+#            humidity = week_slots[x][y]
+#            if humidity == None:
+#                week_slots[x][y] = filler_data
+#            else:
+#                humidity = int(humidity)
+#                # map 0-100 humidity to 0-max default lightness
+#                lit = (humidity / 100.0) * default_lightness
+#                week_slots[x][y] = hsl_color(hue, sat, lit)
+
 def render_forecast_humidity():
-#    filler_data = "120,255," + str(minimum_lightness) + ":hsl"
     filler_data = "0,0," + str(minimum_lightness) + ":hsl"
-    hue = 220 # blue less purple
     sat = 255
+    hue_min = 0
+    hue_max = 240
     map_to_weekdays(humidity_slots)
     for x in xrange(7 -1, -1, -1):
         for y in range(num_segments):
@@ -556,15 +572,20 @@ def render_forecast_humidity():
             if humidity == None:
                 week_slots[x][y] = filler_data
             else:
-                humidity = int(humidity)
-                # map 0-100 humidity to 0-max default lightness
-                lit = (humidity / 100.0) * default_lightness
+                humidity = int(humidity) 
+                # trim range to 40%-100% to increase visibility of differences
+                humidity = max(40, humidity)
+                humidity = (humidity - 40) / 60.0
+                # map humidity to hue-min thru hue-max
+                hue_diff = hue_max - hue_min
+                hue = hue_min + int(humidity * hue_diff)
+                # map humidity to 0-max default lightness
+                lit = int(humidity * default_lightness)
                 week_slots[x][y] = hsl_color(hue, sat, lit)
 
 maximum_wind_speed = 15
 
 def render_forecast_wind_speed():
-#    filler_data = "180,255," + str(minimum_lightness) + ":hsl"
     filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     map_to_weekdays(wind_speed_slots)
     for x in xrange(7 -1, -1, -1):
@@ -577,9 +598,9 @@ def render_forecast_wind_speed():
                 if wind_speed >= 5:
                     week_slots[x][y] = "grn"
                 elif wind_speed >= 10:
-                    week_slots[x][y] = "org"
-                elif wind_speed >= 15:
                     week_slots[x][y] = "yel"
+                elif wind_speed >= 15:
+                    week_slots[x][y] = "org"
                 elif wind_speed >= 20:
                     week_slots[x][y] = "red"
                 elif wind_speed >= 25:
@@ -619,7 +640,6 @@ def render_forecast_wind_speed():
 #                week_slots[x][y] = hsl_color(hue, sat, lit)
 
 def render_forecast_cloudiness():
-#    filler_data = "240,255," + str(minimum_lightness) + ":hsl"
     filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     hue = 220 # blue less purple
     map_to_weekdays(cloudiness_slots)
