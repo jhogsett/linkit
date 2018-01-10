@@ -650,11 +650,15 @@ def render_forecast_cloudiness():
                 week_slots[x][y] = filler_data
             else:
                 cloudiness = int(cloudiness)
-                # convert 0-100 to 100-0
-                cloudiness = 100 - cloudiness
-                # convert 100-0 to 255-0
-                sat = int(255 * (cloudiness / 100.0))
-                week_slots[x][y] = hsl_color(hue, sat)
+                if cloudiness == 0:
+                    # if there are zero clouds, show an amber sun instead of blue sky
+                    week_slots[x][y] = "yel"
+                else:
+                    # convert 0-100 to 100-0
+                    cloudiness = 100 - cloudiness
+                    # convert 100-0 to 255-0
+                    sat = int(255 * (cloudiness / 100.0))
+                    week_slots[x][y] = hsl_color(hue, sat)
 
 
 def send_forecast_conditions():
