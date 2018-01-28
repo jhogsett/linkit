@@ -940,15 +940,15 @@ def specs():
     expect_buffer("rnd:flo", 0, 2, "15,20,0,15,20,0")
 
     test("it sets a random color and sets no effect")
-    expect_buffer("1:rnd", 0, 1, "20,0,20")                                                                                        
+    expect_buffer("1:rnd", 0, 1, "15,20,0")                                                                                        
     expect_effect("1:rnd", 0, 1, "0")  
 
     test("the flooded colors get no effect set")                          
     expect_effect("1:rnd:flo", 0, 3, "0,0,0")    
 
     test("it sets a random color and sets a random effect")                                                                                                                          
-    expect_buffer("1:rnd:2:rnd:2:rnd", 0, 3, "0,10,20,0,0,20,20,0,20")                                                                                                                                                                    
-    expect_effect("1:rnd:2:rnd:2:rnd", 0, 3, "0,17,15") 
+    expect_buffer("1:rnd:2:rnd:2:rnd", 0, 3, "0,0,20,10,0,20,15,20,0")                                                                                                                                                                    
+    expect_effect("1:rnd:2:rnd:2:rnd", 0, 3, "18,11,0") 
 
     skip_test("2:rnd:flo", "it floods using a different color each time")                                                 
 # broken, rnd doesn't work this way any more
@@ -962,22 +962,22 @@ def specs():
 #      expect_buffer("2:rnd:flo", 0, 3, "15,20,0,20,0,20,20,20,0")
 
     test("it places a random color from the palette")
-    expect_buffer("3:rnd", 0, 1, "20,0,20")
+    expect_buffer("3:rnd", 0, 1, "15,20,0")
 
     test("it places multiple versions of the same random color and no effect")
     expect_buffer("rnd:0,5:rnd", 0, 7, "20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,15,20,0,0,0,0")
     expect_effect("rnd:0,5:rnd", 0, 7, "0,0,0,0,0,0,0")
 
     test("it places multiple random colors and no effects")
-    expect_buffer("rnd:1,5:rnd", 0, 7, "0,20,20,0,10,20,0,0,20,20,20,0,10,0,20,15,20,0,0,0,0")
+    expect_buffer("rnd:1,5:rnd", 0, 7, "0,10,20,0,0,20,20,20,0,10,0,20,20,0,20,15,20,0,0,0,0")
     expect_effect("rnd:1,5:rnd", 0, 7, "0,0,0,0,0,0,0")
 
     test("it places multiple random colors with random effects")
-    expect_buffer("rnd:2,5:rnd", 0, 7, "20,0,15,20,10,0,0,10,20,0,10,20,20,20,0,15,20,0,0,0,0")
-    expect_effect("rnd:2,5:rnd", 0, 7, "0,21,15,18,21,17,0")
+    expect_buffer("rnd:2,5:rnd", 0, 7, "20,0,0,20,0,15,0,20,20,0,0,20,10,0,20,15,20,0,0,0,0")
+    expect_effect("rnd:2,5:rnd", 0, 7, "15,18,21,17,19,0,13")
 
     test("it places multiple random palette colors and no effects")
-    expect_buffer("rnd:3,5:rnd", 0, 7, "0,20,20,0,10,20,0,0,20,20,20,0,10,0,20,15,20,0,0,0,0")
+    expect_buffer("rnd:3,5:rnd", 0, 7, "0,10,20,0,0,20,20,20,0,10,0,20,20,0,20,15,20,0,0,0,0")
     expect_effect("rnd:3,5:rnd", 0, 7, "0,0,0,0,0,0,0")
 
     test("it places random colors, filling the number of LEDs")
@@ -1039,7 +1039,7 @@ def specs():
     test("it maxxes out the brightness level")
 
     if default_brightness == 20:
-      expect_buffer("wht:max", 0, 1, "153,153,153")                                                                                                                                                                                                           
+      expect_buffer("wht:max", 0, 1, "204,204,204")                                                                                                                                                                                                           
     elif default_brightness == 25:
       expect_buffer("wht:max", 0, 1, "255,255,255")
     elif default_brightness == 10:
@@ -1437,7 +1437,6 @@ def specs():
     ## the test region starts at zero because when it doesn't find a position it returns zero
 
     test("it sets a random position only where empty")
-
     # use a macro to process the ramndom postion and place a color
     command_str("0:set:4:win:-1:rps:wht:flu:rst")
 
