@@ -1440,7 +1440,7 @@ def specs():
     # use a macro to process the ramndom postion and place a color
     command_str("0:set:4:win:-1:rps:wht:flu:rst")
 
-    expect_buffer("2:dgr:2:blk:0,10:run", 0, 5, "20,20,20,20,20,20,5,5,5,5,5,5,0,0,0")
+    expect_buffer("2:dgr:2:blk:0,2:run", 0, 5, "20,20,20,20,20,20,5,5,5,5,5,5,0,0,0")
 
     test("it sets a random position only where not empty")
 
@@ -1450,10 +1450,10 @@ def specs():
     expect_buffer("2:blk:2:dgr:0,10:run", 0, 5, "20,20,20,20,20,20,0,0,0,0,0,0,0,0,0")
 
     test("doesn't get stuck if there are no empty spots")
-    expect_buffer("pnk:flo:-1:rps:wht", 0, 2, "20,20,20,20,0,10")
+    expect_buffer("2:win:pnk:flo:-1:rps:wht", 0, 2, "20,20,20,20,0,10")
 
     test("doesn't get stuck if there are no non-empty spots")
-    expect_buffer("-2:rps:wht", 0, 2, "20,20,20,0,0,0")
+    expect_buffer("2:win:-2:rps:wht", 0, 2, "20,20,20,0,0,0")
 
 
 ########################################################################
