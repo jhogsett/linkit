@@ -101,7 +101,7 @@ class Commands
   void dispatch_effect(byte cmd);
   void displatch_color(byte cmd, int arg0, int arg1);
   void do_xy_position(byte arg0, byte arg1);
-  void do_dynamic_color(byte arg0, byte arg1, byte arg2);
+  void do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect=NO_EFFECT);
   void do_fan(bool fan_on, bool auto_set=false);
 
 #ifdef TEST_FRAMEWORK
@@ -360,6 +360,8 @@ void Commands::do_max()
   *buf = ColorMath::scale_color(*buf, MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
+//define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
+
 // todo: optional
 void Commands::do_dim(){
   rgb_color * buf = offset_buffer();
@@ -460,46 +462,44 @@ void Commands::do_random(byte type, int times)
   else
     times = max(1, times);
 
-  rgb_color color = ColorMath::random_color();
-  byte * effect = &buffer->get_effects_buffer()[buffer->get_offset()];
-  bool random_effects = type == RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS;
+  if(type == RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT)
+  {
+    buffer->push_color(ColorMath::random_color(), times);
+    return;
+  }
+
+// todo: optional
+  if(type == RANDOM_COLOR_TYPE_DYNAMIC_COLOR_EFFECTS)
+  {
+    for(int i = 0; i < times; i++)
+    {
+      byte color1 = random(0, NUM_PALETTE_COLORS);
+      byte color2 = random(0, NUM_PALETTE_COLORS);
+      byte effect = random(0, 2) == 0 ? BLINK_ON_D : BREATHE_ON_D;
+      do_dynamic_color(color1, color2, 0, effect);
+    }
+    return;
+  }
 
   for(int i = 0; i < times; i++)
   {
-    // this won't clobber dynamic effects marker accidentally because this is an overwrite
-    //*effect = random_effects ? EffectsProcessor::random_effect() : NO_EFFECT;
+    rgb_color color;
+    byte effect = NO_EFFECT;
     switch(type)
     {
-      case RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT:
-        buffer->push_color(color);
-        *effect = NO_EFFECT;
-        break;
-
       case RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS:
-        buffer->push_color(ColorMath::random_color());
-        *effect = NO_EFFECT;
-        break;
-
+        effect = EffectsProcessor::random_effect();
       case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT: 
-        buffer->push_color(ColorMath::random_color());
-        *effect = EffectsProcessor::random_effect();
+        color = ColorMath::random_color();
         break;
 
 // todo: optional
       case RANDOM_COLOR_TYPE_PALETTE:
-        buffer->push_color(Colors::random_palette_color()); 
+        color = Colors::random_palette_color();
         break;
-
-// todo: optional
-      case RANDOM_COLOR_TYPE_DYNAMIC_COLOR_EFFECTS:
-        {
-          byte color1 = random(0, NUM_PALETTE_COLORS);
-          byte color2 = random(0, NUM_PALETTE_COLORS);
-          do_dynamic_color(color1, color2, 0);
-          *effect = *effect | BLINK_ON_D;
-        }
-        break;
-    }  
+    }
+    
+    buffer->push_color(color, 1, false, effect);  
   }
 }
 
@@ -941,17 +941,21 @@ int Commands::random_num(int max, int min)
   {
     byte protection = 0;
     rgb_color * buf = buffer->get_buffer();
-    byte width = buffer->get_width();
-
     do
     {
       byte pos = random(min, max); 
       rgb_color test_color = buf[pos];
+      bool empty = ColorMath::equal(test_color, buffer->black);
 
-      if(empty_only ? ColorMath::equal(test_color, buffer->black) : !ColorMath::equal(test_color, buffer->black))
+      // eo  e   ne  r
+      // 1   1   0   1
+      // 1   0   1   0
+      // 0   1   0   0
+      // 0   0   1   1
+      if(empty_only == empty)
         return pos;
     }
-    while(protection++ <= width);
+    while(protection++ <= max);
     
     return random(min, max);
   } 
@@ -1364,9 +1368,9 @@ void Commands::do_recall(int arg0, int arg1, int arg2)
 // arg0 the color.red value for primary color
 // arg1 the color.green value for secondary color
 // arg2 the color.blue value for rendering type
-void Commands::do_dynamic_color(byte arg0, byte arg1, byte arg2){
+void Commands::do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect){
   rgb_color data = {arg0, arg1, arg2};
-  buffer->push_color(data, 1, false, DYNAMIC_COLOR, 0, 0, false);
+  buffer->push_color(data, 1, false, DYNAMIC_COLOR | effect, 0, 0, false);
 }
 
 void Commands::do_fan(bool fan_on, bool auto_set)

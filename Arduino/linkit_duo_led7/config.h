@@ -16,13 +16,16 @@
 // #define MINI_DISC_19
 
 // single 144-LED strip
-#define LED_STRIP_144
+// #define LED_STRIP_144
 
 // single 72-LED strip
 // #define LED_STRIP_72
 
+// 72-LED weather display
+// #define WEATHER_72
+
 // 36-LED annunciator
-// #define ANNUNCIATOR
+#define ANNUNCIATOR
 
 // 54-LED annunciator #2
 // #define ANNUNCIATOR2
@@ -149,14 +152,12 @@
 #define RADIUS8_MAPPING
 #endif
 
-#ifdef OUTFIT
+#ifdef WEATHER_72
 #define USE_1_DISPLAYS
-#define ANIM_LED_COUNT 150
-#define ZONES_OUTFIT
-#define BLINK_PERIOD 1000
-#define BREATHE_PERIOD 40
-#define FADE_RATE 0.825
-#define DEFAULT_BRIGHTNESS_PERCENT 20
+#define ANIM_LED_COUNT 72
+#define ZONES_72_LEDS
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
 #endif
 
 #ifdef PROJECTOR
@@ -248,6 +249,17 @@
 #define BLINK_PERIOD 2000
 #define BREATHE_PERIOD 125
 #endif
+
+#ifdef OUTFIT
+#define USE_1_DISPLAYS
+#define ANIM_LED_COUNT 150
+#define ZONES_OUTFIT
+#define BLINK_PERIOD 1000
+#define BREATHE_PERIOD 40
+#define FADE_RATE 0.825
+#define DEFAULT_BRIGHTNESS_PERCENT 20
+#endif
+
 
 // first wearable: internal is pin 12
 #ifdef WEARABLE

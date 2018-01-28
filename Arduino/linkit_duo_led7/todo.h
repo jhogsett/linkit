@@ -1,73 +1,26 @@
-// dynamic breathe:
-// red = color1, green = color2, blue = 0-255 = red-green palette colors blended
+// led specs: group and text descriptions should be other than white so they're easier to read
 
-// six-color dynamic blink: uses palette colors 0-15 stored in rgb
+/* new features
 
-
-// wasn't able to use arg1 with n,-2:seq or n,-1:seq - just got nothing
-
-// blank rate of annunciator (1) is twice too fast
-
-
-
-// to compute HSL lightness to match standard color brightness:
-// 0,4:tst - get brightness percent
-// lightness-max = (255 * (brightness percent / 100)) + 1
-//command: 0,4:tst
-//15k
-//command: era:grn:120,255,38:hsl:2,0,2:tst
-//0,19,0,0,20,0,k
-//command: era:grn:120,255,39:hsl:2,0,2:tst
-//0,20,0,0,20,0,k
-// --> have an inquiry that returns the necessary value!
-
-
-// hardware:
-// radius8 - fix pixel; add linkit
-// projector2 - add linkit
+// most needed
 
 
 
 
-/* specs */
-// add test for color correction when using dynamnic colors
-// tests: determine if mapping is enabled (so it's tested only on x,y displays)
-// need to test all sequencer modes,  I had trouble getting some to work
 
 
-
-/* multicasting */
-// on command, show which ones acknowledged
-      // the device name should come back
-// don't wait forever for ack from arduino because it could conflict with http_command or a python app
-// have them communicate and split the rainbow
-  // they could elect a leader, and count the number of members
-  // add message type (along with new machine type, machine name, existing key)
-// could have device types and names and send selective multicast messages
-// a form of run that assumes it was a one-off executable not still running, like runonce=
-// use a back off algorithm for the repeated sends
-  // can that be done in a thread?
-// add way to run system command on all devices
-// add new arg to http_command.py that issues multicast (or another flag to make it broadcast)
-// need to run and runonce commands
-// need to build into http_command to reduce loading delay
-// send a selector for types of devices, or names, or certain characteristics
-
-
-
-/* new features */
 // super pixels
       // for 2d strips, it sets several leds with fade off ends
       // for 3d displays, it sets a circle (with fade off edges?)
 
 // calibrate timing setting by use testing timer to compare
       // could be part of the start-up procedure
+      // make this a calibration program
 
 // now that sto and rcl are settled and args can be passed into macros, are there math opertions that would be handy on the accumulators?
 // need to be able to manipulate arguments
       // example: quantize (to allow position offsets)
       // also: combine two separate random numbers into arg0, arg1 (can be done now with rcl I think)
-
 
 //   also need one-time action sequencers
 
@@ -106,7 +59,7 @@
 // - could be as simple as offset + window + color & effect
 // - could be a complex pattern like a bell curve of lit leds around a center point
 // rearrange config into device profiles
-// replace color feature
+// find and replace color feature
 // the infinite loop protection could also be a trigger, when all full or all empty
 // triggers could be a set of slots that get set to a macro to run when triggers
 // could have certain commands that end the macro under certain conditions
@@ -148,20 +101,64 @@
 // full frame animation in/out using back buffer
 // shooting up
 // transition: all leds get sucked into one LED position
-// being able to specify a number of times and whether to animate for any color push
-// pretty wifi output
+// being able to specify whether to animate for any color push
+
 // logging
-// wifi mode change
+
 // need simple way to make decisions
   // for example n,12,13 returns 13 if n==0 otherwise 12 (or semantically might be better as n,0th,1st so if n==0 it's 12 and if n==1 its 13
 // add links to program macros
 // first needed trigger: run a macro when the breathing level becomes black, so the color can be changed on each breath
 // it's just some defines for types of events, like breath == off, or blink == off, infinite loop broken out of, etc.
 //  then each just points to a position in a byte array of macro numbers to run in response to the trigger
-// allow setting default effect (for instnace to save having to set a slow fade on every case)
 // try again a command to wait for blink counter = 0 (or all off instead?)
 // for button presses, need pin-in command that leaves 0 or 1 as arg0
 // quantization of positions and blocking (sets of leds)
+// ability to display one buffer on two displays as a standard configuration
+// get 2 random numbers at once
+
+
+
+
+
+
+
+
+
+// hardware:
+// radius8 - fix pixel; add linkit
+// projector2 - add linkit
+
+
+
+
+/* specs */
+// add test for color correction when using dynamnic colors
+// tests: determine if mapping is enabled (so it's tested only on x,y displays)
+// need to test all sequencer modes,  I had trouble getting some to work
+// is this tested? // allow setting default effect (for instnace to save having to set a slow fade on every case)
+
+
+
+/* multicasting */
+// on command, show which ones acknowledged
+      // the device name should come back
+// don't wait forever for ack from arduino because it could conflict with http_command or a python app
+// have them communicate and split the rainbow
+  // they could elect a leader, and count the number of members
+  // add message type (along with new machine type, machine name, existing key)
+// could have device types and names and send selective multicast messages
+// a form of run that assumes it was a one-off executable not still running, like runonce=
+// use a back off algorithm for the repeated sends
+  // can that be done in a thread?
+// add way to run system command on all devices
+// add new arg to http_command.py that issues multicast (or another flag to make it broadcast)
+// need to run and runonce commands
+// need to build into http_command to reduce loading delay
+// send a selector for types of devices, or names, or certain characteristics
+
+
+
 
 
 
@@ -259,6 +256,8 @@
 // problems with offset and window
 // pshifto - starts at [0]
 // can't figure out how to pass two arguments into a macro and using them separately
+// wasn't able to use arg1 with n,-2:seq or n,-1:seq - just got nothing
+// blink rate of annunciator (1) is twice too fast
 
 
 
@@ -364,9 +363,9 @@ lowpower command means:
 // would be nice to do something graphicallty once linux is running
 // in verose mode, show the commands being transmnitted
 // trippy form of circleci with cosine sweeps
-
-
-
+// program to compute timing of blinks and breathe for calibration
+// pretty wifi output
+// wifi mode change
 
 
 
@@ -467,6 +466,7 @@ kitt kar like back and forth
 // from a sequence get just the direction, 1 or -1, to allow stepping something else  
 // need a fade from black
 //    maybe invert the otherwise fade to black color (subtract from color standard of 20)
+// six-color dynamic blink: uses palette colors 0-15 stored in rgb
 
 
 
@@ -534,6 +534,22 @@ kitt kar like back and forth
       // green light green
       // yelllow light amber
 // add remaining 5's colors (they may be took dark)
+
+
+
+
+
+
+
+// to compute HSL lightness to match standard color brightness:
+// 0,4:tst - get brightness percent
+// lightness-max = (255 * (brightness percent / 100)) + 1
+//command: 0,4:tst
+//15k
+//command: era:grn:120,255,38:hsl:2,0,2:tst
+//0,19,0,0,20,0,k
+//command: era:grn:120,255,39:hsl:2,0,2:tst
+//0,20,0,0,20,0,k
 
 
 
