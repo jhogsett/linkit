@@ -90,13 +90,13 @@ def setup():
 def monument_macros():
   print tc.cyan("monument macros:\n")
  
-  set_macro(10, "20:lev:16:run:11:run:12:run", 0)
+  set_macro(10, "0:lev:16:run:11:run:12:run", 0)
   set_macro(11, "3:zon:0,3:pal:3,0,4:cpy", 0)
   set_macro(12, "2:zon:0,3:pal:3,0,2:cpy", 0)
   set_macro(13, "3:shf:11:run:12:run:rst", 0)
   set_macro(14, "3:zon:art:flu:rst", 0)
   set_macro(15, "2:zon:art:flu:rst", 0)
-  set_macro(16, "800,14:sch:1600,15:sch:60000,13:sch", 0)
+  set_macro(16, "800,14:sch:1600,15:sch:10000,13:sch", 0)
 
 # process_commands(F("10:set:100:lev:800,14:sch:1600,15:sch:60000,13:sch"));
 # process_commands(F("11:set:3:zon:0,2:pal:2,0,6:cpy"));
