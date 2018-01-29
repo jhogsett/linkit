@@ -13,7 +13,7 @@
 // #define APOLLO_DISPLAY
 
 // 19-LED Mini Disc
-// #define MINI_DISC_19
+#define MINI_DISC_19
 
 // single 144-LED strip
 // #define LED_STRIP_144
@@ -25,7 +25,7 @@
 // #define WEATHER_72
 
 // 36-LED annunciator
-#define ANNUNCIATOR
+// #define ANNUNCIATOR
 
 // 54-LED annunciator #2
 // #define ANNUNCIATOR2
@@ -41,13 +41,13 @@
 
 // 64-LED Glasses
 // #define WEARABLE_AND_GLASSES
+// #define WEARABLE_AND_GLASSES_TYPE2
 
 // 200-LED overhead
 // #define RADIUS8
 
 // 44-LED Wearable and Hard Hat
 // #define WEARABLE_AND_HARDHAT
-
 
 // wearable and 36-LED annunciator
 // #define WEARABLE_AND_ANNUNCIATOR
@@ -181,7 +181,7 @@
 #ifdef MINI_DISC_19
 #define USE_1_DISPLAYS
 #define ANIM_LED_COUNT 19
-#define DEFAULT_BRIGHTNESS_PERCENT 70
+#define DEFAULT_BRIGHTNESS_PERCENT 20
 #define FADE_RATE 0.925
 #define FADE_PERIOD 400
 #define ZONES_MINI_DISC
@@ -199,6 +199,15 @@
 
 #ifdef WEARABLE_AND_GLASSES
 #define WEARABLE
+#define ANIM_LED_COUNT 64
+#define ZONES_GLASSES
+#define DEFAULT_BRIGHTNESS_PERCENT 10
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
+#endif
+
+#ifdef WEARABLE_AND_GLASSES_TYPE2
+#define WEARABLE_TYPE2
 #define ANIM_LED_COUNT 64
 #define ZONES_GLASSES
 #define DEFAULT_BRIGHTNESS_PERCENT 10
