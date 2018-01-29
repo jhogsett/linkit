@@ -42,6 +42,7 @@ class CommandProcessor
   void send_ints(int value);
   void send_str(char * value);
   byte get_num_args() { return NUM_SUB_ARGS; }
+  byte get_max_string_length() { return MAX_STRING_LENGTH - 1; }
 
   private:
 

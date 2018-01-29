@@ -1,3 +1,14 @@
+// formalize fan, having it auto on/off per brightness
+
+// dynamic breathe:
+// red = color1, green = color2, blue = 0-255 = red-green palette colors blended
+
+// six-color dynamic blink: uses palette colors 0-15 stored in rgb
+
+
+// wasn't able to use arg1 with n,-2:seq or n,-1:seq - just got nothing
+
+// blank rate of annunciator (1) is twice too fast
 
 
 
@@ -10,6 +21,7 @@
 //0,19,0,0,20,0,k
 //command: era:grn:120,255,39:hsl:2,0,2:tst
 //0,20,0,0,20,0,k
+// --> have an inquiry that returns the necessary value!
 
 
 // hardware:
@@ -22,30 +34,30 @@
 /* specs */
 // add test for color correction when using dynamnic colors
 // tests: determine if mapping is enabled (so it's tested only on x,y displays)
-
+// need to test all sequencer modes,  I had trouble getting some to work
 
 
 
 /* multicasting */
 // on command, show which ones acknowledged
       // the device name should come back
-// add new arg to http_command.py that issues multicast (or another flag to make it broadcast)
 // don't wait forever for ack from arduino because it could conflict with http_command or a python app
 // have them communicate and split the rainbow
   // they could elect a leader, and count the number of members
-// add way to run system command on all devices
   // add message type (along with new machine type, machine name, existing key)
 // could have device types and names and send selective multicast messages
 // a form of run that assumes it was a one-off executable not still running, like runonce=
 // use a back off algorithm for the repeated sends
   // can that be done in a thread?
-
-
+// add way to run system command on all devices
+// add new arg to http_command.py that issues multicast (or another flag to make it broadcast)
+// need to run and runonce commands
+// need to build into http_command to reduce loading delay
+// send a selector for types of devices, or names, or certain characteristics
 
 
 
 /* new features */
-
 // super pixels
       // for 2d strips, it sets several leds with fade off ends
       // for 3d displays, it sets a circle (with fade off edges?)
@@ -151,6 +163,7 @@
 // allow setting default effect (for instnace to save having to set a slow fade on every case)
 // try again a command to wait for blink counter = 0 (or all off instead?)
 // for button presses, need pin-in command that leaves 0 or 1 as arg0
+// quantization of positions and blocking (sets of leds)
 
 
 
@@ -308,6 +321,7 @@
   // add to the brightness setting code to turn the fan on over a certain brightness level
  // when rendering with dynamic palette colors, could temporarily pre-render the palette colors to avoid doing the math for every case
  // max brightness
+// add argument when setting macro: byte offset, would allow tigher packing of macros
 
 
 

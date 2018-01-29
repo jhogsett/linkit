@@ -186,8 +186,8 @@ def annunciator_macros2():
   set_macro(18, "16:run:17:run:2,8750:cfg", 0)
 
   # set up each each display macro schedule
-  set_macro(19, "39,13:sch:40,14:sch", 0)
-  set_macro(20, "41,15:sch", 0)
+  set_macro(19, "70,13:sch:75,14:sch", 0)
+  set_macro(20, "80,15:sch", 0)
 
   # set up all display macro schedules
   set_macro(21, "19:run:20:run", 0)
@@ -290,9 +290,13 @@ def apollo144_macros():
   set_macro(35, "4:snw:pos:4:pal:sfd:flo:rst", 10)
   set_macro(36, "5:snw:pos:5:pal:sfd:flo:rst", 10)
 
-  set_macro(37, "0,25,0:sws:1,49,24:sws", 14)
-  set_macro(38, "2,73,48:sws:3,97,72:sws", 16)
-  set_macro(39, "4,121,96:sws:5,144,120:sws", 16)
+#  set_macro(37, "0,25,0:sws:1,49,24:sws", 14)
+#  set_macro(38, "2,73,48:sws:3,97,72:sws", 16)
+#  set_macro(39, "4,121,96:sws:5,144,120:sws", 16)
+
+  set_macro(37, "0,25,0:ssc:1,49,24:ssc", 14)
+  set_macro(38, "2,73,48:ssc:3,97,72:ssc", 16)
+  set_macro(39, "4,121,96:ssc:5,144,120:ssc", 16)
 
   set_macro(40, "37:run:38:run:39:run", 9)
 

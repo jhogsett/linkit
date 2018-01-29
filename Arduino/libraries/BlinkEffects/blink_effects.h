@@ -33,9 +33,12 @@ class BlinkEffects
   bool blink_on(byte effect);
   static bool is_handled_effect(byte effect);
   void set_blink_period(int blink_period);
+  bool begin_render(byte* cache);
+  bool blink_on_cached(byte * cache, byte effect);
 
   private:
 
+  bool blink_test();
   bool blink_1_6_test(byte effect);
   bool blink_a_b_test(byte effect);
   bool blink_d_test(byte effect);
@@ -44,6 +47,7 @@ class BlinkEffects
   int blink_counter = 0;
   int interval;
   int half_period;
+  int quarter_period;
   int half_counter;
 };
 
@@ -66,6 +70,8 @@ void BlinkEffects::set_blink_period(int blink_period)
   else
     this->half_period = blink_period;
 
+  this->quarter_period = this->half_period / 2;
+
   // for testing 1-6 blink
   this->interval = this->half_period / MAX_BLINK_SEGMENTS;
 
@@ -85,6 +91,11 @@ bool BlinkEffects::is_handled_effect(byte effect)
   return effect >= BLINK_MIN && effect <= BLINK_MAX;
 }
 
+bool BlinkEffects::blink_test()
+{
+  return this->blink_counter < this->half_period;
+}
+
 bool BlinkEffects::blink_1_6_test(byte effect)
 {
   int start = (effect - BLINK_ON_1) * this->interval;
@@ -94,29 +105,42 @@ bool BlinkEffects::blink_1_6_test(byte effect)
 
 bool BlinkEffects::blink_a_b_test(byte effect)
 {
-  int quarter_period = this->half_period / 2;
   switch(effect)
   {
     case BLINK_ON_A:
-      return this->half_counter < quarter_period;
+      return this->half_counter < this->quarter_period;
 
     case BLINK_ON_B:
-      return this->half_counter >= quarter_period;
+      return this->half_counter >= this->quarter_period;
   }
 }
 
 // a=primary color, b=secondary color
 bool BlinkEffects::blink_d_test(byte effect)
 {
-  int quarter_period = this->half_period / 2;
-  return this->half_counter < quarter_period;
+  return this->half_counter < this->quarter_period;
+}
+
+// cache the blink state ahead of rendering
+// pass in a byte array at least
+bool BlinkEffects::begin_render(byte* cache)
+{
+  cache[0] = blink_test();
+
+  for(byte i = 0; i < 6; i++)
+    cache[1 + i] = blink_1_6_test(BLINK_ON_1 + i);
+
+  cache[7] = blink_a_b_test(BLINK_ON_A);
+  cache[8] = !cache[7];
+
+  cache[9] = blink_d_test(BLINK_ON_D);
 }
 
 bool BlinkEffects::blink_on(byte effect)
 {
   switch(effect){
     case BLINK_ON:
-       return this->blink_counter < this->half_period;
+      return blink_test();
 
     case BLINK_ON_1:
     case BLINK_ON_2:
@@ -133,5 +157,10 @@ bool BlinkEffects::blink_on(byte effect)
     case BLINK_ON_D:
       return blink_d_test(effect);
   }
+}
+
+bool BlinkEffects::blink_on_cached(byte * cache, byte effect)
+{
+  return cache[effect - BLINK_MIN];
 }
 #endif

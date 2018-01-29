@@ -102,7 +102,7 @@ class Commands
   void displatch_color(byte cmd, int arg0, int arg1);
   void do_xy_position(byte arg0, byte arg1);
   void do_dynamic_color(byte arg0, byte arg1, byte arg2);
-
+  void do_fan(bool fan_on, bool auto_set=false);
 
 #ifdef TEST_FRAMEWORK
   void do_test(int type, int arg1, int arg2);
@@ -133,6 +133,8 @@ class Commands
   static Commands * me;
   Sequencer *sequencer;
   FadeEffects *fade_effects;
+  bool user_fan_on;
+  
 #ifdef USE_MAPPING
   Maps maps;
 #endif
@@ -198,6 +200,8 @@ void Commands::begin(
 #endif
 
   //this->default_brightness = maps.get_led(5, 7);
+
+  this->user_fan_on = false;
 }
 
 #include "event_loop.h"
@@ -311,7 +315,9 @@ void Commands::set_brightness_level(byte level)
     level = default_brightness;
 #endif
   }
+
   renderer->set_default_brightness(level);
+  do_fan(level >= FAN_AUTO_ON_BRIGHTNESS, true);  
   flush_all(true);
 }
 
@@ -768,6 +774,8 @@ void Commands::clear(){
   }
 
   buffer->set_display(orig_display);
+
+  do_fan(false);
 }
 
 void Commands::do_delay(int milliseconds)
@@ -1326,6 +1334,25 @@ void Commands::do_dynamic_color(byte arg0, byte arg1, byte arg2){
   rgb_color data = {arg0, arg1, arg2};
   buffer->push_color(data, 1, false, DYNAMIC_COLOR, 0, 0, false);
 }
+
+void Commands::do_fan(bool fan_on, bool auto_set)
+{
+  if(auto_set){
+    if(fan_on){
+      // turn fan on  
+      set_pin(FAN_PIN, true);
+    } else {
+      // turn fan off if not user-enabled
+      if(!user_fan_on)
+        set_pin(FAN_PIN, false);
+    }
+  } else {
+    // set fan according to setting
+    set_pin(FAN_PIN, fan_on);
+    user_fan_on = fan_on;
+  }
+}
+
 
 #ifdef USE_MAPPING
 void Commands::do_xy_position(byte arg0, byte arg1)

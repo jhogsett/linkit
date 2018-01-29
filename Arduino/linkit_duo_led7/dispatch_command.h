@@ -307,6 +307,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   case CMD_CLR_SEQ_LIT:
     do_color_sequence(COLOR_SEQUENCE_HUE + (cmd - CMD_CLR_SEQ_HUE), arg0, arg1, arg2); 
     break;
+
+  case CMD_FAN:
+    do_fan(arg0);
+    break;
   }
   
   if(reset_args)
