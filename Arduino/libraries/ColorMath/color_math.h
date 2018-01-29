@@ -314,11 +314,6 @@ void ColorMath::begin(bool swap_r_and_g = true)
   ColorMath::swap_r_and_g = swap_r_and_g;
 }
 
-//byte ColorMath::crossfade_steps()
-//{
-//  return CROSSFADE_STEPS;
-//}
-
 float ColorMath::crossfade_step_value(byte step)
 {
 #if defined(USE_BYTE_CROSSFADE_STEPS) || defined(USE_ALT_BYTE_CROSSFADE_STEPS)
@@ -348,9 +343,6 @@ byte ColorMath::crossfade_component(byte step, byte component1, byte component2)
   }
 
   return crossfade_component_raw(step, component1, component2);
-//  int newc1 = component1 * crossfade_step_value(CROSSFADE_STEPS - step);
-//  int newc2 = component2 * crossfade_step_value(step);
-//  return newc1 + newc2;
 }
 
 //  color1 is the dominant color for strength (0.0 = all color1)

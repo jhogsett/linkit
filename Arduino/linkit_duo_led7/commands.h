@@ -351,7 +351,6 @@ rgb_color * Commands::offset_buffer()
   return &buffer->get_buffer()[buffer->get_offset()];
 }
 
-
 // todo: optional
 // only works properly when used immediately after placing a standard color
 void Commands::do_max()
@@ -359,8 +358,6 @@ void Commands::do_max()
   rgb_color * buf = offset_buffer();
   *buf = ColorMath::scale_color(*buf, MAX_BRIGHTNESS_PERCENT / 100.0);
 }
-
-//define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 
 // todo: optional
 void Commands::do_dim(){

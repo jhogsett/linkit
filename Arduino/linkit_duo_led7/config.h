@@ -269,7 +269,6 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #endif
 
-
 // first wearable: internal is pin 12
 #ifdef WEARABLE
 #define USE_2_DISPLAYS
