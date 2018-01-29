@@ -136,6 +136,7 @@ bool BlinkEffects::begin_render(byte* cache)
   cache[9] = blink_d_test(BLINK_ON_D);
 }
 
+// todo: optional?
 bool BlinkEffects::blink_on(byte effect)
 {
   switch(effect){

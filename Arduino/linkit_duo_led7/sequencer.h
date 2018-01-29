@@ -289,6 +289,7 @@ int Sequence::increment_wheel_power(int step)
   return this->low + (this->width() * PowerEase::get_ease(spread_position));
 }
 
+// todo: optional
 // TODO the sequence is not symmetrical forward and back so when coming back need to treat it oppositely
 int Sequence::increment_swing_power(int step)
 {

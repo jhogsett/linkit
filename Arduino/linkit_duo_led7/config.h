@@ -13,22 +13,25 @@
 // #define APOLLO_DISPLAY
 
 // 19-LED Mini Disc
-// #define MINI_DISC_19
+#define MINI_DISC_19
 
 // single 144-LED strip
-#define LED_STRIP_144
+// #define LED_STRIP_144
 
 // single 72-LED strip
-//#define LED_STRIP_72
+// #define LED_STRIP_72
+
+// 72-LED weather display
+// #define WEATHER_72
+
+// 36-LED annunciator
+// #define ANNUNCIATOR
 
 // 54-LED annunciator #2
 // #define ANNUNCIATOR2
 
 // 100-LED sphere
 // #define SPHERE
-
-// 36-LED annunciator
-// #define ANNUNCIATOR
 
 // 93-LED platform
 // #define PLATFORM
@@ -38,13 +41,13 @@
 
 // 64-LED Glasses
 // #define WEARABLE_AND_GLASSES
+// #define WEARABLE_AND_GLASSES_TYPE2
 
 // 200-LED overhead
 // #define RADIUS8
 
 // 44-LED Wearable and Hard Hat
 // #define WEARABLE_AND_HARDHAT
-
 
 // wearable and 36-LED annunciator
 // #define WEARABLE_AND_ANNUNCIATOR
@@ -149,14 +152,12 @@
 #define RADIUS8_MAPPING
 #endif
 
-#ifdef OUTFIT
+#ifdef WEATHER_72
 #define USE_1_DISPLAYS
-#define ANIM_LED_COUNT 150
-#define ZONES_OUTFIT
-#define BLINK_PERIOD 1000
-#define BREATHE_PERIOD 40
-#define FADE_RATE 0.825
-#define DEFAULT_BRIGHTNESS_PERCENT 20
+#define ANIM_LED_COUNT 72
+#define ZONES_72_LEDS
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
 #endif
 
 #ifdef PROJECTOR
@@ -180,7 +181,7 @@
 #ifdef MINI_DISC_19
 #define USE_1_DISPLAYS
 #define ANIM_LED_COUNT 19
-#define DEFAULT_BRIGHTNESS_PERCENT 70
+#define DEFAULT_BRIGHTNESS_PERCENT 20
 #define FADE_RATE 0.925
 #define FADE_PERIOD 400
 #define ZONES_MINI_DISC
@@ -198,6 +199,15 @@
 
 #ifdef WEARABLE_AND_GLASSES
 #define WEARABLE
+#define ANIM_LED_COUNT 64
+#define ZONES_GLASSES
+#define DEFAULT_BRIGHTNESS_PERCENT 10
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
+#endif
+
+#ifdef WEARABLE_AND_GLASSES_TYPE2
+#define WEARABLE_TYPE2
 #define ANIM_LED_COUNT 64
 #define ZONES_GLASSES
 #define DEFAULT_BRIGHTNESS_PERCENT 10
@@ -237,8 +247,8 @@
 #define ANIM_LED_COUNT 36
 #define ZONES_ANNUNCIATOR
 #define DEFAULT_BRIGHTNESS_PERCENT 33
-#define BLINK_PERIOD 3500
-#define BREATHE_PERIOD 250
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 125
 #endif
 
 #ifdef ANNUNCIATOR2
@@ -247,6 +257,16 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 33
 #define BLINK_PERIOD 2000
 #define BREATHE_PERIOD 125
+#endif
+
+#ifdef OUTFIT
+#define USE_1_DISPLAYS
+#define ANIM_LED_COUNT 150
+#define ZONES_OUTFIT
+#define BLINK_PERIOD 1000
+#define BREATHE_PERIOD 40
+#define FADE_RATE 0.825
+#define DEFAULT_BRIGHTNESS_PERCENT 20
 #endif
 
 // first wearable: internal is pin 12

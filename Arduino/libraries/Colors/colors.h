@@ -113,6 +113,7 @@ void Colors::shuffle_palette()
   palette[last] = temp;
 }
 
+// todo: optional
 // create a complimentary color by inverting the values
 // within the 0 - BRIGHTNESS_DIVISOR range, since that
 // represents the entire pre-rendered color definition
@@ -128,6 +129,7 @@ rgb_color Colors::complimentary_color(rgb_color color)
 
 // to do: compliment whole palette instead of in pairs
 
+// todo: optional
 // create pairs of complimentary colors by making each odd color
 // complimentary of the previous even color
 void Colors::compliment_pairs()
@@ -139,6 +141,7 @@ void Colors::compliment_pairs()
   }
 }
 
+// todo: optional
 // create a random palette of complimentary color pairs
 void Colors::random_compliment_pairs()
 {

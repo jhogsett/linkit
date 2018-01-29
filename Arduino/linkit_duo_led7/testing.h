@@ -97,58 +97,55 @@ void Commands::do_test(int type, int arg1, int arg2)
 
 void Commands::do_test_inquiry(byte type, int arg2)
 {
+  int result = 0;
   switch(type)
   {
     case TEST_INQUIRY_NUM_LEDS:
-      command_processor->send_int(visible_led_count);
+      result = visible_led_count;
       break;
     case TEST_INQUIRY_PALETTE_SIZE:
-      command_processor->send_int(NUM_PALETTE_COLORS);
+      result = NUM_PALETTE_COLORS;
       break;
     case TEST_INQUIRY_OFFSET:
-      command_processor->send_int(buffer->get_offset());
+      result = buffer->get_offset();
       break;
     case TEST_INQUIRY_WINDOW:
-      command_processor->send_int(buffer->get_window());
+      result = buffer->get_window();
       break;
     case TEST_INQUIRY_DEFAULT_BRIGHTNESS:
-      command_processor->send_int(buffer->get_default_brightness());
+      result = buffer->get_default_brightness();
       break;
     case TEST_INQUIRY_MINIMUM_BRIGHTNESS:
-      command_processor->send_int(renderer->get_minimum_brightness());
+      result = renderer->get_minimum_brightness();
       break;
     case TEST_INQUIRY_REVERSE:
-      command_processor->send_int(buffer->get_reverse() ? 1 : 0);
+      result = buffer->get_reverse() ? 1 : 0;
       break;
     case TEST_INQUIRY_DEFAULT_FADE_RATE:
       // fade rate passed x 10K
-      command_processor->send_int(int(FADE_RATE * 10000));
+      result = FADE_RATE * 10000;
       break;
     case TEST_INQUIRY_FADE_RATE:
-      command_processor->send_int(int(fade_effects->get_fade_rate() * 10000));
+      result = fade_effects->get_fade_rate() * 10000;
       break;
     case TEST_INQUIRY_MAPPING_ENABLED:
 #ifdef USE_MAPPING
-      command_processor->send_int(1);
+      result = 1;
 #else
-      command_processor->send_int(0);
+      result = 0;
 #endif
     case TEST_INQUIRY_DEFAULT_LIGHTNESS:
-      {
-        int default_lightness = (255 * (buffer->get_default_brightness() / 100.0)) + 1;
-        command_processor->send_int(default_lightness);
-      }
+      result = (255 * (buffer->get_default_brightness() / 100.0)) + 1;
       break;
     case TEST_INQUIRY_MINIMUM_LIGHTNESS:
-      {
-        int minimum_lightness = (255 * (renderer->get_minimum_brightness() / 100.0)) + 1;
-        command_processor->send_int(minimum_lightness);
-      }
+      result = (255 * (renderer->get_minimum_brightness() / 100.0)) + 1;
       break;
     case TEST_INQUIRY_MAX_STRING_LENGTH:
-        command_processor->send_int(command_processor->get_max_string_length());
-        break;
+      result = command_processor->get_max_string_length();
+      break;
     }  
+
+  command_processor->send_int(result);    
 }
 
 #define TEST_FUNCTION_PROCESS_EFFECTS   0 // arg2 = number of times to run
