@@ -58,7 +58,7 @@ def set_macro(macro_num, macro_text, expected_bytes):
 
     except StandardError, e:
       print str(e) + " - retrying"
-      lc.set_macro(macro, macro_text, expected_bytes, debug_mode)        
+      lc.set_macro(macro_num, macro_text, expected_bytes, debug_mode)        
 
     lc.command_str("grn:flu")                                 
     macro_count += 1
