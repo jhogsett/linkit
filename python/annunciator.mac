@@ -1,0 +1,44 @@
+# main effect - rotating hue shifted colors
+###########################################
+
+
+
+
+10;-1:sch:23:run;0
+11;-1:sch:22:run;0
+
+# sequence the next window for each display
+13;0:seq:pos:0:pal:sfd:flo:rst;0
+14;1:seq:pos:1:pal:sfd:flo:rst;0
+15;2:seq:pos:2:pal:sfd:flo:rst:flu;0
+
+# set up each sequencer
+16;0,12,0:seq:1,24,12:seq;0
+17;2,36,24:seq;0
+
+# set up all sequences and a quick fade rate
+18;16:run:17:run:2,8000:cfg;0
+
+# set up each each display macro schedule
+19;147,13:sch:150,14:sch;0
+20;153,15:sch;0
+
+# set up all display macro schedules
+21;19:run:20:run;0
+
+# start up random color change power swingers
+22;1:pau:18:run:21:run:31:run;0
+
+# start up hue sequence swingers
+23;1:pau:18:run:21:run:32:run;0
+
+# set up shuffler
+30;shf";1
+
+# set shuffler schedule
+31;13000,30:sch;0
+
+# set up sequencing hues
+32;3,360:seq:500,33:sch;0
+33;3,0,1:seq:sto:45:rcl:csh;0
+
