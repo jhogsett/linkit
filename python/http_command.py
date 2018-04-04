@@ -11,6 +11,7 @@ import os
 import socket
 from socket import error as socket_error
 import os.path
+import datetime
 
 global webpage, base_path, last_run, host_name, host_ip
 
@@ -79,6 +80,7 @@ class Handler(BaseHTTPRequestHandler):
     global last_run, last_run_full, host_name, host_ip
 
     filename, file_ext = os.path.splitext(page)
+    filetime = datetime.datetime.fromtimestamp(os.path.getmtime(page))
 
     self.send_response(200)
     if file_ext == '.html':
@@ -93,7 +95,9 @@ class Handler(BaseHTTPRequestHandler):
       content_type = "image/png"
     else:
       content_type = "application/octet-stream"                     
+    self.send_header("Cache-Control", "private")
     self.send_header("Content-type", content_type)
+    self.send_header("Last-Modified", filetime.strftime("%a, %d %b %Y %H:%M:%S GMT"))
     self.end_headers()  
 
     if last_run != '':
@@ -122,19 +126,22 @@ class Handler(BaseHTTPRequestHandler):
     self.wfile.close() 
 
   def handle_commands(self, commands):
-    command(":::pause")
+    command(":::pau:pau")
     for cmd in commands:
       command(cmd)
-    command("flush:continue")
+    command("cnt")
 
   def do_GET(self):
     req = urlparse.urlparse(self.path)
+
+
+    print self.headers
+
  
     if req.path == '/command':
       args = urlparse.parse_qs(req.query)            
 
       if 'cmd' in args:
-
         # if an app is running, stop it first
         if last_run != '':
           to_run = last_run_full
@@ -162,6 +169,7 @@ class Handler(BaseHTTPRequestHandler):
     elif os.path.isfile(base_path + req.path):
       page = base_path + req.path 
       self.serve_page(page)
+
     else:
       self.send_response(404)
       self.send_header("Content-type", "text/html")               
@@ -189,4 +197,5 @@ except KeyboardInterrupt:
 finally:
   if last_run != '':                         
     print 'killing: ' + last_run            
-    call('killall ' + last_run, shell=True)     
+    call('killall ' + last_run, shell=True)
+
