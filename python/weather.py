@@ -499,8 +499,8 @@ def render_forecast_conditions():
             else:
                 week_slots[x][y] = wc.weather_conditions[int(condition)]
 
-minimum_temperature = 32
-maximum_temperature = 102
+minimum_temperature = 50
+maximum_temperature = 100
 temperature_range = maximum_temperature - minimum_temperature
 
 def hsl_color(hue, sat=255, lit=None):

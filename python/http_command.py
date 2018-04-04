@@ -11,6 +11,7 @@ import os
 import socket
 from socket import error as socket_error
 import os.path
+import datetime
 
 global webpage, base_path, last_run, host_name, host_ip
 
@@ -75,12 +76,26 @@ class Handler(BaseHTTPRequestHandler):
     print '#' * 80
     print 
 
-  def serve_page(self, page):
+  def serve_page(self, page, headers={}):
     global last_run, last_run_full, host_name, host_ip
 
     filename, file_ext = os.path.splitext(page)
+    filetime = datetime.datetime.fromtimestamp(os.path.getmtime(page))
+    filetime_str = filetime.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
-    self.send_response(200)
+    is_cached = False
+    if headers != None:
+      modified_since = headers['If-Modified-Since']
+      if modified_since != None:
+        if modified_since.lower() == filetime_str.lower():
+          is_cached = True
+
+    if is_cached:
+      self.send_response(304)
+      self.send_header("Content-Length", "0")
+      self.end_headers()
+      return
+
     if file_ext == '.html':
       content_type = "text/html"                     
     elif file_ext == '.css':
@@ -93,7 +108,11 @@ class Handler(BaseHTTPRequestHandler):
       content_type = "image/png"
     else:
       content_type = "application/octet-stream"                     
+
+    self.send_response(200)
+    self.send_header("Cache-Control", "private")
     self.send_header("Content-type", content_type)
+    self.send_header("Last-Modified", filetime_str)
     self.end_headers()  
 
     if last_run != '':
@@ -122,19 +141,21 @@ class Handler(BaseHTTPRequestHandler):
     self.wfile.close() 
 
   def handle_commands(self, commands):
-    command(":::pause")
+    command(":::pau")
     for cmd in commands:
       command(cmd)
-    command("flush:continue")
+    command("cnt")
 
   def do_GET(self):
     req = urlparse.urlparse(self.path)
+
+    #print self.headers.getheader('If-Modified-Since')
+    headers = {'If-Modified-Since': self.headers.getheader('If-Modified-Since')}
  
     if req.path == '/command':
       args = urlparse.parse_qs(req.query)            
 
       if 'cmd' in args:
-
         # if an app is running, stop it first
         if last_run != '':
           to_run = last_run_full
@@ -157,11 +178,12 @@ class Handler(BaseHTTPRequestHandler):
           call(sys, shell=True)
 
       # serve main page
-      self.serve_page(webpage)
+      self.serve_page(webpage, headers)
 
     elif os.path.isfile(base_path + req.path):
       page = base_path + req.path 
-      self.serve_page(page)
+      self.serve_page(page, headers)
+
     else:
       self.send_response(404)
       self.send_header("Content-type", "text/html")               
@@ -189,4 +211,5 @@ except KeyboardInterrupt:
 finally:
   if last_run != '':                         
     print 'killing: ' + last_run            
-    call('killall ' + last_run, shell=True)     
+    call('killall ' + last_run, shell=True)
+
