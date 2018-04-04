@@ -115,9 +115,15 @@ class Handler(BaseHTTPRequestHandler):
       content_type = "application/octet-stream"                     
 
     self.send_response(200)
-    self.send_header("Cache-Control", "private")
     self.send_header("Content-type", content_type)
-    self.send_header("Last-Modified", filetime_str)
+
+    # can't cache the html page until actions are backgrounded
+    if content_type == "text/html":
+      self.send_header("Cache-Control", "no-cache")
+    else:
+      self.send_header("Cache-Control", "private")
+      self.send_header("Last-Modified", filetime_str)
+
     self.end_headers()  
 
     if last_run != '':
@@ -151,8 +157,9 @@ class Handler(BaseHTTPRequestHandler):
   def handle_commands(self, commands):
     command(":::3:pau")
     for cmd in commands:
-      command(cmd)
-    command("3:cnt")
+      print cmd
+      command("3:cnt:" + cmd)
+    #command("3:cnt")
 
   def do_GET(self):
     req = urlparse.urlparse(self.path)
