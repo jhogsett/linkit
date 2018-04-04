@@ -85,10 +85,15 @@ class Handler(BaseHTTPRequestHandler):
 
     is_cached = False
     if headers != None:
-      modified_since = headers['If-Modified-Since']
-      if modified_since != None:
-        if modified_since.lower() == filetime_str.lower():
-          is_cached = True
+      if 'If-Modified-Since' in headers:
+        modified_since = headers['If-Modified-Since']
+        if modified_since != None:
+
+          print modified_since
+          print filetime_str
+
+          if modified_since.lower() == filetime_str.lower():
+            is_cached = True
 
     if is_cached:
       self.send_response(304)
@@ -135,21 +140,22 @@ class Handler(BaseHTTPRequestHandler):
     """ % globals()
 
     f = open(page, 'r')                       
-    self.wfile.write(f.read().replace('<!-- banner -->', banner).replace('<!-- footer -->', footer))
+    if content_type == "text/html":
+    	self.wfile.write(f.read().replace('<!-- banner -->', banner).replace('<!-- footer -->', footer))
+    else:
+        self.wfile.write(f.read())
                    
     f.close  
     self.wfile.close() 
 
   def handle_commands(self, commands):
-    command(":::pau")
+    command(":::3:pau")
     for cmd in commands:
       command(cmd)
-    command("cnt")
+    command("3:cnt")
 
   def do_GET(self):
     req = urlparse.urlparse(self.path)
-
-    #print self.headers.getheader('If-Modified-Since')
     headers = {'If-Modified-Since': self.headers.getheader('If-Modified-Since')}
  
     if req.path == '/command':
@@ -178,7 +184,11 @@ class Handler(BaseHTTPRequestHandler):
           call(sys, shell=True)
 
       # serve main page
-      self.serve_page(webpage, headers)
+      # self.serve_page(webpage, headers)
+
+      # until command actions are handled asynchronously, need to
+      # serve the page each time non-cached
+      self.serve_page(webpage)
 
     elif os.path.isfile(base_path + req.path):
       page = base_path + req.path 
