@@ -6,13 +6,13 @@
 # set the slow fade rate to 0.8
 # set up the sequencers
 # set up the palette hue sequencer
-10;clr:1:pau:2,8000:cfg:30:run:25:run;0
+10;clr:1:pau:2,8000:cfg:30:run:25:run;16
 
 # pause effects
 # set up sine sequencers
 # set up sequence schedules
 # reset the palette
-30;1:pau:40:run:44:run:1:shf;15
+30;1:pau:40:run:44:run:1:shf;12
 
 # set up sine sequencers
 40;37:run:38:run:39:run;9
@@ -34,10 +34,10 @@
 
 # set up palette hue sequencer
 # schedule it to rotate
-25;6,360:seq:100,26:sch;0
+25;6,360:seq:100,26:sch;12
 
 # sequence the palette hues
-26;6,0,2:seq:sto:60:rcl:csh;0
+26;6,0,2:seq:sto:60:rcl:csh;13
 
 
 
