@@ -161,7 +161,7 @@ def set_macro(macro, macro_text, expected_bytes, debug_mode):
 
     else:
         if expected_bytes > 0 and expected_bytes != bytes:
-            raise StandardError("Wrong number of bytes received for macro %" % str(macro)) 
+            raise StandardError("Wrong number of bytes received for macro %s" % str(macro)) 
 
     return bytes
 

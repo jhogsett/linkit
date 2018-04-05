@@ -58,7 +58,10 @@ def set_macro(macro_num, macro_text, expected_bytes):
 
     except StandardError, e:
       print str(e) + " - retrying"
-      lc.set_macro(macro_num, macro_text, expected_bytes, debug_mode)        
+      try:
+        lc.set_macro(macro_num, macro_text, expected_bytes, debug_mode)        
+      except StandardError, e:
+        sys.exit("\nUnable to program macros. Macro file may be corrupt.")
 
     lc.command_str("grn:flu")                                 
     macro_count += 1
