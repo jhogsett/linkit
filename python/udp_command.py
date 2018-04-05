@@ -94,8 +94,12 @@ def handle_command(cmd_text):
         print >>sys.stderr, tc.yellow("command: ") + tc.white(cmd) + tc.red(" (key: " + key + ")")
     else:
         print >>sys.stderr, tc.yellow("command: ") + tc.white(cmd)
-    command(":::3:pau")
-    command(":::3:cnt:" + cmd)
+    #command(":::3:pau")
+    #command("3:cnt:" + cmd)
+
+    command(":::")
+    command(cmd)
+
     flush_output();
     return True
 
