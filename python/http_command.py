@@ -172,30 +172,30 @@ class Handler(BaseHTTPRequestHandler):
         if last_run != '':
           to_run = last_run_full
           self.kill_last_app();
-          self.handle_commands(["3:pau:"] + args['cmd'] + [":3:cnt"])
+          self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
           self.run_app(to_run)
         else:
-          self.handle_commands(["3:pau:"] + args['cmd'] + [":3:cnt"])
+          self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
 
       if 'color' in args:
         # if an app is running, stop it first
         if last_run != '':
           to_run = last_run_full
           self.kill_last_app();
-          self.handle_commands(["2:pau:"] + args['color'] + [":1:cnt:flu"])
+          self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
           self.run_app(to_run)
         else:
-          self.handle_commands(["2:pau:"] + args['color'] + [":1:cnt:flu"])
+          self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
 
       if 'macro' in args:
         # if an app is running, stop it first
         if last_run != '':
           to_run = last_run_full
           self.kill_last_app();
-          self.handle_commands(["1:pau:2:cnt:"] + args['macro'] + [":run"])
+          self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
           self.run_app(to_run)
         else:
-          self.handle_commands(["1:pau:2:cnt:"] + args['macro'] + [":run"])
+          self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
  
       if 'run' in args:
         self.kill_last_app() 
