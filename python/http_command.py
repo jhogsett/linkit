@@ -12,8 +12,11 @@ import socket
 from socket import error as socket_error
 import os.path
 import datetime
+import led_command as lc
+import argparse
+import app_ui as ui
 
-global webpage, base_path, last_run, host_name, host_ip
+global httpd, webpage, base_path, last_run, host_name, host_ip
 
 last_run = ''
 last_run_full = ''
@@ -30,20 +33,50 @@ if len(sys.argv) > 1:
 else:
   webpage = base_path + 'http_command.html'
 
-global s
-s = None                            
+global app_description, verbose_mode, debug_mode, num_leds, macro_count, programs, macro_run_number
+app_description = None
+verbose_mode = None
+debug_mode = None
+num_leds = None
 
-def wait_for_ack():      
-  while s.inWaiting() <= 0:
-    pass                   
-  s.read(s.inWaiting())    
-                           
-def command(cmd_text):   
-  s.write((cmd_text + ':').encode())
-  wait_for_ack()   
+def get_options():
+  global verbose_mode, debug_mode
+  parser = argparse.ArgumentParser(description=app_description)
+  parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
+  parser.add_argument("-d", "--debug", dest="debug", action="store_true", help="display verbose info (False)")
+  args = parser.parse_args()
+  verbose_mode = args.verbose
+  debug_mode = args.debug
+
+def validate_options():
+    errors = False
+    return not errors
+
+def initialize():
+  global app_description, num_leds
+  app_description = "Apollo Lighting System - HTTP Commander v.2.0 4-0-2018"
+  get_options()
+  if not validate_options():
+    sys.exit("\nExiting...\n")
+  lc.begin(verbose_mode)
+  ui.begin(verbose_mode)
+  lc.attention()
+  lc.stop_all()
+  num_leds = lc.get_num_leds()
+  lc.command("cnt")
+
+def introduction():
+    ui.app_description(app_description)
+
+    ui.report_verbose("verbose mode")
+    ui.report_verbose("debug_mode: " + str(debug_mode))
+    ui.report_verbose()
+
+    ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
+    print 
 
 class Handler(BaseHTTPRequestHandler):
-  global last_run, last_run_full, host_name, host_ip
+  global last_run, last_run_full, host_name, host_ip, to_run
 
   def run_app(self, app, track=True):
     global last_run, last_run_full    
@@ -155,10 +188,22 @@ class Handler(BaseHTTPRequestHandler):
     self.wfile.close() 
 
   def handle_commands(self, commands):
-    command(":::")
+    lc.command(":::")
     for cmd in commands:
       print cmd, 
-      command(cmd)
+      lc.command(cmd)
+
+  def stop_running_app(self):
+    global to_run
+    if last_run != '':
+      to_run = last_run_full
+      self.kill_last_app();
+    else:
+      to_run = ''
+
+  def restart_running_app(self):
+    if to_run != '':
+      self.run_app(to_run)
 
   def do_GET(self):
     req = urlparse.urlparse(self.path)
@@ -169,33 +214,39 @@ class Handler(BaseHTTPRequestHandler):
 
       if 'cmd' in args:
         # if an app is running, stop it first
-        if last_run != '':
-          to_run = last_run_full
-          self.kill_last_app();
-          self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
-          self.run_app(to_run)
-        else:
-          self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
+        self.stop_running_app()
+#        if last_run != '':
+#          to_run = last_run_full
+#          self.kill_last_app();
+        self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
+#          self.run_app(to_run)
+        self.restart_running_app()
+#        else:
+#          self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
 
       if 'color' in args:
         # if an app is running, stop it first
-        if last_run != '':
-          to_run = last_run_full
-          self.kill_last_app();
-          self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
-          self.run_app(to_run)
-        else:
-          self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
+        self.stop_running_app()
+#        if last_run != '':
+#          to_run = last_run_full
+#          self.kill_last_app();
+        self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
+#          self.run_app(to_run)
+        self.restart_running_app()
+#        else:
+#          self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
 
       if 'macro' in args:
         # if an app is running, stop it first
-        if last_run != '':
-          to_run = last_run_full
-          self.kill_last_app();
-          self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
-          self.run_app(to_run)
-        else:
-          self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
+        self.stop_running_app()
+#        if last_run != '':
+#          to_run = last_run_full
+#          self.kill_last_app();
+        self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
+#          self.run_app(to_run)
+        self.restart_running_app()
+#        else:
+#          self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
  
       if 'run' in args:
         self.kill_last_app() 
@@ -209,6 +260,9 @@ class Handler(BaseHTTPRequestHandler):
           self.log('shell command: ' + sys)
           call(sys, shell=True)
 
+      if 'cast' in args:
+        pass
+
       # serve main page
       # self.serve_page(webpage, headers)
 
@@ -221,31 +275,92 @@ class Handler(BaseHTTPRequestHandler):
       self.serve_page(page, headers)
 
     else:
+      msg = "<html><body><h1>404 Not Found</h1></body></html>"
       self.send_response(404)
-      self.send_header("Content-type", "text/html")               
+      self.send_header("Content-Type", "text/html")
+      self.send_header("Content-Length", len(msg))
       self.end_headers()                             
-      self.wfile.write("<html><body><h1>404 Not Found</h1></body></html>")
+      self.wfile.write(msg)
       self.wfile.close()                             
 
-s = serial.Serial("/dev/ttyS0", 115200)
+#s = serial.Serial("/dev/ttyS0", 115200)
 
-while(True):
+############################################################################
+
+def start_server():
+  global httpd
+  while(True):
+    try:
+      httpd = SocketServer.TCPServer(("", 8080), Handler)
+    except socket_error,e:
+      print "Error: " + str(e) + " - retrying"
+      time.sleep(5)
+      continue
+    print "Listening..."
+    break
+
+def run_server():
   try:
-    httpd = SocketServer.TCPServer(("", 8080), Handler)
-  except socket_error,e:
-    print "Error: " + str(e) + " - retrying"
-    time.sleep(5)
-    continue
-  break 
+    httpd.serve_forever()
+  except KeyboardInterrupt:
+    sys.exit("\nExiting...\n")
 
-print "Listening..."
+def setup():
+  initialize()
+  introduction()
 
-try:
-  httpd.serve_forever()
-except KeyboardInterrupt:                                               
-  sys.exit("\nExiting...\n") 
-finally:
-  if last_run != '':                         
-    print 'killing: ' + last_run            
+def run():
+  start_server()
+  run_server()
+
+def conclude():
+  if last_run != '':
+    print 'killing: ' + last_run
     call('killall ' + last_run, shell=True)
+
+if __name__ == '__main__':
+  setup()
+  try:
+    run() 
+  except KeyboardInterrupt:
+    sys.exit("\nExiting...\n")
+  finally:
+    conclude()
+
+#try:
+#  httpd.serve_forever()
+#except KeyboardInterrupt:
+#  sys.exit("\nExiting...\n")
+#finally:
+#  if last_run != '':
+#    print 'killing: ' + last_run
+#    call('killall ' + last_run, shell=True)
+#    try:
+#      run()
+#    while True:
+#        try:
+#            loop()
+#        except KeyboardInterrupt:
+#            sys.exit("\nExiting...\n")
+#        except Exception:
+#            raise
+#while(True):
+#  try:
+#    httpd = SocketServer.TCPServer(("", 8080), Handler)
+#  except socket_error,e:
+#    print "Error: " + str(e) + " - retrying"
+#    time.sleep(5)
+#    continue
+#  break 
+#
+#print "Listening..."
+#
+#try:
+#  httpd.serve_forever()
+#except KeyboardInterrupt:                                               
+#  sys.exit("\nExiting...\n") 
+#finally:
+#  if last_run != '':                         
+#    print 'killing: ' + last_run            
+#    call('killall ' + last_run, shell=True)
 
