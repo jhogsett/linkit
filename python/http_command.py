@@ -215,38 +215,20 @@ class Handler(BaseHTTPRequestHandler):
       if 'cmd' in args:
         # if an app is running, stop it first
         self.stop_running_app()
-#        if last_run != '':
-#          to_run = last_run_full
-#          self.kill_last_app();
         self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
-#          self.run_app(to_run)
         self.restart_running_app()
-#        else:
-#          self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
 
       if 'color' in args:
         # if an app is running, stop it first
         self.stop_running_app()
-#        if last_run != '':
-#          to_run = last_run_full
-#          self.kill_last_app();
         self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
-#          self.run_app(to_run)
         self.restart_running_app()
-#        else:
-#          self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
 
       if 'macro' in args:
         # if an app is running, stop it first
         self.stop_running_app()
-#        if last_run != '':
-#          to_run = last_run_full
-#          self.kill_last_app();
         self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
-#          self.run_app(to_run)
         self.restart_running_app()
-#        else:
-#          self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
  
       if 'run' in args:
         self.kill_last_app() 
@@ -282,8 +264,6 @@ class Handler(BaseHTTPRequestHandler):
       self.end_headers()                             
       self.wfile.write(msg)
       self.wfile.close()                             
-
-#s = serial.Serial("/dev/ttyS0", 115200)
 
 ############################################################################
 
@@ -326,41 +306,4 @@ if __name__ == '__main__':
     sys.exit("\nExiting...\n")
   finally:
     conclude()
-
-#try:
-#  httpd.serve_forever()
-#except KeyboardInterrupt:
-#  sys.exit("\nExiting...\n")
-#finally:
-#  if last_run != '':
-#    print 'killing: ' + last_run
-#    call('killall ' + last_run, shell=True)
-#    try:
-#      run()
-#    while True:
-#        try:
-#            loop()
-#        except KeyboardInterrupt:
-#            sys.exit("\nExiting...\n")
-#        except Exception:
-#            raise
-#while(True):
-#  try:
-#    httpd = SocketServer.TCPServer(("", 8080), Handler)
-#  except socket_error,e:
-#    print "Error: " + str(e) + " - retrying"
-#    time.sleep(5)
-#    continue
-#  break 
-#
-#print "Listening..."
-#
-#try:
-#  httpd.serve_forever()
-#except KeyboardInterrupt:                                               
-#  sys.exit("\nExiting...\n") 
-#finally:
-#  if last_run != '':                         
-#    print 'killing: ' + last_run            
-#    call('killall ' + last_run, shell=True)
 
