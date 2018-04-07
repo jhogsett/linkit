@@ -205,6 +205,36 @@ class Handler(BaseHTTPRequestHandler):
     if to_run != '':
       self.run_app(to_run)
 
+  def do_cmd(self, args):
+    self.stop_running_app()
+    self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
+    self.restart_running_app()
+
+  def do_color(self, args):
+    self.stop_running_app()
+    self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
+    self.restart_running_app()
+
+  def do_macro(self, args):
+    self.stop_running_app()
+    self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
+    self.restart_running_app()
+
+  def do_run(self, args):
+    self.kill_last_app()
+    self.run_app(args['run'][0])
+
+  def do_runonce(self, args):
+    self.run_app(args['runonce'][0], False)
+
+  def do_sys(self, args):
+    for sys in args['sys']:
+      self.log('shell command: ' + sys)
+      call(sys, shell=True)
+
+  def do_cast(self):
+    pass
+
   def do_GET(self):
     req = urlparse.urlparse(self.path)
     headers = {'If-Modified-Since': self.headers.getheader('If-Modified-Since')}
@@ -214,36 +244,42 @@ class Handler(BaseHTTPRequestHandler):
 
       if 'cmd' in args:
         # if an app is running, stop it first
-        self.stop_running_app()
-        self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
-        self.restart_running_app()
+        #self.stop_running_app()
+        #self.handle_commands(["3:pau"] + args['cmd'] + [":3:cnt"])
+        #self.restart_running_app()
+        self.do_cmd(args)
 
       if 'color' in args:
         # if an app is running, stop it first
-        self.stop_running_app()
-        self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
-        self.restart_running_app()
+        #self.stop_running_app()
+        #self.handle_commands(["2:pau"] + args['color'] + [":1:cnt:flu"])
+        #self.restart_running_app()
+        self.do_color(args)
 
       if 'macro' in args:
         # if an app is running, stop it first
-        self.stop_running_app()
-        self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
-        self.restart_running_app()
- 
+        #self.stop_running_app()
+        #self.handle_commands(["1:pau:2:cnt"] + [str(args['macro'][0]) + ":run"])
+        #self.restart_running_app()
+        self.do_macro(args) 
+
       if 'run' in args:
-        self.kill_last_app() 
-        self.run_app(args['run'][0])
+        #self.kill_last_app() 
+        #self.run_app(args['run'][0])
+        self.do_run(args)
 
       if 'runonce' in args:
-        self.run_app(args['runonce'][0], False)
+        #self.run_app(args['runonce'][0], False)
+        self.runonce(args)
 
       if 'sys' in args:
-        for sys in args['sys']:
-          self.log('shell command: ' + sys)
-          call(sys, shell=True)
+        #for sys in args['sys']:
+        #  self.log('shell command: ' + sys)
+        #  call(sys, shell=True)
+        do_sys(args)
 
       if 'cast' in args:
-        pass
+        do_cast(args)
 
       # serve main page
       # self.serve_page(webpage, headers)
