@@ -15,10 +15,12 @@ import datetime
 import led_command as lc
 import argparse
 import app_ui as ui
+import struct
 
 # ---------------------------------------------------------
 
 global httpd, webpage, base_path, last_run, host_name, host_ip, app_description, verbose_mode, debug_mode, num_leds, macro_count, programs, macro_run_number, retry_wait, ip_address, port
+global multicast_group_ip, multicast_port, timeout_in_seconds, multicast_group, num_times, no_keys, msg_delay
 
 last_run = ''
 last_run_full = ''
@@ -35,15 +37,23 @@ port = None
 # ---------------------------------------------------------
 
 def get_options():
-  global verbose_mode, debug_mode, retry_wait, base_path, webpage, ip_address, port
+  global verbose_mode, debug_mode, retry_wait, base_path, webpage, ip_address, port, multicast_group_ip, multicast_port, timeout_in_seconds, multicast_group, num_times, no_keys, msg_delay
+  global multicast_group_ip, multicast_port, timeout_in_seconds, multicast_group, num_times, no_keys, msg_delay
   parser = argparse.ArgumentParser(description=app_description)
-  parser.add_argument("webpage",  metavar="W", nargs="?",                                         help="path to web page")
-  parser.add_argument("rootpath", metavar="R", nargs="?",                                         help="root path for files")
-  parser.add_argument("-a",       "--address", dest="address",                      default="",   help='server address (all addresses)')
-  parser.add_argument("-p",       "--port",    dest="port",    type=int,            default=8080, help='server port (8080)')
-  parser.add_argument("-r",       "--retry",   dest="retry",   type=int,            default=10,   help='retry wait (secs) (10)')
-  parser.add_argument("-v",       "--verbose", dest="verbose", action="store_true",               help="display verbose info (False)")
-  parser.add_argument("-d",       "--debug",   dest="debug",   action="store_true",               help="display verbose info (False)")
+  parser.add_argument("webpage",  metavar="W",  nargs="?",                                                  help="path to web page")
+  parser.add_argument("rootpath", metavar="R",  nargs="?",                                                  help="root path for files")
+  parser.add_argument("-a",       "--addr",     dest="address",                      default="",            help='server address (all addresses)')
+  parser.add_argument("-p",       "--port",     dest="port",    type=int,            default=8080,          help='server port (8080)')
+  parser.add_argument("-r",       "--retry",    dest="retry",   type=int,            default=10,            help='retry wait (secs) (10)')
+  parser.add_argument("-v",       "--verbose",  dest="verbose", action="store_true",                        help="display verbose info (False)")
+  parser.add_argument("-d",       "--debug",    dest="debug",   action="store_true",                        help="display verbose info (False)")
+  parser.add_argument("-m",       "--mcaddr",   dest="mcaddr",                       default='224.3.29.71', help='multicast group IP address (224.3.29.71)')
+  parser.add_argument("-o",       "--mcport",   dest="mcport",  type=int,            default=10000,         help='multicast port (10000)')
+  parser.add_argument("-t",       "--timeout",  dest="timeout", type=float,          default=0.1,           help='timeout time waiting for responses (seconds) (0.1)')
+  parser.add_argument("-n",       "--numtimes", dest="times",   type=int,            default=15,            help='number of times to issue command (9)')
+  parser.add_argument("-k",       "--nokeys",   dest="nokeys",  action='store_true',                        help='disables keys sent for dupe detection (False)')
+  parser.add_argument("-e",       "--delay",    dest="delay",   type=float,          default=0.001,         help='delay exponent between duplicate messages (seconds) (0.01)')
+
   args = parser.parse_args()
   verbose_mode = args.verbose
   debug_mode = args.debug
@@ -56,10 +66,19 @@ def get_options():
   webpage = args.webpage
   if webpage == None:
     webpage = base_path + 'http_command.html'
+  multicast_group_ip = args.mcaddr
+  multicast_port = args.mcport
+  timeout_in_seconds = args.timeout
+  multicast_group = (multicast_group_ip, multicast_port)
+  num_times = args.times
+  no_keys = args.nokeys
+  msg_delay = args.delay
 
 def validate_options():
     errors = False
     return not errors
+
+# ---------------------------------------------------------
 
 def initialize():
   global app_description, num_leds
@@ -81,11 +100,20 @@ def introduction():
   ui.report_verbose("web page: " + webpage)  
   ui.report_verbose("ip_address: " + "all" if ip_address == '' else ip_address)
   ui.report_verbose("port: " + str(port))
+  ui.report_verbose("server name: " + host_name)
+  ui.report_verbose("multicast group IP: " + multicast_group_ip)
+  ui.report_verbose("multicast port: " + str(multicast_port))
+  ui.report_verbose("reply timeout: " + str(timeout_in_seconds) + "s")
+  ui.report_verbose("sends per message: " + str(num_times))
+  ui.report_verbose("sending keys: " + str(no_keys == False))
+  ui.report_verbose("message delay: " + str(msg_delay))
   ui.report_verbose("retry wait: " + str(retry_wait) + "s")
   ui.report_verbose("debug_mode: " + str(debug_mode))
   ui.report_verbose()
   ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
   print 
+
+# ---------------------------------------------------------
 
 class Handler(BaseHTTPRequestHandler):
   global last_run, last_run_full, host_name, host_ip, to_rerun
@@ -236,8 +264,11 @@ class Handler(BaseHTTPRequestHandler):
       self.log('shell command: ' + sys)
       call(sys, shell=True)
 
-  def do_cast(self):
-    pass
+  def do_cast(self, args):
+    sock = cast_socket()
+    for cast in args['cast']:
+      send_message(sock, cast, num_times)
+    sock.close()
 
   def get_headers(self):
     return {'If-Modified-Since': self.headers.getheader('If-Modified-Since')}
@@ -293,6 +324,44 @@ class Handler(BaseHTTPRequestHandler):
     else: 
       if not self.do_file(url):
         self.do_notfound()
+
+# ---------------------------------------------------------
+
+def cast_socket():
+  # Create the datagram socket
+  sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+  # Set a timeout so the socket does not block indefinitely when trying
+  # to receive data.
+  sock.settimeout(timeout_in_seconds)
+
+  # Set the time-to-live for messages to 1 so they do not go past the
+  # local network segment.
+  ttl = struct.pack('b', 1)
+  sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
+
+  return sock
+
+def add_key(command):
+  return host_name + "/" + str(time.time()) + ";" + command
+
+def send_message(sock, message, times):
+  if no_keys != True:
+    message = add_key(message)
+  for n in range(0, times):
+    # Send data to the multicast group
+    ui.report_verbose('sending "%s"' % message)
+    sent = sock.sendto(message, multicast_group)
+    if verbose_mode:
+      while True:
+        try:
+          data, server = sock.recvfrom(16)
+        except socket.timeout:
+          break
+        else:
+          ui.report_verbose('received "%s" from %s' % (data, server))
+    if n < (times - 1):
+      time.sleep(msg_delay * (2 ** n))
 
 ############################################################################
 

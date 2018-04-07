@@ -29,7 +29,7 @@ def report_footer():
     print
 
 def intro_entry(key, value):
-    return tc.white(key) + ": " + tc.green(str(value))
+    return tc.cyan(key) + ": " + tc.green(str(value))
 
 def app_description(description):
     print tc.magenta("\n" + description + "\n")
