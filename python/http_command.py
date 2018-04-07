@@ -16,7 +16,9 @@ import led_command as lc
 import argparse
 import app_ui as ui
 
-global httpd, webpage, base_path, last_run, host_name, host_ip, app_description, verbose_mode, debug_mode, num_leds, macro_count, programs, macro_run_number, retry_wait
+# ---------------------------------------------------------
+
+global httpd, webpage, base_path, last_run, host_name, host_ip, app_description, verbose_mode, debug_mode, num_leds, macro_count, programs, macro_run_number, retry_wait, ip_address, port
 
 last_run = ''
 last_run_full = ''
@@ -27,35 +29,31 @@ verbose_mode = None
 debug_mode = None
 num_leds = None
 retry_wait = None
+ip_address = None
+port = None
 
-#if len(sys.argv) > 2:
-#  base_path = sys.argv[2] + '/'
-#else:
-#  base_path = os.getcwd() + '/'
-
-#if len(sys.argv) > 1:
-#  webpage = sys.argv[1]
-#else:
-#  webpage = base_path + 'http_command.html'
+# ---------------------------------------------------------
 
 def get_options():
-  global verbose_mode, debug_mode, retry_wait, base_path, webpage
+  global verbose_mode, debug_mode, retry_wait, base_path, webpage, ip_address, port
   parser = argparse.ArgumentParser(description=app_description)
-  parser.add_argument("page", metavar="P", nargs="?", help="path to web page")
-  parser.add_argument("path", metavar="R", nargs="?", help="root path for files")
-  parser.add_argument("-r", "--retry", type=int, dest="retry", default=10, help='retry wait (secs) (10)')
-  parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
-  parser.add_argument("-d", "--debug", dest="debug", action="store_true", help="display verbose info (False)")
+  parser.add_argument("webpage",  metavar="W", nargs="?",                                         help="path to web page")
+  parser.add_argument("rootpath", metavar="R", nargs="?",                                         help="root path for files")
+  parser.add_argument("-a",       "--address", dest="address",                      default="",   help='server address (all addresses)')
+  parser.add_argument("-p",       "--port",    dest="port",    type=int,            default=8080, help='server port (8080)')
+  parser.add_argument("-r",       "--retry",   dest="retry",   type=int,            default=10,   help='retry wait (secs) (10)')
+  parser.add_argument("-v",       "--verbose", dest="verbose", action="store_true",               help="display verbose info (False)")
+  parser.add_argument("-d",       "--debug",   dest="debug",   action="store_true",               help="display verbose info (False)")
   args = parser.parse_args()
-  retry_wait = args.retry
   verbose_mode = args.verbose
   debug_mode = args.debug
-
-  base_path = args.path
+  retry_wait = args.retry
+  ip_address = args.address
+  port = args.port
+  base_path = args.rootpath
   if base_path == None:
     base_path = os.getcwd() + '/'
-
-  webpage = args.page
+  webpage = args.webpage
   if webpage == None:
     webpage = base_path + 'http_command.html'
 
@@ -81,6 +79,8 @@ def introduction():
   ui.report_verbose("verbose mode")
   ui.report_verbose("root path: " + base_path)
   ui.report_verbose("web page: " + webpage)  
+  ui.report_verbose("ip_address: " + "all" if ip_address == '' else ip_address)
+  ui.report_verbose("port: " + str(port))
   ui.report_verbose("retry wait: " + str(retry_wait) + "s")
   ui.report_verbose("debug_mode: " + str(debug_mode))
   ui.report_verbose()
@@ -88,7 +88,7 @@ def introduction():
   print 
 
 class Handler(BaseHTTPRequestHandler):
-  global last_run, last_run_full, host_name, host_ip, to_run
+  global last_run, last_run_full, host_name, host_ip, to_rerun
 
   def run_app(self, app, track=True):
     global last_run, last_run_full    
@@ -198,16 +198,16 @@ class Handler(BaseHTTPRequestHandler):
       lc.command(cmd)
 
   def stop_running_app(self):
-    global to_run
+    global to_rerun
     if last_run != '':
-      to_run = last_run_full
+      to_rerun = last_run_full
       self.kill_last_app();
     else:
-      to_run = ''
+      to_rerun = ''
 
   def restart_running_app(self):
-    if to_run != '':
-      self.run_app(to_run)
+    if to_rerun != '':
+      self.run_app(to_rerun)
 
   def do_cmd(self, args):
     self.stop_running_app()
@@ -300,7 +300,7 @@ def start_server():
   global httpd
   while(True):
     try:
-      httpd = SocketServer.TCPServer(("", 8080), Handler)
+      httpd = SocketServer.TCPServer((ip_address, port), Handler)
     except socket_error,e:
       print "Error: " + str(e) + " - retrying"
       time.sleep(retry_wait)
@@ -326,6 +326,9 @@ def conclude():
   if last_run != '':
     print 'killing: ' + last_run
     call('killall ' + last_run, shell=True)
+
+############################################################################
+############################################################################
 
 if __name__ == '__main__':
   setup()
