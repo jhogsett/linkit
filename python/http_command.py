@@ -16,6 +16,7 @@ import led_command as lc
 import argparse
 import app_ui as ui
 import struct
+import threading
 
 # ---------------------------------------------------------
 
@@ -265,10 +266,8 @@ class Handler(BaseHTTPRequestHandler):
       call(sys, shell=True)
 
   def do_cast(self, args):
-    sock = cast_socket()
     for cast in args['cast']:
-      send_message(sock, cast, num_times)
-    sock.close()
+      send_background_message(cast)
 
   def get_headers(self):
     return {'If-Modified-Since': self.headers.getheader('If-Modified-Since')}
@@ -345,7 +344,7 @@ def cast_socket():
 def add_key(command):
   return host_name + "/" + str(time.time()) + ";" + command
 
-def send_message(sock, message, times):
+def send_socket_message(sock, message, times):
   if no_keys != True:
     message = add_key(message)
   for n in range(0, times):
@@ -362,6 +361,15 @@ def send_message(sock, message, times):
           ui.report_verbose('received "%s" from %s' % (data, server))
     if n < (times - 1):
       time.sleep(msg_delay * (2 ** n))
+
+def send_message(message):
+  sock = cast_socket()
+  send_socket_message(sock, message, num_times)
+  sock.close()
+
+def send_background_message(message):
+  thread = threading.Thread(target=send_message, args=(message,))
+  thread.start()
 
 ############################################################################
 
