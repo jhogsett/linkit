@@ -47,13 +47,13 @@ def get_options():
   parser.add_argument("-p",       "--port",     dest="port",    type=int,            default=8080,          help='server port (8080)')
   parser.add_argument("-r",       "--retry",    dest="retry",   type=int,            default=10,            help='retry wait (secs) (10)')
   parser.add_argument("-v",       "--verbose",  dest="verbose", action="store_true",                        help="display verbose info (False)")
-  parser.add_argument("-d",       "--debug",    dest="debug",   action="store_true",                        help="display verbose info (False)")
+  parser.add_argument("-d",       "--debug",    dest="debug",   action="store_true",                        help="display debugging info (False)")
   parser.add_argument("-m",       "--mcaddr",   dest="mcaddr",                       default='224.3.29.71', help='multicast group IP address (224.3.29.71)')
   parser.add_argument("-o",       "--mcport",   dest="mcport",  type=int,            default=10000,         help='multicast port (10000)')
   parser.add_argument("-t",       "--timeout",  dest="timeout", type=float,          default=0.1,           help='timeout time waiting for responses (seconds) (0.1)')
-  parser.add_argument("-n",       "--numtimes", dest="times",   type=int,            default=15,            help='number of times to issue command (9)')
+  parser.add_argument("-n",       "--numtimes", dest="times",   type=int,            default=15,            help='number of times to issue command (15)')
   parser.add_argument("-k",       "--nokeys",   dest="nokeys",  action='store_true',                        help='disables keys sent for dupe detection (False)')
-  parser.add_argument("-e",       "--delay",    dest="delay",   type=float,          default=0.001,         help='delay exponent between duplicate messages (seconds) (0.01)')
+  parser.add_argument("-e",       "--delay",    dest="delay",   type=float,          default=0.001,         help='delay exponent between duplicate messages (seconds) (0.001)')
 
   args = parser.parse_args()
   verbose_mode = args.verbose
@@ -97,21 +97,21 @@ def initialize():
 def introduction():
   ui.app_description(app_description)
   ui.report_verbose("verbose mode")
-  ui.report_verbose("root path: " + base_path)
-  ui.report_verbose("web page: " + webpage)  
-  ui.report_verbose("ip_address: " + "all" if ip_address == '' else ip_address)
-  ui.report_verbose("port: " + str(port))
-  ui.report_verbose("server name: " + host_name)
-  ui.report_verbose("multicast group IP: " + multicast_group_ip)
-  ui.report_verbose("multicast port: " + str(multicast_port))
-  ui.report_verbose("reply timeout: " + str(timeout_in_seconds) + "s")
-  ui.report_verbose("sends per message: " + str(num_times))
-  ui.report_verbose("sending keys: " + str(no_keys == False))
-  ui.report_verbose("message delay: " + str(msg_delay))
-  ui.report_verbose("retry wait: " + str(retry_wait) + "s")
-  ui.report_verbose("debug_mode: " + str(debug_mode))
+  ui.verbose_entry("root path", base_path)
+  ui.verbose_entry("web page", webpage)  
+  ui.verbose_entry("ip_address", "all" if ip_address == '' else ip_address)
+  ui.verbose_entry("port", str(port))
+  ui.verbose_entry("server name", host_name)
+  ui.verbose_entry("multicast group IP", multicast_group_ip)
+  ui.verbose_entry("multicast port", str(multicast_port))
+  ui.verbose_entry("reply timeout", str(timeout_in_seconds) + "s")
+  ui.verbose_entry("sends per message", str(num_times))
+  ui.verbose_entry("sending keys", str(no_keys == False))
+  ui.verbose_entry("message delay", str(msg_delay))
+  ui.verbose_entry("retry wait", str(retry_wait) + "s")
+  ui.verbose_entry("debug_mode", str(debug_mode))
   ui.report_verbose()
-  ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
+  ui.info_entry("Number of LEDs", num_leds)
   print 
 
 # ---------------------------------------------------------
@@ -170,39 +170,79 @@ class Handler(BaseHTTPRequestHandler):
 </div>
     """ % globals()
 
-  def serve_page(self, page, headers={}):
-    global last_run, last_run_full, host_name, host_ip
-    filename, file_ext = os.path.splitext(page)
-    filetime = datetime.datetime.fromtimestamp(os.path.getmtime(page))
-    filetime_str = filetime.strftime("%a, %d %b %Y %H:%M:%S GMT")
-    is_cached = False
-    if headers != None:
-      if 'If-Modified-Since' in headers:
-        modified_since = headers['If-Modified-Since']
-        if modified_since != None:
-          print modified_since
-          print filetime_str
-          if modified_since.lower() == filetime_str.lower():
-            is_cached = True
-    if is_cached:
-      self.send_response(304)
-      self.send_header("Content-Length", "0")
-      self.end_headers()
-      return
+  def content_type(self, file_path):
+    filename, file_ext = os.path.splitext(file_path)
+    content_type = "application/octet-stream"
     if file_ext == '.html':
-      content_type = "text/html"                     
+      content_type = "text/html"
     elif file_ext == '.css':
-      content_type = "text/css"                     
+      content_type = "text/css"
     elif file_ext == '.js':
       content_type = "application/javascript"
     elif file_ext == '.ico':
       content_type = "image/x-icon"
     elif file_ext == '.png':
       content_type = "image/png"
-    else:
-      content_type = "application/octet-stream"                     
+    return content_type
+
+  def is_cached(self, file_path, headers):
+    filetime = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+    filetime_str = filetime.strftime("%a, %d %b %Y %H:%M:%S GMT")
+    is_cached = False
+    if headers != None:
+      if 'If-Modified-Since' in headers:
+        modified_since = headers['If-Modified-Since']
+        if modified_since != None:
+          #print modified_since
+          #print filetime_str
+          if modified_since.lower() == filetime_str.lower():
+            is_cached = True
+    return is_cached
+
+  def serve_page(self, page, headers={}):
+    global last_run, last_run_full, host_name, host_ip
+
+#    filename, file_ext = os.path.splitext(page)
+#
+
+    filetime = datetime.datetime.fromtimestamp(os.path.getmtime(page))
+    filetime_str = filetime.strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+#    is_cached = False
+#    if headers != None:
+#      if 'If-Modified-Since' in headers:
+#        modified_since = headers['If-Modified-Since']
+#        if modified_since != None:
+#          #print modified_since
+#          #print filetime_str
+#          if modified_since.lower() == filetime_str.lower():
+#            is_cached = True
+
+    is_cached = self.is_cached(page, headers)
+    if is_cached:
+      self.send_response(304)
+      self.send_header("Content-Length", "0")
+      self.end_headers()
+      return
+
+    content_type = self.content_type(page)
+
+#    if file_ext == '.html':
+#      content_type = "text/html"                     
+#    elif file_ext == '.css':
+#      content_type = "text/css"                     
+#    elif file_ext == '.js':
+#      content_type = "application/javascript"
+#    elif file_ext == '.ico':
+#      content_type = "image/x-icon"
+#    elif file_ext == '.png':
+#      content_type = "image/png"
+#    else:
+#      content_type = "application/octet-stream"                     
+
     self.send_response(200)
     self.send_header("Content-type", content_type)
+
     # can't cache the html page until actions are backgrounded
     if content_type == "text/html":
       self.send_header("Cache-Control", "no-cache")
@@ -210,8 +250,10 @@ class Handler(BaseHTTPRequestHandler):
       self.send_header("Cache-Control", "private")
       self.send_header("Last-Modified", filetime_str)
     self.end_headers()  
+
     banner = self.banner()
     footer = self.footer()
+
     f = open(page, 'r')                       
     if content_type == "text/html":
     	self.wfile.write(f.read().replace('<!-- banner -->', banner).replace('<!-- footer -->', footer))
@@ -355,6 +397,8 @@ def send_socket_message(sock, message, times):
       while True:
         try:
           data, server = sock.recvfrom(16)
+        #except KeyboardInterrupt:
+        #  break
         except socket.timeout:
           break
         else:
@@ -367,9 +411,25 @@ def send_message(message):
   send_socket_message(sock, message, num_times)
   sock.close()
 
+background_threads = []
+
+def handle_background_message(message):
+  send_message(message)
+  thread = threading.current_thread()
+  background_threads.remove(thread)
+  ui.report_verbose("terminating thread: " + str(thread))
+
 def send_background_message(message):
-  thread = threading.Thread(target=send_message, args=(message,))
+  thread = threading.Thread(target=handle_background_message, args=(message,))
+  ui.report_verbose("new thread: " + str(thread))
+  background_threads.append(thread)
   thread.start()
+
+def wait_for_active_threads():
+  if(len(background_threads) > 0):
+    ui.report_warn("waiting for active threads to terminate...")
+    for t in background_threads:
+      t.join()
 
 ############################################################################
 
@@ -379,17 +439,20 @@ def start_server():
     try:
       httpd = SocketServer.TCPServer((ip_address, port), Handler)
     except socket_error,e:
-      print "Error: " + str(e) + " - retrying"
+      ui.report_error("Error: " + str(e) + " - retrying")
       time.sleep(retry_wait)
       continue
-    print "Listening..."
+    ui.report_info("Listening...")
     break
 
 def run_server():
   try:
     httpd.serve_forever()
   except KeyboardInterrupt:
-    sys.exit("\nExiting...\n")
+    ui.report_verbose("keyboard interupt")
+    httpd.server_close()
+    #sys.exit("\nExiting...\n")
+    raise
 
 def setup():
   initialize()
@@ -401,7 +464,7 @@ def run():
 
 def conclude():
   if last_run != '':
-    print 'killing: ' + last_run
+    ui.report_info('killing: ' + last_run)
     call('killall ' + last_run, shell=True)
 
 ############################################################################
@@ -412,7 +475,11 @@ if __name__ == '__main__':
   try:
     run() 
   except KeyboardInterrupt:
+    pass
     sys.exit("\nExiting...\n")
+
   finally:
+    wait_for_active_threads()
     conclude()
+    sys.exit("\nExiting...\n")
 
