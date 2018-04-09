@@ -17,6 +17,7 @@ import argparse
 import app_ui as ui
 import struct
 import threading
+import fcntl
 
 # ---------------------------------------------------------
 
@@ -25,8 +26,8 @@ global multicast_group_ip, multicast_port, timeout_in_seconds, multicast_group, 
 
 last_run = ''
 last_run_full = ''
-host_name = socket.getfqdn(socket.gethostname())
-host_ip = socket.gethostbyname(socket.gethostname())
+#host_name = socket.getfqdn(socket.gethostname())
+#host_ip = socket.gethostbyname(socket.gethostname())
 app_description = None
 verbose_mode = None
 debug_mode = None
@@ -34,6 +35,25 @@ num_leds = None
 retry_wait = None
 ip_address = None
 port = None
+
+def get_ip_address(ifname):
+  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  return socket.inet_ntoa(fcntl.ioctl(
+    s.fileno(),
+    0x8915,  # SIOCGIFADDR
+    struct.pack('256s', ifname[:15])
+  )[20:24])
+
+client_interface_name = 'apcli0'
+
+def get_client_ip():
+  return get_ip_address(client_interface_name)
+
+def get_client_hostname():
+  return socket.gethostname()
+
+host_name = get_client_hostname()
+host_ip = get_client_ip()
 
 # ---------------------------------------------------------
 
@@ -96,12 +116,16 @@ def initialize():
 
 def introduction():
   ui.app_description(app_description)
+  ui.info_entry("client ip address", host_ip)
+  ui.info_entry("server name", host_name)
+  ui.info_entry("Number of LEDs", num_leds)
+  print
+#  ui.report_verbose()
   ui.report_verbose("verbose mode")
   ui.verbose_entry("root path", base_path)
   ui.verbose_entry("web page", webpage)  
-  ui.verbose_entry("ip_address", "all" if ip_address == '' else ip_address)
+  ui.verbose_entry("server ip_address", "all" if ip_address == '' else ip_address)
   ui.verbose_entry("port", str(port))
-  ui.verbose_entry("server name", host_name)
   ui.verbose_entry("multicast group IP", multicast_group_ip)
   ui.verbose_entry("multicast port", str(multicast_port))
   ui.verbose_entry("reply timeout", str(timeout_in_seconds) + "s")
@@ -111,8 +135,7 @@ def introduction():
   ui.verbose_entry("retry wait", str(retry_wait) + "s")
   ui.verbose_entry("debug_mode", str(debug_mode))
   ui.report_verbose()
-  ui.info_entry("Number of LEDs", num_leds)
-  print 
+#  print 
 
 # ---------------------------------------------------------
 
