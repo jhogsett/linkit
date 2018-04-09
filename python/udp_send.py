@@ -81,34 +81,6 @@ ui.info_entry("sending keys", str(no_keys == False))
 ui.info_entry("message delay", str(msg_delay))
 print
 
-#def add_key(command):
-#    return server_name + "/" + str(time.time()) + ";" + command
-#
-#def send_message(message, times):
-#    if no_keys != True:
-#        message = add_key(message)
-#    for n in range(0, times):
-#        # Send data to the multicast group
-#        ui.report_verbose('sending "%s"' % message)
-#        sent = sock.sendto(message, multicast_group)
-#        if verbose_mode:
-#            while True:
-#                try:
-#                    data, server = sock.recvfrom(256)
-#                except socket.timeout:
-#                    break
-#                else:
-#                    ui.report_verbose_alt('received "%s" from %s' % (data, server))
-#        if n < (times - 1):
-#            time.sleep(msg_delay * (2 ** n))
-#if command != None:
-#    send_message(command, num_times)
-#    sock.close()
-#    exit(0);
-#
-#cmd = ""
-#last_cmd = cmd
-
 def cast_socket():
   # Create the datagram socket
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
