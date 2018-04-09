@@ -10,6 +10,7 @@ import terminal_colors as tc
 import argparse
 import led_command as lc
 import app_ui as ui
+import fcntl
 
 app_description = "LED Multicast Commander v.0.0 10-1-2017"
 timeout_in_seconds = 10
@@ -46,6 +47,12 @@ global keylist
 keylist = []
 numkeys = 20
 
+def get_key(message):
+  return message.split(";")[0]
+
+def get_command(message):
+  return message.split(";")[1]
+
 def handle_command(cmd_text):
     """
     returns false if this was a duplicate command
@@ -55,7 +62,9 @@ def handle_command(cmd_text):
     cmd = ""
     key = ""
     if ";" in cmd_text:
-        key, cmd = cmd_text.split(";")
+        #key, cmd = cmd_text.split(";")
+        key = get_key(cmd_text)
+        cmd = get_command(cmd_text)
 
         if key in keylist:
             ui.report_verbose('skipping duplicate command')
@@ -80,18 +89,30 @@ def handle_command(cmd_text):
     lc.flush_output();
     return True
 
-sock_hostname = socket.gethostname()
-host_name = socket.getfqdn(sock_hostname)
-host_ip = socket.gethostbyname(sock_hostname)
+def get_ip_address(ifname):
+  s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+  return socket.inet_ntoa(fcntl.ioctl(
+    s.fileno(),
+    0x8915,  # SIOCGIFADDR
+    struct.pack('256s', ifname[:15])
+  )[20:24])
+
+client_interface_name = 'apcli0'
+
+def get_client_ip():
+  return get_ip_address(client_interface_name)
+
+def get_client_hostname():
+  return socket.gethostname()
+
+host_name = get_client_hostname()
+host_ip = get_client_ip()
 
 multicast_group = multicast_group_ip
 server_address = ('', server_port)
-client_name = socket.getfqdn()
 
 ui.app_description(app_description)
 ui.report_verbose("verbose mode")
-ui.info_entry("client name", client_name)
-ui.info_entry("sock host name", sock_hostname)
 ui.info_entry("host name", host_name)
 ui.info_entry("host ip", host_ip)
 ui.info_entry("multicast group IP", multicast_group_ip)
@@ -99,6 +120,10 @@ ui.info_entry("server port", str(server_port))
 ui.info_entry("receiving period", str(timeout_in_seconds) + "s")
 ui.info_entry("Number of LEDs", num_leds)
 print
+
+# key looks like   return host_name + "/" + str(time.time()) + ";" + command
+def create_ack(key):
+  return host_name + "/" + str(time.time()) + ";ack;" + key
 
 # Receive/respond loop
 while True:
@@ -120,15 +145,12 @@ while True:
         ready = select.select([sock], [], [], timeout_in_seconds)
         if ready[0]:
             data, address = sock.recvfrom(1024)
-    
             ui.report_verbose('received %s bytes from %s' % (len(data), address))            
 
-            should_ack = handle_command(data)
-
-            if should_ack:
-                ui.report_verbose('sending acknowledgement to ' + str(address))
-                sock.sendto('ack', address)
-
+            if handle_command(data):
+                ack = create_ack(get_key(data))
+                ui.report_verbose('sending acknowledgement to ' + str(address) + ': ' + ack)
+                sock.sendto(ack, address)
         sock.close()
     except EOFError:
         sys.exit("\ngoodbye.\n")

@@ -21,6 +21,10 @@ def report_verbose(message=""):
     if verbose_mode:
         print tc.green(message)
 
+def report_verbose_alt(message=""):
+    if verbose_mode:
+        print tc.blue(message)
+
 def verbose_entry(key, value):
     if verbose_mode:
         print tc.green(key) + ": " + tc.white(str(value))        
