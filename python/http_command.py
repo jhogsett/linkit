@@ -120,7 +120,6 @@ def introduction():
   ui.info_entry("server name", host_name)
   ui.info_entry("Number of LEDs", num_leds)
   print
-#  ui.report_verbose()
   ui.report_verbose("verbose mode")
   ui.verbose_entry("root path", base_path)
   ui.verbose_entry("web page", webpage)  
@@ -135,7 +134,6 @@ def introduction():
   ui.verbose_entry("retry wait", str(retry_wait) + "s")
   ui.verbose_entry("debug_mode", str(debug_mode))
   ui.report_verbose()
-#  print 
 
 # ---------------------------------------------------------
 
@@ -216,53 +214,21 @@ class Handler(BaseHTTPRequestHandler):
       if 'If-Modified-Since' in headers:
         modified_since = headers['If-Modified-Since']
         if modified_since != None:
-          #print modified_since
-          #print filetime_str
           if modified_since.lower() == filetime_str.lower():
             is_cached = True
     return is_cached
 
   def serve_page(self, page, headers={}):
     global last_run, last_run_full, host_name, host_ip
-
-#    filename, file_ext = os.path.splitext(page)
-#
-
     filetime = datetime.datetime.fromtimestamp(os.path.getmtime(page))
     filetime_str = filetime.strftime("%a, %d %b %Y %H:%M:%S GMT")
-
-#    is_cached = False
-#    if headers != None:
-#      if 'If-Modified-Since' in headers:
-#        modified_since = headers['If-Modified-Since']
-#        if modified_since != None:
-#          #print modified_since
-#          #print filetime_str
-#          if modified_since.lower() == filetime_str.lower():
-#            is_cached = True
-
     is_cached = self.is_cached(page, headers)
     if is_cached:
       self.send_response(304)
       self.send_header("Content-Length", "0")
       self.end_headers()
       return
-
     content_type = self.content_type(page)
-
-#    if file_ext == '.html':
-#      content_type = "text/html"                     
-#    elif file_ext == '.css':
-#      content_type = "text/css"                     
-#    elif file_ext == '.js':
-#      content_type = "application/javascript"
-#    elif file_ext == '.ico':
-#      content_type = "image/x-icon"
-#    elif file_ext == '.png':
-#      content_type = "image/png"
-#    else:
-#      content_type = "application/octet-stream"                     
-
     self.send_response(200)
     self.send_header("Content-type", content_type)
 
@@ -288,7 +254,6 @@ class Handler(BaseHTTPRequestHandler):
   def handle_commands(self, commands):
     lc.command(":::")
     for cmd in commands:
-      print cmd, 
       lc.command(cmd)
 
   def stop_running_app(self):
