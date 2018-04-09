@@ -419,7 +419,7 @@ def send_socket_message(sock, message, times):
     if verbose_mode:
       while True:
         try:
-          data, server = sock.recvfrom(16)
+          data, server = sock.recvfrom(256)
         #except KeyboardInterrupt:
         #  break
         except socket.timeout:
