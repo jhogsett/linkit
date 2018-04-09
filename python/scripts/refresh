@@ -10,6 +10,7 @@ rsync -ut /Media/SD-P1/dev/linkit/python/terminal_colors.* /root
 rsync -ut /Media/SD-P1/dev/linkit/python/weather.* /root
 rsync -ut /Media/SD-P1/dev/linkit/python/weather_conditions.* /root
 rsync -ut /Media/SD-P1/dev/linkit/python/led_command.* /root
+rsync -ut /Media/SD-P1/dev/linkit/python/app_ui.* /root
 #/etc/init.d/circleci restart
 /etc/init.d/http_command restart
 /etc/init.d/udp_command restart
