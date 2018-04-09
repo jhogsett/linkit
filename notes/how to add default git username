@@ -1,0 +1,7 @@
+[user]
+	email = jhogsett@gmail.com
+	name = Jerry Hogsett
+[core]
+	pager = cat
+[credential "https://github.com"]
+  username = jhogsett
