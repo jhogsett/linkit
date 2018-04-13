@@ -144,7 +144,7 @@ def setup():
 
   print (
           tc.cyan("Device: ") + 
-          tc.white(str(num_leds) + 
+          tc.green(str(num_leds) + 
           " LEDs, default brightness: " + 
           str(default_brightness) + "%")
 	)                                                                                                                                                  
@@ -252,10 +252,10 @@ def skip_test(command, description):
 # --- reporting results ---
 
 def group_message():
-  return "\nGroup #" + str(group_number) + " " + group_description + " @" + str(group_line_number)
+  return "\n" + tc.blue("Group #" + str(group_number) + " " + group_description) + tc.yellow(" @" + str(group_line_number))
 
 def test_message():
-  return "\n  Test #" + str(test_number) + " " + test_description + " @" + str(test_line_number) + " "
+  return "\n  " + tc.cyan("Test #" + str(test_number) + " " + test_description) + tc.yellow(" @" + str(test_line_number)) + " "
 
 def failure_message(got, expected):
   return ("\n    " +
@@ -950,16 +950,10 @@ def specs():
     expect_buffer("1:rnd:2:rnd:2:rnd", 0, 3, "0,0,20,10,0,20,15,20,0")                                                                                                                                                                    
     expect_effect("1:rnd:2:rnd:2:rnd", 0, 3, "18,11,0") 
 
-    skip_test("2:rnd:flo", "it floods using a different color each time")                                                 
-# broken, rnd doesn't work this way any more
-#    if num_leds == 90 or num_leds == 144 or num_leds == 36 or num_leds == 93 or num_leds == 100:
-#      expect_buffer("2:rnd:flo", 0, 3, "10,0,20,10,0,20,10,0,20")                                                                                                                                          
-#    elif num_leds == 100 or num_leds == 200 or num_leds == 44:
-#      expect_buffer("2:rnd:flo", 0, 3, "15,20,0,0,20,20,20,20,0")
-#    elif num_leds == 150:
-#      10,0,20,10,0,20,10,0,20
-#    else:
-#      expect_buffer("2:rnd:flo", 0, 3, "15,20,0,20,0,20,20,20,0")
+    test("the flooded colors get the chosen effect") 
+    # extra commands added to skip over randomly-chosen no effect
+    expect_buffer("2:rnd:2:rnd:flo", 0, 3, "20,20,0,20,20,0,20,20,0")
+    expect_effect("2:rnd:2:rnd:flo", 0, 3, "11,11,11")
 
     test("it places a random color from the palette")
     expect_buffer("3:rnd", 0, 1, "15,20,0")
@@ -980,11 +974,16 @@ def specs():
     expect_buffer("rnd:3,5:rnd", 0, 7, "0,10,20,0,0,20,20,20,0,10,0,20,20,0,20,15,20,0,0,0,0")
     expect_effect("rnd:3,5:rnd", 0, 7, "0,0,0,0,0,0,0")
 
-    test("it places random colors, filling the number of LEDs")
-    neg_expected = "0,0,0"
-#    for n in range(0, num_leds):
-#      neg_expected = neg_expected + "0,0,0,"
-    expect_buffer("1,-1:rnd", num_leds - 1, 1, "0,0,0", True, True, False)
+    test("it fills the current width with random colors")
+    expect_buffer("3:win:1,-1:rnd", 0, 4, "10,0,20,20,0,20,15,20,0,0,0,0")
+
+    test("it fills the current width with random colors and effects")
+    expect_buffer("3:win:2,-1:rnd", 0, 4, "0,10,20,20,20,0,20,0,20,0,0,0")
+    expect_effect("3:win:2,-1:rnd", 0, 4, "15,18,11,0")
+
+    test("it fills the current width with random palette colors and no effects")
+    expect_buffer("3:win:3,-1:rnd", 0, 4, "10,0,20,20,0,20,15,20,0,0,0,0")
+    expect_effect("3:win:3,-1:rnd", 0, 4, "0,0,0,0")
 
 
 ########################################################################
