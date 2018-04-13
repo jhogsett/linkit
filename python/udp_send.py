@@ -70,17 +70,6 @@ sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, ttl)
 #server_name = socket.getfqdn()
 server_name = host_name
 
-ui.app_description(app_description)
-ui.report_verbose("verbose mode")
-ui.info_entry("server name", server_name)
-ui.info_entry("multicast group ip", multicast_group_ip)
-ui.info_entry("multicast port", str(multicast_port))
-ui.info_entry("reply timeout", str(timeout_in_seconds))
-ui.info_entry("sends per message", str(num_times))
-ui.info_entry("sending keys", str(no_keys == False))
-ui.info_entry("message delay", str(msg_delay))
-print
-
 def cast_socket():
   # Create the datagram socket
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -143,6 +132,21 @@ def wait_for_active_threads():
     ui.report_warn("waiting for active threads to terminate...")
     for t in background_threads:
       t.join()
+
+if command != None:
+  send_background_message(command)
+  sys.exit();
+
+ui.app_description(app_description)
+ui.report_verbose("verbose mode")
+ui.info_entry("server name", server_name)
+ui.info_entry("multicast group ip", multicast_group_ip)
+ui.info_entry("multicast port", str(multicast_port))
+ui.info_entry("reply timeout", str(timeout_in_seconds))
+ui.info_entry("sends per message", str(num_times))
+ui.info_entry("sending keys", str(no_keys == False))
+ui.info_entry("message delay", str(msg_delay))
+print
 
 while True:
     try:
