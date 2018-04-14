@@ -1,7 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define TEST_FRAMEWORK
+#define USE_TEST_FRAMEWORK // 3%
+// #define USE_EXTRA_SHUFFLES // 1%
+// #define USE_BLEND          // 2%
 
 // #define REAL_ARDUINO
 
@@ -13,10 +15,10 @@
 // #define APOLLO_DISPLAY
 
 // 19-LED Mini Disc
-#define MINI_DISC_19
+// #define MINI_DISC_19
 
 // single 144-LED strip
-// #define LED_STRIP_144
+#define LED_STRIP_144
 
 // single 72-LED strip
 // #define LED_STRIP_72
@@ -217,9 +219,12 @@
 
 #ifdef WEARABLE_8
 #define WEARABLE_TYPE3
-#define ANIM_LED_COUNT 72
-#define ZONES_72_LEDS
-#define DEFAULT_BRIGHTNESS_PERCENT 10
+#define ANIM_LED_COUNT 8
+#define ZONES_8_LEDS
+#define DEFAULT_BRIGHTNESS_PERCENT 5
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
+
 //#define BLINK_PERIOD 6000
 //#define BREATHE_PERIOD 150
 //#define ONE_WAY_MACROS

@@ -130,7 +130,8 @@ bool CommandProcessor::str_equal_P(char *str1, const char *str2)
     char c1 = *(str1 + i);
     char c2 = (char)pgm_read_byte(str2 + i);
 
-    if(c1 == 0 && c2 == 0)
+//    if(c1 == 0 && c2 == 0)
+    if(c2 == 0)
       // found
       return true;
 

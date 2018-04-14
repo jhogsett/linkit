@@ -50,8 +50,8 @@ void EffectsProcessor::begin(Buffer *buffer, BlinkEffects *blink_effects, Breath
 
 void EffectsProcessor::start_effect(byte effect)
 {
-  byte existing = buffer->get_effects_buffer()[buffer->get_offset()];
-  buffer->get_effects_buffer()[buffer->get_offset()] = (existing & DYNAMIC_COLOR) | (effect & NOT_DYNAMIC_COLOR);
+  byte *existing = &buffer->get_effects_buffer()[buffer->get_offset()];
+  *existing = (*existing & DYNAMIC_COLOR) | (effect & NOT_DYNAMIC_COLOR);
 }
 
 void EffectsProcessor::start_blinking_r()

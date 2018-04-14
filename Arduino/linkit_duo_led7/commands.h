@@ -23,6 +23,23 @@
 #define CROSSFADE_DELAY 1
 #endif
 
+
+
+//Buffer *buffer
+//Render *renderer
+//EffectsProcessor *effects_processor
+//CommandProcessor *command_processor
+//BlinkEffects *blink_effects
+//BreatheEffects *breathe_effects
+//FadeEffects *fade_effects
+//Sequencer *sequencer
+
+//, byte default_brightness, byte visible_led_count, , 
+//
+//
+//);
+
+
 class Commands
 {
   public:
@@ -51,13 +68,17 @@ class Commands
   void restore_paused_state();
   void save_paused_state();
   rgb_color * offset_buffer();
+
+  #ifdef USE_BLEND
   void do_blend(byte strength);
+  #endif
+
   void do_max();
   void do_dim();
   void do_bright();
   void do_fade();
   void do_crossfade();
-  void do_wipe();
+//  void do_wipe();
   void do_flood();
   void do_random(byte type, int times);
   void do_mirror();
@@ -104,9 +125,11 @@ class Commands
   void do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect=NO_EFFECT);
   void do_fan(bool fan_on, bool auto_set=false);
 
-#ifdef TEST_FRAMEWORK
-  void do_test(int type, int arg1, int arg2);
   void do_test_inquiry(byte type, int arg2);
+  void do_test(int type, int arg1, int arg2);
+//  void do_test_process(int times, bool schedules);
+
+#ifdef USE_TEST_FRAMEWORK
   void do_test_macro(byte macro_number);
   void do_test_buffer(byte start, byte count);
   void do_test_effects(byte start, byte count);
@@ -321,7 +344,7 @@ void Commands::set_brightness_level(byte level)
   flush_all(true);
 }
 
-// todo: optional
+#ifdef USE_BLEND
 // todo: allow blending over a range of leds
 // strength 1-100, 100 = all color @ offset
 // 0 == 50
@@ -337,7 +360,7 @@ void Commands::do_blend(byte strength)
   *buf = ColorMath::blend_colors(*buf, *(buf+1), strength / 100.0);
   *(buf+1) = *buf;
 }
-
+#endif
 
 // todo: change these to a single "adj" command
 // 0:adj - adjusts to maximum brightness
@@ -712,12 +735,12 @@ void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = 
 #endif
 
 // todo: optional
-void Commands::do_wipe()
-{
+//void Commands::do_wipe()
+//{
 #ifdef USE_POWER_EASE
   do_power_shift_object(0, visible_led_count, false);
 #endif
-}
+//}
 
 // arg[0] # times to rotate, default = 1
 // arg[1] # rotation steps each time, default = 1
@@ -1260,38 +1283,34 @@ void Commands::do_shuffle(int arg0, int arg1, int arg2)
       Colors::reset_palette();  
       break;
 
-// todo: optional
+#ifdef USE_EXTRA_SHUFFLES
     case SHUFFLE_COMPLIMENT_PAIRS:
       // make every odd color the complimentary color of the previous even color
       Colors::compliment_pairs();
       break;
 
-// todo: optional
     case SHUFFLE_RAND_COMP_PAIRS:
       // create a palette of random complimentary color pairs
       Colors::random_compliment_pairs();        
        break;
 
-// todo: optional
     case SHUFFLE_COMPLIMENT:
       Colors::compliment_palette();        
       break;
       
-// todo: optional
     case SHUFFLE_ROTATE_DOWN:
       Colors::rotate_palette(arg1, arg2, true);
       break;
       
-// todo: optional
     case SHUFFLE_ROTATE_UP:
       Colors::rotate_palette(arg1, arg2, false); 
       break;
       
-// todo: optional
     case SHUFFLE_REVERSE:
       Colors::reverse_palette();
       break;
-  }            
+#endif
+  }    
 }
 
 // todo: optional
@@ -1302,6 +1321,7 @@ void Commands::set_black_level(int arg0, int arg1, int arg2)
   buffer->set_black_level(black_level);
 }
 
+// core
 void Commands::do_store(int arg0, int arg1, int arg2)
 {
   byte nargs = command_processor->get_num_args();
@@ -1370,6 +1390,7 @@ void Commands::do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect){
   buffer->push_color(data, 1, false, DYNAMIC_COLOR | effect, 0, 0, false);
 }
 
+// todo: optional
 void Commands::do_fan(bool fan_on, bool auto_set)
 {
   if(auto_set){

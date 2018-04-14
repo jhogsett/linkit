@@ -93,16 +93,10 @@ rgb_color Render::get_breathe(rgb_color color, float scale, byte effect, rgb_col
 
         byte index = orig_color.green * COLOR_CACHE_SIZE + orig_color.red;
 
-        if(ColorMath::equal(black, color_cache[index])){
+        if(ColorMath::equal(black, color_cache[index]))
+          color_cache[index] = ColorMath::scale_color(compute_dynamic_breathe(orig_color), default_brightness_scale);
 
-          // cache miss
-          color_cache[index] = result = ColorMath::scale_color(compute_dynamic_breathe(orig_color), default_brightness_scale);
-
-        } else {
-
-          // cache hit
-          result = color_cache[index];
-        }
+        result = color_cache[index];
       } else {
         // not eligible for cache
         result = ColorMath::scale_color(compute_dynamic_breathe(orig_color), default_brightness_scale);

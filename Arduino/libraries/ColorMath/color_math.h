@@ -391,9 +391,7 @@ rgb_color ColorMath::random_color()
 
 bool ColorMath::equal(rgb_color color1, rgb_color color2)
 {
-  if(color1.red == color2.red && color1.green == color2.green && color1.blue == color2.blue)
-    return true;
-  return false;
+  return color1.red == color2.red && color1.green == color2.green && color1.blue == color2.blue;
 }
 
 // steps 0-12
