@@ -21,7 +21,7 @@ import fcntl
 
 # ---------------------------------------------------------
 
-global httpd, webpage, base_path, last_run, host_name, host_ip, app_description, verbose_mode, debug_mode, num_leds, macro_count, programs, macro_run_number, retry_wait, ip_address, port
+global httpd, webpage, base_path, last_run, host_name, host_ip, app_description, verbose_mode, debug_mode, macro_count, programs, macro_run_number, retry_wait, ip_address, port
 global multicast_group_ip, multicast_port, timeout_in_seconds, multicast_group, num_times, no_keys, msg_delay
 
 last_run = ''
@@ -31,7 +31,6 @@ last_run_full = ''
 app_description = None
 verbose_mode = None
 debug_mode = None
-num_leds = None
 retry_wait = None
 ip_address = None
 port = None
@@ -102,23 +101,21 @@ def validate_options():
 # ---------------------------------------------------------
 
 def initialize():
-  global app_description, num_leds
+  global app_description
   app_description = "Apollo Lighting System - HTTP Commander v.2.0 4-0-2018"
   get_options()
   if not validate_options():
     sys.exit("\nExiting...\n")
   lc.begin(verbose_mode)
   ui.begin(verbose_mode)
-  lc.attention()
-  lc.stop_all()
-  num_leds = lc.get_num_leds()
-  lc.command("cnt")
+  #lc.attention()
+  #lc.stop_all()
+  #lc.command("cnt")
 
 def introduction():
   ui.app_description(app_description)
   ui.info_entry("client ip address", host_ip)
   ui.info_entry("server name", host_name)
-  ui.info_entry("Number of LEDs", num_leds)
   print
   ui.report_verbose("verbose mode")
   ui.verbose_entry("root path", base_path)

@@ -35,10 +35,9 @@ server_address = ('', server_port)
 
 lc.begin(verbose_mode)
 ui.begin(verbose_mode)
-lc.attention()
-lc.stop_all()
-num_leds = lc.get_num_leds()
-lc.command("cnt")
+#lc.attention()
+#lc.stop_all()
+#lc.command("cnt")
 
 # Create the socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -118,7 +117,6 @@ ui.info_entry("host ip", host_ip)
 ui.info_entry("multicast group IP", multicast_group_ip)
 ui.info_entry("server port", str(server_port))
 ui.info_entry("receiving period", str(timeout_in_seconds) + "s")
-ui.info_entry("Number of LEDs", num_leds)
 print
 
 # key looks like   return host_name + "/" + str(time.time()) + ";" + command
