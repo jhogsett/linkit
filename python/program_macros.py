@@ -213,14 +213,15 @@ def annunciator_macros2():
 def apollo_macros(): 
   print tc.cyan("apollo macros:\n")
 
-
 # fancy - swinging rainbow colors
 
-  # initialize
-  set_macro(10, "clr:1:pau:2,8000:cfg:30:run:25:run", 0)
+  # initialize - clear, pause effects, resume schedules
+  # set fade rate to 0.8, set up color sequencers
+  # set up hsl color offset sequencer
+  set_macro(10, "clr:1:pau:2:cnt:2,8000:cfg:30:run:25:run", 19)
 
   # set up 6 color sequencers, macros and schedules
-  set_macro(30, "1:pau:40:run:44:run:46:run:1:shf", 15)
+  set_macro(30, "40:run:44:run:46:run", 9)
 
   # set up 6 color sequencers
   set_macro(40, "37:run:38:run:39:run", 9)
@@ -243,8 +244,8 @@ def apollo_macros():
   set_macro(36, "5:snw:pos:5:pal:sfd:flo:rst", 10)
 
   # set up hsl color offset sequencer, macro and schedule
-  set_macro(25, "6,360:seq:100,26:sch", 0)
-  set_macro(26, "6,0,2:seq:sto:60:rcl:csh", 0)
+  set_macro(25, "6,360:seq:100,26:sch", 12)
+  set_macro(26, "6,0,2:seq:sto:60:rcl:csh", 13)
 
 # mellow - random colors with drain animation
   set_macro(11, "clr:100,13:sch:10000,14:sch", 13)
@@ -258,6 +259,8 @@ def apollo_macros():
 # lamp - random colors then tungsten flood
   set_macro(12, "clr:-1:sch:1:pau:21:run", 11)
   set_macro(21, "era:50:lev:13,120:run:tun:flo:cfa:100:lev", 16)
+
+# demo 
 
 
 
