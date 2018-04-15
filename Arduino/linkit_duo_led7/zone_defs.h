@@ -79,6 +79,13 @@ const byte PROGMEM zone_windows[NUM_ZONES] = { 64,   8, 32, 56, 64,   56,       
 #define FINE_ZONES 3 //                             inner, middle, outer rings  inner + middle rings
 const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,  0, 1,  7,                   0 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 19,  1, 7, 19,                   7 };
+
+#elif defined(ZONES_8_LEDS)
+#define NUM_ZONES 7
+#define FINE_ZONES 2 //                            l,r four, 4 2-led zones 
+const byte PROGMEM zone_offsets[NUM_ZONES] = { 0,  0, 4,     0, 2, 4, 6 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 8,  4, 8,     2, 4, 6, 8 };
+
 #endif
 
 

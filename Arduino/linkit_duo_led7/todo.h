@@ -1,13 +1,46 @@
+// pending explanation should be yellow not white
+
+// add rgb terminal colors
+
+// split out test inquiries to always be present
+
+
+
+
+
+
+
+
+// can a sequencer be used to simulate the effect of a spinning light intensity profile?
+
+// is it possible to create an on/off sequencer?
+
+// need command to quit macro early under certain conditions
+  // something like: default: exit if zero, exit if non-zero, exit if (conditions of various kinds)
+
+// dynamic blink based on 1-6
+  // blue dynamic color channel lower six bits specify which ones are on
+  // or double to 1-12 and use green & blue channels
+
+// macros need to set up effects pausing
+  // annunciator needs fix
+
+// ensure macros do 1:pau to disable effects, unless they need them.
+
+// command document last modified date should be the later of it and http_command.py
+
 // led specs: group and text descriptions should be other than white so they're easier to read
+
+
+// dazzling intense flashy color pulsating and changing lights from apollo
+
+
+
+
 
 /* new features
 
 // most needed
-
-
-
-
-
 
 // super pixels
       // for 2d strips, it sets several leds with fade off ends

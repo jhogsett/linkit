@@ -110,7 +110,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_BLEND: 
+#ifdef USE_BLEND
       do_blend(arg0); 
+#endif
       break;
     
     case CMD_MAX: 
@@ -186,7 +188,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_WIPE: 
-      do_wipe(); 
+//      do_wipe(); 
       break;
     
     case CMD_ANIM_ROTATE: 

@@ -57,8 +57,8 @@ class Sequence
   int increment_swing_cosine(int step);
   int increment_wheel_sine(int step);
   int increment_swing_sine(int step);
-  int increment_wheel_power(int step);
-  int increment_swing_power(int step);
+//  int increment_wheel_power(int step);
+//  int increment_swing_power(int step);
 
   // can type and state be consolidated
 
@@ -109,7 +109,7 @@ void Sequence::set_limit(int low, int high){
   
     case SEQUENCE_WHEEL_POWER:
     case SEQUENCE_SWING_POWER:
-      this->factor = PowerEase::ease_range() / this->width();
+//      this->factor = PowerEase::ease_range() / this->width();
       break;
   }
 }
@@ -194,10 +194,11 @@ int Sequence::increment(int step)
       return this->increment_swing_sine(step);
     
     case SEQUENCE_WHEEL_POWER:  
-      return this->increment_wheel_power(step);
+      // return this->increment_wheel_power(step);
     
     case SEQUENCE_SWING_POWER:  
-      return this->increment_swing_power(step);
+      // return this->increment_swing_power(step);
+      break;
   }
 }
 
@@ -282,47 +283,47 @@ int Sequence::increment_swing_sine(int step)
   return this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
-int Sequence::increment_wheel_power(int step)
-{
-  increment_wheel(step);
-  byte spread_position = (this->current - this->low) * this->factor;
-  return this->low + (this->width() * PowerEase::get_ease(spread_position));
-}
+//int Sequence::increment_wheel_power(int step)
+//{
+//  increment_wheel(step);
+//  byte spread_position = (this->current - this->low) * this->factor;
+//  return this->low + (this->width() * PowerEase::get_ease(spread_position));
+//}
 
 // todo: optional
 // TODO the sequence is not symmetrical forward and back so when coming back need to treat it oppositely
-int Sequence::increment_swing_power(int step)
-{
-  increment_swing(step);
-//  byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
-  byte spread_position;
-  if(state == STATE_NORMAL)
-  {
-    // current-low = progress toward end
-    spread_position = (this->current - this->low) * this->factor;
-  } 
-  else 
-  {
-    // width - (current-low) = progress toward start 
-
-    // this needs rework - power ease data oriented toward forward going animation
-    // just flipping the index when going back makes it appear to go in the same direction as before flipping due to the ordering
-    // to make it work, treat power ease data as progress towards start, not progress toward beginning
-
-    // when this is at max, need to treat as if at low
-    
-    spread_position = (this->max - this->current) * this->factor;
+//int Sequence::increment_swing_power(int step)
+//{
+//  increment_swing(step);
+////  byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
+//  byte spread_position;
+//  if(state == STATE_NORMAL)
+//  {
+//    // current-low = progress toward end
 //    spread_position = (this->current - this->low) * this->factor;
-//    spread_position = (this->width - (this->current - this->low)) * this->factor;
-
-  // spread position 
-
-
-
-
-  }
-  return this->low + (this->width() * PowerEase::get_ease(spread_position));
-}
+//  } 
+//  else 
+//  {
+//    // width - (current-low) = progress toward start 
+//
+//    // this needs rework - power ease data oriented toward forward going animation
+//    // just flipping the index when going back makes it appear to go in the same direction as before flipping due to the ordering
+//    // to make it work, treat power ease data as progress towards start, not progress toward beginning
+//
+//    // when this is at max, need to treat as if at low
+//    
+//    spread_position = (this->max - this->current) * this->factor;
+////    spread_position = (this->current - this->low) * this->factor;
+////    spread_position = (this->width - (this->current - this->low)) * this->factor;
+//
+//  // spread position 
+//
+//
+//
+//
+//  }
+//  return this->low + (this->width() * PowerEase::get_ease(spread_position));
+//}
 
 int Sequence::current_position()
 {

@@ -116,44 +116,6 @@ def command_str(cmd_text, slow = False):
   s.write((cmd_text + ':').encode()) 
   return wait_for_str()                     
 
-
-# -----------------------------------------------------------------------------
-# --- Setup ---
-
-def setup(): 
-  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only 
-
-  parser = argparse.ArgumentParser(description=app_description)
-  parser.add_argument("-g", "--group",     type=int, dest="group",     default=0)
-  parser.add_argument("-n", "--groupname",           dest="groupname", default="")
-  parser.add_argument("-v", "--verbose",             dest="verbose",   action='store_true')
-  args = parser.parse_args()
-  group_number_only = args.group
-  group_name_only = args.groupname
-  verbose_mode = args.verbose
-
-  s = serial.Serial("/dev/ttyS0", 115200) 
-  do_reset_device()
-  num_leds = command_int("0,0:tst")                                                                                                                                                        
-  palette_size = command_int("0,1:tst")
-  default_brightness = command_int("0,4:tst")                                                                                                
-  default_brightness_percent = default_brightness / 100.0                                                                                                               
-  for i in range(0, palette_size):
-    standard_palette += test_colors.colors[i][1] + ","
-  standard_palette = standard_palette[:-1]
-
-  print (
-          tc.cyan("Device: ") + 
-          tc.green(str(num_leds) + 
-          " LEDs, default brightness: " + 
-          str(default_brightness) + "%")
-	)                                                                                                                                                  
-
-def write(text):
-  sys.stdout.write(text)
-  sys.stdout.flush()                                                
-
-
 # -----------------------------------------------------------------------------
 # --- device handling ---
 
@@ -175,17 +137,113 @@ def reset_standard_palette():
 def reset_default_effect():
   return "3,0:cfg"
 
+def inquiry(feature):
+  return "0," + str(feature) + ":tst"
+
+def int_inquiry(feature):
+  return command_int(inquiry(feature))
+
+def is_enabled(feature):
+  return int_inquiry(feature) == 1
+
+def is_test_framework_enabled():
+  return is_enabled(13)
+
+def is_mapping_enabled():
+  return is_enabled(9)
+
+def is_extra_shuffles_enabled():
+  return is_enabled(14)
+
+def is_blend_enabled():
+  return is_enabled(15)
+
+def get_num_leds():
+  return int_inquiry(0)
+
+def get_palette_size():
+  return int_inquiry(1)
+
+def get_default_brightness():
+  return int_inquiry(4)  
+
+def get_offset():
+  return int_inquiry(2)
+
+def get_window():
+  return int_inquiry(3)
+
+def get_minimum_brightness():
+  return int_inquiry(5)
+
+def get_reverse():
+  return int_inquiry(6)
+
+def get_default_fade_rate():
+  return int_inquiry(7)
+
+def get_fade_rate():
+  return int_inquiry(8)
+
+def get_offset():
+  return int_inquiry(2)
+
+def get_max_string_length():
+  return int_inquiry(12)
+
 def pre_test_reset():
   command = ""
   command += reset_device() + ":"
   command += reset_standard_seed() + ":"
   command += reset_standard_fade_rate() + ":"
   command += reset_standard_palette() + ":"
-  command += reset_default_effect() 
+  command += reset_default_effect()
   command_str(command)
 
 def do_reset_device():
-  command_str(reset_device())                                                                                                                                                                             
+  command_str(reset_device())
+
+
+# -----------------------------------------------------------------------------
+# --- Setup ---
+
+def setup(): 
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only 
+
+  parser = argparse.ArgumentParser(description=app_description)
+  parser.add_argument("-g", "--group",     type=int, dest="group",     default=0)
+  parser.add_argument("-n", "--groupname",           dest="groupname", default="")
+  parser.add_argument("-v", "--verbose",             dest="verbose",   action='store_true')
+  args = parser.parse_args()
+  group_number_only = args.group
+  group_name_only = args.groupname
+  verbose_mode = args.verbose
+
+  s = serial.Serial("/dev/ttyS0", 115200) 
+  do_reset_device()
+  num_leds = get_num_leds()                                                                                                                                                       
+  palette_size = command_int("0,1:tst")
+  default_brightness = command_int("0,4:tst")                                                                                                
+  default_brightness_percent = default_brightness / 100.0                                                                                                               
+  for i in range(0, palette_size):
+    standard_palette += test_colors.colors[i][1] + ","
+  standard_palette = standard_palette[:-1]
+  
+  if not is_test_framework_enabled():
+    print tc.red("Test framework is not enabled for this device.")
+    sys.exit()
+
+
+  print (
+          tc.cyan("Device: ") + 
+          tc.green(str(num_leds) + 
+          " LEDs, default brightness: " + 
+          str(default_brightness) + "%")
+	)                                                                                                                                                  
+
+def write(text):
+  sys.stdout.write(text)
+  sys.stdout.flush()                                                
 
 
 # -----------------------------------------------------------------------------
@@ -750,52 +808,54 @@ def specs():
     test("the palette resets to the right fixed set of colors")
     expect_palette("shf:flu:1:shf", 0, palette_size, standard_palette)
 
-    test("the shuffler sets every odd-numbered palette color to the previous one's compliment")
-    expect_palette("2:shf", 0, palette_size, standard_palette, False)
-    expected_colors = "0,20,20,20,0,0,0,0,20,20,20,0,0,10,20,20,10,0,5,20,0,15,0,20,20,10,0,0,10,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
-    expect_palette("shf:flu:2:shf", 0, palette_size, expected_colors)                                                                         
+    if is_extra_shuffles_enabled():
+      test("the shuffler sets every odd-numbered palette color to the previous one's compliment")
+      expect_palette("2:shf", 0, palette_size, standard_palette, False)
+      expected_colors = "0,20,20,20,0,0,0,0,20,20,20,0,0,10,20,20,10,0,5,20,0,15,0,20,20,10,0,0,10,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
+      expect_palette("shf:flu:2:shf", 0, palette_size, expected_colors)                                                                         
 
-    test("the shuffler creates a random palette of complimentary pairs")
-    expect_palette("3:shf", 0, palette_size, standard_palette, False)
-    expected_colors = "0,10,20,20,10,0,0,15,20,20,5,0,20,10,0,0,10,20,0,20,20,20,0,0,20,0,10,0,20,10,0,20,15,20,0,5,20,15,0,0,5,20,10,20,0,10,0,20,0,20,10,20,0,10"
-    expect_palette("flu:3:shf", 0, palette_size, expected_colors)                                                                 
+      test("the shuffler creates a random palette of complimentary pairs")
+      expect_palette("3:shf", 0, palette_size, standard_palette, False)
+      expected_colors = "0,10,20,20,10,0,0,15,20,20,5,0,20,10,0,0,10,20,0,20,20,20,0,0,20,0,10,0,20,10,0,20,15,20,0,5,20,15,0,0,5,20,10,20,0,10,0,20,0,20,10,20,0,10"
+      expect_palette("flu:3:shf", 0, palette_size, expected_colors)                                                                 
 
-    test("the shuffler compliments the entire current palette")
-    expect_palette("4:shf", 0, palette_size, standard_palette, False)
-    expected_colors = "0,20,20,0,10,20,0,0,20,20,0,20,20,20,0,10,20,0,20,0,0,0,20,0,20,10,0,10,0,20,20,0,10,0,20,10,0,5,20,5,0,20,20,5,0,20,0,5,5,20,0,0,20,5"
-    expect_palette("1:shf:flu:4:shf", 0, palette_size, expected_colors)                                                                                             
+      test("the shuffler compliments the entire current palette")
+      expect_palette("4:shf", 0, palette_size, standard_palette, False)
+      expected_colors = "0,20,20,0,10,20,0,0,20,20,0,20,20,20,0,10,20,0,20,0,0,0,20,0,20,10,0,10,0,20,20,0,10,0,20,10,0,5,20,5,0,20,20,5,0,20,0,5,5,20,0,0,20,5"
+      expect_palette("1:shf:flu:4:shf", 0, palette_size, expected_colors)                                                                                             
 
-    test("the shuffler rotates the current palettes down")
-    expect_palette("5:shf", 0, palette_size, standard_palette, False)
-    expected_colors = "20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0"
-    expect_palette("1:shf:flu:5:shf", 0, palette_size, expected_colors)
+      test("the shuffler rotates the current palettes down")
+      expect_palette("5:shf", 0, palette_size, standard_palette, False)
+      expected_colors = "20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0"
+      expect_palette("1:shf:flu:5:shf", 0, palette_size, expected_colors)
 
-    test("the shuffler rotates the current palette up")
-    expect_palette("6:shf", 0, palette_size, standard_palette, False)
-    expected_colors = "20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20"
-    expect_palette("1:shf:flu:6:shf", 0, palette_size, expected_colors)
+      test("the shuffler rotates the current palette up")
+      expect_palette("6:shf", 0, palette_size, standard_palette, False)
+      expected_colors = "20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20"
+      expect_palette("1:shf:flu:6:shf", 0, palette_size, expected_colors)
 
-    test("the shuffler rotates the palette down a number of times")
-    expected_colors = "20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0,20,10,0"
-    expect_palette("1:shf:flu:5,2:shf", 0, palette_size, expected_colors)
+      test("the shuffler rotates the palette down a number of times")
+      expected_colors = "20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15,20,0,0,20,10,0"
+      expect_palette("1:shf:flu:5,2:shf", 0, palette_size, expected_colors)
 
-    test("the shuffler rotates the palette up a number of times")
-    expected_colors = "0,20,15,15,0,20,20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20"
-    expect_palette("1:shf:flu:6,3:shf", 0, palette_size, expected_colors)
+      test("the shuffler rotates the palette up a number of times")
+      expected_colors = "0,20,15,15,0,20,20,0,15,20,0,0,20,10,0,20,20,0,0,20,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20"
+      expect_palette("1:shf:flu:6,3:shf", 0, palette_size, expected_colors)
 
-    test("the shuffer rotates a number of positions of the palette down")
-    expected_colors = "20,10,0,20,20,0,0,20,0,20,0,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
-    expect_palette("1:shf:flu:5,0,4:shf", 0, palette_size, expected_colors)
+      test("the shuffer rotates a number of positions of the palette down")
+      expected_colors = "20,10,0,20,20,0,0,20,0,20,0,0,0,0,20,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
+      expect_palette("1:shf:flu:5,0,4:shf", 0, palette_size, expected_colors)
 
-    test("the shuffler rotates a number of positions of the palette up")
-    expected_colors = "0,0,20,20,0,0,20,10,0,20,20,0,0,20,0,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
-    expect_palette("1:shf:flu:6,0,5:shf", 0, palette_size, expected_colors)
+      test("the shuffler rotates a number of positions of the palette up")
+      expected_colors = "0,0,20,20,0,0,20,10,0,20,20,0,0,20,0,10,0,20,0,20,20,20,0,20,0,10,20,10,20,0,0,20,10,20,0,10,20,15,0,15,20,0,0,15,20,0,20,15,15,0,20,20,0,15"
+      expect_palette("1:shf:flu:6,0,5:shf", 0, palette_size, expected_colors)
 
-    test("the shuffler reverses the current palette")
-    expect_palette("7:shf", 0, palette_size, standard_palette, False)
-    expected_colors = "20,0,15,15,0,20,0,20,15,0,15,20,15,20,0,20,15,0,20,0,10,0,20,10,10,20,0,0,10,20,20,0,20,0,20,20,10,0,20,0,0,20,0,20,0,20,20,0,20,10,0,20,0,0"
-    expect_palette("1:shf:flu:7:shf", 0, palette_size, expected_colors)
-
+      test("the shuffler reverses the current palette")
+      expect_palette("7:shf", 0, palette_size, standard_palette, False)
+      expected_colors = "20,0,15,15,0,20,0,20,15,0,15,20,15,20,0,20,15,0,20,0,10,0,20,10,10,20,0,0,10,20,20,0,20,0,20,20,10,0,20,0,0,20,0,20,0,20,20,0,20,10,0,20,0,0"
+      expect_palette("1:shf:flu:7:shf", 0, palette_size, expected_colors)
+    else:
+      skip_test("shf", "extra palette shuffling features not enabled on this device.")
 
 ########################################################################
 # ZONES
@@ -1012,17 +1072,19 @@ def specs():
 ########################################################################
   if group("blending colors"):                                                                          
 
-    # the color not in position 0 dominates the color blending
+    if is_blend_enabled():
+      # the color not in position 0 dominates the color blending
 
-    test("it blends two colors @ 50%")
-    expect_buffer("wht:blk:ble", 0, 3, "10,10,10,10,10,10,0,0,0")
+      test("it blends two colors @ 50%")
+      expect_buffer("wht:blk:ble", 0, 3, "10,10,10,10,10,10,0,0,0")
 
-    test("it blends two colors @ 90%")
-    expect_buffer("wht:blk:90:ble", 0, 3, "2,2,2,2,2,2,0,0,0")
+      test("it blends two colors @ 90%")
+      expect_buffer("wht:blk:90:ble", 0, 3, "2,2,2,2,2,2,0,0,0")
 
-    test("it blends two colors @ 10%")
-    expect_buffer("wht:blk:10:ble", 0, 3, "18,18,18,18,18,18,0,0,0")                                                                                                                                                                                                           
-
+      test("it blends two colors @ 10%")
+      expect_buffer("wht:blk:10:ble", 0, 3, "18,18,18,18,18,18,0,0,0")                                                                                                                                                                                                           
+    else:
+      skip_test("ble", "blend feature is not enabled on this device")
 
 ########################################################################
 # MAX, DIM AND BRIGHT

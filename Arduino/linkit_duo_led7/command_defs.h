@@ -210,8 +210,10 @@ const char cmd_094[] PROGMEM = "swc"; // wheel cosine
 const char cmd_095[] PROGMEM = "ssc"; // swing cosine
 const char cmd_096[] PROGMEM = "sws"; // wheel sine
 const char cmd_097[] PROGMEM = "sss"; // swing sine
+
 const char cmd_098[] PROGMEM = "swp"; // wheel power
 const char cmd_099[] PROGMEM = "ssp"; // swing power
+
 const char cmd_100[] PROGMEM = "snw"; // sequence next window
 const char cmd_101[] PROGMEM = "snm"; // sequence next macro (future)
 const char cmd_102[] PROGMEM = "csh"; // color sequence by hue
