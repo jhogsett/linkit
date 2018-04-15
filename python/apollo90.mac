@@ -1,81 +1,45 @@
-# main effect - swinging random colors
-######################################
+# initialize - clear, pause effects, resume schedules
+# set fade rate to 0.8, set up color sequencers
+# set up hsl color offset sequencer
+10;clr:1:pau:2:cnt:2,8000:cfg:30:run:25:run;19
 
-# clear the display
-# pause effects
-# set the slow fade rate to 0.8
-# set up the sequencers
-# set up the palette hue sequencer
-10;clr:1:pau:2,8000:cfg:30:run:25:run;16
+# set up 6 color sequencers, macros and schedules
+30;40:run:44:run:46:run;9
 
-# pause effects
-# set up sine sequencers
-# set up sequence schedules
-# reset the palette
-30;1:pau:40:run:44:run:1:shf;12
-
-# set up sine sequencers
+# set up 6 color sequencers
 40;37:run:38:run:39:run;9
-
-# sine sequencers for each
-# led segment
 37;0,16,0:ssc:1,31,15:ssc;14
 38;2,46,30:ssc:3,61,45:ssc;16
 39;4,76,60:ssc:5,91,75:ssc;16
 
-# set up sequence schedules
+# set up 6 color sequence schedules
 44;41:run:42:run:43:run;9
-
-# set up slightly offset sequence schedules
-# creates a wave effect
 41;150,31:sch:151,32:sch;12
 42;152,33:sch:153,34:sch;12
 43;154,35:sch:155,36:sch;12
 
-# set up palette hue sequencer
-# schedule it to rotate
-25;6,360:seq:100,26:sch;12
+# 6 color sequence macros
+31;0:snw:pos:0:pal:sfd:flo:rst:flu;11
+32;1:snw:pos:1:pal:sfd:flo:rst;10
+33;2:snw:pos:2:pal:sfd:flo:rst;10
+34;3:snw:pos:3:pal:sfd:flo:rst;10
+35;4:snw:pos:4:pal:sfd:flo:rst;10
+36;5:snw:pos:5:pal:sfd:flo:rst;10
 
-# sequence the palette hues
+# set up hsl color offset sequencer, macro and schedule
+25;6,360:seq:100,26:sch;12
 26;6,0,2:seq:sto:60:rcl:csh;13
 
-
-
-# calm effect - sparking colors with drain
-
-# clear the dsplay
-# schedule the random positioning
-# schedule the wipe-in effect
+# mellow - random colors with drain animation
 11;clr:100,13:sch:10000,14:sch;13
-
-# run the wipe-in effect 15 times
-# delay 500ms
+13;-1:rps:1:rnd:sfd:flu:rst;10
 14;15,15:run:500:del;10
-
-# run one frame of wipe-in effect
 15;16:run:17:run:18:run:flu;10
-
-# push black into each zone from ends
-# to create wipe-in effect
 16;1:zon:1:blk:2:zon:1:rev:1:blk:rst;16
 17;3:zon:1:blk:4:zon:1:rev:1:blk:rst;16
 18;5:zon:1:blk:6:zon:1:rev:1:blk:rst;16
 
-
-
-# lamp effect - tunsten lamp
-
-# clear the display
-# stop macro schedules
-# pause effects
+# lamp - random colors then tungsten flood
 12;clr:-1:sch:1:pau:21:run;11
-
-# erase the display
-# set the level to 50%
-# run the random postion+color with slow fade
-# 120 times
-# flood with tunsten
-# crossfade from random colors
-# set level to 100%
 21;era:50:lev:13,120:run:tun:flo:cfa:100:lev;16
 
