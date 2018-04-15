@@ -38,7 +38,7 @@ class Macros
   byte set_macro_from_serial(byte macro);
   void run_macro(byte macro, int times = 1, int delay_ = 0);
 
-#ifdef TEST_FRAMEWORK
+#ifdef USE_TEST_FRAMEWORK
   byte begin_dump_macro(byte macro, byte **position);
   byte continue_dump_macro(byte macro, byte **position);
 #endif
@@ -382,7 +382,7 @@ void Macros::run_macro(byte macro, int times, int delay_){
   }
 }
 
-#ifdef TEST_FRAMEWORK
+#ifdef USE_TEST_FRAMEWORK
 byte Macros::begin_dump_macro(byte macro, byte **position)
 {
   bool from_eeprom;

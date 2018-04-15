@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define USE_TEST_FRAMEWORK // 3%
+// #define USE_TEST_FRAMEWORK // 3%
 // #define USE_EXTRA_SHUFFLES // 1%
 // #define USE_BLEND          // 2%
 
@@ -12,13 +12,16 @@
 ///////////////////////////
 
 // single 90-LED strip in Apollo
-// #define APOLLO_DISPLAY
+#define APOLLO_DISPLAY
+
+// single 90-LED strip for dev
+// #define LED_STRIP_90
 
 // 19-LED Mini Disc
 // #define MINI_DISC_19
 
 // single 144-LED strip
-#define LED_STRIP_144
+// #define LED_STRIP_144
 
 // single 72-LED strip
 // #define LED_STRIP_72
@@ -56,9 +59,6 @@
 
 // wearable and 54-LED annunciator #2
 // #define WEARABLE_AND_ANNUNCIATOR2
-
-// single 90-LED strip
-// #define LED_STRIP_90
 
 // 8-LED standalone wearable
 // #define WEARABLE_8
@@ -106,8 +106,8 @@
 #define ANIM_LED_COUNT 90
 #define ZONES_90_LEDS
 #define DEFAULT_BRIGHTNESS_PERCENT 15
-#define BLINK_PERIOD 1500
-#define BREATHE_PERIOD 100
+#define BLINK_PERIOD 1000
+#define BREATHE_PERIOD 50
 #endif
 
 #ifdef LED_STRIP_144

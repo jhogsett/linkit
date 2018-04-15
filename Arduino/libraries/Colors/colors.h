@@ -63,12 +63,16 @@ class Colors
   static rgb_color random_palette_color();
   static void reset_palette();
   static void shuffle_palette();
+
+#ifdef USE_EXTRA_SHUFFLES
   static rgb_color complimentary_color(rgb_color color);
   static void compliment_pairs();
   static void random_compliment_pairs();
   static void compliment_palette();
   static void rotate_palette(byte times, byte limit, bool down = true);
   static void reverse_palette();
+#endif
+
   static rgb_color * get_palette();
 
   private:
@@ -113,7 +117,7 @@ void Colors::shuffle_palette()
   palette[last] = temp;
 }
 
-// todo: optional
+#ifdef USE_EXTRA_SHUFFLES
 // create a complimentary color by inverting the values
 // within the 0 - BRIGHTNESS_DIVISOR range, since that
 // represents the entire pre-rendered color definition
@@ -212,6 +216,7 @@ void Colors::reverse_palette()
     *swap = carry_color;
   }
 }
+#endif
 
 rgb_color * Colors::get_palette()
 {

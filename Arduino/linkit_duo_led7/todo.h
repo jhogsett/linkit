@@ -1,13 +1,26 @@
-// pending explanation should be yellow not white
+// program subsections need to stop other macros from running before going
+
+
+// maybe sequencers should be automatically tied to macros
+
+// pending expectation should be yellow not white
 
 // add rgb terminal colors
 
-// split out test inquiries to always be present
+// move helpers into led_command.py
 
 
+// dynamic blink based on 1-6
+  // blue dynamic color channel lower six bits specify which ones are on
+  // or double to 1-12 and use green & blue channels
 
+// calibrate timing setting by use testing timer to compare
+      // could be part of the start-up procedure
+      // make this a calibration program
 
+// app to collect timing metrics on various commands (can this be built into test suite?)
 
+// command to convert percentage to perfect count of leds/width/whatever to make scaling more automatic
 
 
 
@@ -17,10 +30,6 @@
 
 // need command to quit macro early under certain conditions
   // something like: default: exit if zero, exit if non-zero, exit if (conditions of various kinds)
-
-// dynamic blink based on 1-6
-  // blue dynamic color channel lower six bits specify which ones are on
-  // or double to 1-12 and use green & blue channels
 
 // macros need to set up effects pausing
   // annunciator needs fix
@@ -34,7 +43,7 @@
 
 // dazzling intense flashy color pulsating and changing lights from apollo
 
-
+// should program macros default to paused effects processing? 
 
 
 

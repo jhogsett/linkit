@@ -29,7 +29,11 @@ class ColorMath
   static rgb_color hsl_to_rgb(int hue, int sat, int val);
   static rgb_color add_color(rgb_color color1, rgb_color color2);
   static rgb_color subtract_color(rgb_color color1, rgb_color color2);
+
+#ifdef USE_BLEND
   static rgb_color blend_colors(rgb_color color1, rgb_color color2, float strength);
+#endif
+
   static rgb_color crossfade_colors(byte step, rgb_color color1, rgb_color color2);
   static rgb_color correct_color(rgb_color color);
   static byte crossfade_steps(){ return CROSSFADE_STEPS; }
@@ -52,7 +56,10 @@ class ColorMath
   static const float PROGMEM cosines[NUM_COSINES];
   static const float PROGMEM sines[NUM_COSINES];
 
+#ifdef USE_BLEND
   static byte blend_component(byte component1, byte component2, float strength);
+#endif
+
   static byte crossfade_component(byte step, byte component1, byte component2);
 
   static float read_cosine_array(byte step);
@@ -355,13 +362,12 @@ rgb_color ColorMath::crossfade_colors(byte step, rgb_color color1, rgb_color col
   return result;
 }
 
-// todo: optional
+#ifdef USE_BLEND
 byte ColorMath::blend_component(byte component1, byte component2, float strength)
 {
   return (byte)((component1 * strength) + (component2 * (1.0 - strength)));
 }
 
-// todo: optional
 //  color1 is the dominant color for strength (1.0 = all color1)
 rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2, float strength = 0.5)
 {
@@ -371,6 +377,7 @@ rgb_color ColorMath::blend_colors(rgb_color color1, rgb_color color2, float stre
   result.blue = blend_component(color1.blue, color2.blue, strength);
   return result;
 }
+#endif
 
 rgb_color ColorMath::correct_color(rgb_color color)
 {
