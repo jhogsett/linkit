@@ -166,7 +166,7 @@ def set_macro(macro, macro_text, expected_bytes, debug_mode):
     return bytes
 
 def run_macro(macro):
-    command("cnt:%s:run" % macro)
+    command("1:pau:2:cnt:%s:run" % macro)
 
 def stop_all():
     attention()
