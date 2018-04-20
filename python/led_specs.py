@@ -1657,18 +1657,36 @@ def specs():
     expect_arguments("1,2,3:sto:4,5,2:rcl:sto", "3,4,5")
 
     test("can successfully shift arguments")
+
     # no shift
-    expect_buffer("0:sto:50:rgb", 0, 1, "26,0,0")
-    # shift arg0 to arg1
-    expect_buffer("0:sto:50:rcl:rgb", 0, 1, "0,26,0")
-    # shift arg0 to arg2
-    expect_buffer("0:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "0,0,26")
+    expect_render("0:sto:50:rgb", 0, 1, "66,0,0")
+
+    # shift arg0 to arg1, fill arg0 with 0
+    expect_render("0:sto:50:rcl:rgb", 0, 1, "0,66,0")
+
+    # shift arg0 to arg2, fill arg0 and arg1 with 0
+    expect_render("0:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "0,0,66")
+
     # shift arg0 + arg0 to arg0, arg1
-    expect_buffer("50:sto:50:rcl:rgb", 0, 1, "26,26,0")
-    # shft arg0 + arg0 to arg0, arg2
-    expect_buffer("50:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "26,0,26")
-    # shift arg0 + arg0 to arg1, arg2
-    expect_buffer("0:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "0,26,26")
+    expect_render("50:sto:50:rcl:rgb", 0, 1, "66,66,0")
+
+    # shft arg0 + arg0 to arg0, arg2, fill arg1 with 0
+    expect_render("50:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "66,0,66")
+
+    # shift arg0 + arg0 to arg1, arg2, fill arg0 with 0
+    expect_render("0:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "0,66,66")
+
+    # shift arg0 to arg1, fill arg0 with a value
+    expect_render("25:sto:50:rcl:rgb", 0, 1, "33,66,0")
+
+    # shift arg0 to arg2, fill arg0 and arg1 with values
+    expect_render("25:sto:50:rcl:sto:100:rcl:rgb", 0, 1, "33,132,66")
+
+    # shft arg0 + arg0 to arg0, arg2, fill arg1 with a value
+    expect_render("50:sto:50:rcl:sto:25:rcl:rgb", 0, 1, "66,33,66")
+
+    # shift arg0 + arg0 to arg1, arg2, fill arg0 with a value
+    expect_render("25:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "33,66,66")
 
                      
 ########################################################################
