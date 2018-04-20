@@ -149,7 +149,10 @@ def daily_timestamp(data):
     return data["dt"]
 
 def daily_visibility(data):
-    return data["visibility"]
+    try:
+        return data["visibility"]
+    except:
+        return 5280 * 10
 
 def daily_weather(data):
     return data["weather"][0]
