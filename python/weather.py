@@ -57,6 +57,10 @@ def get_options():
     min_api_delay = args.min_api_delay
     suppress_spew = args.suppress_spew
 
+def setup_palette():
+#    lc.command("1:shf")
+    lc.command("era:wht:pur:blu:grn:org:red:6,-1:cpy:era")
+
 def initialize():
     global app_description, num_leds, default_lightness, minimum_lightness, double_size
     app_description = "LED Weather Forecaster v.0.0 12-21-2017"
@@ -71,6 +75,7 @@ def initialize():
         double_size = True
     default_lightness = lc.get_default_lightness()
     minimum_lightness = lc.get_minimum_lightness()
+    setup_palette()
     lc.command("cnt")
 
 def report_error(message):
@@ -344,9 +349,6 @@ def report_forecast(data):
         print weather_entry(" Conditions", forecast_conditions(data, x)),
         print weather_entry(" Description", forecast_description(data, x))        
 
-#def setup_palette():
-#    lc.command("1:shf")
-
 def begin_display_sequence():
     lc.command("::pau")
     lc.command("::pau:-1:sch:era") 
@@ -491,7 +493,6 @@ def send_week_slots(type_style):
     end_display_sequence()
     
 def render_forecast_conditions():
-#    filler_data = "0,255," + str(minimum_lightness) + ":hsl"
     filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     map_to_weekdays(condition_slots)
     for x in xrange(7 -1, -1, -1):
@@ -586,8 +587,6 @@ def render_forecast_humidity():
                 lit = int(humidity * default_lightness)
                 week_slots[x][y] = hsl_color(hue, sat, lit)
 
-maximum_wind_speed = 15
-
 def render_forecast_wind_speed():
     filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     map_to_weekdays(wind_speed_slots)
@@ -599,15 +598,15 @@ def render_forecast_wind_speed():
             else:
                 wind_speed = int(wind_speed)
                 if wind_speed >= 5:
-                    week_slots[x][y] = "grn"
-                elif wind_speed >= 10:
                     week_slots[x][y] = "yel"
-                elif wind_speed >= 15:
+                elif wind_speed >= 10:
                     week_slots[x][y] = "org"
-                elif wind_speed >= 20:
+                elif wind_speed >= 15:
                     week_slots[x][y] = "red"
+                elif wind_speed >= 20:
+                    week_slots[x][y] = "pur"
                 elif wind_speed >= 25:
-                    week_slots[x][y] = "red:bla"
+                    week_slots[x][y] = "pur:bla"
                 else:
                     week_slots[x][y] = filler_data
 
