@@ -1442,14 +1442,10 @@ def specs():
 # COMMAND PROCESSING BUG FIX
 ########################################################################
   if group("test fix for 50-59 argument parsing"):
+   test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
+   for x in range(49,61):
+     expect_arguments("rnd:" + str(x) + ":sto", str(x) + ",0,0")
 
-#    test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
-#    for x in range(49,61):
-#      # the random color is just so there's something to see while it runs
-#      expect_macro("rnd:flu:0:set:" + str(x), 0, "249," + str(x) + ",255")
-
-    for x in range(49,61):
-      expect_arguments("rnd:" + str(x) + ":sto", str(x) + ",0,0")
 
 ########################################################################
 # MACROS
@@ -1661,23 +1657,18 @@ def specs():
     expect_arguments("1,2,3:sto:4,5,2:rcl:sto", "3,4,5")
 
     test("can successfully shift arguments")
+    # no shift
     expect_buffer("0:sto:50:rgb", 0, 1, "26,0,0")
+    # shift arg0 to arg1
     expect_buffer("0:sto:50:rcl:rgb", 0, 1, "0,26,0")
+    # shift arg0 to arg2
     expect_buffer("0:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "0,0,26")
+    # shift arg0 + arg0 to arg0, arg1
     expect_buffer("50:sto:50:rcl:rgb", 0, 1, "26,26,0")
+    # shft arg0 + arg0 to arg0, arg2
     expect_buffer("50:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "26,0,26")
-    expect_buffer("0:sto:49:rcl:sto:49:rcl:rgb", 0, 1, "0,25,25")
-
-    # these should be cyan but end up green
+    # shift arg0 + arg0 to arg1, arg2
     expect_buffer("0:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "0,26,26")
-    expect_buffer("0:sto:59:rcl:sto:59:rcl:rgb", 0, 1, "0,30,30")
-
-    # another showing of problem
-    expect_arguments("0:sto:49:rcl:sto:", "0,49,0")
-    expect_arguments("0:sto:60:rcl:sto:", "0,60,0")
-
-    expect_arguments("0:sto:50:rcl:sto:", "0,50,0")
-    expect_arguments("0:sto:59:rcl:sto:", "0,59,0")
 
                      
 ########################################################################
