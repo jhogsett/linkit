@@ -1439,14 +1439,22 @@ def specs():
 
 
 ########################################################################
+# COMMAND PROCESSING BUG FIX
+########################################################################
+  if group("test fix for 50-59 argument parsing"):
+
+#    test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
+#    for x in range(49,61):
+#      # the random color is just so there's something to see while it runs
+#      expect_macro("rnd:flu:0:set:" + str(x), 0, "249," + str(x) + ",255")
+
+    for x in range(49,61):
+      expect_arguments("rnd:" + str(x) + ":sto", str(x) + ",0,0")
+
+########################################################################
 # MACROS
 ########################################################################
   if group("setting and running macros"):                                                                                                            
-
-    test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
-    for x in range(49,61):
-      # the random color is just so there's something to see while it runs
-      expect_macro("rnd:flu:0:set:" + str(x), 0, "249," + str(x) + ",255")                                                                                                                                                                                                           
 
     test("a macro can be set")
     command_str("0:set:red:wht:blu")
