@@ -25,7 +25,7 @@
 
 #define DEFAULT_ERASE_BYTE 0xff
 
-#define STRTOK_50_59_FIX
+//#define STRTOK_50_59_FIX
 
 typedef bool (*DispatchFunction)(int cmd, byte *dispatch_data);
 
@@ -249,17 +249,17 @@ byte Macros::set_macro(byte macro, char * commands){
     {
       // this is a set of arguments
 
-#ifndef STRTOK_50_59_FIX
+//#ifndef STRTOK_50_59_FIX
       // doesn't work for "50" through "59"
       command_processor->get_sub_args(command);
-#else
-      // no cause was identified for the odd strtok_r behavior
-      // however adding a trailing delimiter prevents the problem
-      char buf[20];
-      strcpy(buf, command);
-      strcat(buf, ",");
-      command_processor->get_sub_args(buf);
-#endif
+//#else
+//      // no cause was identified for the odd strtok_r behavior
+//      // however adding a trailing delimiter prevents the problem
+//      char buf[20];
+//      strcpy(buf, command);
+//      strcat(buf, ",");
+//      command_processor->get_sub_args(buf);
+//#endif
 
       // pack the arguments
       byte arg_marker;

@@ -9,6 +9,11 @@
 #define CMD_NONE 0
 #define CMD_FIRST 1
 
+#define STRTOK_50_59_FIX
+
+// this doesn't work; interferes with setting a macro within a macro
+//#define ALT_STRTOK_50_59_FIX
+
 class CommandProcessor
 {
   public:
@@ -149,6 +154,9 @@ bool CommandProcessor::is_command_P(char *str, const char *command)
 
 void CommandProcessor::get_sub_args(char * args = NULL)
 {
+
+#ifndef STRTOK_50_59_FIX
+  // doesn't work for "50" through "59"
   if(args == NULL)
   {
     args = this->str;
@@ -158,7 +166,58 @@ void CommandProcessor::get_sub_args(char * args = NULL)
   sub_args[0] = atoi(strtok_r(args, ",", &saveptr));
   sub_args[1] = atoi(strtok_r(NULL, ",", &saveptr));
   sub_args[2] = atoi(strtok_r(NULL, ",", &saveptr));
+
+#else
+  // no cause was identified for the odd strtok_r behavior
+  // however adding a trailing delimiter prevents the problem
+
+  if(args == NULL)
+  {
+    args = this->str;
+  }
+
+#ifndef ALT_STRTOK_50_59_FIX
+  // -99999,-99999,-99999,
+  char buf[21];
+  strcpy(buf, args);
+  strcat(buf, ",");
+
+  char *saveptr = NULL;
+  sub_args[0] = atoi(strtok_r(buf, ",", &saveptr));
+  sub_args[1] = atoi(strtok_r(NULL, ",", &saveptr));
+  sub_args[2] = atoi(strtok_r(NULL, ",", &saveptr));
+#else
+  // this doesn't work - interferes with setting macros inside macros
+  byte len = strlen(args);
+  args[len] = ',';
+  args[len + 1] = 0; // this is OK because arguments fall short of the buffer length
+
+  char *saveptr = NULL;
+  sub_args[0] = atoi(strtok_r(args, ",", &saveptr));
+  sub_args[1] = atoi(strtok_r(NULL, ",", &saveptr));
+  sub_args[2] = atoi(strtok_r(NULL, ",", &saveptr));
+#endif
+
+#endif
 }
+
+
+
+//#ifndef STRTOK_50_59_FIX
+//      // doesn't work for "50" through "59"
+//      command_processor->get_sub_args(command);
+//#else
+//      // no cause was identified for the odd strtok_r behavior
+//      // however adding a trailing delimiter prevents the problem
+//      char buf[20];
+//      strcpy(buf, command);
+//      strcat(buf, ",");
+//      command_processor->get_sub_args(buf);
+//#endif
+
+
+
+
 
 void CommandProcessor::reset_args()
 {
