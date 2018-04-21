@@ -506,7 +506,7 @@ def expect_empty_render(command_, start, count):
   str_ = command_str("3," + str(start) + "," + str(count) + ":tst", True)
   expect_equal(str_[:-1], expected[:-1])
 
-def expect_arguments(command_, expected, flush = True, positive = True):
+def expect_accumulators(command_, expected, flush = True, positive = True):
   if flush:
     command_ += ":flu"
   command(command_)
@@ -1444,7 +1444,7 @@ def specs():
   if group("test fix for 50-59 argument parsing"):
    test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
    for x in range(49,61):
-     expect_arguments("rnd:" + str(x) + ":sto", str(x) + ",0,0")
+     expect_accumulators("rnd:" + str(x) + ":sto", str(x) + ",0,0")
 
 
 ########################################################################
@@ -1643,29 +1643,29 @@ def specs():
     #                                      :   arg2 = 2 - arg2 = accumulator2
 
     test("can store and recall arguments")
-    expect_arguments("1,2,3:sto:4,5,6:0:rcl:sto", "1,2,3")
+    expect_accumulators("1,2,3:sto:4,5,6:0:rcl:sto", "1,2,3")
 
     test("can store and recall empty arguments")
-    expect_arguments("0:sto:4,5,6:0:rcl:sto", "0,0,0")
+    expect_accumulators("0:sto:4,5,6:0:rcl:sto", "0,0,0")
 
     test("when one argument is supplied, it is shifted to arg1, arg0 is filled from accumulator 0, and arg2 is filled from accumulator1")
-    expect_arguments("1,2,3:sto:4:rcl:sto", "1,4,2")
+    expect_accumulators("1,2,3:sto:4:rcl:sto", "1,4,2")
 
     test("when two/three arguments are supplied, they are shifted to arg1 and arg2, and arg0 is set from an accumulator based on the third argument")
-    expect_arguments("1,2,3:sto:4,5,0:rcl:sto", "1,4,5") 
-    expect_arguments("1,2,3:sto:4,5,1:rcl:sto", "2,4,5")                                                  
-    expect_arguments("1,2,3:sto:4,5,2:rcl:sto", "3,4,5")
+    expect_accumulators("1,2,3:sto:4,5,0:rcl:sto", "1,4,5") 
+    expect_accumulators("1,2,3:sto:4,5,1:rcl:sto", "2,4,5")                                                  
+    expect_accumulators("1,2,3:sto:4,5,2:rcl:sto", "3,4,5")
 
-    test("can successfully shift arguments")
+    test("can successfully shift arguments with sto/rcl tricks")
 
-    # no shift
+    # no shift 
     expect_render("0:sto:50:rgb", 0, 1, "66,0,0")
 
     # shift arg0 to arg1, fill arg0 with 0
     expect_render("0:sto:50:rcl:rgb", 0, 1, "0,66,0")
 
     # shift arg0 to arg2, fill arg0 and arg1 with 0
-    expect_render("0:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "0,0,66")
+    expect_render("1,1:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "0,0,66")
 
     # shift arg0 + arg0 to arg0, arg1
     expect_render("50:sto:50:rcl:rgb", 0, 1, "66,66,0")
@@ -1674,7 +1674,7 @@ def specs():
     expect_render("50:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "66,0,66")
 
     # shift arg0 + arg0 to arg1, arg2, fill arg0 with 0
-    expect_render("0:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "0,66,66")
+    expect_render("1:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "0,66,66")
 
     # shift arg0 to arg1, fill arg0 with a value
     expect_render("25:sto:50:rcl:rgb", 0, 1, "33,66,0")
@@ -1688,7 +1688,34 @@ def specs():
     # shift arg0 + arg0 to arg1, arg2, fill arg0 with a value
     expect_render("25:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "33,66,66")
 
-                     
+    test("stores by copying with fill of two arguments supplied")
+    expect_accumulators("1,2,3:sto:4,5:sto", "4,5,0")
+
+    test("stores by copying if three arguments supplied")
+    expect_accumulators("1,2,3:sto:4,5,6:sto", "4,5,6")
+
+    test("stores by pushing if only one argument supplied")
+    expect_accumulators("1,2,3:sto:4:sto", "4,1,2") 
+
+    test("stores zeros in all accumulators if arg0 is 0")
+    expect_accumulators("1,2,3:sto:0:sto", "0,0,0")
+
+
+#  Test #5 can successfully shift arguments with sto/rcl tricks @1668
+#    Expectation: [0:sto:50:rcl:sto:1:rcl:rgb:flu] @ 1668 Failed!
+#  expected:
+#    [0,0,66]
+#  got:
+#    [0,0,0]
+#
+#    Expectation: [0:sto:50:rcl:sto:50:rcl:rgb:flu] @ 1677 Failed!
+#  expected:
+#    [0,66,66]
+#  got:
+#    [0,66,0]
+
+
+
 ########################################################################
 # Configuring
 ########################################################################
