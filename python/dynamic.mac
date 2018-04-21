@@ -1,0 +1,17 @@
+11;0,90:sqs:75,12:sch;0
+12;0,0,2:snw:pos:0:pal:ffd:flo:flu:rst;0
+13;1,90:sqs:75,14:sch;0
+14;1,0,3:snw:pos:1:pal:ffd:flo:rst;0
+15;2,90:sqs:75,16:sch;0
+16;2,0,4:snw:pos:2:pal:ffd:flo:rst;0
+17;11:run:13:run:15:run:1:pau:2:cnt;0
+18;90:rng:psh:0,-5:psh:rcl:seq;0
+19;90:rng:psh:0,-6:psh:rcl:seq;0
+20;90:rng:psh:1,-5:psh:rcl:seq;0
+21;90:rng:psh:1,-6:psh:rcl:seq;0
+22;90:rng:psh:2,-5:psh:rcl:seq;0
+23;90:rng:psh:2,-6:psh:rcl:seq;0
+24;18:run:19:run:20:run:21:run:22:run:23:run:shf;0
+25;10000,24:sch:17:run;0
+10;25:run;0
+
