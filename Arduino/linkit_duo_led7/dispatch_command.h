@@ -316,7 +316,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     break;
 
   case CMD_PUSH:
-    do_push(arg0);
+    do_push(arg0, arg1);
     break;
     
   }

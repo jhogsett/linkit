@@ -118,7 +118,7 @@ class Commands
   void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
   void do_store(int arg0, int arg1, int arg2);
-  void do_push(int arg0);
+  void do_push(int arg0, int arg1);
   void do_recall(int arg0, int arg1, int arg2);
   void dispatch_effect(byte cmd);
   void displatch_color(byte cmd, int arg0, int arg1);
@@ -1341,11 +1341,22 @@ void Commands::do_store(int arg0, int arg1, int arg2)
 //  }
 }
 
-void Commands::do_push(int arg0)
+// push one or two arguments into accumulators
+void Commands::do_push(int arg0, int arg1)
 {
   int *accumulators = command_processor->accumulators;
-  accumulators[2] = accumulators[1];
-  accumulators[1] = accumulators[0];
+
+  if(arg1 != 0) {
+    accumulators[2] = accumulators[0];
+    accumulators[1] = arg1;
+  } else {
+    accumulators[2] = accumulators[1];
+    accumulators[1] = accumulators[0];
+  }
+
+//  // case for one arg
+//  accumulators[2] = accumulators[1];
+//  accumulators[1] = accumulators[0];
   accumulators[0] = arg0;
 }
 
