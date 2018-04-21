@@ -1,20 +1,20 @@
-11;0,90:sqs:75,12:sch;0
-12;0,0,2:snw:pos:0:pal:ffd:flo:flu:rst;0
+11;0,90:sqs:50,12:sch;0
+12;0,0,3:snw:pos:0:pal:ffd:flo:flu:rst;0
 
-13;1,90:sqs:75,14:sch;0
-14;1,0,2:snw:pos:1:pal:ffd:flo:rst;0
+13;1,90:sqs:50,14:sch;0
+14;1,0,3:snw:pos:1:pal:ffd:flo:rst;0
 
-15;2,90:sqs:75,16:sch;0
-16;2,0,2:snw:pos:2:pal:ffd:flo:rst;0
+15;2,90:sqs:50,16:sch;0
+16;2,0,3:snw:pos:2:pal:ffd:flo:rst;0
 
-17;3,90:sqs:75,18:sch;0
-18;3,0,2:snw:pos:3:pal:ffd:flo:rst;0
+17;3,90:sqs:50,18:sch;0
+18;3,0,3:snw:pos:3:pal:ffd:flo:rst;0
 
-19;4,90:sqs:75,20:sch;0
-20;4,0,2:snw:pos:4:pal:ffd:flo:rst;0
+19;4,90:sqs:50,20:sch;0
+20;4,0,3:snw:pos:4:pal:ffd:flo:rst;0
 
-21;5,90:sqs:75,22:sch;0
-22;5,0,2:snw:pos:5:pal:ffd:flo:rst;0
+21;5,90:sqs:50,22:sch;0
+22;5,0,3:snw:pos:5:pal:ffd:flo:rst;0
 
 25;11:run:13:run:15:run;0
 26;17:run:19:run:21:run;0
