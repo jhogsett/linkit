@@ -118,6 +118,7 @@ class Commands
   void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
   void do_store(int arg0, int arg1, int arg2);
+  void do_push(int arg0, int arg1);
   void do_recall(int arg0, int arg1, int arg2);
   void dispatch_effect(byte cmd);
   void displatch_color(byte cmd, int arg0, int arg1);
@@ -1329,28 +1330,34 @@ void Commands::set_black_level(int arg0, int arg1, int arg2)
 void Commands::do_store(int arg0, int arg1, int arg2)
 {
   int *accumulators = command_processor->accumulators;
-//  int *sub_args = command_processor->sub_args;
-
-  if(arg0 == 0){
-    // no arguments supplied, clear accumulators  
-    accumulators[0] = 0;
-    accumulators[1] = 0;
-    accumulators[2] = 0;
-  } else if(arg1 == 0 && arg2 == 0){
-    // only one argument supplied, push it in at acc0
-    accumulators[2] = accumulators[1];
-    accumulators[1] = accumulators[0];
-    accumulators[0] = arg0;
-  } else {
-    accumulators[2] = arg2;
-    accumulators[1] = arg1;
-    accumulators[0] = arg0;
+  accumulators[0] = arg0;
+  accumulators[1] = arg1;
+  accumulators[2] = arg2;
 
 //    byte nargs = command_processor->get_num_args();
 //    for(int i = 0; i < nargs; i++){
 //      accumulators[i] = sub_args[i];  
 //    }
+//  }
+}
+
+// push one or two arguments into accumulators
+void Commands::do_push(int arg0, int arg1)
+{
+  int *accumulators = command_processor->accumulators;
+
+  if(arg1 != 0) {
+    accumulators[2] = accumulators[0];
+    accumulators[1] = arg1;
+  } else {
+    accumulators[2] = accumulators[1];
+    accumulators[1] = accumulators[0];
   }
+
+//  // case for one arg
+//  accumulators[2] = accumulators[1];
+//  accumulators[1] = accumulators[0];
+  accumulators[0] = arg0;
 }
 
 // arg0 = 0                             : (no argument supplied)       restore all arguments from the accumulators

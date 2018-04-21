@@ -1,3 +1,11 @@
+// figure out a scheme for spec randomization
+
+// wrote latest failures to ./.led_specs so they can be rerun easily
+
+// be able to update sequencer keeping present width (offset the sequencer)
+
+// psh should handle twpo arguments
+
 // variation on sto that pushes arg0 at acc0
 
 // program subsections need to stop other macros from running before going

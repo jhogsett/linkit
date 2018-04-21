@@ -301,9 +301,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       reset_args = false; 
       break;
   
-  case CMD_SEQ_NEXTM: 
+//  case CMD_SEQ_NEXTM: 
 //    reset_args = false; 
-    break;
+//    break;
   
   case CMD_CLR_SEQ_HUE:
   case CMD_CLR_SEQ_SAT:
@@ -314,6 +314,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   case CMD_FAN:
     do_fan(arg0);
     break;
+
+  case CMD_PUSH:
+    do_push(arg0, arg1);
+    break;
+    
   }
   
   if(reset_args)
