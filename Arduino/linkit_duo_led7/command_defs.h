@@ -76,9 +76,13 @@
 #define CMD_CLEAR        68
 #define CMD_LEVEL        69
 #define CMD_FADE         70
+
 #define CMD_WIPE         71
+
 #define CMD_ANIM_ROTATE  72
+
 #define CMD_PSHIFTO      73
+
 #define CMD_CFADE        74
 #define CMD_TEST         75
 #define CMD_CONFIGURE    76
@@ -97,20 +101,25 @@
 #define CMD_PALETTE      89
 #define CMD_SHUFFLE      90
 #define CMD_SETBLACK     91
+
 #define CMD_SEQ_WHEEL    92
 #define CMD_SEQ_SWING    93
 #define CMD_SEQ_WHLCO    94
 #define CMD_SEQ_SWGCO    95
 #define CMD_SEQ_WHLSN    96
 #define CMD_SEQ_SWGSN    97
+
 #define CMD_SEQ_WHLPW    98
 #define CMD_SEQ_SWGPW    99
+
 #define CMD_SEQ_NEXTW   100
-#define CMD_SEQ_NEXTM   101
-#define CMD_CLR_SEQ_HUE 102
-#define CMD_CLR_SEQ_SAT 103
-#define CMD_CLR_SEQ_LIT 104
-#define CMD_FAN         105
+
+#define CMD_CLR_SEQ_HUE 101
+#define CMD_CLR_SEQ_SAT 102
+#define CMD_CLR_SEQ_LIT 103
+#define CMD_FAN         104
+
+#define CMD_SEQ_NEXTM   105
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "rst";
@@ -210,16 +219,15 @@ const char cmd_094[] PROGMEM = "swc"; // wheel cosine
 const char cmd_095[] PROGMEM = "ssc"; // swing cosine
 const char cmd_096[] PROGMEM = "sws"; // wheel sine
 const char cmd_097[] PROGMEM = "sss"; // swing sine
-
 const char cmd_098[] PROGMEM = "swp"; // wheel power
 const char cmd_099[] PROGMEM = "ssp"; // swing power
-
 const char cmd_100[] PROGMEM = "snw"; // sequence next window
-const char cmd_101[] PROGMEM = "snm"; // sequence next macro (future)
-const char cmd_102[] PROGMEM = "csh"; // color sequence by hue
-const char cmd_103[] PROGMEM = "css"; // color sequence by saturation
-const char cmd_104[] PROGMEM = "csl"; // color sequence by lightness
-const char cmd_105[] PROGMEM = "fan";
+const char cmd_101[] PROGMEM = "csh"; // color sequence by hue
+const char cmd_102[] PROGMEM = "css"; // color sequence by saturation
+const char cmd_103[] PROGMEM = "csl"; // color sequence by lightness
+const char cmd_104[] PROGMEM = "fan";
+const char cmd_105[] PROGMEM = "arg"; // arg selection arg0,1 passed thru, arg2 specifies resulting args0,1,2, arg2 is 3 positions xyz, each can be 1:arg0 2:arg1 3:acc0 4:acc1 5:acc2
+                                      // if arg2 is < 0, specifies math operations
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,

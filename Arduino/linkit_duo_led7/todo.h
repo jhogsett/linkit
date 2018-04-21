@@ -1,14 +1,12 @@
+// variation on sto that pushes arg0 at acc0
+
 // program subsections need to stop other macros from running before going
-
-
-// maybe sequencers should be automatically tied to macros
 
 // pending expectation should be yellow not white
 
 // add rgb terminal colors
 
 // move helpers into led_command.py
-
 
 // dynamic blink based on 1-6
   // blue dynamic color channel lower six bits specify which ones are on
@@ -21,8 +19,6 @@
 // app to collect timing metrics on various commands (can this be built into test suite?)
 
 // command to convert percentage to perfect count of leds/width/whatever to make scaling more automatic
-
-
 
 // can a sequencer be used to simulate the effect of a spinning light intensity profile?
 
