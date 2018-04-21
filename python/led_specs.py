@@ -1694,29 +1694,17 @@ def specs():
     test("stores by copying if three arguments supplied")
     expect_accumulators("1,2,3:sto:4,5,6:sto", "4,5,6")
 
-    test("pushes argument to accumulators")
-    expect_accumulators("1,2,3:sto:4:psh", "4,1,2") 
-
-    test("can push multiple argument to accumulators")
-    expect_accumulators("1,2,3:sto:4:psh:5:psh:6:psh", "6,5,4")
-
     test("stores zeros in all accumulators if arg0 is 0")
     expect_accumulators("1,2,3:sto:0:sto", "0,0,0")
 
+    test("pushes argument to accumulators")
+    expect_accumulators("1,2,3:sto:4:psh", "4,1,2")
 
-#  Test #5 can successfully shift arguments with sto/rcl tricks @1668
-#    Expectation: [0:sto:50:rcl:sto:1:rcl:rgb:flu] @ 1668 Failed!
-#  expected:
-#    [0,0,66]
-#  got:
-#    [0,0,0]
-#
-#    Expectation: [0:sto:50:rcl:sto:50:rcl:rgb:flu] @ 1677 Failed!
-#  expected:
-#    [0,66,66]
-#  got:
-#    [0,66,0]
+    test("can push arguments multiple times to accumulators")
+    expect_accumulators("1,2,3:sto:4:psh:5:psh:6:psh", "6,5,4")
 
+    test("can push multiple arguments to accumulators")
+    expect_accumulators("1,2,3:sto:4,5:psh", "4,5,1")
 
 
 ########################################################################
