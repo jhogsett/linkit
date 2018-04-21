@@ -1439,14 +1439,18 @@ def specs():
 
 
 ########################################################################
+# COMMAND PROCESSING BUG FIX
+########################################################################
+  if group("test fix for 50-59 argument parsing"):
+   test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
+   for x in range(49,61):
+     expect_arguments("rnd:" + str(x) + ":sto", str(x) + ",0,0")
+
+
+########################################################################
 # MACROS
 ########################################################################
   if group("setting and running macros"):                                                                                                            
-
-    test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
-    for x in range(49,61):
-      # the random color is just so there's something to see while it runs
-      expect_macro("rnd:flu:0:set:" + str(x), 0, "249," + str(x) + ",255")                                                                                                                                                                                                           
 
     test("a macro can be set")
     command_str("0:set:red:wht:blu")
@@ -1651,6 +1655,38 @@ def specs():
     expect_arguments("1,2,3:sto:4,5,0:rcl:sto", "1,4,5") 
     expect_arguments("1,2,3:sto:4,5,1:rcl:sto", "2,4,5")                                                  
     expect_arguments("1,2,3:sto:4,5,2:rcl:sto", "3,4,5")
+
+    test("can successfully shift arguments")
+
+    # no shift
+    expect_render("0:sto:50:rgb", 0, 1, "66,0,0")
+
+    # shift arg0 to arg1, fill arg0 with 0
+    expect_render("0:sto:50:rcl:rgb", 0, 1, "0,66,0")
+
+    # shift arg0 to arg2, fill arg0 and arg1 with 0
+    expect_render("0:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "0,0,66")
+
+    # shift arg0 + arg0 to arg0, arg1
+    expect_render("50:sto:50:rcl:rgb", 0, 1, "66,66,0")
+
+    # shft arg0 + arg0 to arg0, arg2, fill arg1 with 0
+    expect_render("50:sto:50:rcl:sto:1:rcl:rgb", 0, 1, "66,0,66")
+
+    # shift arg0 + arg0 to arg1, arg2, fill arg0 with 0
+    expect_render("0:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "0,66,66")
+
+    # shift arg0 to arg1, fill arg0 with a value
+    expect_render("25:sto:50:rcl:rgb", 0, 1, "33,66,0")
+
+    # shift arg0 to arg2, fill arg0 and arg1 with values
+    expect_render("25:sto:50:rcl:sto:100:rcl:rgb", 0, 1, "33,132,66")
+
+    # shft arg0 + arg0 to arg0, arg2, fill arg1 with a value
+    expect_render("50:sto:50:rcl:sto:25:rcl:rgb", 0, 1, "66,33,66")
+
+    # shift arg0 + arg0 to arg1, arg2, fill arg0 with a value
+    expect_render("25:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "33,66,66")
 
                      
 ########################################################################

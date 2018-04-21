@@ -17,7 +17,9 @@ def begin(verbose=False):
     flush_input()
     max_command_chars = get_max_string_length()
     if max_command_chars == None or max_command_chars == 0:
-        raise StandardError("unable to get maximum command chars")
+        #raise StandardError("unable to get maximum command chars")
+        # just use a default
+        max_command_chars = 60
     max_command_chars -= 1
 
 def flush_input():
