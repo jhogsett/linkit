@@ -119,7 +119,7 @@
 #define CMD_CLR_SEQ_LIT 103
 #define CMD_FAN         104
 
-#define CMD_SEQ_NEXTM   105
+#define CMD_PUSH        105
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "rst";
@@ -226,8 +226,7 @@ const char cmd_101[] PROGMEM = "csh"; // color sequence by hue
 const char cmd_102[] PROGMEM = "css"; // color sequence by saturation
 const char cmd_103[] PROGMEM = "csl"; // color sequence by lightness
 const char cmd_104[] PROGMEM = "fan";
-const char cmd_105[] PROGMEM = "arg"; // arg selection arg0,1 passed thru, arg2 specifies resulting args0,1,2, arg2 is 3 positions xyz, each can be 1:arg0 2:arg1 3:acc0 4:acc1 5:acc2
-                                      // if arg2 is < 0, specifies math operations
+const char cmd_105[] PROGMEM = "psh"; // push arg0 to accumulators
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
