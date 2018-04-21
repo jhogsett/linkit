@@ -118,6 +118,9 @@ void Sequence::fix_current()
 {
   this->current = max(this->low, this->current);
   this->current = min(this->max, this->current);
+
+  this->previous = this->current;  
+  this->prev_computed = this->current;
 }
 
 void Sequence::reset()
@@ -158,14 +161,24 @@ int Sequence::next(int advancement, int step) // step or macro
       return this->increment(step);
  
     case ADVANCE_NEW_HIGH:
-      this->set_limit(this->low, step);
-      this->fix_current();
+    {
+      int new_max = step - 1;
+      if(new_max - 2 > this->low){
+        this->set_limit(this->low, new_max + 1);
+        this->fix_current();
+      }
       return this->current;
+    }
  
     case ADVANCE_NEW_LOW:
-      this->set_limit(step, this->max + 1);
-      this->fix_current();
+    {
+      int new_low = step;
+      if(new_low + 2 < this->max){
+        this->set_limit(new_low, this->max + 1);
+        this->fix_current();
+      }
       return this->current;
+    }
   }
 }
 
