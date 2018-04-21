@@ -1444,7 +1444,7 @@ def specs():
   if group("test fix for 50-59 argument parsing"):
    test("a known bug is fixed - using values 50-59 as arguments in setting macros uses too many bytes")
    for x in range(49,61):
-     expect_accumulators("rnd:" + str(x) + ":sto", str(x) + ",0,0")
+     expect_accumulators("rnd:" + str(x) + ",1:sto", str(x) + ",1,0")
 
 
 ########################################################################
