@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// #define USE_TEST_FRAMEWORK // 3%
+#define USE_TEST_FRAMEWORK // 3%
 // #define USE_EXTRA_SHUFFLES // 1%
 // #define USE_BLEND          // 2%
 
@@ -12,10 +12,10 @@
 ///////////////////////////
 
 // single 90-LED strip in Apollo
-#define APOLLO_DISPLAY
+// #define APOLLO_DISPLAY
 
 // single 90-LED strip for dev
-// #define LED_STRIP_90
+#define LED_STRIP_90
 
 // 19-LED Mini Disc
 // #define MINI_DISC_19

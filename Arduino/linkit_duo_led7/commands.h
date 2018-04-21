@@ -1321,15 +1321,35 @@ void Commands::set_black_level(int arg0, int arg1, int arg2)
   buffer->set_black_level(black_level);
 }
 
+// maybe:
+// with only one argument, push it, as in: acc2=acc1, acc1=acc0, acc0=arg0
+// with two or three arguments, just store them to the accumulators
+
 // core
 void Commands::do_store(int arg0, int arg1, int arg2)
 {
-  byte nargs = command_processor->get_num_args();
   int *accumulators = command_processor->accumulators;
-  int *sub_args = command_processor->sub_args;
+//  int *sub_args = command_processor->sub_args;
 
-  for(int i = 0; i < nargs; i++){
-    accumulators[i] = sub_args[i];  
+  if(arg0 == 0){
+    // no arguments supplied, clear accumulators  
+    accumulators[0] = 0;
+    accumulators[1] = 0;
+    accumulators[2] = 0;
+  } else if(arg1 == 0 && arg2 == 0){
+    // only one argument supplied, push it in at acc0
+    accumulators[2] = accumulators[1];
+    accumulators[1] = accumulators[0];
+    accumulators[0] = arg0;
+  } else {
+    accumulators[2] = arg2;
+    accumulators[1] = arg1;
+    accumulators[0] = arg0;
+
+//    byte nargs = command_processor->get_num_args();
+//    for(int i = 0; i < nargs; i++){
+//      accumulators[i] = sub_args[i];  
+//    }
   }
 }
 
