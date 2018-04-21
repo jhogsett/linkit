@@ -1694,8 +1694,11 @@ def specs():
     test("stores by copying if three arguments supplied")
     expect_accumulators("1,2,3:sto:4,5,6:sto", "4,5,6")
 
-    test("stores by pushing if only one argument supplied")
-    expect_accumulators("1,2,3:sto:4:sto", "4,1,2") 
+    test("pushes argument to accumulators")
+    expect_accumulators("1,2,3:sto:4:psh", "4,1,2") 
+
+    test("can push multiple argument to accumulators")
+    expect_accumulators("1,2,3:sto:4:psh:5:psh:6:psh", "6,5,4")
 
     test("stores zeros in all accumulators if arg0 is 0")
     expect_accumulators("1,2,3:sto:0:sto", "0,0,0")
