@@ -67,59 +67,51 @@
 #define CMD_BREATHE_D    59
 #define CMD_SLOW_FADE    60
 #define CMD_FAST_FADE    61
-#define CMD_BLINKR       62
-#define CMD_EFFECTR      63
-#define CMD_STORE        64 
-#define CMD_RECALL       65
-#define CMD_PAUSE        66
-#define CMD_CONTINUE     67
-#define CMD_CLEAR        68
-#define CMD_LEVEL        69
-#define CMD_FADE         70
+#define CMD_STORE        62 
+#define CMD_RECALL       63
+#define CMD_PUSH         64
+#define CMD_PAUSE        65
+#define CMD_CONTINUE     66
+#define CMD_CLEAR        67
+#define CMD_LEVEL        68
+#define CMD_FADE         69
+#define CMD_ANIM_ROTATE  70
+#define CMD_CFADE        71
+#define CMD_BLINKR       72
+#define CMD_EFFECTR      73
+#define CMD_TEST         74
+#define CMD_CONFIGURE    75
+#define CMD_PINON        76
+#define CMD_PINOFF       77
+#define CMD_SCHEDULE     78
+#define CMD_CARRY        79
+#define CMD_SET_MACRO    80
+#define CMD_RUN_MACRO    81
+#define CMD_DELAY        82
+#define CMD_STOP         83
+#define CMD_RANDOM_NUM   84
+#define CMD_POSITION     85
+#define CMD_RPOSITION    86
+#define CMD_XYPOSITION   87
+#define CMD_PALETTE      88
+#define CMD_SHUFFLE      89
+#define CMD_SETBLACK     90
+#define CMD_SEQ_WHEEL    91
+#define CMD_SEQ_SWING    92
+#define CMD_SEQ_WHLCO    93
+#define CMD_SEQ_SWGCO    94
+#define CMD_SEQ_WHLSN    95
+#define CMD_SEQ_SWGSN    96
+#define CMD_SEQ_WHLPW    97
+#define CMD_SEQ_SWGPW    98
+#define CMD_SEQ_NEXTW    99
+#define CMD_CLR_SEQ_HUE 100
+#define CMD_CLR_SEQ_SAT 101
+#define CMD_CLR_SEQ_LIT 102
+#define CMD_FAN         103
+#define CMD_MATH        104
+#define CMD_PSHIFTO     105
 
-#define CMD_WIPE         71
-
-#define CMD_ANIM_ROTATE  72
-
-#define CMD_PSHIFTO      73
-
-#define CMD_CFADE        74
-#define CMD_TEST         75
-#define CMD_CONFIGURE    76
-#define CMD_PINON        77
-#define CMD_PINOFF       78
-#define CMD_SCHEDULE     79
-#define CMD_CARRY        80
-#define CMD_SET_MACRO    81
-#define CMD_RUN_MACRO    82
-#define CMD_DELAY        83
-#define CMD_STOP         84
-#define CMD_RANDOM_NUM   85
-#define CMD_POSITION     86
-#define CMD_RPOSITION    87
-#define CMD_XYPOSITION   88
-#define CMD_PALETTE      89
-#define CMD_SHUFFLE      90
-#define CMD_SETBLACK     91
-
-#define CMD_SEQ_WHEEL    92
-#define CMD_SEQ_SWING    93
-#define CMD_SEQ_WHLCO    94
-#define CMD_SEQ_SWGCO    95
-#define CMD_SEQ_WHLSN    96
-#define CMD_SEQ_SWGSN    97
-
-#define CMD_SEQ_WHLPW    98
-#define CMD_SEQ_SWGPW    99
-
-#define CMD_SEQ_NEXTW   100
-
-#define CMD_CLR_SEQ_HUE 101
-#define CMD_CLR_SEQ_SAT 102
-#define CMD_CLR_SEQ_LIT 103
-#define CMD_FAN         104
-
-#define CMD_PUSH        105
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "rst";
@@ -180,53 +172,52 @@ const char cmd_056[] PROGMEM = "blb";
 const char cmd_057[] PROGMEM = "bld";
 const char cmd_058[] PROGMEM = "bre";
 const char cmd_059[] PROGMEM = "brd";
-
 const char cmd_060[] PROGMEM = "sfd";
 const char cmd_061[] PROGMEM = "ffd";
-const char cmd_062[] PROGMEM = "blr";
-const char cmd_063[] PROGMEM = "efr";
-const char cmd_064[] PROGMEM = "sto";
-const char cmd_065[] PROGMEM = "rcl";
-const char cmd_066[] PROGMEM = "pau";
-const char cmd_067[] PROGMEM = "cnt";
-const char cmd_068[] PROGMEM = "clr";
-const char cmd_069[] PROGMEM = "lev";
-const char cmd_070[] PROGMEM = "fad";
-const char cmd_071[] PROGMEM = "wip";
-const char cmd_072[] PROGMEM = "art";
-const char cmd_073[] PROGMEM = "pso";
-const char cmd_074[] PROGMEM = "cfa";
-const char cmd_075[] PROGMEM = "tst";
-const char cmd_076[] PROGMEM = "cfg";
-const char cmd_077[] PROGMEM = "pon";
-const char cmd_078[] PROGMEM = "pof";
-const char cmd_079[] PROGMEM = "sch";
-const char cmd_080[] PROGMEM = "car";
-const char cmd_081[] PROGMEM = "set";
-const char cmd_082[] PROGMEM = "run";
-const char cmd_083[] PROGMEM = "del";
-const char cmd_084[] PROGMEM = "stp";
-const char cmd_085[] PROGMEM = "rng";
-const char cmd_086[] PROGMEM = "pos"; // set position (, width)
-const char cmd_087[] PROGMEM = "rps"; // random position within current window
-const char cmd_088[] PROGMEM = "xyp"; // x,y position
-const char cmd_089[] PROGMEM = "pal"; // palette color
-const char cmd_090[] PROGMEM = "shf"; // shuffle/reset palette
-const char cmd_091[] PROGMEM = "sbl"; // set black level
-const char cmd_092[] PROGMEM = "seq"; // wheel
-const char cmd_093[] PROGMEM = "sqs"; // swing
-const char cmd_094[] PROGMEM = "swc"; // wheel cosine
-const char cmd_095[] PROGMEM = "ssc"; // swing cosine
-const char cmd_096[] PROGMEM = "sws"; // wheel sine
-const char cmd_097[] PROGMEM = "sss"; // swing sine
-const char cmd_098[] PROGMEM = "swp"; // wheel power
-const char cmd_099[] PROGMEM = "ssp"; // swing power
-const char cmd_100[] PROGMEM = "snw"; // sequence next window
-const char cmd_101[] PROGMEM = "csh"; // color sequence by hue
-const char cmd_102[] PROGMEM = "css"; // color sequence by saturation
-const char cmd_103[] PROGMEM = "csl"; // color sequence by lightness
-const char cmd_104[] PROGMEM = "fan";
-const char cmd_105[] PROGMEM = "psh"; // push arg0 to accumulators
+const char cmd_062[] PROGMEM = "sto";
+const char cmd_063[] PROGMEM = "rcl";
+const char cmd_064[] PROGMEM = "psh"; // push arg0 to accumulators
+const char cmd_065[] PROGMEM = "pau";
+const char cmd_066[] PROGMEM = "cnt";
+const char cmd_067[] PROGMEM = "clr";
+const char cmd_068[] PROGMEM = "lev";
+const char cmd_069[] PROGMEM = "fad";
+const char cmd_070[] PROGMEM = "art";
+const char cmd_071[] PROGMEM = "cfa";
+const char cmd_072[] PROGMEM = "blr";
+const char cmd_073[] PROGMEM = "efr";
+const char cmd_074[] PROGMEM = "tst";
+const char cmd_075[] PROGMEM = "cfg";
+const char cmd_076[] PROGMEM = "pon";
+const char cmd_077[] PROGMEM = "pof";
+const char cmd_078[] PROGMEM = "sch";
+const char cmd_079[] PROGMEM = "car";
+const char cmd_080[] PROGMEM = "set";
+const char cmd_081[] PROGMEM = "run";
+const char cmd_082[] PROGMEM = "del";
+const char cmd_083[] PROGMEM = "stp";
+const char cmd_084[] PROGMEM = "rng";
+const char cmd_085[] PROGMEM = "pos"; // set position (, width)
+const char cmd_086[] PROGMEM = "rps"; // random position within current window
+const char cmd_087[] PROGMEM = "xyp"; // x,y position
+const char cmd_088[] PROGMEM = "pal"; // palette color
+const char cmd_089[] PROGMEM = "shf"; // shuffle/reset palette
+const char cmd_090[] PROGMEM = "sbl"; // set black level
+const char cmd_091[] PROGMEM = "seq"; // wheel
+const char cmd_092[] PROGMEM = "sqs"; // swing
+const char cmd_093[] PROGMEM = "swc"; // wheel cosine
+const char cmd_094[] PROGMEM = "ssc"; // swing cosine
+const char cmd_095[] PROGMEM = "sws"; // wheel sine
+const char cmd_096[] PROGMEM = "sss"; // swing sine
+const char cmd_097[] PROGMEM = "swp"; // wheel power
+const char cmd_098[] PROGMEM = "ssp"; // swing power
+const char cmd_099[] PROGMEM = "snw"; // sequence next window
+const char cmd_100[] PROGMEM = "csh"; // color sequence by hue
+const char cmd_101[] PROGMEM = "css"; // color sequence by saturation
+const char cmd_102[] PROGMEM = "csl"; // color sequence by lightness
+const char cmd_103[] PROGMEM = "fan";
+const char cmd_104[] PROGMEM = "mth"; // accumulator manipulation
+const char cmd_105[] PROGMEM = "pso";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,

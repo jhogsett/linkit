@@ -138,6 +138,7 @@ void Sequence::reset()
 #define ADVANCE_MACRO    -4
 #define ADVANCE_NEW_HIGH -5
 #define ADVANCE_NEW_LOW  -6
+//#define ADVANCE_OFFSET   -7
 
 // can advancement be a byte?
 int Sequence::next(int advancement, int step) // step or macro
@@ -159,11 +160,12 @@ int Sequence::next(int advancement, int step) // step or macro
  
     case ADVANCE_NEXT:
       return this->increment(step);
- 
+
+ #define SAFETY_MARGIN 2
     case ADVANCE_NEW_HIGH:
     {
       int new_max = step - 1;
-      if(new_max - 2 > this->low){
+      if(new_max - SAFETY_MARGIN > this->low){
         this->set_limit(this->low, new_max + 1);
         this->fix_current();
       }
@@ -173,7 +175,7 @@ int Sequence::next(int advancement, int step) // step or macro
     case ADVANCE_NEW_LOW:
     {
       int new_low = step;
-      if(new_low + 2 < this->max){
+      if(new_low + SAFETY_MARGIN < this->max){
         this->set_limit(new_low, this->max + 1);
         this->fix_current();
       }

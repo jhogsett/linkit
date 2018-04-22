@@ -154,14 +154,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       do_recall(arg0, arg1, arg2);
       reset_args = false; 
       break;
-  
-    case CMD_BLINKR: 
-      effects_processor->start_blinking_r(); 
-      break;
-    
-    case CMD_EFFECTR: 
-      effects_processor->start_effect_r(); 
-      break;
+
+    case CMD_PUSH:
+    do_push(arg0, arg1);
+    break;
     
     case CMD_PAUSE: 
       pause(arg0); 
@@ -187,27 +183,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       do_fade(); 
       break;
     
-    case CMD_WIPE: 
-//      do_wipe(); 
-      break;
-    
     case CMD_ANIM_ROTATE: 
       do_rotate(arg0, arg1, true); 
       break;
   
-#ifdef USE_POWER_SHIFT
-//    case CMD_PSHIFT: 
-//      do_power_shift(arg0); 
-//      break;
-    case CMD_PSHIFTO: 
-      do_power_shift_object(arg0, arg1); 
-      break;
-#else
-//    case CMD_PSHIFT: 
-    case CMD_PSHIFTO: 
-      break;
-#endif
-
     case CMD_XYPOSITION:
  #ifdef USE_MAPPING
      do_xy_position(arg0, arg1);
@@ -216,6 +195,14 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   
     case CMD_CFADE: 
       do_crossfade(); 
+      break;
+    
+    case CMD_BLINKR: 
+      effects_processor->start_blinking_r(); 
+      break;
+    
+    case CMD_EFFECTR: 
+      effects_processor->start_effect_r(); 
       break;
     
     case CMD_TEST: 
@@ -315,10 +302,22 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     do_fan(arg0);
     break;
 
-  case CMD_PUSH:
-    do_push(arg0, arg1);
-    break;
+    case CMD_MATH: 
+      do_math(arg0); 
+      break;
     
+#ifdef USE_POWER_SHIFT
+//    case CMD_PSHIFT: 
+//      do_power_shift(arg0); 
+//      break;
+    case CMD_PSHIFTO: 
+      do_power_shift_object(arg0, arg1); 
+      break;
+#else
+//    case CMD_PSHIFT: 
+    case CMD_PSHIFTO: 
+      break;
+#endif
   }
   
   if(reset_args)
