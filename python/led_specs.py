@@ -1816,6 +1816,98 @@ def specs():
     expect_render("12:dyn:1,2,2:cpy", 0, 4, "51,38,0,51,38,0,51,38,0,51,38,0")
 
 
+########################################################################
+# Math operations
+########################################################################
+  if group("math operations"):
+
+    test("should be able to add two values")
+    expect_accumulators("2,5:psh:0:mth", "7,0,0")
+
+    test("should be able to add positibve and negative values")
+    expect_accumulators("3,-3:psh:0:mth", "0,0,0")
+
+    test("should be able to add positive and negative values and get a negative result")
+    expect_accumulators("0,-3:psh:0:mth", "-3,0,0")
+
+    test("should not crash when adding two large integers")
+    expect_accumulators("32767,32767:psh:0:mth", "-2,0,0")
+
+    test("should not crash when adding two crazy large numbers")
+    expect_accumulators("99999,99999:psh:0:mth", "3390,0,0")
+
+
+    test("should be able to subtract two values")
+    expect_accumulators("7,5:psh:1:mth", "2,0,0")
+
+    test("should be able to subtract negative and positive values")
+    expect_accumulators("0,-3:psh:1:mth", "3,0,0")
+
+    test("should not crash when subtracting two large integers")
+    expect_accumulators("32767,32767:psh:1:mth", "0,0,0")
+
+    test("should not crash when subtracting two crazy large numbers")
+    expect_accumulators("99999,99999:psh:1:mth", "0,0,0")
+    
+
+    test("should be able to multiply two values")
+    expect_accumulators("2,5:psh:2:mth", "10,0,0")
+
+    test("should be able to multiply by zero")
+    expect_accumulators("0,1000:psh:2:mth", "0,0,0")
+
+    test("should be able to multiply by a negative number")
+    expect_accumulators("2,-1:psh:2:mth", "-2,0,0")
+
+    test("should not crash when multiplying two large integers")
+    expect_accumulators("32767,32767:psh:2:mth", "1,0,0")
+
+    test("should not crash when multiplying two crazy large numbers")
+    expect_accumulators("99999,99999:psh:2:mth", "-10559,0,0")
+
+
+    test("should be able to divide two values")
+    expect_accumulators("10,3:psh:3:mth", "3,0,0")
+
+    test("should be able to divide zero by something")
+    expect_accumulators("0,5:psh:3:mth", "0,0,0")
+
+    test("a divide by zero is ignored, leaving accumulators as were")
+    expect_accumulators("5,0:psh:3:mth", "5,0,0")
+
+    test("should be able to divide a negative number")
+    expect_accumulators("-5,2:psh:3:mth", "-2,0,0")
+
+    test("should be able to divide by a negative number")
+    expect_accumulators("5,-2:psh:3:mth", "-2,0,0")
+
+    test("should not crash when dividing two large integers")
+    expect_accumulators("32767,32767:psh:3:mth", "1,0,0")
+
+    test("should not crash when dividing two crazy large numbers")
+    expect_accumulators("99999,99999:psh:3:mth", "1,0,0")
+
+
+    test("should be able to modulus two values")
+    expect_accumulators("10,3:psh:4:mth", "1,0,0")
+
+    test("should be able to modulus zero by something")
+    expect_accumulators("0,3:psh:4:mth", "0,0,0")
+
+    test("a modulus by zero is ignored, leaving accumulators as were")
+    expect_accumulators("5,0:psh:4:mth", "5,0,0")
+
+    test("should be able to modulus a negative nunmber")
+    expect_accumulators("-10,3:psh:4:mth", "-1,0,0")
+
+    test("should be able to modulus by a negative nunmber")
+    expect_accumulators("10,-3:psh:4:mth", "1,0,0")
+
+    test("should not crash when modulusing two large integers")
+    expect_accumulators("32767,32767:psh:4:mth", "0,0,0")
+
+    test("should not crash when modulusing two crazy large numbers")
+    expect_accumulators("99999,99999:psh:4:mth", "0,0,0")
 
 
 ########################################################################                     
