@@ -117,7 +117,8 @@ void Sequence::set_limit(int low, int high){
 void Sequence::fix_current()
 {
   this->current = max(this->low, this->current);
-  this->current = min(this->max, this->current);
+  
+  this->current = min(this->max - 1, this->current);
 
   this->previous = this->current;  
   this->prev_computed = this->current;
@@ -161,7 +162,7 @@ int Sequence::next(int advancement, int step) // step or macro
     case ADVANCE_NEXT:
       return this->increment(step);
 
- #define SAFETY_MARGIN 2
+ #define SAFETY_MARGIN 1
     case ADVANCE_NEW_HIGH:
     {
       int new_max = step - 1;
