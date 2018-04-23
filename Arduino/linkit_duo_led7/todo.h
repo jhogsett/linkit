@@ -1,3 +1,7 @@
+// inquire: # of macro bytes
+
+// math: min/max/avg
+
 // could use accumulators to do if/then decisions in macros
   // x,m1,m2:iff: m1, m2 are macros, m1 is run unless x is zero, then it's m2
   //

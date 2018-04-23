@@ -17,7 +17,7 @@ class Buffer
   void display_buffer(rgb_color * pbuffer);
   void render_display();
   void erase(bool display);
-  void push_color(rgb_color color, byte times, bool display, byte effect, byte max, byte start, bool color_correction);
+  void push_color(rgb_color color, byte times, byte mode, bool display, byte effect, byte max, byte start, bool color_correction);
   void push_rgb_color(byte red, byte green, byte blue);
   void push_hsl_color(int hue, int sat, int lit);
   void push_carry_color();
@@ -216,8 +216,11 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
   }
 }
 
+#define PUSH_COLOR_MODE_OVERWRITE 0
+#define PUSH_COLOR_MODE_ADD       1
+
 // todo: only need to shift buffer multiple times if displaying (otherwise, shift the whole amount)
-void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = DEFAULT_EFFECT, byte max = 0, byte start = 0, bool color_correction = true)
+void Buffer::push_color(rgb_color color, byte times = 1, byte mode = PUSH_COLOR_MODE_OVERWRITE, bool display = false, byte effect = DEFAULT_EFFECT, byte max = 0, byte start = 0, bool color_correction = true)
 {
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
@@ -248,7 +251,15 @@ void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, b
   for(byte i = 0; i < times; i++)
   {
     shift_buffer(buffer, effects, max, start, this->reverse);
-    *buf = color;
+
+    if(mode == PUSH_COLOR_MODE_ADD){
+      buf-> red += color.red;
+      buf-> green += color.green;
+      buf-> blue += color.blue;
+    } else {
+      *buf = color;
+    }
+
     *eff = effect;
     if(display)
       render_display();
@@ -270,7 +281,7 @@ void Buffer::push_hsl_color(int hue, int sat, int lit)
 
 void Buffer::push_carry_color()
 {
-  push_color(carry_color, 1, false, carry_effect);
+  push_color(carry_color, 1, PUSH_COLOR_MODE_OVERWRITE, false, carry_effect);
 }
 
 // todo: is this used?
