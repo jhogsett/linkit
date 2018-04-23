@@ -78,7 +78,7 @@ class Commands
   void do_bright();
   void do_fade();
   void do_crossfade();
-//  void do_wipe();
+  void do_math(int arg0);
   void do_flood();
   void do_random(byte type, int times);
   void do_mirror();
@@ -738,10 +738,53 @@ void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = 
 // todo: optional
 //void Commands::do_wipe()
 //{
-#ifdef USE_POWER_EASE
-  do_power_shift_object(0, visible_led_count, false);
-#endif
+//#ifdef USE_POWER_EASE
+//  do_power_shift_object(0, visible_led_count, false);
+//#endif
 //}
+
+
+// should acc2 be an offset or a scaling factor?
+
+// arg0 ==
+// 0 - acc0 = acc0 + acc1
+// 1 - acc0 = acc0 - acc1
+// 2 - acc0 = acc0 * acc1
+// 3 - acc0 = acc0 / acc1
+// 4 - acc0 = acc0 % acc1
+
+#define MATH_ADD 0
+#define MATH_SUB 1
+#define MATH_MUL 2
+#define MATH_DIV 3
+#define MATH_MOD 4
+
+void Commands::do_math(int arg0)
+{
+  int *accumulators = command_processor->accumulators;
+
+  switch(arg0){
+    case MATH_ADD: 
+      accumulators[0] = accumulators[0] + accumulators[1]; 
+      break;
+    case MATH_SUB: 
+      accumulators[0] = accumulators[0] - accumulators[1]; 
+      break;
+    case MATH_MUL: 
+      accumulators[0] = accumulators[0] * accumulators[1]; 
+      break;
+    case MATH_DIV: 
+      if(accumulators[1] == 0) return;
+      accumulators[0] = accumulators[0] / accumulators[1]; 
+      break;
+    case MATH_MOD: 
+      if(accumulators[1] == 0) return;
+      accumulators[0] = accumulators[0] % accumulators[1]; 
+      break;
+  }
+  accumulators[1] = 0;
+  accumulators[2] = 0;
+}
 
 // arg[0] # times to rotate, default = 1
 // arg[1] # rotation steps each time, default = 1
