@@ -1,3 +1,10 @@
+// could use accumulators to do if/then decisions in macros
+  // x,m1,m2:iff: m1, m2 are macros, m1 is run unless x is zero, then it's m2
+  //
+  // alternate: 
+  // x,mf,ml:swt: mf,ml are first,last macros in range, x specifies switch (but in this case, ml isn't needed since x can be constrained)
+    // could have ml be redefined as: macro to call if x is zero (is this needed?)
+
 // figure out a scheme for spec randomization
 
 // wrote latest failures to ./.led_specs so they can be rerun easily
