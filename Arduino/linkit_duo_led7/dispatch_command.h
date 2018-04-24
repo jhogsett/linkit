@@ -35,7 +35,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_FLOOD: 
-      do_flood(); 
+      do_flood(arg0); 
       break;
     
     case CMD_MIRROR: 
@@ -94,7 +94,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_TUNGSTEN: 
     case CMD_NEON: 
     case CMD_SODIUM: 
-      displatch_color(cmd, arg0, arg1);
+      dispatch_color(cmd, arg0, arg1);
       break; 
   
     case CMD_BLACK: 
@@ -259,7 +259,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_PALETTE: 
-      do_palette(arg0, arg1); 
+      do_palette(arg0, arg1, arg2); 
       break;
     
     case CMD_SHUFFLE: 
@@ -326,7 +326,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   return continue_dispatching;
 }
 
-void Commands::displatch_color(byte cmd, int arg0, int arg1){
+
+// arg0: times
+// arg1: 
+void Commands::dispatch_color(byte cmd, int arg0, int arg1){
   buffer->push_color(*Colors::get_color(cmd - CMD_RED), arg0, arg1); 
 }
 

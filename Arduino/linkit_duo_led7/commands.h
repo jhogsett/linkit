@@ -79,7 +79,7 @@ class Commands
   void do_fade();
   void do_crossfade();
   void do_math(int arg0);
-  void do_flood();
+  void do_flood(byte type);
   void do_random(byte type, int times);
   void do_mirror();
   void do_copy(byte size, int times, byte zoom);
@@ -114,14 +114,14 @@ class Commands
   void do_color_sequence(byte type, int arg0, int arg1, int arg2);
   void do_random_number(int arg0, int arg1, int arg2);
   void do_stop();
-  void do_palette(int arg0, int arg1);
+  void do_palette(byte arg0, byte arg1, byte arg2);
   void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
   void do_store(int arg0, int arg1, int arg2);
   void do_push(int arg0, int arg1);
   void do_recall(int arg0, int arg1, int arg2);
   void dispatch_effect(byte cmd);
-  void displatch_color(byte cmd, int arg0, int arg1);
+  void dispatch_color(byte cmd, int arg0, int arg1);
   void do_xy_position(byte arg0, byte arg1);
   void do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect=NO_EFFECT);
   void do_fan(bool fan_on, bool auto_set=false);
@@ -420,7 +420,10 @@ void Commands::do_crossfade()
   }
 }
 
-void Commands::do_flood()
+#define FLOOD_TYPE_WRITE 0
+#define FLOOD_TYPE_ADD   1
+
+void Commands::do_flood(byte type)
 {
   byte offset = buffer->get_offset();
   byte window = buffer->get_window();
@@ -455,7 +458,13 @@ void Commands::do_flood()
 
   for(byte i = start; i < end_; i++)
   {
-    *buf = color;
+    if(type == 1){
+      buf->red += color.red;
+      buf->green += color.green;
+      buf->blue += color.blue;
+    } else {
+      *buf = color;
+    }
     *effects = effect;    
     buf++;
     effects++;
@@ -520,7 +529,7 @@ void Commands::do_random(byte type, int times)
         break;
     }
     
-    buffer->push_color(color, 1, false, effect);  
+    buffer->push_color(color, 1, 0, false, effect);  
   }
 }
 
@@ -694,7 +703,7 @@ void Commands::do_repeat(byte times = 1){
   byte offset = buffer->get_reverse() ? buffer->get_window() - 1 : buffer->get_offset();
   rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
   byte effect = buffer->get_effects_buffer()[offset];
-  buffer->push_color(color, times, false, effect);
+  buffer->push_color(color, times, 0, false, effect);
 }
 
 //void Commands::do_elastic_shift(byte count, byte max = 0){
@@ -1286,8 +1295,9 @@ void Commands::do_stop()
 // arg[1] if > 0, colors are inserted counting down from this position
 //                the counting down is done so the palette achieves a left-to-right order when inserted  
 //                in this case arg[0] is the stopping point when counting down
+// arg[2] push type 0=overwrite, 1=add
 // for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
-void Commands::do_palette(int arg0, int arg1)
+void Commands::do_palette(byte arg0, byte arg1, byte arg2)
 {
   rgb_color * palette = Colors::get_palette();
 
@@ -1295,10 +1305,10 @@ void Commands::do_palette(int arg0, int arg1)
   {
     arg0 = max(0, arg0);
     for(int i = arg1; i >= arg0; i--)
-      buffer->push_color(palette[i]);                      
+      buffer->push_color(palette[i], 1, arg2);                      
   } 
   else 
-    buffer->push_color(palette[arg0]);                                                      
+    buffer->push_color(palette[arg0], 1, arg2);                                                      
 }
 
 #define SHUFFLE_RANDOM           0
@@ -1457,7 +1467,7 @@ void Commands::do_recall(int arg0, int arg1, int arg2)
 // arg2 the color.blue value for rendering type
 void Commands::do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect){
   rgb_color data = {arg0, arg1, arg2};
-  buffer->push_color(data, 1, false, DYNAMIC_COLOR | effect, 0, 0, false);
+  buffer->push_color(data, 1, 0, false, DYNAMIC_COLOR | effect, 0, 0, false);
 }
 
 // todo: optional
