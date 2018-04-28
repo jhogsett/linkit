@@ -1945,19 +1945,19 @@ def specs():
 
 
     test("should be able to divide two values")
-    expect_accumulators("10,3:psh:3:mth", "3,0,0")
+    expect_accumulators("3,10:psh:3:mth", "3,0,0")
 
     test("should be able to divide zero by something")
-    expect_accumulators("0,5:psh:3:mth", "0,0,0")
+    expect_accumulators("5,0:psh:3:mth", "0,0,0")
 
     test("a divide by zero is ignored, leaving accumulators as were")
-    expect_accumulators("5,0:psh:3:mth", "5,0,0")
+    expect_accumulators("0,5:psh:3:mth", "0,5,0")
 
     test("should be able to divide a negative number")
-    expect_accumulators("-5,2:psh:3:mth", "-2,0,0")
+    expect_accumulators("2,-5:psh:3:mth", "-2,0,0")
 
     test("should be able to divide by a negative number")
-    expect_accumulators("5,-2:psh:3:mth", "-2,0,0")
+    expect_accumulators("-2, 5:psh:3:mth", "-2,0,0")
 
     test("should not crash when dividing two large integers")
     expect_accumulators("32767,32767:psh:3:mth", "1,0,0")
@@ -1967,25 +1967,51 @@ def specs():
 
 
     test("should be able to modulus two values")
-    expect_accumulators("10,3:psh:4:mth", "1,0,0")
+    expect_accumulators("3,10:psh:4:mth", "1,0,0")
 
     test("should be able to modulus zero by something")
-    expect_accumulators("0,3:psh:4:mth", "0,0,0")
+    expect_accumulators("3,0,1:psh:4:mth", "0,0,0")
 
     test("a modulus by zero is ignored, leaving accumulators as were")
-    expect_accumulators("5,0:psh:4:mth", "5,0,0")
+    expect_accumulators("0,5:psh:4:mth", "0,5,0")
 
     test("should be able to modulus a negative nunmber")
-    expect_accumulators("-10,3:psh:4:mth", "-1,0,0")
+    expect_accumulators("3,-10:psh:4:mth", "-1,0,0")
 
     test("should be able to modulus by a negative nunmber")
-    expect_accumulators("10,-3:psh:4:mth", "1,0,0")
+    expect_accumulators("-3,10:psh:4:mth", "1,0,0")
 
     test("should not crash when modulusing two large integers")
     expect_accumulators("32767,32767:psh:4:mth", "0,0,0")
 
     test("should not crash when modulusing two crazy large numbers")
     expect_accumulators("99999,99999:psh:4:mth", "0,0,0")
+
+
+    test("should be able to diff two values")
+    expect_accumulators("27,45:psh:5:mth", "18,0,0")
+
+    test("should be able to diff two values in either direction")
+    expect_accumulators("45,27:psh:5:mth", "18,0,0")
+
+    test("should be able to diff two negative values")
+    expect_accumulators("-27,-45:psh:5:mth", "18,0,0")
+
+    test("should be able to diff two negative values in either direction")
+    expect_accumulators("-45,-27:psh:5:mth", "18,0,0")
+
+
+    test("should be able to average two values")
+    expect_accumulators("27,45:psh:6:mth", "36,0,0")
+
+    test("should be able to average two values in either direction")
+    expect_accumulators("27,45:psh:6:mth", "36,0,0")
+
+    test("should be able to average two negative values")
+    expect_accumulators("-27,-45:psh:6:mth", "-36,0,0")
+
+    test("should be able to average two negative values in either direction")
+    expect_accumulators("-45,-27:psh:6:mth", "-36,0,0")
 
 
 ########################################################################                     
