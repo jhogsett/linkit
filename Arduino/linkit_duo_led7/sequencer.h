@@ -149,20 +149,7 @@ int Sequence::next(int advancement, int step) // step or macro
 
   switch(advancement)
   {
-    case ADVANCE_RESET:
-      this->reset();
-      return this->current;
-
-    case ADVANCE_OPPOSITE:
-      return (this->max - this->current) + this->low;
- 
-    case ADVANCE_CURRENT:
-      return this->current;
- 
-    case ADVANCE_NEXT:
-      return this->increment(step);
-
- #define SAFETY_MARGIN 1
+#define SAFETY_MARGIN 1
     case ADVANCE_NEW_HIGH:
     {
       int new_max = step - 1;
@@ -182,6 +169,23 @@ int Sequence::next(int advancement, int step) // step or macro
       }
       return this->current;
     }
+
+    case ADVANCE_MACRO:
+      return this->current;
+    
+    case ADVANCE_RESET:
+      this->reset();
+      return this->current;
+
+    case ADVANCE_OPPOSITE:
+      this->increment(step);
+      return (this->max - this->current) + this->low;
+ 
+    case ADVANCE_CURRENT:
+      return this->current;
+ 
+    case ADVANCE_NEXT:
+      return this->increment(step);
   }
 }
 

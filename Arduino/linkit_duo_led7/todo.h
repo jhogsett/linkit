@@ -1,3 +1,17 @@
+// turn any two arbitrary positions into m,n args to pos for drawing a line
+
+// to sum and do average, need to divide by 2
+
+// should mth do automatic rcl?
+
+// some way to do snw with arbitrary numbers
+
+// swing sequencer is reliant on a mode, and needs to be sensitive to the mode changing when stepping negatively
+
+
+// era doesn't work when width is one pixel
+
+
 // inquire: # of macro bytes
 
 // math: min/max/avg
