@@ -118,7 +118,7 @@ class Commands
   void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
   void do_store(int arg0, int arg1, int arg2);
-  void do_push(int arg0, int arg1);
+  void do_push(int arg0, int arg1, int arg2);
   void do_recall(int arg0, int arg1, int arg2);
   void dispatch_effect(byte cmd);
   void dispatch_color(byte cmd, int arg0, int arg1);
@@ -767,6 +767,11 @@ void Commands::do_power_shift_object(byte width, byte shift, bool fast_render = 
 #define MATH_MUL 2
 #define MATH_DIV 3
 #define MATH_MOD 4
+#define MATH_DIF 5
+#define MATH_AVG 6
+//#define MATH_MIN 7
+//#define MATH_MAX 8
+//#define MATH_ABS 9
 
 void Commands::do_math(int arg0)
 {
@@ -783,12 +788,19 @@ void Commands::do_math(int arg0)
       accumulators[0] = accumulators[0] * accumulators[1]; 
       break;
     case MATH_DIV: 
-      if(accumulators[1] == 0) return;
-      accumulators[0] = accumulators[0] / accumulators[1]; 
+      // this seems more natural 1/3 = one divided by three = 1:psh:3:psh:3:mth
+      if(accumulators[0] == 0) return;
+      accumulators[0] = accumulators[1] / accumulators[0]; 
       break;
     case MATH_MOD: 
-      if(accumulators[1] == 0) return;
-      accumulators[0] = accumulators[0] % accumulators[1]; 
+      if(accumulators[0] == 0) return;
+      accumulators[0] = accumulators[1] % accumulators[0]; 
+      break;
+    case MATH_DIF:
+      accumulators[0] = abs(accumulators[0] - accumulators[1]); 
+      break;    
+    case MATH_AVG:
+      accumulators[0] = (accumulators[0] + accumulators[1]) / 2; 
       break;
   }
   accumulators[1] = 0;
@@ -1053,7 +1065,7 @@ int Commands::random_num(int max, int min)
 // arg0 - sequence number, 0-5, default = 0
 // arg1 - advancement, must be <= 0 for 'getting' mode 
 // arg1 -1 = get current number without advancing
-// arg1 -2 = get opposite of current number without advancing (for range 0-9 and current number 4, this would be 5)
+// arg1 -2 = advances and gets opposite of current number (for range 0-9 and current number 4, this would be 5)
 // arg1 -3 = reset current number to low limit and return it without advancing
 // arg1 -4 = step (arg2) instead is a macro # to run for each position, filling gaps
 
@@ -1395,11 +1407,11 @@ void Commands::do_store(int arg0, int arg1, int arg2)
 }
 
 // push one or two arguments into accumulators
-void Commands::do_push(int arg0, int arg1)
+void Commands::do_push(int arg0, int arg1, int arg2)
 {
   int *accumulators = command_processor->accumulators;
 
-  if(arg1 != 0) {
+  if(arg1 != 0 || arg2 != 0) { // to push a zero into accum1, arg2 must be something so arg1 is used
     accumulators[2] = accumulators[0];
     accumulators[1] = arg1;
   } else {

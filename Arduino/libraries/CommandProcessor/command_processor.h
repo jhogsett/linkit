@@ -3,7 +3,7 @@
 
 #define DELIMITER_CHAR ':'
 #define DELIMITER_STR ":"
-#define MAX_STRING_LENGTH 60
+#define MAX_STRING_LENGTH 80
 #define NUM_SUB_ARGS 3
 #define CMD_NULL -1
 #define CMD_NONE 0
@@ -176,7 +176,7 @@ void CommandProcessor::get_sub_args(char * args = NULL)
     args = this->str;
   }
 
-#ifndef ALT_STRTOK_50_59_FIX
+//#ifndef ALT_STRTOK_50_59_FIX
   // -99999,-99999,-99999,
   char buf[21];
   strcpy(buf, args);
@@ -186,17 +186,17 @@ void CommandProcessor::get_sub_args(char * args = NULL)
   sub_args[0] = atoi(strtok_r(buf, ",", &saveptr));
   sub_args[1] = atoi(strtok_r(NULL, ",", &saveptr));
   sub_args[2] = atoi(strtok_r(NULL, ",", &saveptr));
-#else
-  // this doesn't work - interferes with setting macros inside macros
-  byte len = strlen(args);
-  args[len] = ',';
-  args[len + 1] = 0; // this is OK because arguments fall short of the buffer length
-
-  char *saveptr = NULL;
-  sub_args[0] = atoi(strtok_r(args, ",", &saveptr));
-  sub_args[1] = atoi(strtok_r(NULL, ",", &saveptr));
-  sub_args[2] = atoi(strtok_r(NULL, ",", &saveptr));
-#endif
+//#else
+//  // this doesn't work - interferes with setting macros inside macros
+//  byte len = strlen(args);
+//  args[len] = ',';
+//  args[len + 1] = 0; // this is OK because arguments fall short of the buffer length
+//
+//  char *saveptr = NULL;
+//  sub_args[0] = atoi(strtok_r(args, ",", &saveptr));
+//  sub_args[1] = atoi(strtok_r(NULL, ",", &saveptr));
+//  sub_args[2] = atoi(strtok_r(NULL, ",", &saveptr));
+//#endif
 
 #endif
 }

@@ -30,6 +30,7 @@
 #define TEST_INQUIRY_TEST_FRAMEWORK_ENABLED 13
 #define TEST_INQUIRY_EXTRA_SHUFFLES_ENABLED 14
 #define TEST_INQUIRY_BLEND_ENABLED     15
+// macro chars, # memory macros, # eeprom macros, first eeprom macro
 
 void Commands::do_test_inquiry(byte type, int arg2)
 {
@@ -222,6 +223,7 @@ void Commands::do_test_macro(byte macro_number)
   command_processor->send_ints(b);
 
   // WHY IS THIS 76 BYTES?
+  
   for(byte i = 0; i < NUM_MACRO_CHARS - 1; i++)
   {
     b = macros.continue_dump_macro(macro_number, &position);            
