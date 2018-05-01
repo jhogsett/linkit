@@ -1,5 +1,5 @@
-10;12:run:100,11:sch:1:pau:2:cnt:1:shf:20:lev
-11;flu
+10;12:run:100,11:sch:1:pau:2:cnt:1:shf:10:lev
+11;mir:flu
 
 12;15:run:18:run:21:run:13:run:14:run
 13;24:run:27:run:30:run
