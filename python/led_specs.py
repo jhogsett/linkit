@@ -381,6 +381,10 @@ def report_failure(got, expected):
     tc.red(" -" + expected) + 
     tc.green(" +" + got) + 
     "\n") 
+  if verbose_mode:
+    print group_message(),    
+    print test_message(),
+    print failure_message(got, expected),
 
 def report_pending():
   report_test()
