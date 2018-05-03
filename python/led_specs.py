@@ -302,9 +302,9 @@ def pending_test(description):
   test_line_number = get_line_number(2)                                                                                                                                                                    
   test_number = test_number + 1                                                                                                                                                                            
   test_description = description                                                                                                                                                                           
-  report_pending()                                                                                                                                                                                         
   num_pending += 1                                                                                                                                                                                         
   if test_number_only == 0 or test_number == test_number_only:
+    report_pending()
     if verbose_mode:
       print tc.yellow(pending_message())
     else:
