@@ -287,10 +287,12 @@ def test(description):
   test_line_number = get_line_number(2)
   pre_test_reset()
   if test_number_only == 0:
+    pre_test_reset()
     if verbose_mode:
       verbose_test_outcome = test_message()
     return True
   if test_number == test_number_only:
+    pre_test_reset()
     if verbose_mode:
       print group_message(),
       print test_message(),
@@ -1604,12 +1606,12 @@ def specs():
 
     if test("it does a swing sine sequence"):
       expect_buffer("0,7,1:sss:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:org", 0, 3,       "20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:yel", 0, 5,       "20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:grn", 0, 9,       "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:blu", 0, 14,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:pur", 0, 17,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:red", 0, 22,      "20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
 
     if test("it does a wheel sequence in reverse"):
       expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
