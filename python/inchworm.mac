@@ -1,0 +1,21 @@
+# init
+10;-1:sch:-1:pau:2:cnt:11:run
+11;100,13:sch:12:run
+12;14:run
+
+# display
+13;flu
+
+# seq 0 & 1
+# init
+14;0,15:sqs:1,90:sqs:2,75:sqs:15:run
+15;50,16:sch:200,18:sch
+
+# render
+16;1,-4,17:snw:pos:0,0,1:pal:ffd:1:flo:rst
+# advance
+17;0,0,1:seq:psh:2,-1:seq:psh:mth:rcl
+18;2,0,2:seq
+
+
+
