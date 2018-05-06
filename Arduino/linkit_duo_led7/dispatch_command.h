@@ -35,11 +35,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_FLOOD: 
-      do_flood(arg0, arg1); 
+      do_flood(arg0); 
       break;
     
     case CMD_MIRROR: 
-      do_mirror(arg0, arg1); 
+      do_mirror(); 
       break;
  
     case CMD_DISPLAY: 
@@ -213,14 +213,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       do_configure(arg0, arg1, arg2); 
       break;
     
-    case CMD_PINON: 
-      set_pin(arg0, true); 
+    case CMD_PIN: 
+      set_pin(arg0, arg1); 
       break;
-    
-    case CMD_PINOFF: 
-      set_pin(arg0, false); 
-      break;
-    
+
     case CMD_SCHEDULE: 
       scheduler.set_schedule(arg0, arg1, arg2); 
       break;
@@ -304,20 +300,8 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
 
     case CMD_MATH: 
       do_math(arg0); 
+      reset_args = false; 
       break;
-    
-#ifdef USE_POWER_SHIFT
-//    case CMD_PSHIFT: 
-//      do_power_shift(arg0); 
-//      break;
-    case CMD_PSHIFTO: 
-      do_power_shift_object(arg0, arg1); 
-      break;
-#else
-//    case CMD_PSHIFT: 
-    case CMD_PSHIFTO: 
-      break;
-#endif
   }
   
   if(reset_args)

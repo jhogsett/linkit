@@ -79,9 +79,9 @@ class Commands
   void do_fade();
   void do_crossfade();
   void do_math(int arg0);
-  void do_flood(byte type, byte wrap);
+  void do_flood(byte type);
   void do_random(byte type, int times);
-  void do_mirror(byte arg0, byte arg1);
+  void do_mirror();
   void do_copy(byte size, int times, byte zoom);
   void do_repeat(byte times);
 
@@ -97,7 +97,7 @@ class Commands
   void flush(bool force_display);
   void set_display(byte display);
   void set_buffer(byte nbuffer);
-  void set_pin(byte pin, bool on);
+  void set_pin(byte pin, byte mode);
   void clear();
   void do_rotate(byte times, byte steps, bool flush);
   void do_delay(int milliseconds);
@@ -323,10 +323,10 @@ void Commands::set_display(byte display)
   buffer->set_zone(0);
 }
 
-void Commands::set_pin(byte pin, bool on)
+void Commands::set_pin(byte pin, byte mode)
 {
   pinMode(pin, OUTPUT);
-  digitalWrite(pin, on ? HIGH : LOW);  
+  digitalWrite(pin, mode == 0 ? LOW : HIGH);  
 }
 
 void Commands::set_brightness_level(byte level)
@@ -423,7 +423,7 @@ void Commands::do_crossfade()
 #define FLOOD_TYPE_WRITE 0
 #define FLOOD_TYPE_ADD   1
 
-void Commands::do_flood(byte type, byte wrap)
+void Commands::do_flood(byte type)
 {
   byte offset = buffer->get_offset();
   byte window = buffer->get_window();
@@ -537,7 +537,7 @@ void Commands::do_random(byte type, int times)
 
 // arg0: number of cuts, 0: defaults to 1 
 // arg1: 0: draw mode, 0: defaults to 0=replace, 1=add
-void Commands::do_mirror(byte arg0, byte arg1)
+void Commands::do_mirror()
 {
   bool reverse = buffer->get_reverse();
   byte front = buffer->get_offset();
@@ -808,6 +808,11 @@ void Commands::do_math(int arg0)
   }
   accumulators[1] = 0;
   accumulators[2] = 0;
+
+  int *sub_args = command_processor->sub_args;
+  sub_args[0] = accumulators[0];
+  sub_args[1] = accumulators[1];
+  sub_args[2] = accumulators[2];
 }
 
 // arg[0] # times to rotate, default = 1

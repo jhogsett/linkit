@@ -1,3 +1,5 @@
+// 
+
 //type of sequencer
 //    no limits
 //    instead: macro #1: advancing, macro #2 painting
