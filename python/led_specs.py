@@ -2034,6 +2034,10 @@ def specs():
     if test("should be able to average two negative values in either direction"):
       expect_accumulators("-45,-27:psh:6:mth", "-36,0,0")
 
+# mth should do an auto recall
+    if test("mth operations should automatically recall accumulators into arguments"):
+      expect_accumulators("3,9:psh:2:mth:sto", "27,0,0")
+
 
 ########################################################################                     
 ########################################################################                     
