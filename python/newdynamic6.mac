@@ -28,13 +28,13 @@
 
 32;3,90:sqs:100,33:sch
 33;3,-4,34:snw:pos:0,0,1:pal:sfd:1:flo:rst
-34;0,-1:seq:psh:1,-1:seq:psh:5:mth:rcl
+34;0,-1:seq:psh:1,-1:seq:psh:5:mth
 
 36;4,90:sqs:100,37:sch
 37;4,-4,38:snw:pos:3,0,1:pal:sfd:1:flo:rst
-38;0,-1:seq:psh:2,-1:seq:psh:5:mth:rcl
+38;0,-1:seq:psh:2,-1:seq:psh:5:mth
 
 40;5,90:sqs:100,41:sch
 41;5,-4,42:snw:pos:4,0,1:pal:sfd:1:flo:rst
-42;2,-1:seq:psh:1,-1:seq:psh:5:mth:rcl
+42;2,-1:seq:psh:1,-1:seq:psh:5:mth
 
