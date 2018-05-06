@@ -35,11 +35,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_FLOOD: 
-      do_flood(arg0); 
+      do_flood(arg0, arg1); 
       break;
     
     case CMD_MIRROR: 
-      do_mirror(); 
+      do_mirror(arg0, arg1); 
       break;
  
     case CMD_DISPLAY: 

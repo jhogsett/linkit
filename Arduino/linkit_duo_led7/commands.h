@@ -79,9 +79,9 @@ class Commands
   void do_fade();
   void do_crossfade();
   void do_math(int arg0);
-  void do_flood(byte type);
+  void do_flood(byte type, byte wrap);
   void do_random(byte type, int times);
-  void do_mirror();
+  void do_mirror(byte arg0, byte arg1);
   void do_copy(byte size, int times, byte zoom);
   void do_repeat(byte times);
 
