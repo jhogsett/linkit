@@ -66,6 +66,9 @@
 // 150-LED Outfit
 // #define OUTFIT
 
+// 93-led proector on original wearable
+// #define WEARABLE_AND_PROJECTOR
+
 //////////////////////////////
 // devices profile definitions
 //////////////////////////////
@@ -149,7 +152,7 @@
 #define BREATHE_PERIOD 80
 #define FADE_RATE 0.925
 #define NUM_MEMORY_MACROS 2
-#define NUM_SEQUENCERS 2
+#define NUM_SEQUENCERS 10
 #define USE_MAPPING
 #define RADIUS8_MAPPING
 #endif
@@ -213,6 +216,15 @@
 #define ANIM_LED_COUNT 64
 #define ZONES_GLASSES
 #define DEFAULT_BRIGHTNESS_PERCENT 10
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
+#endif
+
+#ifdef WEARABLE_AND_PROJECTOR
+#define WEARABLE
+#define ANIM_LED_COUNT 93
+#define ZONES_DISC
+#define DEFAULT_BRIGHTNESS_PERCENT 100
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 150
 #endif

@@ -25,12 +25,13 @@
 #define DEFAULT_HIGH  10
 
 #include <macros.h>
+#include <command_processor.h>
 
 class Sequence
 {
   public:
 
-  void begin();
+  void begin(Macros * macros, CommandProcessor * command_processor);
   void set(byte type, int low, int high);
   void set_limit(int low, int high);
   void fix_current();
@@ -43,8 +44,11 @@ class Sequence
 
   int current_position();
   int previous_position();
+
+  // needed for brush strokes with next window
   int previous_computed();
   void set_previous_computed(int position);
+  int evaluate_macro(byte macro);
 
   private:
 
@@ -70,20 +74,28 @@ class Sequence
   byte state;
   float factor;
 
-// how different is this from previous?
+  // for smooth brush strokes
   int prev_computed;
 
   int width();
+
+  static Macros * macros;
+  static CommandProcessor * command_processor;
  };
+
+Macros * Sequence::macros;
+CommandProcessor * Sequence::command_processor;
 
 int Sequence::width()
 {
   return this->max - this->low;    
 }
   
-void Sequence::begin()
+void Sequence::begin(Macros * macros, CommandProcessor * command_processor)
 {
   set(DEFAULT_TYPE, DEFAULT_LOW, DEFAULT_HIGH);
+  this->macros = macros;
+  this->command_processor = command_processor;
   this->reset();
 }
 
@@ -171,7 +183,7 @@ int Sequence::next(int advancement, int step) // step or macro
     }
 
     case ADVANCE_MACRO:
-      return this->current;
+      return this->current = this->evaluate_macro(step);
     
     case ADVANCE_RESET:
       this->reset();
@@ -222,6 +234,7 @@ int Sequence::increment(int step)
   }
 }
 
+// this only works with positive step
 int Sequence::increment_wheel(int step)
 {
   this->current += step;
@@ -303,6 +316,12 @@ int Sequence::increment_swing_sine(int step)
   return this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
+int Sequence::evaluate_macro(byte macro)
+{
+  this->macros->run_macro(macro);
+  return this->command_processor->sub_args[0]; 
+}
+
 //int Sequence::increment_wheel_power(int step)
 //{
 //  increment_wheel(step);
@@ -374,7 +393,7 @@ class Sequencer
 {
   public:
   
-  void begin();
+  void begin(Macros * macros, CommandProcessor * command_processor);
   void set(int sequencer, byte type, int low, int high);
   void reset(int sequencer);
   int next(int sequencer, int advancement, int step);
@@ -385,16 +404,16 @@ class Sequencer
 
   private:
 
-  static Sequence sequences[NUM_SEQUENCERS];  
+  static Sequence sequences[NUM_SEQUENCERS];
 };
 
 Sequence Sequencer::sequences[NUM_SEQUENCERS];  
 
-void Sequencer::begin()
+void Sequencer::begin(Macros * macros, CommandProcessor * command_processor)
 {
   // set default sequences
   for(int i = 0; i < NUM_SEQUENCERS; i++)
-    sequences[i].begin();
+    sequences[i].begin(macros, command_processor);
 }
 
 void Sequencer::set(int sequencer, byte type, int low, int high)

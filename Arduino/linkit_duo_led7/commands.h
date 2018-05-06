@@ -45,9 +45,9 @@ class Commands
   public:
   
 #ifdef USE_AUTO_BRIGHTNESS
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects, Sequencer *sequencer);
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, AutoBrightnessBase *auto_brightness, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects);
 #else
-  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects, Sequencer *sequencer);
+  void begin(Buffer *buffer, Render *renderer, EffectsProcessor *effects_processor, byte default_brightness, byte visible_led_count, CommandProcessor *command_processor, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects);
 #endif
 
   void process_events();
@@ -155,7 +155,7 @@ class Commands
   byte visible_led_count;
   static Macros macros;
   static Commands * me;
-  Sequencer *sequencer;
+  static Sequencer sequencer;
   FadeEffects *fade_effects;
   bool user_fan_on;
   
@@ -171,6 +171,7 @@ class Commands
 Macros Commands::macros;
 Scheduler Commands::scheduler;
 Commands * Commands::me;
+Sequencer Commands::sequencer;
 
 #ifdef USE_AUTO_BRIGHTNESS
 void Commands::begin(
@@ -183,8 +184,7 @@ void Commands::begin(
   CommandProcessor *command_processor, 
   BlinkEffects *blink_effects, 
   BreatheEffects *breathe_effects, 
-  FadeEffects *fade_effects, 
-  Sequencer *sequencer)
+  FadeEffects *fade_effects)
 {
 #else
 void Commands::begin(
@@ -196,8 +196,7 @@ void Commands::begin(
   CommandProcessor *command_processor, 
   BlinkEffects *blink_effects, 
   BreatheEffects *breathe_effects, 
-  FadeEffects *fade_effects, 
-  Sequencer *sequencer)
+  FadeEffects *fade_effects)
 {
 #endif
   this->me                 = this;
@@ -218,6 +217,7 @@ void Commands::begin(
 
   macros.begin(command_processor, &Commands::dispatch_function);
   scheduler.begin(&macros);
+  sequencer.begin(&macros, command_processor);
 
 #ifdef USE_MAPPING
   maps.begin(map_rows);
@@ -423,7 +423,7 @@ void Commands::do_crossfade()
 #define FLOOD_TYPE_WRITE 0
 #define FLOOD_TYPE_ADD   1
 
-void Commands::do_flood(byte type)
+void Commands::do_flood(byte type, byte wrap)
 {
   byte offset = buffer->get_offset();
   byte window = buffer->get_window();
@@ -534,7 +534,10 @@ void Commands::do_random(byte type, int times)
 }
 
 // this won't clobber dynamic effects because this is a copy operation
-void Commands::do_mirror()
+
+// arg0: number of cuts, 0: defaults to 1 
+// arg1: 0: draw mode, 0: defaults to 0=replace, 1=add
+void Commands::do_mirror(byte arg0, byte arg1)
 {
   bool reverse = buffer->get_reverse();
   byte front = buffer->get_offset();
@@ -1105,29 +1108,40 @@ int Commands::do_set_sequence(byte type, int arg0, int arg1, int arg2)
   // values are entered in high,low order, so low can be skipped if zero
   // note the reverse argument order compared to do_next_sequence()
   //                         low   high
-  sequencer->set(arg0, type, arg2, arg1);
+  sequencer.set(arg0, type, arg2, arg1);
   return arg2;
 }
 
 int Commands::do_next_sequence(int arg0, int arg1, int arg2)
 {
   //                     num   adv   step
-  return sequencer->next(arg0, arg1, arg2);
+  return sequencer.next(arg0, arg1, arg2);
 }
 
 // advance the sequencer, then leave arg0 = position, arg1 = width
 // for the position command to allow filling gaps
+// the position is smart: computed 
 void Commands::do_next_window(int arg0, int arg1, int arg2)
 {
-  byte position = sequencer->next(arg0, arg1, arg2);
-  byte previous_position = sequencer->previous_computed(arg0);
-  sequencer->set_previous_computed(arg0, position);
+  // position is some new position
+  byte position = sequencer.next(arg0, arg1, arg2);
+
+  // compute previous position, arg0 is the sequence number
+  // where to get this from when sequencing a macro with math?
+  byte previous_position = sequencer.previous_computed(arg0);
+
+  // set the new 'previous' position for this sequencer
+  sequencer.set_previous_computed(arg0, position);
+
+  // clear the third argument (not needed for the position command)
   command_processor->sub_args[2] = 0;
 
   if(position == previous_position)
   {      
     // short-circuit - no change in position
     command_processor->sub_args[0] = position;
+
+    // just a single-pixel set
     command_processor->sub_args[1] = 0;
     return;
   }
@@ -1145,7 +1159,7 @@ void Commands::do_next_window(int arg0, int arg1, int arg2)
       width = width_;
     }
   } 
-  else                                     // going down
+  else                                     // going down by at least one
   {
     width_ = previous_position - position; // width needing drawing
     if(width_ > 0)                         // there's a gap, new position is beginning of range
@@ -1155,6 +1169,39 @@ void Commands::do_next_window(int arg0, int arg1, int arg2)
   command_processor->sub_args[0] = offset;
   command_processor->sub_args[1] = width;
 }
+
+// need to use this, but feed it positions and have it keep track of previous and direction
+// except that's not recurrent
+// 
+
+//void set_line(byte position, byte previous position)
+//{
+//  byte offset = position;
+//  byte width = 0;
+//  byte width_;
+//
+//  if(position > previous_position)         // going up by at least one
+//  { 
+//    width_ = position - previous_position; // width needing drawing
+//    if(width_ > 0)
+//    {
+//      offset = previous_position;          // there's a gap, start right after the last position
+//      width = width_;
+//    }
+//  } 
+//  else                                     // going down by at least one
+//  {
+//    width_ = previous_position - position; // width needing drawing
+//    if(width_ > 0)                         // there's a gap, new position is beginning of range
+//      width = width_;                      // and width is already computed, though it might need a - 1
+//  } 
+//
+//  command_processor->sub_args[0] = offset;
+//  command_processor->sub_args[1] = width;
+//}
+
+
+
 
 #define CONFIG_SET_BLINK_PERIOD   0
 #define CONFIG_SET_BREATHE_TIME   1

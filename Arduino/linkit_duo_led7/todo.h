@@ -1,10 +1,22 @@
-// turn any two arbitrary positions into m,n args to pos for drawing a line
+//type of sequencer
+//    no limits
+//    instead: macro #1: advancing, macro #2 painting
+//    has built-in next window support
+//    advancing does any arbitrary positions
+//    how to deal with wheel problem? how does it know when to do it? (wrapping around is different from a large rebound, that arrives at the same position)
+//    might need a wheel vs. swing macro sequencer to deal with brushing
 
-// to sum and do average, need to divide by 2
+// snw should do the pos and extra drawing if necessary
+
+// could make a form of flood that wraps around the end of the width to the beginning
+
+// mir modes, like quarters insted of half, etc.
+
+// mir that blends
+
+// default sequencers to num leds
 
 // should mth do automatic rcl?
-
-// some way to do snw with arbitrary numbers
 
 // swing sequencer is reliant on a mode, and needs to be sensitive to the mode changing when stepping negatively
 
@@ -14,7 +26,7 @@
 
 // inquire: # of macro bytes
 
-// math: min/max/avg
+// math: min/max
 
 // could use accumulators to do if/then decisions in macros
   // x,m1,m2:iff: m1, m2 are macros, m1 is run unless x is zero, then it's m2
@@ -29,7 +41,6 @@
 
 // be able to update sequencer keeping present width (offset the sequencer)
 
-// psh should handle twpo arguments
 
 // variation on sto that pushes arg0 at acc0
 
@@ -66,8 +77,6 @@
 // ensure macros do 1:pau to disable effects, unless they need them.
 
 // command document last modified date should be the later of it and http_command.py
-
-// led specs: group and text descriptions should be other than white so they're easier to read
 
 
 // dazzling intense flashy color pulsating and changing lights from apollo

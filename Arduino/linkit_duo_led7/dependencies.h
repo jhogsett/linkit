@@ -31,7 +31,6 @@
 #include "commands.h"
 #include "zone_defs.h"
 #include <zones.h>
-#include "sequencer.h"
 
 class Dependencies
 {
@@ -107,9 +106,6 @@ class Dependencies
 
   // zone positions
   static Zones zones;
-
-  // sequencers
-  static Sequencer sequencer;
 
   // initialize all dependencies
   void begin();
@@ -214,8 +210,6 @@ Commands Dependencies::commands;
 
 Zones Dependencies::zones;
 
-Sequencer Dependencies::sequencer;
-
 void Dependencies::begin()
 {
   // open internal serial connection to MT7688 for receiving commands
@@ -247,8 +241,6 @@ void Dependencies::begin()
 
   zones.begin(NUM_ZONES, FINE_ZONES, ::zone_offsets, ::zone_windows);
 
-  sequencer.begin();
-
   // start up the interface between display buffers and LED strips, passing in config values necessary for rendering, the renderer, the display and render buffers, and effects
   buffer.begin(
     this->ledStrips, 
@@ -273,8 +265,7 @@ void Dependencies::begin()
     &this->command_processor, 
     &this->blink_effects, 
     &this->breathe_effects, 
-    &this->fade_effects, 
-    &this->sequencer);
+    &this->fade_effects);
 #else
   commands.begin(
     &this->buffer, 
@@ -285,8 +276,7 @@ void Dependencies::begin()
     &this->command_processor, 
     &this->blink_effects, 
     &this->breathe_effects, 
-    &this->fade_effects, 
-    &this->sequencer);
+    &this->fade_effects);
 #endif
 
   // set up the blink effects counter and states
