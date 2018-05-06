@@ -70,7 +70,10 @@ def set_macro(macro_num, macro_text, expected_bytes):
         ui.write(tc.green('.'))
 
 def program_macros(program_name):
-    program_name = "./" + program_name + ".mac"
+    program_name = "./" + program_name
+
+    if not program_name.endswith(".mac"):
+        program_name = program_name  + ".mac"
 
     file = open(program_name, "r")
     for line in file: 
@@ -85,8 +88,9 @@ def program_macros(program_name):
         words = line.split(";")
         macro_num = int(words[0])
         macro_text = words[1].strip()
-        expected_bytes = int(words[2])
-
+        expected_bytes = 0
+        if len(words) > 2:
+          expected_bytes = int(words[2])
         set_macro(macro_num, macro_text, expected_bytes)
     
 def introduction():
