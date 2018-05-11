@@ -1,4 +1,35 @@
-// 
+// bug: seq returns the next value for sin/cos, but doesn't actually set current
+
+// need a command for flushing the serial output buffer for debugging macros
+
+// test: chaining math operations, leaving results in args
+
+// -1 is common so maybe it should have it's own number encoding with zero data bytes
+// negative numbers are generally small; they could be encoded as 8-bits and expanded back to 16 (if needed).
+
+// it might simplify things if there was a separate command to retrieve sequence numbers, so seq becomes sqw for setting, and then seq pulls the value
+
+// add a timing test on fade and crossfade, should happen in less than x
+
+// if you happen to push three args, 0:mth should add them all for simplicity
+
+// to save macro bytes, commands should have non-negative switching parameters when possible
+
+// ssc and sss are not needed (look bad and don't serve a purpose)
+
+// these or a variation are needed whenever starting a new app
+// rst:era:flu:-1:sch:1:pau:2:cnt:11:run
+
+// could save macro bytes by having more commands
+// ex: command to get a sequencer current value instead of having to pass 2 extra bytes
+
+// may not need arg command given psh command
+
+// would save macro bytes to not have to set the drawing mode on each drawing operation
+
+// sequencer that calls macro should restrain to bounds (?)
+
+// swc and ssc don't seem to have the same number of steps overall
 
 //type of sequencer
 //    no limits

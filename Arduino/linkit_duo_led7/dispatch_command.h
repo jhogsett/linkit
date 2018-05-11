@@ -156,8 +156,8 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
 
     case CMD_PUSH:
-    do_push(arg0, arg1, arg2);
-    break;
+      do_push(arg0, arg1, arg2);
+      break;
     
     case CMD_PAUSE: 
       pause(arg0); 
@@ -269,11 +269,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_SEQ_WHEEL: 
     case CMD_SEQ_SWING: 
     case CMD_SEQ_WHLCO: 
-    case CMD_SEQ_SWGCO:
     case CMD_SEQ_WHLSN: 
-    case CMD_SEQ_SWGSN: 
-    case CMD_SEQ_WHLPW: 
-    case CMD_SEQ_SWGPW: 
       command_processor->reset_args();
       command_processor->sub_args[0] = do_sequence(SEQUENCE_WHEEL + (cmd - CMD_SEQ_WHEEL), arg0, arg1, arg2); 
       reset_args = false; 
@@ -283,10 +279,6 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       do_next_window(arg0, arg1, arg2); 
       reset_args = false; 
       break;
-  
-//  case CMD_SEQ_NEXTM: 
-//    reset_args = false; 
-//    break;
   
   case CMD_CLR_SEQ_HUE:
   case CMD_CLR_SEQ_SAT:
