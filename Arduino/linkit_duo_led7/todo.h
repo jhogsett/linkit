@@ -1,4 +1,8 @@
+// sws looks nice and even end to end, but swc looks offset by one
+
+
 // bug: seq returns the next value for sin/cos, but doesn't actually set current
+
 
 // need a command for flushing the serial output buffer for debugging macros
 
