@@ -797,7 +797,10 @@ void Commands::do_math(int arg0)
       break;
     case MATH_MOD: 
       if(accumulators[0] == 0) return;
-      accumulators[0] = accumulators[1] % accumulators[0]; 
+
+      // return the absolute value on a mod operation 
+      // to ease using mod to restarting pixel location
+      accumulators[0] = abs(accumulators[1] % accumulators[0]); 
       break;
     case MATH_DIF:
       accumulators[0] = abs(accumulators[0] - accumulators[1]); 
@@ -809,6 +812,7 @@ void Commands::do_math(int arg0)
   accumulators[1] = 0;
   accumulators[2] = 0;
 
+  // pre-recall the values
   int *sub_args = command_processor->sub_args;
   sub_args[0] = accumulators[0];
   sub_args[1] = accumulators[1];
@@ -1132,7 +1136,6 @@ void Commands::do_next_window(int arg0, int arg1, int arg2)
   byte position = sequencer.next(arg0, arg1, arg2);
 
   // compute previous position, arg0 is the sequence number
-  // where to get this from when sequencing a macro with math?
   byte previous_position = sequencer.previous_computed(arg0);
 
   // set the new 'previous' position for this sequencer
