@@ -8,9 +8,9 @@
 
 # set up 6 color sequencers
 40;37:run:38:run:39:run;9
-37;0,16,0:ssc:1,31,15:ssc;14
-38;2,46,30:ssc:3,61,45:ssc;16
-39;4,76,60:ssc:5,91,75:ssc;16
+37;0,15,0:swc:1,30,15:swc;14
+38;2,45,30:swc:3,60,45:swc;16
+39;4,75,60:swc:5,90,75:swc;16
 
 # set up 6 color sequence schedules
 44;41:run:42:run:43:run;9

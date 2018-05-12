@@ -1,0 +1,32 @@
+#start app
+10;-1:sch:1:pau:2:cnt:era:flu:11:run:13:run
+
+# configure rendering
+11;1:shf:2,8000:cfg:150,12:sch
+12;flu
+
+# configure app
+13;15:run:17:run:19:run:21:run:23:run:25:run:27:run
+
+
+
+15;0,15,0:swc:150,16:sch
+16;0:snw:pos:0:pal:sfd:flo:rst
+
+17;1,30,15:swc:151,18:sch
+18;1:snw:pos:1:pal:sfd:flo:rst
+
+19;2,45,30:swc:152,20:sch
+20;2:snw:pos:2:pal:sfd:flo:rst
+
+21;3,60,45:swc:153,22:sch
+22;3:snw:pos:3:pal:sfd:flo:rst
+
+23;4,75,60:swc:154,24:sch
+24;4:snw:pos:4:pal:sfd:flo:rst
+
+25;5,90,75:swc:155,26:sch
+26;5:snw:pos:5:pal:sfd:flo:rst
+
+27;6,360:seq:150,28:sch
+28;psh:60:psh:6:seq:psh:rcl:csh

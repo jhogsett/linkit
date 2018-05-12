@@ -1980,7 +1980,8 @@ def specs():
       expect_accumulators("0,5:psh:4:mth", "0,5,0")
 
     if test("should be able to modulus a negative nunmber"):
-      expect_accumulators("3,-10:psh:4:mth", "-1,0,0")
+      # mod returns an absolute value to ease restraining pixel location
+      expect_accumulators("3,-10:psh:4:mth", "1,0,0")
 
     if test("should be able to modulus by a negative nunmber"):
       expect_accumulators("-3,10:psh:4:mth", "1,0,0")
@@ -1990,6 +1991,10 @@ def specs():
 
     if test("should not crash when modulusing two crazy large numbers"):
       expect_accumulators("99999,99999:psh:4:mth", "0,0,0")
+
+    if test("mod operation should also return a positive value"):
+      # mod returns an absolute value to ease restraining pixel location
+      expect_accumulators("90,-26:psh:4:mth", "26,0,0")
 
 
     if test("should be able to diff two values"):
@@ -2017,9 +2022,9 @@ def specs():
     if test("should be able to average two negative values in either direction"):
       expect_accumulators("-45,-27:psh:6:mth", "-36,0,0")
 
-# mth should do an auto recall
     if test("mth operations should automatically recall accumulators into arguments"):
       expect_accumulators("3,9:psh:2:mth:sto", "27,0,0")
+
 
 
 ########################################################################                     

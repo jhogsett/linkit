@@ -14,7 +14,7 @@
 # render
 16;1,-4,17:snw:pos:0,0,1:pal:sfd:1:flo:rst
 # advance
-17;0,0,1:seq:psh:2,-1:seq:psh:mth
+17;0,0,1:seq:psh:2,-1:seq:psh:mth:rcl
 18;2,0,2:seq
 
 
@@ -26,7 +26,7 @@
 # render
 26;4,-4,27:snw:pos:3,0,1:pal:sfd:1:flo:rst
 # advance
-27;3,0,1:seq:psh:5,-1:seq:psh:mth
+27;3,0,1:seq:psh:5,-1:seq:psh:mth:rcl
 28;5,0,2:seq
 
 
@@ -39,7 +39,7 @@
 # render
 36;7,-4,37:snw:pos:4,0,1:pal:sfd:1:flo:rst
 # advance
-37;6,0,1:seq:psh:8,-1:seq:psh:mth
+37;6,0,1:seq:psh:8,-1:seq:psh:mth:rcl
 38;8,0,2:seq
 
 
