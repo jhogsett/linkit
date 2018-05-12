@@ -197,8 +197,9 @@ int Sequence::increment(int step)
 
   switch(this->type)
   {
+    default:
     case SEQUENCE_WHEEL:        
-       return this->increment_wheel(step);
+      return this->increment_wheel(step);
        
     case SEQUENCE_SWING:        
       return this->increment_swing(step);
@@ -268,15 +269,15 @@ int Sequence::increment_swing_reverse(int step)
 int Sequence::increment_wheel_cosine(int step)
 {
   increment_wheel(step);
-  byte spread_position = (this->current - this->low) * this->factor;
-  return this->low + (this->width() * ColorMath::get_cosine(spread_position));
+  byte spread_position = (byte)((this->current - this->low) * this->factor);
+  return this->computed = 0.5 + this->low + (this->width() * ColorMath::get_cosine(spread_position));
 }
 
 int Sequence::increment_wheel_sine(int step)
 {
   increment_wheel(step);
-  byte spread_position = (this->current - this->low) * this->factor;
-  return this->low + (this->width() * ColorMath::get_sine(spread_position));
+  byte spread_position = (byte)((this->current - this->low) * this->factor);
+  return this->computed = 0.5 + this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
 int Sequence::evaluate_macro(byte macro)

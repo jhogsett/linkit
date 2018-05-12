@@ -1,4 +1,9 @@
+// sws looks nice and even end to end, but swc looks offset by one
+
+// name match should apply to to group and/or test description
+
 // bug: seq returns the next value for sin/cos, but doesn't actually set current
+
 
 // need a command for flushing the serial output buffer for debugging macros
 
