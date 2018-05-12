@@ -9,11 +9,7 @@
 #define SEQUENCE_WHEEL        0
 #define SEQUENCE_SWING        1
 #define SEQUENCE_WHEEL_COSINE 2
-#define SEQUENCE_SWING_COSINE 3
-#define SEQUENCE_WHEEL_SINE   4 
-#define SEQUENCE_SWING_SINE   5
-#define SEQUENCE_WHEEL_POWER  6 
-#define SEQUENCE_SWING_POWER  7
+#define SEQUENCE_WHEEL_SINE   3 
 
 #define STATE_NORMAL   0
 #define STATE_REVERSE  1
@@ -47,6 +43,7 @@ class Sequence
 
   // needed for brush strokes with next window
   int previous_computed();
+  
   void set_previous_computed(int position);
   int evaluate_macro(byte macro);
 
@@ -58,11 +55,7 @@ class Sequence
   int increment_swing_normal(int step);
   int increment_swing_reverse(int step);
   int increment_wheel_cosine(int step);
-  int increment_swing_cosine(int step);
   int increment_wheel_sine(int step);
-  int increment_swing_sine(int step);
-//  int increment_wheel_power(int step);
-//  int increment_swing_power(int step);
 
   // can type and state be consolidated
 
@@ -73,6 +66,9 @@ class Sequence
   int previous;
   byte state;
   float factor;
+
+  // for getting current value of non-linear sequencers
+  int computed;
 
   // for smooth brush strokes
   int prev_computed;
@@ -113,15 +109,8 @@ void Sequence::set_limit(int low, int high){
   switch(this->type)
   {
     case SEQUENCE_WHEEL_COSINE:
-    case SEQUENCE_SWING_COSINE:
     case SEQUENCE_WHEEL_SINE:
-    case SEQUENCE_SWING_SINE:
       this->factor = COSINE_RANGE / this->width();
-      break;
-  
-    case SEQUENCE_WHEEL_POWER:
-    case SEQUENCE_SWING_POWER:
-//      this->factor = PowerEase::ease_range() / this->width();
       break;
   }
 }
@@ -129,10 +118,9 @@ void Sequence::set_limit(int low, int high){
 void Sequence::fix_current()
 {
   this->current = max(this->low, this->current);
-  
   this->current = min(this->max - 1, this->current);
-
   this->previous = this->current;  
+  this->computed = this->current;
   this->prev_computed = this->current;
 }
 
@@ -140,38 +128,29 @@ void Sequence::reset()
 {
   this->current = this->low;
   this->previous = this->low;
+  this->computed = this->low;
   this->prev_computed = this->low;
   this->state = STATE_NORMAL;
 }
 
 #define ADVANCE_NEXT      0
 #define ADVANCE_CURRENT  -1
-#define ADVANCE_OPPOSITE -2
-#define ADVANCE_RESET    -3
+#define ADVANCE_COMPUTED -2
+#define ADVANCE_OPPOSITE -3
 #define ADVANCE_MACRO    -4
 #define ADVANCE_NEW_HIGH -5
 #define ADVANCE_NEW_LOW  -6
-//#define ADVANCE_OFFSET   -7
+#define ADVANCE_RESET    -7
+#define SAFETY_MARGIN 1
 
-// can advancement be a byte?
 int Sequence::next(int advancement, int step) // step or macro
 {
-   if(step == 0)
-    step = 1;
-
   switch(advancement)
   {
-#define SAFETY_MARGIN 1
-    case ADVANCE_NEW_HIGH:
-    {
-      int new_max = step - 1;
-      if(new_max - SAFETY_MARGIN > this->low){
-        this->set_limit(this->low, new_max + 1);
-        this->fix_current();
-      }
+    case ADVANCE_RESET:
+      this->reset();
       return this->current;
-    }
- 
+
     case ADVANCE_NEW_LOW:
     {
       int new_low = step;
@@ -182,21 +161,32 @@ int Sequence::next(int advancement, int step) // step or macro
       return this->current;
     }
 
+    case ADVANCE_NEW_HIGH:
+    {
+      int new_max = step - 1;
+      if(new_max - SAFETY_MARGIN > this->low){
+        this->set_limit(this->low, new_max + 1);
+        this->fix_current();
+      }
+      return this->current;
+    }
+ 
     case ADVANCE_MACRO:
       return this->current = this->evaluate_macro(step);
     
-    case ADVANCE_RESET:
-      this->reset();
-      return this->current;
-
     case ADVANCE_OPPOSITE:
+      if(step == 0) step = 1;
       this->increment(step);
       return (this->max - this->current) + this->low;
+ 
+    case ADVANCE_COMPUTED:
+      return this->computed;
  
     case ADVANCE_CURRENT:
       return this->current;
  
     case ADVANCE_NEXT:
+      if(step == 0) step = 1;
       return this->increment(step);
   }
 }
@@ -215,22 +205,9 @@ int Sequence::increment(int step)
  
     case SEQUENCE_WHEEL_COSINE: 
       return this->increment_wheel_cosine(step);
-      
-    case SEQUENCE_SWING_COSINE: 
-      return this->increment_swing_cosine(step);
-    
+          
     case SEQUENCE_WHEEL_SINE:   
       return this->increment_wheel_sine(step);
-    
-    case SEQUENCE_SWING_SINE:   
-      return this->increment_swing_sine(step);
-    
-    case SEQUENCE_WHEEL_POWER:  
-      // return this->increment_wheel_power(step);
-    
-    case SEQUENCE_SWING_POWER:  
-      // return this->increment_swing_power(step);
-      break;
   }
 }
 
@@ -302,67 +279,11 @@ int Sequence::increment_wheel_sine(int step)
   return this->low + (this->width() * ColorMath::get_sine(spread_position));
 }
 
-int Sequence::increment_swing_cosine(int step)
-{
-  increment_swing(step);
-  byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
-  return this->low + (this->width() * ColorMath::get_cosine(spread_position));
-}
-
-int Sequence::increment_swing_sine(int step)
-{
-  increment_swing(step);
-  byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
-  return this->low + (this->width() * ColorMath::get_sine(spread_position));
-}
-
 int Sequence::evaluate_macro(byte macro)
 {
   this->macros->run_macro(macro);
   return this->command_processor->sub_args[0]; 
 }
-
-//int Sequence::increment_wheel_power(int step)
-//{
-//  increment_wheel(step);
-//  byte spread_position = (this->current - this->low) * this->factor;
-//  return this->low + (this->width() * PowerEase::get_ease(spread_position));
-//}
-
-// todo: optional
-// TODO the sequence is not symmetrical forward and back so when coming back need to treat it oppositely
-//int Sequence::increment_swing_power(int step)
-//{
-//  increment_swing(step);
-////  byte spread_position = 0.5 + ((this->current - this->low) * this->factor);
-//  byte spread_position;
-//  if(state == STATE_NORMAL)
-//  {
-//    // current-low = progress toward end
-//    spread_position = (this->current - this->low) * this->factor;
-//  } 
-//  else 
-//  {
-//    // width - (current-low) = progress toward start 
-//
-//    // this needs rework - power ease data oriented toward forward going animation
-//    // just flipping the index when going back makes it appear to go in the same direction as before flipping due to the ordering
-//    // to make it work, treat power ease data as progress towards start, not progress toward beginning
-//
-//    // when this is at max, need to treat as if at low
-//    
-//    spread_position = (this->max - this->current) * this->factor;
-////    spread_position = (this->current - this->low) * this->factor;
-////    spread_position = (this->width - (this->current - this->low)) * this->factor;
-//
-//  // spread position 
-//
-//
-//
-//
-//  }
-//  return this->low + (this->width() * PowerEase::get_ease(spread_position));
-//}
 
 int Sequence::current_position()
 {
