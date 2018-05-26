@@ -70,6 +70,7 @@ def set_macro(macro_num, macro_text, expected_bytes):
         ui.write(tc.green('.'))
 
 def program_macros(program_name):
+    show_comments = True
     program_name = "./" + program_name
 
     if not program_name.endswith(".mac"):
@@ -83,7 +84,13 @@ def program_macros(program_name):
             continue
 
         if line[0] == "#":
+            if show_comments:
+                print tc.yellow(line[1:].strip())
             continue
+        else:
+            if show_comments:
+                print
+                show_comments = False
 
         words = line.split(";")
         macro_num = int(words[0])
