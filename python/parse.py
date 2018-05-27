@@ -166,6 +166,19 @@ def resolve_script(script_lines):
       break
   return new_lines
 
+def consolidate_macros(script_lines):
+  new_lines = []
+  building_commands = ""
+  for line in script_lines:
+    if line.endswith(":set"):
+      if len(building_commands) > 0:
+        new_lines.append(building_commands[:-1])
+        building_commands = ""
+    building_commands += line + ":"
+  if len(building_commands) > 0:
+    new_lines.append(building_commands[:-1])
+  return new_lines
+
 # ----------------
 
 def expect(description, expected, got):
@@ -224,6 +237,9 @@ new_script = resolve_script(script)
 
 expected_script = ['14:set', 'red', '10:rep', '15:run', '1:set', 'blu', '15:set', 'flu']
 expect("compiled script #1", expected_script, new_script)
+
+new_lines = consolidate_macros(new_script)
+print_script(new_lines)
 
 reset()
 
@@ -355,4 +371,6 @@ new_script = resolve_script(script)
 expected_script = ['10:set', '22:run', '23:run', '25:run', '22:set', 'app', '23:set', '50,17:sch', '17:set', 'mir', 'flu', '25:set', '27:run', '21:run', '20:run', '27:set', '0,90,0:seq', '20,18:sch', '18:set', '0,-4,16:seq', 'pos', '0,0,1:pal', 'ffd', 'rst', '16:set', '3:rng:psh', '-1:psh', 'add', '0,-1:seq:psh', 'add', '45:psh', 'mod', '21:set', '1,90,0:seq', '20,24:sch', '24:set', '1,-4,19:seq', 'pos', '1,0,1:pal', 'ffd', 'rst', '19:set', '3:rng:psh', '-1:psh', 'add', '1,-1:seq', 'psh', 'add', '45:psh', 'mod', '20:set', '2,90,0:seq', '20,15:sch', '15:set', '2,-4,26:seq', 'pos', '2,0,1:pal', 'ffd', 'rst', '26:set', '3:rng:psh', '-1:psh', 'add', '2,-1:seq', 'psh', 'add', '45:psh', 'mod']
 expect("compiled script #2", expected_script, new_script)
 
+new_lines = consolidate_macros(new_script)
+print_script(new_lines)
 
