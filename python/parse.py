@@ -1,9 +1,16 @@
 #!/usr/bin/python
 
-global macros, resolved, unresolved
+global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number
 macros = {}
+macro_commands = {}
 resolved = {}
 unresolved = {}
+passes = 0
+
+# macros 10-13 are reserved, 0-9 are memory
+starting_macro_number = 14
+ending_macro_number = 51
+next_available_macro_number = starting_macro_number
 
 def set_macro(name, value):
   global macros
@@ -20,11 +27,24 @@ def set_unresolved(name, value=None):
 def resolve_unresolved(name, value=None):
   set_unresolved(name, value)
 
+def remove_resolved():
+  global unresolved
+  new_dict = {}
+  for name in unresolved:
+    if unresolved[name] == None:
+      new_dict[name] = None
+  unresolved = new_dict
+
+def unresolved_exist():
+  return len(unresolved) > 0
+
 def reset():
-  global macros, resolved, unresolved
+  global macros, macro_commands, resolved, unresolved, passes
   macros = {}
+  macro_commands = {}
   resolved = {}
   unresolved = {}
+  passes = 0
 
 def process_comment(line):
   line = line.strip()
@@ -100,11 +120,62 @@ def process_line(line):
   line = process_get_variable(line)
   return line
 
+def is_macro_number_in_use(macro_number):
+  for macro_name in macros:
+    if macros[macro_name] == macro_number:
+      return True
+  return False
+
+def get_next_macro_number():
+  global next_available_macro_number
+  while next_available_macro_number <= ending_macro_number:
+    if not is_macro_number_in_use(next_available_macro_number):
+      return next_available_macro_number
+    else:
+      next_available_macro_number += 1
+  if next_available_macro_number > ending_macro_number:
+    raise ValueError("No available macro numbers available")
+
+def resolution_pass(script_lines):
+  global passes
+  new_lines = []
+  for line in script_lines:
+    new_line = process_line(line)
+    if new_line != None:
+      new_lines.append(new_line)
+  passes += 1
+  return filter(None, new_lines)
+
+def resolve_macro_numbers():
+  for name in unresolved:
+    if unresolved[name] == None:
+      new_macro_number = get_next_macro_number()
+      resolve_unresolved(name, new_macro_number)
+      set_resolved(name, new_macro_number)
+      set_macro(name, new_macro_number)
+  remove_resolved()
+
+def resolve_script(script_lines):
+  new_lines = resolution_pass(script_lines)
+  resolve_macro_numbers()
+  while True:
+    prev_lines = new_lines
+    new_lines = resolution_pass(new_lines)
+    if new_lines == prev_lines:
+      # no more resolving needed/possible
+      break
+  return new_lines
+
 # ----------------
 
 def expect(description, expected, got):
   if expected != got:
     print "failed: " + description
+
+def print_script(script):
+  for line in script:
+    print line
+  print
 
 process_line(" [ lamp 12 ] ")
 expect("setting forced macro name, number", resolved["lamp"], "12")
@@ -131,7 +202,7 @@ expect("replaced variable ref", new_line, "red:19:rep")
 
 reset()
 
-script = '''
+script_text = '''
 # test script
 
 $max 10
@@ -148,80 +219,140 @@ blu
 flu
 '''
 
-script_lines = script.split('\n')
+script = script_text.split('\n')
+new_script = resolve_script(script)
 
-print script
+expected_script = ['14:set', 'red', '10:rep', '15:run', '1:set', 'blu', '15:set', 'flu']
+expect("compiled script #1", expected_script, new_script)
 
-new_lines = []
-for line in script_lines:
-  new_line = process_line(line)
-  if new_line != None:
-    new_lines.append(new_line)
-    print new_line
+reset()
 
-print
+script_text = '''
+# red green and blue wandering pixels with mirror
 
-new_lines = filter(None, new_lines)
+#[name {number}] start macro
+#(name) run macro
 
-expected_script_lines = ['<init>:set', 'red', '10:rep', '(render)', '1:set', 'blu', '<render>:set', 'flu']
-expect("first pass parsing a script", new_lines, expected_script_lines)
+# variables
+$max 90
+$max-half 45
+$render-time 50
+$sequence-time 20
+$fade-type ffd
+$red-seq 0
+$green-seq 1
+$blue-seq 2
+$wander-range 3
+$wander-neg-range -1
 
-#print new_lines
+# use variables or recall macro numbers <name>
 
-#print "resolved: " + str(resolved)
-#print "unresolved: " + str(unresolved)
-
-global next_available_macro_number
-
-starting_macro_number = 10
-ending_macro_number = 51
-next_available_macro_number = starting_macro_number
-
-def is_macro_number_in_use(macro_number):
-  for macro_name in macros:
-    if macros[macro_name] == macro_number:
-      return True
-  return False
-
-def get_next_macro_number():
-  global next_available_macro_number 
-  while next_available_macro_number <= ending_macro_number:
-    if not is_macro_number_in_use(next_available_macro_number):
-      return next_available_macro_number
-    else:
-      next_available_macro_number += 1
-  if next_available_macro_number > ending_macro_number:
-    raise ValueError("No available macro numbers available")
-    
+# command value substitutions
+# these should be all caps built-in?
+$get-current -1
+$macro-seq -4
 
 
-# make a pass at resolving
-for name in unresolved:
-  if unresolved[name] == None:
-    new_macro_number = get_next_macro_number()
-    resolve_unresolved(name, new_macro_number)
-    set_resolved(name, new_macro_number)
-    set_macro(name, new_macro_number)
+# fancy app
+[fancy 10]
+(init)
+(setup-rendering)
+(start-components)
 
-print resolved
-print unresolved
-print macros
+# initialization
+[init]
+# these should be an app command, including shuffle reset
+#-1:sch
+#1:pau
+#2:cnt
+#era
+#flu
+app
 
-script_lines = new_lines
-new_lines = []
-for line in script_lines:
-  new_line = process_line(line)
-  if new_line != None:
-    new_lines.append(new_line)
-    print new_line
+# rendering
+[setup-rendering]
+<render-time>,<render>:sch
 
-print
+[render]
+mir
+flu
 
-new_lines = filter(None, new_lines)
+# start up components
+[start-components]
+(start-red)
+(start-green)
+(start-blue)
 
-print new_lines
-expected_script_lines = ['10:set', 'red', '10:rep', '11:run', '1:set', 'blu', '11:set', 'flu']
-expect("second pass parsing a script", new_lines, expected_script_lines)
+# red wanderer
+[start-red]
+<red-seq>,<max>,0:seq
+<sequence-time>,<red-sequence>:sch
 
+[red-sequence]
+<red-seq>,<macro-seq>,<red-math>:seq
+pos
+<red-seq>,0,1:pal
+<fade-type>
+rst
+
+[red-math]
+<wander-range>:rng:psh
+<wander-neg-range>:psh
+add
+<red-seq>,<get-current>:seq:psh
+add
+<max-half>:psh
+mod
+
+# green wanderer
+[start-green]
+<green-seq>,<max>,0:seq
+<sequence-time>,<green-sequence>:sch
+
+[green-sequence]
+<green-seq>,<macro-seq>,<green-math>:seq
+pos
+<green-seq>,0,1:pal
+<fade-type>
+rst
+
+[green-math]
+<wander-range>:rng:psh
+<wander-neg-range>:psh
+add
+<green-seq>,<get-current>:seq
+psh
+add
+<max-half>:psh
+mod
+
+
+# blue wanderer
+[start-blue]
+<blue-seq>,<max>,0:seq
+<sequence-time>,<blue-sequence>:sch
+
+[blue-sequence]
+<blue-seq>,<macro-seq>,<blue-math>:seq
+pos
+<blue-seq>,0,1:pal
+<fade-type>
+rst
+
+[blue-math]
+<wander-range>:rng:psh
+<wander-neg-range>:psh
+add
+<blue-seq>,<get-current>:seq
+psh
+add
+<max-half>:psh
+mod
+'''
+
+script = script_text.split('\n')
+new_script = resolve_script(script)
+expected_script = ['10:set', '22:run', '23:run', '25:run', '22:set', 'app', '23:set', '50,17:sch', '17:set', 'mir', 'flu', '25:set', '27:run', '21:run', '20:run', '27:set', '0,90,0:seq', '20,18:sch', '18:set', '0,-4,16:seq', 'pos', '0,0,1:pal', 'ffd', 'rst', '16:set', '3:rng:psh', '-1:psh', 'add', '0,-1:seq:psh', 'add', '45:psh', 'mod', '21:set', '1,90,0:seq', '20,24:sch', '24:set', '1,-4,19:seq', 'pos', '1,0,1:pal', 'ffd', 'rst', '19:set', '3:rng:psh', '-1:psh', 'add', '1,-1:seq', 'psh', 'add', '45:psh', 'mod', '20:set', '2,90,0:seq', '20,15:sch', '15:set', '2,-4,26:seq', 'pos', '2,0,1:pal', 'ffd', 'rst', '26:set', '3:rng:psh', '-1:psh', 'add', '2,-1:seq', 'psh', 'add', '45:psh', 'mod']
+expect("compiled script #2", expected_script, new_script)
 
 
