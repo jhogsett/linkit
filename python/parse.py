@@ -179,6 +179,9 @@ def consolidate_macros(script_lines):
     new_lines.append(building_commands[:-1])
   return new_lines
 
+def sort_script(script_lines):
+  script_lines.sort()
+
 # ----------------
 
 def expect(description, expected, got):
@@ -239,6 +242,7 @@ expected_script = ['14:set', 'red', '10:rep', '15:run', '1:set', 'blu', '15:set'
 expect("compiled script #1", expected_script, new_script)
 
 new_lines = consolidate_macros(new_script)
+sort_script(new_lines)
 print_script(new_lines)
 
 reset()
@@ -372,5 +376,6 @@ expected_script = ['10:set', '22:run', '23:run', '25:run', '22:set', 'app', '23:
 expect("compiled script #2", expected_script, new_script)
 
 new_lines = consolidate_macros(new_script)
+sort_script(new_lines)
 print_script(new_lines)
 
