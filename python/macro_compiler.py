@@ -3,7 +3,7 @@
 # todo
 # any number of spaces/tabs in variable setting
 
-global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number
+global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -14,6 +14,7 @@ passes = 0
 starting_macro_number = 14
 ending_macro_number = 51
 next_available_macro_number = starting_macro_number
+next_available_sequencer_number = 0
 
 def set_macro(name, value):
   global macros
@@ -115,6 +116,22 @@ def process_get_variable(line):
       return line[0:start_position] + str(resolved_value) + line[end_position + 1:]
   return line
 
+def process_allocate_sequencer(line):
+  global next_available_sequencer_number
+  if len(line) > 0 and "{" in line and "}" in line:
+    start_position = line.find("{")
+    end_position = line.find("}")
+    sequencer_name = line[start_position + 1:end_position].strip()
+    resolved_value = None
+    if sequencer_name in resolved:
+      resolved_value = resolved[sequencer_name]
+    else:
+      resolved_value = next_available_sequencer_number
+      set_resolved(sequencer_name, resolved_value)
+      next_available_sequencer_number += 1
+    return line[0:start_position] + str(resolved_value) + line[end_position + 1:]
+  return line
+
 def process_line(line):
   line = process_blank_line(line)
   line = process_comment(line)
@@ -122,6 +139,7 @@ def process_line(line):
   line = process_set_macro(line)
   line = process_macro_call(line)
   line = process_get_variable(line)
+  line = process_allocate_sequencer(line)
   return line
 
 def is_macro_number_in_use(macro_number):

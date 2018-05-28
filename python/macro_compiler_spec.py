@@ -71,9 +71,9 @@ $max-half 45
 $render-time 50
 $sequence-time 20
 $fade-type ffd
-$red-seq 0
-$green-seq 1
-$blue-seq 2
+#$red-seq 0
+#$green-seq 1
+#$blue-seq 2
 $wander-range 3
 $wander-neg-range -1
 
@@ -93,12 +93,6 @@ $macro-seq -4
 
 # initialization
 [init]
-# these should be an app command, including shuffle reset
-#-1:sch
-#1:pau
-#2:cnt
-#era
-#flu
 app
 
 # rendering
@@ -117,7 +111,7 @@ flu
 
 # red wanderer
 [start-red]
-<red-seq>,<max>,0:seq
+{red-seq},<max>,0:seq
 <sequence-time>,<red-sequence>:sch
 
 [red-sequence]
@@ -138,7 +132,7 @@ mod
 
 # green wanderer
 [start-green]
-<green-seq>,<max>,0:seq
+{green-seq},<max>,0:seq
 <sequence-time>,<green-sequence>:sch
 
 [green-sequence]
@@ -161,7 +155,7 @@ mod
 
 # blue wanderer
 [start-blue]
-<blue-seq>,<max>,0:seq
+{blue-seq},<max>,0:seq
 <sequence-time>,<blue-sequence>:sch
 
 [blue-sequence]
