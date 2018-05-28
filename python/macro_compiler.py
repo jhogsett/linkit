@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import os
+
 # todo
 # any number of spaces/tabs in variable setting
 
@@ -220,6 +222,26 @@ def consolidate_macros(script_lines):
 def sort_script(script_lines):
   script_lines.sort()
 
+def load_file(filename, default_ext=".mac"):
+  file_lines = []
+  if not filename.endswith(default_ext):
+    filename = filename + default_ext
+  file_path = os.path.dirname(filename)
+  file = open(filename, "r")
+  for line in file:
+    line = line.strip()
+    if len(line) == 0:
+      continue
+    if line.startswith("%include"):
+      args = line.split()
+      include_filename = args[1]
+      if len(include_filename) > 0:
+        include_filename = os.path.join(file_path, include_filename)
+        file_lines = file_lines + load_file(include_filename)
+        continue
+    file_lines.append(line)
+  return file_lines
+
 # ----------------
 
 def compile_script(script):
@@ -227,4 +249,8 @@ def compile_script(script):
   new_lines = consolidate_macros(new_script)
   sort_script(new_lines)
   return new_lines
+
+def compile_file(filename):
+  script = load_file(filename)
+  return compile_script(script)
 
