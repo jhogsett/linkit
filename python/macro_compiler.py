@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# todo
+# any number of spaces/tabs in variable setting
+
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number
 macros = {}
 macro_commands = {}

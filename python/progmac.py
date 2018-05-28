@@ -80,6 +80,7 @@ def set_script(script_text):
 
         lc.command_str("grn:flu")
         macro_count += 1
+
         if not debug_mode:
             ui.write(tc.green('.'))
 
@@ -126,9 +127,12 @@ def program_macros(program_name):
     script = import_file(program_name)
     compiled_script = mc.compile_script(script)
 
-    ui.report_verbose("compiled script:")
+    if verbose_mode:
+        ui.report_verbose("compiled script:")
+        for script_text in compiled_script:
+            ui.report_verbose(script_text)
+
     for script_text in compiled_script:
-        ui.report_verbose(script_text)
         set_script(script_text) 
 
 # --------------------------------------------------------------------------
