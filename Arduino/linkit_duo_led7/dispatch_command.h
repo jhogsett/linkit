@@ -290,10 +290,20 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     do_fan(arg0);
     break;
 
-    case CMD_MATH: 
-      do_math(arg0); 
-      reset_args = false; 
-      break;
+  case CMD_APP:
+    do_app_setup();
+    break;
+
+  case CMD_ADD:
+  case CMD_SUB:
+  case CMD_MUL:
+  case CMD_DIV:
+  case CMD_MOD:
+  case CMD_DIF:
+  case CMD_AVG:
+    dispatch_math(cmd);
+    reset_args = false; 
+    break;
   }
   
   if(reset_args)
@@ -311,6 +321,10 @@ void Commands::dispatch_color(byte cmd, int arg0, int arg1){
 
 void Commands::dispatch_effect(byte cmd){
   effects_processor->start_effect((cmd - CMD_STATIC) + STATIC_ON); 
+}
+
+void Commands::dispatch_math(byte cmd){
+  do_math((cmd - CMD_ADD) + MATH_ADD);
 }
 
 #endif

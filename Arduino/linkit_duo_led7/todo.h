@@ -1,9 +1,36 @@
-// sws looks nice and even end to end, but swc looks offset by one
+// weather data shows rain as main forecast even when rain amount section is missing
+// in these cases consider the conditions clear
+
+
+// button presses
+  // examine an input
+  // if it's positive X number of times and negative < Y number of times, consider it switched on
+  // could be a special type of schedule that counts pin highs, and macro gets called if pin is high
+
+
+
+// these or a variation are needed whenever starting a new app
+// rst:era:flu:-1:sch:1:pau:2:cnt:11:run
+
+// may not need arg command given psh command
+
+// would save macro bytes to not have to set the drawing mode on each drawing operation
+
+// sequencers: one-time
+
+// figure out a scheme for spec randomization
+
+// command to convert percentage to perfect count of leds/width/whatever to make scaling more automatic
+
+// have the ability to set drawing mode: overwrite, add, etc.
+
+
+
+
+
+// add min/max fixing mth op
 
 // name match should apply to to group and/or test description
-
-// bug: seq returns the next value for sin/cos, but doesn't actually set current
-
 
 // need a command for flushing the serial output buffer for debugging macros
 
@@ -16,25 +43,15 @@
 
 // add a timing test on fade and crossfade, should happen in less than x
 
-// if you happen to push three args, 0:mth should add them all for simplicity
-
 // to save macro bytes, commands should have non-negative switching parameters when possible
-
-// ssc and sss are not needed (look bad and don't serve a purpose)
-
-// these or a variation are needed whenever starting a new app
-// rst:era:flu:-1:sch:1:pau:2:cnt:11:run
 
 // could save macro bytes by having more commands
 // ex: command to get a sequencer current value instead of having to pass 2 extra bytes
 
-// may not need arg command given psh command
 
-// would save macro bytes to not have to set the drawing mode on each drawing operation
+
 
 // sequencer that calls macro should restrain to bounds (?)
-
-// swc and ssc don't seem to have the same number of steps overall
 
 //type of sequencer
 //    no limits
@@ -54,8 +71,6 @@
 
 // default sequencers to num leds
 
-// should mth do automatic rcl?
-
 // swing sequencer is reliant on a mode, and needs to be sensitive to the mode changing when stepping negatively
 
 
@@ -73,18 +88,12 @@
   // x,mf,ml:swt: mf,ml are first,last macros in range, x specifies switch (but in this case, ml isn't needed since x can be constrained)
     // could have ml be redefined as: macro to call if x is zero (is this needed?)
 
-// figure out a scheme for spec randomization
-
 // wrote latest failures to ./.led_specs so they can be rerun easily
 
 // be able to update sequencer keeping present width (offset the sequencer)
 
 
-// variation on sto that pushes arg0 at acc0
-
 // program subsections need to stop other macros from running before going
-
-// pending expectation should be yellow not white
 
 // add rgb terminal colors
 
@@ -100,7 +109,11 @@
 
 // app to collect timing metrics on various commands (can this be built into test suite?)
 
-// command to convert percentage to perfect count of leds/width/whatever to make scaling more automatic
+
+
+
+
+
 
 // can a sequencer be used to simulate the effect of a spinning light intensity profile?
 
@@ -118,8 +131,6 @@
 
 
 // dazzling intense flashy color pulsating and changing lights from apollo
-
-// should program macros default to paused effects processing? 
 
 
 
@@ -170,7 +181,6 @@
 // command to run a range of macros, like 20,29:rmm runs macros 20 through 29 in order
   // -- would have to be a private seed (feed value back as seed?) to have a repeatable sequence
 
-// have the ability to set drawing mode: overwrite, add, etc.
 // concept of "objects"
 // - hidden/shown
 // - moved around
