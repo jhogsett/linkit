@@ -185,8 +185,7 @@ def sort_script(script_lines):
 
 # ----------------
 
-def compile_script(script_text):
-  script = script_text.split('\n')
+def compile_script(script):
   new_script = resolve_script(script)
   new_lines = consolidate_macros(new_script)
   sort_script(new_lines)

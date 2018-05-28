@@ -42,7 +42,8 @@ blu
 flu
     '''
 
-    compiled_script = mc.compile_script(script_text)
+    script = script_text.split("\n")
+    compiled_script = mc.compile_script(script)
     print_script(compiled_script)
 
     expected_script = [
@@ -181,7 +182,8 @@ add
 mod
     '''
 
-    compiled_script = mc.compile_script(script_text)
+    script = script_text.split("\n")
+    compiled_script = mc.compile_script(script)
     print_script(compiled_script)
 
     expected_script = [

@@ -7,11 +7,13 @@ import terminal_colors as tc
 import led_command as lc
 import argparse
 import app_ui as ui
+import macro_compiler as mc
 
-global app_description, verbose_mode, debug_mode, num_leds, macro_count, programs, macro_run_number
+global app_description, verbose_mode, debug_mode, legacy_mode, num_leds, macro_count, programs, macro_run_number
 app_description = None
 verbose_mode = None
 debug_mode = None
+legacy_mode = None
 macro_count = 0
 num_leds = None
 programs = None
@@ -25,12 +27,14 @@ def get_options():
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-d", "--debug", dest="debug", action="store_true", help="display verbose info (False)")
+    parser.add_argument("-l", "--legacy", dest="legacy", action="store_true", help="use legacy .mac file format (False)")
 
     args = parser.parse_args()
     programs = args.programs
     macro_run_number = args.macro
     verbose_mode = args.verbose
     debug_mode = args.debug
+    legacy_mode = args.legacy
 
 def initialize():
     global app_description, num_leds
@@ -69,7 +73,22 @@ def set_macro(macro_num, macro_text, expected_bytes):
     if not debug_mode:                                             
         ui.write(tc.green('.'))
 
-def program_macros(program_name):
+def set_script(script_text):
+    global macro_count
+    try:
+        bytes = lc.command_int(script_text);
+
+        lc.command_str("grn:flu")
+        macro_count += 1
+        if not debug_mode:
+            ui.write(tc.green('.'))
+
+    except StandardError, e:
+      print str(e) + " - retrying"
+      set_script(script_text)
+
+def import_file(program_name):
+    script = []
     show_comments = True
     program_name = "./" + program_name
 
@@ -77,12 +96,10 @@ def program_macros(program_name):
         program_name = program_name  + ".mac"
 
     file = open(program_name, "r")
-    for line in file: 
+    for line in file:
         line = line.strip()
-
         if len(line) == 0:
             continue
-
         if line[0] == "#":
             if show_comments:
                 print tc.yellow(line[1:].strip())
@@ -91,7 +108,12 @@ def program_macros(program_name):
             if show_comments:
                 print
                 show_comments = False
+        script.append(line)
+    return script
 
+def legacy_program_macros(program_name):
+    script = import_file(program_name)
+    for line in script:
         words = line.split(";")
         macro_num = int(words[0])
         macro_text = words[1].strip()
@@ -99,12 +121,24 @@ def program_macros(program_name):
         if len(words) > 2:
           expected_bytes = int(words[2])
         set_macro(macro_num, macro_text, expected_bytes)
+
+def program_macros(program_name):
+    script = import_file(program_name)
+    compiled_script = mc.compile_script(script)
+
+    ui.report_verbose("compiled script:")
+    for script_text in compiled_script:
+        ui.report_verbose(script_text)
+        set_script(script_text) 
+
+# --------------------------------------------------------------------------
     
 def introduction():
     ui.app_description(app_description)
 
     ui.report_verbose("verbose mode")
     ui.report_verbose("debug_mode: " + str(debug_mode))
+    ui.report_verbose("legacy_mode: " + str(legacy_mode))
     ui.report_verbose()
 
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
@@ -118,8 +152,12 @@ def summary():
     print
 
 def upload_programs():
-    for program in programs:
-        program_macros(program)
+    if legacy_mode:
+        for program in programs:
+            legacy_program_macros(program)
+    else:
+        # to support multiple compiled macros, need to keep track of used macro numbers
+        program_macros(programs[0])
 
 def run_default_macro():
     lc.run_macro(macro_run_number)
