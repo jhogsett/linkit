@@ -132,6 +132,21 @@ def process_allocate_sequencer(line):
     return line[0:start_position] + str(resolved_value) + line[end_position + 1:]
   return line
 
+def line_has_unresolved_variables(line):
+  return len(line) > 0 and "<" in line and ">" in line
+
+def process_evaluate_python(line):
+  # can't evaluate until variables are resolved
+  if len(line) > 0 and not line_has_unresolved_variables(line):
+    if "`" in line:
+      start_position = line.find("`")
+      if "`" in line[start_position+1:]:
+        end_position = line.find("`", start_position+1)
+        expression = line[start_position + 1:end_position].strip()
+        result = eval(expression)
+        return line[0:start_position] + str(result) + line[end_position + 1:]
+  return line
+
 def process_line(line):
   line = process_blank_line(line)
   line = process_comment(line)
@@ -140,6 +155,7 @@ def process_line(line):
   line = process_macro_call(line)
   line = process_get_variable(line)
   line = process_allocate_sequencer(line)
+  line = process_evaluate_python(line)
   return line
 
 def is_macro_number_in_use(macro_number):

@@ -2,8 +2,15 @@
 
 $fade-rate 8000
 $fade-type sfd
-$sequencer-type swc
-$angle 60
+$sequencer-type sws
+
+$hsl-angle 60
+$hsl-step 2
+$hsl-time 100
+
+$base-timing 150
+
+$CONFIG-FADE-RATE 2
 
 [fancy 10]
   (init)
@@ -11,7 +18,7 @@ $angle 60
 
 [init]
   app
-  <fade-rate>:cfg
+  <CONFIG-FADE-RATE>,<fade-rate>:cfg
 
 [setup-components]
   (setup-hsl-sequencer)
@@ -20,12 +27,12 @@ $angle 60
 
 [setup-hsl-sequencer]
   {seq-hsl},360:seq
-  100,<hsl-sequencer>:sch
+  <hsl-time>,<hsl-sequencer>:sch
 
 [hsl-sequencer]
-  <seq-hsl>,0,2:seq
+  <seq-hsl>,0,<hsl-step>:seq
   sto
-  <angle>:rcl
+  <hsl-angle>:rcl
   csh
 
 [setup-color-sequencers]
@@ -40,15 +47,15 @@ $angle 60
   {seq6},90,75:<sequencer-type>
 
 [setup-color-seq-schedules]
-  150,<sequencer1>:sch
-  151,<sequencer2>:sch
-  152,<sequencer3>:sch
+  `<base-timing> + 0`,<sequencer1>:sch
+  `<base-timing> + 1`,<sequencer2>:sch
+  `<base-timing> + 2`,<sequencer3>:sch
   (setup-color-seq-schedules2)
 
 [setup-color-seq-schedules2]
-  153,<sequencer4>:sch
-  154,<sequencer5>:sch
-  155,<sequencer6>:sch
+  `<base-timing> + 3`,<sequencer4>:sch
+  `<base-timing> + 4`,<sequencer5>:sch
+  `<base-timing> + 5`,<sequencer6>:sch
 
 [sequencer1]
   <seq1>:snw
