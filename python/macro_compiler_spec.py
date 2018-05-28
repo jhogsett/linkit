@@ -198,6 +198,140 @@ mod
     ]
     expect("compiled script #2", expected_script, compiled_script)
 
+  if test("complex script 2"):
+    script_text = '''
+# 6 part rainbow consine swing
+
+$fade-rate 8000
+$fade-type sfd
+$sequencer-type sws
+
+$hsl-angle 60
+$hsl-step 2
+$hsl-time 100
+
+$base-timing 150
+
+$CONFIG-FADE-RATE 2
+
+[fancy 10]
+  (init)
+  (setup-components)
+
+[init]
+  app
+  <CONFIG-FADE-RATE>,<fade-rate>:cfg
+
+[setup-components]
+  (setup-hsl-sequencer)
+  (setup-color-sequencers)
+  (setup-color-seq-schedules)
+
+[setup-hsl-sequencer]
+  {seq-hsl},360:seq
+  <hsl-time>,<hsl-sequencer>:sch
+
+[hsl-sequencer]
+  <seq-hsl>,0,<hsl-step>:seq
+  sto
+  <hsl-angle>:rcl
+  csh
+
+[setup-color-sequencers]
+  {seq1},15,0:<sequencer-type>
+  {seq2},30,15:<sequencer-type>
+  {seq3},45,30:<sequencer-type>
+  (setup-color-sequencers2)
+
+[setup-color-sequencers2]
+  {seq4},60,45:<sequencer-type>
+  {seq5},75,60:<sequencer-type>
+  {seq6},90,75:<sequencer-type>
+
+[setup-color-seq-schedules]
+  `<base-timing> + 0`,<sequencer1>:sch
+  `<base-timing> + 1`,<sequencer2>:sch
+  `<base-timing> + 2`,<sequencer3>:sch
+  (setup-color-seq-schedules2)
+
+[setup-color-seq-schedules2]
+  `<base-timing> + 3`,<sequencer4>:sch
+  `<base-timing> + 4`,<sequencer5>:sch
+  `<base-timing> + 5`,<sequencer6>:sch
+
+[sequencer1]
+  <seq1>:snw
+  pos
+  <seq1>:pal
+  <fade-type>
+  flo
+  rst
+  flu
+
+[sequencer2]
+  <seq2>:snw
+  pos
+  <seq2>:pal
+  <fade-type>
+  flo
+  rst
+
+[sequencer3]
+  <seq3>:snw
+  pos
+  <seq3>:pal
+  <fade-type>
+  flo
+  rst
+
+[sequencer4]
+  <seq4>:snw
+  pos
+  <seq4>:pal
+  <fade-type>
+  flo
+  rst
+
+[sequencer5]
+  <seq5>:snw
+  pos
+  <seq5>:pal
+  <fade-type>
+  flo
+  rst
+
+[sequencer6]
+  <seq6>:snw
+  pos
+  <seq6>:pal
+  <fade-type>
+  flo
+  rst
+    '''
+
+    script = script_text.split("\n")
+    compiled_script = mc.compile_script(script)
+    print_script(compiled_script)
+
+    expected_script = [
+      '10:set:21:run:35:run', 
+      '21:set:app:2,8000:cfg', 
+      '27:set:3,0,2:seq:sto:60:rcl:csh', 
+      '28:set:9:snw:pos:9:pal:sfd:flo:rst', 
+      '29:set:4,15,0:sws:5,30,15:sws:6,45,30:sws:39:run', 
+      '30:set:7:snw:pos:7:pal:sfd:flo:rst', 
+      '31:set:6:snw:pos:6:pal:sfd:flo:rst', 
+      '32:set:5:snw:pos:5:pal:sfd:flo:rst', 
+      '33:set:4:snw:pos:4:pal:sfd:flo:rst:flu', 
+      '34:set:153,30:sch:154,36:sch:155,28:sch', 
+      '35:set:40:run:29:run:37:run', 
+      '36:set:8:snw:pos:8:pal:sfd:flo:rst', 
+      '37:set:150,33:sch:151,32:sch:152,31:sch:34:run', 
+      '39:set:7,60,45:sws:8,75,60:sws:9,90,75:sws', 
+      '40:set:3,360:seq:100,27:sch'
+    ]
+    expect("compiled script #32", expected_script, compiled_script)
+
 
 ############################################################################
 
