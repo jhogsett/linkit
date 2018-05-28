@@ -1,8 +1,9 @@
-# initialize - clear, pause effects, resume schedules
-# set fade rate to 0.8, set up color sequencers
-# set up hsl color offset sequencer
+# 6 part rainbow consine swing
 
 $fade-rate 8000
+$fade-type sfd
+$sequencer-type swc
+$angle 60
 
 [fancy 10]
   (init)
@@ -18,25 +19,25 @@ $fade-rate 8000
   (setup-color-seq-schedules)
 
 [setup-hsl-sequencer]
-  6,360:seq
+  {seq-hsl},360:seq
   100,<hsl-sequencer>:sch
 
 [hsl-sequencer]
-  6,0,2:seq
+  <seq-hsl>,0,2:seq
   sto
-  60:rcl
+  <angle>:rcl
   csh
 
 [setup-color-sequencers]
-  0,15,0:swc
-  1,30,15:swc
-  2,45,30:swc
+  {seq1},15,0:<sequencer-type>
+  {seq2},30,15:<sequencer-type>
+  {seq3},45,30:<sequencer-type>
   (setup-color-sequencers2)
 
 [setup-color-sequencers2]
-  3,60,45:swc
-  4,75,60:swc
-  5,90,75:swc
+  {seq4},60,45:<sequencer-type>
+  {seq5},75,60:<sequencer-type>
+  {seq6},90,75:<sequencer-type>
 
 [setup-color-seq-schedules]
   150,<sequencer1>:sch
@@ -50,51 +51,51 @@ $fade-rate 8000
   155,<sequencer6>:sch
 
 [sequencer1]
-  0:snw
+  <seq1>:snw
   pos
-  0:pal
-  sfd
+  <seq1>:pal
+  <fade-type>
   flo
   rst
   flu
 
 [sequencer2]
-  1:snw
+  <seq2>:snw
   pos
-  1:pal
-  sfd
+  <seq2>:pal
+  <fade-type>
   flo
   rst
 
 [sequencer3]
-  2:snw
+  <seq3>:snw
   pos
-  2:pal
-  sfd
+  <seq3>:pal
+  <fade-type>
   flo
   rst
 
 [sequencer4]
-  3:snw
+  <seq4>:snw
   pos
-  3:pal
-  sfd
+  <seq4>:pal
+  <fade-type>
   flo
   rst
 
 [sequencer5]
-  4:snw
+  <seq5>:snw
   pos
-  4:pal
-  sfd
+  <seq5>:pal
+  <fade-type>
   flo
   rst
 
 [sequencer6]
-  5:snw
+  <seq6>:snw
   pos
-  5:pal
-  sfd
+  <seq6>:pal
+  <fade-type>
   flo
   rst
 
