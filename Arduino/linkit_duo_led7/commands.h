@@ -120,11 +120,15 @@ class Commands
   void do_store(int arg0, int arg1, int arg2);
   void do_push(int arg0, int arg1, int arg2);
   void do_recall(int arg0, int arg1, int arg2);
+
   void dispatch_effect(byte cmd);
   void dispatch_color(byte cmd, int arg0, int arg1);
+  void dispatch_math(byte cmd);
+
   void do_xy_position(byte arg0, byte arg1);
   void do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect=NO_EFFECT);
   void do_fan(bool fan_on, bool auto_set=false);
+  void do_app_setup();
 
   void do_test_inquiry(byte type, int arg2);
   void do_test(int type, int arg1, int arg2);
@@ -1554,6 +1558,19 @@ void Commands::do_fan(bool fan_on, bool auto_set)
     set_pin(FAN_PIN, fan_on);
     user_fan_on = fan_on;
   }
+}
+
+void Commands::do_app_setup(){
+  // stop all schedules
+  // reset palette
+  // pause effects; start processing
+  // erase; flush
+  // reset
+  scheduler.reset_all_schedules();
+  clear();                                                            
+  pause(PAUSE_EFFECTS);                                                            
+  resume(RESUME_SCHEDULES);
+  Colors::reset_palette();
 }
 
 #ifdef USE_MAPPING
