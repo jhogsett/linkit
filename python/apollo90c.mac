@@ -1,0 +1,100 @@
+# initialize - clear, pause effects, resume schedules
+# set fade rate to 0.8, set up color sequencers
+# set up hsl color offset sequencer
+
+$fade-rate 8000
+
+[fancy 10]
+  (init)
+  (setup-components)
+
+[init]
+  app
+  <fade-rate>:cfg
+
+[setup-components]
+  (setup-hsl-sequencer)
+  (setup-color-sequencers)
+  (setup-color-seq-schedules)
+
+[setup-hsl-sequencer]
+  6,360:seq
+  100,<hsl-sequencer>:sch
+
+[hsl-sequencer]
+  6,0,2:seq
+  sto
+  60:rcl
+  csh
+
+[setup-color-sequencers]
+  0,15,0:swc
+  1,30,15:swc
+  2,45,30:swc
+  (setup-color-sequencers2)
+
+[setup-color-sequencers2]
+  3,60,45:swc
+  4,75,60:swc
+  5,90,75:swc
+
+[setup-color-seq-schedules]
+  150,<sequencer1>:sch
+  151,<sequencer2>:sch
+  152,<sequencer3>:sch
+  (setup-color-seq-schedules2)
+
+[setup-color-seq-schedules2]
+  153,<sequencer4>:sch
+  154,<sequencer5>:sch
+  155,<sequencer6>:sch
+
+[sequencer1]
+  0:snw
+  pos
+  0:pal
+  sfd
+  flo
+  rst
+  flu
+
+[sequencer2]
+  1:snw
+  pos
+  1:pal
+  sfd
+  flo
+  rst
+
+[sequencer3]
+  2:snw
+  pos
+  2:pal
+  sfd
+  flo
+  rst
+
+[sequencer4]
+  3:snw
+  pos
+  3:pal
+  sfd
+  flo
+  rst
+
+[sequencer5]
+  4:snw
+  pos
+  4:pal
+  sfd
+  flo
+  rst
+
+[sequencer6]
+  5:snw
+  pos
+  5:pal
+  sfd
+  flo
+  rst
+

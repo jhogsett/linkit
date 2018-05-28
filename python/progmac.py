@@ -78,6 +78,8 @@ def set_script(script_text):
     try:
         bytes = lc.command_int(script_text);
 
+        ui.report_verbose("bytes programmed: " + str(bytes))
+
         lc.command_str("grn:flu")
         macro_count += 1
 
