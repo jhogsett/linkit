@@ -2,12 +2,19 @@
 
 import sys
 import macro_compiler as mc
+import os
 
 def expect(description, expected, got):
   if expected != got:
     print "failed: " + description
     print "expected: " + str(expected)
     print "got: " + str(got)
+
+def not_expect(description, expected, got):
+  if expected == got:
+    print "failed: " + description
+    print "expected: " + str(expected)
+    print "got (matches): " + str(got)
 
 def print_script(script):
   for line in script:
@@ -22,43 +29,39 @@ def test(description):
 
 def specs():
 
-########################################################################
-# simple script
-########################################################################
-  if test("simple script"):
-    compiled_script = mc.compile_file("spec_fixtures/test_script1.mac")
-    print_script(compiled_script)
-    expected_script = mc.load_file("spec_fixtures/test_script1_expected", ".txt")
-    expect("compiled script #1", expected_script, compiled_script)
-    mc.reset()
+  # positive tests
+  fixture_filename = "spec_fixtures/test_script%d.mac"
+  expected_filename = "spec_fixtures/test_script%d_expected.txt"
+  script_number = 1
+  while(True):
+    fixture_file = fixture_filename % script_number
+    expected_file = expected_filename % script_number
+    script_number += 1
+    if(os.path.exists(fixture_file)):
+      print "Testing file (pos): " + fixture_file
+      compiled_script = mc.compile_file(fixture_file)
+      print_script(compiled_script)
+      expected_script = mc.load_file(expected_file, ".txt")
+      expect("compiled script", expected_script, compiled_script)
+      mc.reset()
+    else:
+      break
 
-
-########################################################################
-# complex script
-########################################################################  
-  if test("complex script"):
-    compiled_script = mc.compile_file("spec_fixtures/test_script2.mac")
-    print_script(compiled_script)
-    expected_script = mc.load_file("spec_fixtures/test_script2_expected", ".txt")
-    expect("compiled script #2", expected_script, compiled_script)
-    mc.reset()
-
-  if test("complex script 2"):
-    compiled_script = mc.compile_file("spec_fixtures/test_script2.mac")
-    print_script(compiled_script)
-    expected_script = mc.load_file("spec_fixtures/test_script3_expected", ".txt")
-    expect("complex script #2", expected_script, compiled_script)
-    mc.reset()
-
-########################################################################
-# include script
-########################################################################
-  if test("include script"):
-    compiled_script = mc.compile_file("spec_fixtures/include_test.mac")
-    print_script(compiled_script)
-    expected_script = mc.load_file("spec_fixtures/include_test_expected", ".txt")
-    expect("include script", expected_script, compiled_script)
-    mc.reset()
+  # negative tests
+  # these are expected to fail to compile but not crash
+  fixture_filename = "spec_fixtures/bad_script%d.mac"
+  script_number = 1
+  while(True):
+    fixture_file = fixture_filename % script_number
+    script_number += 1
+    if(os.path.exists(fixture_file)):
+      print "Testing file (neg): " + fixture_file
+      compiled_script = mc.compile_file(fixture_file)
+      print_script(compiled_script)
+      expect("compilation valid", False, mc.compilation_valid(compiled_script))
+      mc.reset()
+    else:
+      break
 
 
 ############################################################################

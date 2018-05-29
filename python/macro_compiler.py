@@ -33,6 +33,12 @@ def set_unresolved(name, value=None):
 def resolve_unresolved(name, value=None):
   set_unresolved(name, value)
 
+def get_unresolved():
+  return unresolved
+
+def get_resolved():
+  return resolved
+
 def remove_resolved():
   global unresolved
   new_dict = {}
@@ -95,7 +101,7 @@ def process_macro_call(line):
 
 def process_set_variable(line):
   line = line.strip()
-  if len(line) > 0 and line[0] == "$":
+  if len(line) > 0 and line[0] == "$" and not line_has_unresolved(line):
     variable_value = None
     variable_name = line[1:]
     args = variable_name.split()
@@ -137,6 +143,12 @@ def process_allocate_sequencer(line):
 def line_has_unresolved_variables(line):
   return len(line) > 0 and "<" in line and ">" in line
 
+def line_has_python_expression(line):
+  return len(line) > 0 and "`" in line
+
+def line_has_unresolved(line):
+  return line_has_unresolved_variables(line) or line_has_python_expression(line)
+
 def process_evaluate_python(line):
   # can't evaluate until variables are resolved
   if len(line) > 0 and not line_has_unresolved_variables(line):
@@ -152,12 +164,14 @@ def process_evaluate_python(line):
 def process_line(line):
   line = process_blank_line(line)
   line = process_comment(line)
-  line = process_set_variable(line)
+
+  line = process_evaluate_python(line)
+  line = process_set_variable(line)    # put after evaluating python so python expressions can be used to set variables
+
   line = process_set_macro(line)
   line = process_macro_call(line)
   line = process_get_variable(line)
   line = process_allocate_sequencer(line)
-  line = process_evaluate_python(line)
   return line
 
 def is_macro_number_in_use(macro_number):
@@ -253,4 +267,10 @@ def compile_script(script):
 def compile_file(filename):
   script = load_file(filename)
   return compile_script(script)
+
+def compilation_valid(script):
+  for line in script:
+    if line_has_unresolved(line):
+      return False
+  return True
 
