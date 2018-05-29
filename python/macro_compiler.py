@@ -2,21 +2,23 @@
 
 import os
 
-# todo
-# any number of spaces/tabs in variable setting
-
-global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
+global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode
 macros = {}
 macro_commands = {}
 resolved = {}
 unresolved = {}
 passes = 0
+verbose_mode = False
 
 # macros 10-13 are reserved, 0-9 are memory
 starting_macro_number = 14
 ending_macro_number = 51
 next_available_macro_number = starting_macro_number
 next_available_sequencer_number = 0
+
+def begin(verbose_mode_ = False):
+  global verbose_mode
+  verbose_mode = verbose_mode_
 
 def set_macro(name, value):
   global macros
@@ -115,13 +117,20 @@ def process_set_variable(line):
   return line
 
 def process_get_variable(line):
-  if len(line) > 0 and "<" in line and ">" in line:
-    start_position = line.find("<")
-    end_position = line.find(">")
-    variable_name = line[start_position + 1:end_position].strip()
+  if len(line) < 1:
+    return line
+  index = 0
+#  while index < len(line):
+  left_bracket = line.find("<", index)
+  right_bracket = line.find(">", left_bracket+1)
+  if left_bracket != -1 and right_bracket != -1:
+    variable_name = line[left_bracket + 1:right_bracket].strip()
     if variable_name in resolved:
       resolved_value = resolved[variable_name]
-      return line[0:start_position] + str(resolved_value) + line[end_position + 1:]
+      line = line[0:left_bracket] + str(resolved_value) + line[right_bracket + 1:]
+    #index = left_bracket+1 # starting here is reliable because the string was edited to the right
+ # else:
+ #   break
   return line
 
 def process_allocate_sequencer(line):
@@ -167,6 +176,7 @@ def process_line(line):
 
   line = process_evaluate_python(line)
   line = process_set_variable(line)    # put after evaluating python so python expressions can be used to set variables
+#  line = process_evaluate_python(line) # doesn't seem to matter
 
   line = process_set_macro(line)
   line = process_macro_call(line)
@@ -198,7 +208,18 @@ def resolution_pass(script_lines):
     if new_line != None:
       new_lines.append(new_line)
   passes += 1
-  return filter(None, new_lines)
+
+  new_lines = filter(None, new_lines)
+
+  if verbose_mode:
+    print
+    print "pass# %d" % passes
+    print_script(new_lines)
+    print
+    print "resolved:"
+    print_list(resolved)
+
+  return new_lines
 
 def resolve_macro_numbers():
   for name in unresolved:
@@ -210,6 +231,8 @@ def resolve_macro_numbers():
   remove_resolved()
 
 def resolve_script(script_lines):
+  if verbose_mode:
+    print "-------------------------"
   new_lines = resolution_pass(script_lines)
   resolve_macro_numbers()
   while True:
@@ -273,4 +296,13 @@ def compilation_valid(script):
     if line_has_unresolved(line):
       return False
   return True
+
+def print_script(script):
+  for line in script:
+    print line
+  print
+
+def print_list(list):
+  for key in list.keys():
+    print str(key) + "='" + str(list[key]) + "'"
 

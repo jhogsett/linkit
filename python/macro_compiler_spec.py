@@ -4,6 +4,9 @@ import sys
 import macro_compiler as mc
 import os
 
+def initialize():
+  mc.begin(False)
+
 def expect(description, expected, got):
   if expected != got:
     print "failed: " + description
@@ -67,9 +70,9 @@ def specs():
 ############################################################################
 
 def setup():
-#    initialize()
+  initialize()
 #    introduction()
-  pass
+#  pass
 
 def loop():
   specs() 
