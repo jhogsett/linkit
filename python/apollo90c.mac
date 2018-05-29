@@ -1,5 +1,7 @@
 # 6 part rainbow consine swing
 
+%include symbols
+
 $fade-rate 8000
 $fade-type sfd
 $sequencer-type sws
@@ -9,16 +11,24 @@ $hsl-step 2
 $hsl-time 100
 
 $base-timing 150
+$timing-gap 1
 
-$CONFIG-FADE-RATE 2
+$render-time <base-timing>
 
 [fancy 10]
   (init)
+  (setup-rendering)
   (setup-components)
 
 [init]
   app
   <CONFIG-FADE-RATE>,<fade-rate>:cfg
+
+[setup-rendering]
+  <render-time>,<render>:sch
+
+[render]
+  flu
 
 [setup-components]
   (setup-hsl-sequencer)
@@ -47,15 +57,15 @@ $CONFIG-FADE-RATE 2
   {seq6},90,75:<sequencer-type>
 
 [setup-color-seq-schedules]
-  `<base-timing> + 0`,<sequencer1>:sch
-  `<base-timing> + 1`,<sequencer2>:sch
-  `<base-timing> + 2`,<sequencer3>:sch
+  `<base-timing> + (0 * <timing-gap>)`,<sequencer1>:sch
+  `<base-timing> + (1 * <timing-gap>)`,<sequencer2>:sch
+  `<base-timing> + (2 * <timing-gap>)`,<sequencer3>:sch
   (setup-color-seq-schedules2)
 
 [setup-color-seq-schedules2]
-  `<base-timing> + 3`,<sequencer4>:sch
-  `<base-timing> + 4`,<sequencer5>:sch
-  `<base-timing> + 5`,<sequencer6>:sch
+  `<base-timing> + (3 * <timing-gap>)`,<sequencer4>:sch
+  `<base-timing> + (4 * <timing-gap>)`,<sequencer5>:sch
+  `<base-timing> + (5 * <timing-gap>)`,<sequencer6>:sch
 
 [sequencer1]
   <seq1>:snw
@@ -64,7 +74,6 @@ $CONFIG-FADE-RATE 2
   <fade-type>
   flo
   rst
-  flu
 
 [sequencer2]
   <seq2>:snw

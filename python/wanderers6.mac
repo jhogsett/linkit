@@ -1,5 +1,7 @@
 # rainbow wandering pixels with mirror
 
+%include symbols
+
 $max 90
 $max-half 45
 $render-time 50

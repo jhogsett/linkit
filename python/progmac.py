@@ -126,8 +126,7 @@ def legacy_program_macros(program_name):
         set_macro(macro_num, macro_text, expected_bytes)
 
 def program_macros(program_name):
-    script = import_file(program_name)
-    compiled_script = mc.compile_script(script)
+    compiled_script = mc.compile_file(program_name)
 
     if verbose_mode:
         ui.report_verbose("compiled script:")
