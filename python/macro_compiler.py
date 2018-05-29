@@ -226,6 +226,11 @@ def resolve_macro_numbers():
     if unresolved[name] == None:
       new_macro_number = get_next_macro_number()
       resolve_unresolved(name, new_macro_number)
+
+# at this point, it could program the macro to determine how many bytes are used
+# if the # of bytes are exceeded, then mark the following macro as excess space in some way
+# then the macro has enough space to run using two macro slots
+
       set_resolved(name, new_macro_number)
       set_macro(name, new_macro_number)
   remove_resolved()
