@@ -16,6 +16,8 @@ ending_macro_number = 51
 next_available_macro_number = starting_macro_number
 next_available_sequencer_number = 0
 
+# ----------------------------------------------------
+
 def begin(verbose_mode_ = False):
   global verbose_mode
   verbose_mode = verbose_mode_
@@ -61,6 +63,8 @@ def reset():
   passes = 0
   next_available_macro_number = starting_macro_number
 
+# ----------------------------------------------------
+
 def process_comment(line):
   line = line.strip()
   if len(line) > 0 and line[0] == "#":
@@ -72,14 +76,6 @@ def process_blank_line(line):
   if len(line) == 0:
     return ''
   return line
-
-def process_evaluate_python(line):
-  # can't evaluate until variables are resolved
-  line = line.strip()
-  if not line_has_unresolved_variables(line):
-    expression = extract_contents(line, "`")
-    result = eval(expression)
-    return replace_args(line, "`", str(result))
 
 def process_set_macro(line):
   macro_name = None
@@ -133,10 +129,11 @@ def process_get_variable(line):
 
 def process_allocate_sequencer(line):
   global next_available_sequencer_number
-  if len(line) > 0 and "{" in line and "}" in line:
-    start_position = line.find("{")
-    end_position = line.find("}")
-    sequencer_name = line[start_position + 1:end_position].strip()
+  if len(line) < 1:
+    return line
+  args = extract_args(line, "{}")
+  if len(args) > 0:
+    sequencer_name = args[0]
     resolved_value = None
     if sequencer_name in resolved:
       resolved_value = resolved[sequencer_name]
@@ -144,28 +141,16 @@ def process_allocate_sequencer(line):
       resolved_value = next_available_sequencer_number
       set_resolved(sequencer_name, resolved_value)
       next_available_sequencer_number += 1
-    return line[0:start_position] + str(resolved_value) + line[end_position + 1:]
+      return replace_args(line, "{}", str(resolved_value))
   return line
 
-def line_has_unresolved_variables(line):
-  return len(line) > 0 and "<" in line and ">" in line
-
-def line_has_python_expression(line):
-  return len(line) > 0 and "`" in line
-
-def line_has_unresolved(line):
-  return line_has_unresolved_variables(line) or line_has_python_expression(line)
-
 def process_evaluate_python(line):
-  # can't evaluate until variables are resolved
-  if len(line) > 0 and not line_has_unresolved_variables(line):
-    if "`" in line:
-      start_position = line.find("`")
-      if "`" in line[start_position+1:]:
-        end_position = line.find("`", start_position+1)
-        expression = line[start_position + 1:end_position].strip()
-        result = eval(expression)
-        return line[0:start_position] + str(result) + line[end_position + 1:]
+  if len(line) < 1:
+    return line
+  if not line_has_unresolved_variables(line):
+    expression = extract_contents(line, "`")
+    if len(expression) > 0:
+      return replace_args(line, "`", str(eval(expression)))
   return line
 
 def process_line(line):
@@ -179,11 +164,22 @@ def process_line(line):
   line = process_allocate_sequencer(line)
   return line
 
+def line_has_unresolved_variables(line):
+  return len(line) > 0 and "<" in line and ">" in line
+
+def line_has_python_expression(line):
+  return len(line) > 0 and "`" in line
+
+def line_has_unresolved(line):
+  return line_has_unresolved_variables(line) or line_has_python_expression(line)
+
+# ----------------------------------------------------
+
 # locate the start and end positions of a delimited portion of a string
 # returns start, end
 def locate_delimiters(line, delimiters):
-  start = 0
-  end = 0
+  start = -1
+  end = -1
   start_mark = delimiters[0]
   end_mark = delimiters[1] if len(delimiters) > 1 else delimiters[0]
   if start_mark in line:
@@ -193,7 +189,7 @@ def locate_delimiters(line, delimiters):
   return start, end
 
 def cut_contents(line, start, end):
-  return line[start + 1:end]
+  return line[start + 1:end].strip()
 
 # pass in line and two delimiters, get back contents within
 # delimiters specified as one or two characters
@@ -202,13 +198,14 @@ def extract_contents(line, delimiters):
   if len(line) == 0:
     return ''
   start, end = locate_delimiters(line, delimiters)
-  return cut_contents(line, start, end)
+  if start != -1 and end != -1:
+    return cut_contents(line, start, end)
+  return ''
   
 # pass in line and two delimiters, get back list of arguments within
 # delimiters specified as one or two characters
 def extract_args(line, delimiters):
-  contents = extract_contents(line, delimiters)
-  return contents.split()
+  return extract_contents(line, delimiters).split()
 
 def get_key_contents(line, key):
   line = line.strip()
@@ -221,7 +218,11 @@ def get_key_args(line, key):
 
 def replace_args(line, delimiters, replacement):
   start, end = locate_delimiters(line, delimiters)
-  return line[0:start] + str(replacement) + line[end + 1:]
+  if start != -1 and end != -1:
+    return line[0:start] + str(replacement) + line[end + 1:]
+  return line
+
+# ----------------------------------------------------
 
 def is_macro_number_in_use(macro_number):
   for macro_name in macros:
@@ -303,6 +304,8 @@ def consolidate_macros(script_lines):
 def sort_script(script_lines):
   script_lines.sort()
 
+# ----------------------------------------------------
+
 def load_file(filename, default_ext=".mac"):
   file_lines = []
   if not filename.endswith(default_ext):
@@ -323,7 +326,7 @@ def load_file(filename, default_ext=".mac"):
     file_lines.append(line)
   return file_lines
 
-# ----------------
+# ----------------------------------------------------
 
 def compile_script(script):
   new_script = resolve_script(script)

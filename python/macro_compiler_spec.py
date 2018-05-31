@@ -45,10 +45,19 @@ def specs():
   expect("extract args 11", mc.extract_args("[test", "[]"), [])
   expect("extract args 12", mc.extract_args("test]", "[]"), [])
   expect("extract args 13", mc.extract_args("test", "[]"), [])
+  expect("extract args 14", mc.extract_args("[test", "[]"), [])
+  expect("extract args 1", mc.extract_args("[]", "[]"), [])
 
   expect("replace args 1", mc.replace_args("[test]", "[]", "abc"), "abc")
   expect("replace args 2", mc.replace_args(" [test] ", "[]", "abc"), " abc ")
   expect("replace args 3", mc.replace_args("[test][]", "[]", "abc"), "abc[]")
+
+  expect("replace args 4", mc.replace_args("[test", "[]", "abc"), "[test")
+#failed: replace args 4
+#expected: [test
+#got: abctest
+
+  expect("replace args 5", mc.replace_args("[]", "[]", "abc"), "abc")
 
   expect("get key args 1", mc.get_key_args("$abc", "$"), ["abc"])
   expect("get key args 2", mc.get_key_args(" $abc", "$"), ["abc"])
@@ -56,6 +65,8 @@ def specs():
   expect("get key args 4", mc.get_key_args(" $abc ", "$"), ["abc"])
   expect("get key args 5", mc.get_key_args("$abc def", "$"), ["abc", "def"])
   expect("get key args 6", mc.get_key_args("$abc  def", "$"), ["abc", "def"])
+  expect("get key args 7", mc.get_key_args("$", "$"), [])
+  expect("get key args 8", mc.get_key_args("", "$"), [])
 
   # positive tests
   fixture_filename = "spec_fixtures/test_script%d.mac"
