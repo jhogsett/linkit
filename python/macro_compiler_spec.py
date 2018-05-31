@@ -42,6 +42,9 @@ def specs():
   expect("extract args 8", mc.extract_args("(t  e  s  t)", "()"), ["t", "e", "s", "t"])
   expect("extract args 9", mc.extract_args("abc [test] def [test2]", "[]"), ["test"])
   expect("extract args 10", mc.extract_args("( t e s t )", "()"), ["t", "e", "s", "t"])
+  expect("extract args 11", mc.extract_args("[test", "[]"), [])
+  expect("extract args 12", mc.extract_args("test]", "[]"), [])
+  expect("extract args 13", mc.extract_args("test", "[]"), [])
 
   expect("replace args 1", mc.replace_args("[test]", "[]", "abc"), "abc")
   expect("replace args 2", mc.replace_args(" [test] ", "[]", "abc"), " abc ")

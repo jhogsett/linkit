@@ -73,56 +73,23 @@ def process_blank_line(line):
     return ''
   return line
 
-# locate the start and end positions of a delimited portion of a string
-# returns start, end
-def locate_delimiters(line, delimiters):
-  start_mark = delimiters[0]
-  end_mark = delimiters[1] if len(delimiters) > 1 else delimiters[0]
-  if start_mark in line:
-    start = line.find(start_mark)
-    if end_mark in line[start + 1:]:
-      end = line.find(end_mark, start + 1)
-  return start, end
-
-def extract_contents(line, start, end):
-  return line[start + 1:end]
-
-# pass in line and two delimiters, get back list of arguments within
-# delimiters specified as one or two characters
-def extract_args(line, delimiters):
-  args = []
-  line = line.strip()
-  if len(line) > 0:
-    start, end = locate_delimiters(line, delimiters)
-    contents = extract_contents(line, start, end)
-    args = contents.split()
-  return args
-
-def replace_args(line, delimiters, replacement):
-  start, end = locate_delimiters(line, delimiters)
-  return line[0:start] + str(replacement) + line[end + 1:]
-
 def process_evaluate_python(line):
   # can't evaluate until variables are resolved
-  if len(line) > 0 and not line_has_unresolved_variables(line):
-    if "`" in line:
-      start_position = line.find("`")
-      if "`" in line[start_position+1:]:
-        end_position = line.find("`", start_position+1)
-        expression = line[start_position + 1:end_position].strip()
-        result = eval(expression)
-        return line[0:start_position] + str(result) + line[end_position + 1:]
-  return line
+  line = line.strip()
+  if not line_has_unresolved_variables(line):
+    expression = extract_contents(line, "`")
+    result = eval(expression)
+    return replace_args(line, "`", str(result))
 
 def process_set_macro(line):
   macro_name = None
   macro_number = None
   line = line.strip()
-  if len(line) > 0 and line[0] == "[" and line[-1] == "]":
-    macro_name = line.strip(' []')
-    args = macro_name.split()
-    if len(args) == 2:
-      macro_name, macro_number = args
+  args = extract_args(line, "[]")
+  if len(args) > 0:
+    macro_name = args[0]
+    if len(args) > 1:
+      macro_number = args[1]
     if macro_number == None:
       set_unresolved(macro_name)
       return "<" + macro_name + ">:set"
@@ -209,16 +176,48 @@ def process_evaluate_python(line):
 def process_line(line):
   line = process_blank_line(line)
   line = process_comment(line)
-
   line = process_evaluate_python(line)
-  line = process_set_variable(line)    # put after evaluating python so python expressions can be used to set variables
-#  line = process_evaluate_python(line) # doesn't seem to matter
-
+  line = process_set_variable(line)
   line = process_set_macro(line)
   line = process_macro_call(line)
   line = process_get_variable(line)
   line = process_allocate_sequencer(line)
   return line
+
+# locate the start and end positions of a delimited portion of a string
+# returns start, end
+def locate_delimiters(line, delimiters):
+  start = 0
+  end = 0
+  start_mark = delimiters[0]
+  end_mark = delimiters[1] if len(delimiters) > 1 else delimiters[0]
+  if start_mark in line:
+    start = line.find(start_mark)
+    if end_mark in line[start + 1:]:
+      end = line.find(end_mark, start + 1)
+  return start, end
+
+def cut_contents(line, start, end):
+  return line[start + 1:end]
+
+# pass in line and two delimiters, get back contents within
+# delimiters specified as one or two characters
+def extract_contents(line, delimiters):
+  line = line.strip()
+  if len(line) == 0:
+    return ''
+  start, end = locate_delimiters(line, delimiters)
+  return cut_contents(line, start, end)
+  
+# pass in line and two delimiters, get back list of arguments within
+# delimiters specified as one or two characters
+def extract_args(line, delimiters):
+  contents = extract_contents(line, delimiters)
+  return contents.split()
+
+def replace_args(line, delimiters, replacement):
+  start, end = locate_delimiters(line, delimiters)
+  return line[0:start] + str(replacement) + line[end + 1:]
 
 def is_macro_number_in_use(macro_number):
   for macro_name in macros:
