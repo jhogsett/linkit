@@ -99,41 +99,36 @@ def process_set_macro(line):
       return str(macro_number) + ":set"
   return line
 
+# todo: a way to pass args to run call
 def process_macro_call(line):
   macro_name = None
-  line_ = line.strip()
-  if len(line) > 0 and line_[0] == "(" and line_[-1] == ")":
-    macro_name = line_.strip(' ()')
-    if macro_name in resolved:
-      return str(resolved[macro_name]) + ":run"
+  line = line.strip()
+  macro_name = extract_contents(line, "()")
+  if macro_name in resolved:
+    return str(resolved[macro_name]) + ":run"
   return line
 
 def process_set_variable(line):
   line = line.strip()
-  if len(line) > 0 and line[0] == "$" and not line_has_unresolved(line):
-    variable_value = None
-    variable_name = line[1:]
-    args = variable_name.split()
+  if len(line) > 0 and not line_has_unresolved(line):
+    args = get_key_args(line, "$")
     if len(args) >= 2:
-      variable_name, variable_value = args
-    if variable_value == None:
-      set_unresolved(variable_name)
-    else:
+      variable_name = args[0]
+      # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
+      variable_value = line[len(variable_name) + 1:].strip()
       set_resolved(variable_name, variable_value)
-    return ''
+      return ''
   return line
 
 def process_get_variable(line):
   if len(line) < 1:
     return line
-  index = 0
-  left_bracket = line.find("<", index)
-  right_bracket = line.find(">", left_bracket+1)
-  if left_bracket != -1 and right_bracket != -1:
-    variable_name = line[left_bracket + 1:right_bracket].strip()
+  args = extract_args(line, "<>")
+  if len(args) > 0:
+    variable_name = args[0]
     if variable_name in resolved:
       resolved_value = resolved[variable_name]
-      line = line[0:left_bracket] + str(resolved_value) + line[right_bracket + 1:]
+      return replace_args(line, "<>", resolved_value)
   return line
 
 def process_allocate_sequencer(line):
@@ -214,6 +209,15 @@ def extract_contents(line, delimiters):
 def extract_args(line, delimiters):
   contents = extract_contents(line, delimiters)
   return contents.split()
+
+def get_key_contents(line, key):
+  line = line.strip()
+  if len(line) > 0 and line[0] == key:
+    return line[1:].strip()
+  return ''
+
+def get_key_args(line, key):
+  return get_key_contents(line, key).split()
 
 def replace_args(line, delimiters, replacement):
   start, end = locate_delimiters(line, delimiters)

@@ -50,6 +50,12 @@ def specs():
   expect("replace args 2", mc.replace_args(" [test] ", "[]", "abc"), " abc ")
   expect("replace args 3", mc.replace_args("[test][]", "[]", "abc"), "abc[]")
 
+  expect("get key args 1", mc.get_key_args("$abc", "$"), ["abc"])
+  expect("get key args 2", mc.get_key_args(" $abc", "$"), ["abc"])
+  expect("get key args 3", mc.get_key_args("$abc ", "$"), ["abc"])
+  expect("get key args 4", mc.get_key_args(" $abc ", "$"), ["abc"])
+  expect("get key args 5", mc.get_key_args("$abc def", "$"), ["abc", "def"])
+  expect("get key args 6", mc.get_key_args("$abc  def", "$"), ["abc", "def"])
 
   # positive tests
   fixture_filename = "spec_fixtures/test_script%d.mac"
@@ -60,11 +66,13 @@ def specs():
     expected_file = expected_filename % script_number
     script_number += 1
     if(os.path.exists(fixture_file)):
+      print "-----------------------------------------------"
       print "Testing file (pos): " + fixture_file
       compiled_script = mc.compile_file(fixture_file)
       print_script(compiled_script)
       expected_script = mc.load_file(expected_file, ".txt")
       expect("compiled script", compiled_script, expected_script)
+      print
       mc.reset()
     else:
       break
@@ -77,6 +85,7 @@ def specs():
     fixture_file = fixture_filename % script_number
     script_number += 1
     if(os.path.exists(fixture_file)):
+      print "-----------------------------------------------"
       print "Testing file (neg): " + fixture_file
       compiled_script = mc.compile_file(fixture_file)
       print_script(compiled_script)
