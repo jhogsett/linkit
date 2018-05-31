@@ -68,10 +68,50 @@ def process_comment(line):
   return line
 
 def process_blank_line(line):
-# need to switch out of modes here
   line = line.strip()
   if len(line) == 0:
     return ''
+  return line
+
+# locate the start and end positions of a delimited portion of a string
+# returns start, end
+def locate_delimiters(line, delimiters):
+  start_mark = delimiters[0]
+  end_mark = delimiters[1] if len(delimiters) > 1 else delimiters[0]
+  if start_mark in line:
+    start = line.find(start_mark)
+    if end_mark in line[start + 1:]:
+      end = line.find(end_mark, start + 1)
+  return start, end
+
+def extract_contents(line, start, end):
+  return line[start + 1:end]
+
+# pass in line and two delimiters, get back list of arguments within
+# delimiters specified as one or two characters
+def extract_args(line, delimiters):
+  args = []
+  line = line.strip()
+  if len(line) > 0:
+    start, end = locate_delimiters(line, delimiters)
+    contents = extract_contents(line, start, end)
+    args = contents.split()
+  return args
+
+def replace_args(line, delimiters, replacement):
+  start, end = locate_delimiters(line, delimiters)
+  return line[0:start] + str(replacement) + line[end + 1:]
+
+def process_evaluate_python(line):
+  # can't evaluate until variables are resolved
+  if len(line) > 0 and not line_has_unresolved_variables(line):
+    if "`" in line:
+      start_position = line.find("`")
+      if "`" in line[start_position+1:]:
+        end_position = line.find("`", start_position+1)
+        expression = line[start_position + 1:end_position].strip()
+        result = eval(expression)
+        return line[0:start_position] + str(result) + line[end_position + 1:]
   return line
 
 def process_set_macro(line):
@@ -120,7 +160,6 @@ def process_get_variable(line):
   if len(line) < 1:
     return line
   index = 0
-#  while index < len(line):
   left_bracket = line.find("<", index)
   right_bracket = line.find(">", left_bracket+1)
   if left_bracket != -1 and right_bracket != -1:
@@ -128,9 +167,6 @@ def process_get_variable(line):
     if variable_name in resolved:
       resolved_value = resolved[variable_name]
       line = line[0:left_bracket] + str(resolved_value) + line[right_bracket + 1:]
-    #index = left_bracket+1 # starting here is reliable because the string was edited to the right
- # else:
- #   break
   return line
 
 def process_allocate_sequencer(line):

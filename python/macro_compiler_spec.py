@@ -7,13 +7,13 @@ import os
 def initialize():
   mc.begin(False)
 
-def expect(description, expected, got):
+def expect(description, got, expected):
   if expected != got:
     print "failed: " + description
     print "expected: " + str(expected)
     print "got: " + str(got)
 
-def not_expect(description, expected, got):
+def not_expect(description, got, expected):
   if expected == got:
     print "failed: " + description
     print "expected: " + str(expected)
@@ -32,6 +32,22 @@ def test(description):
 
 def specs():
 
+  expect("extract args 1", mc.extract_args("[test]", "[]"), ["test"])
+  expect("extract args 2", mc.extract_args(" [test] ", "[]"), ["test"])
+  expect("extract args 3", mc.extract_args("[ test ]", "[]"), ["test"])
+  expect("extract args 4", mc.extract_args("/test/", "/"), ["test"])
+  expect("extract args 5", mc.extract_args("(t e s t)", "()"), ["t", "e", "s", "t"])
+  expect("extract args 6", mc.extract_args("[test] abc", "[]"), ["test"])
+  expect("extract args 7", mc.extract_args("abc [test] def", "[]"), ["test"])
+  expect("extract args 8", mc.extract_args("(t  e  s  t)", "()"), ["t", "e", "s", "t"])
+  expect("extract args 9", mc.extract_args("abc [test] def [test2]", "[]"), ["test"])
+  expect("extract args 10", mc.extract_args("( t e s t )", "()"), ["t", "e", "s", "t"])
+
+  expect("replace args 1", mc.replace_args("[test]", "[]", "abc"), "abc")
+  expect("replace args 2", mc.replace_args(" [test] ", "[]", "abc"), " abc ")
+  expect("replace args 3", mc.replace_args("[test][]", "[]", "abc"), "abc[]")
+
+
   # positive tests
   fixture_filename = "spec_fixtures/test_script%d.mac"
   expected_filename = "spec_fixtures/test_script%d_expected.txt"
@@ -45,7 +61,7 @@ def specs():
       compiled_script = mc.compile_file(fixture_file)
       print_script(compiled_script)
       expected_script = mc.load_file(expected_file, ".txt")
-      expect("compiled script", expected_script, compiled_script)
+      expect("compiled script", compiled_script, expected_script)
       mc.reset()
     else:
       break
@@ -61,7 +77,7 @@ def specs():
       print "Testing file (neg): " + fixture_file
       compiled_script = mc.compile_file(fixture_file)
       print_script(compiled_script)
-      expect("compilation valid", False, mc.compilation_valid(compiled_script))
+      expect("compilation valid", mc.compilation_valid(compiled_script), False)
       mc.reset()
     else:
       break
