@@ -24,13 +24,17 @@ def report_failed(description, expected, got):
   description_ = tc.yellow(description)
   expected_ = "\t" + tc.cyan("Expected:") + "\n\t\t" + tc.green(str(expected))      
   got_ = "\t" + tc.cyan("Got:     ") + "\n\t\t" + tc.red(str(got))
-  ui.report_error("Test failed! %s\n%s\n%s\n" % (description_, expected_, got_))
+  ui.report_error("\nTest failed! %s\n%s\n%s\n" % (description_, expected_, got_))
 
 def report_worked(description, expected, got):
   description_ = tc.yellow(description)
   expected_ = "\t" + tc.cyan("Expected:") + "\n\t\t" + tc.green(str(expected))
   got_ = "\t" + tc.cyan("Got Same:") + "\n\t\t" + tc.red(str(got))
-  ui.report_error("Test failed! %s\n%s\n%s\n" % (description_, expected_, got_))
+  ui.report_error("\nTest failed! %s\n%s\n%s\n" % (description_, expected_, got_))
+
+def report_success(description, expected, got):
+  if not verbose_mode:
+    sys.stdout.write(tc.green("."))
   
 def report_test(type, description):
   print tc.cyan(type) + " " + tc.green(description)
@@ -38,10 +42,14 @@ def report_test(type, description):
 def expect(description, got, expected):
   if expected != got:
     report_failed(description, expected, got)
+  else:
+    report_success(description, expected, got)
 
 def not_expect(description, got, expected):
   if expected == got:
     report_worked(description, expected, got)
+  else:
+    report_success(description, expected, got)
 
 def print_script(script):
   for line in script:
@@ -56,7 +64,8 @@ def test(description):
 
 def specs():
 
-  report_test("String manipulation tests", "extract_args()")
+  if verbose_mode:
+    report_test("String manipulation tests", "extract_args()")
   expect("extract args 1", mc.extract_args("[test]", "[", "]"), ["test"])
   expect("extract args 2", mc.extract_args(" [test] ", "[", "]"), ["test"])
   expect("extract args 3", mc.extract_args("[ test ]", "[", "]"), ["test"])
@@ -75,14 +84,16 @@ def specs():
   expect("extract args 16", mc.extract_args("[[test]]", "[[", "]]"), ["test"])
   expect("extract args 16", mc.extract_args("[[[test]]]", "[[[", "]]]"), ["test"])
 
-  report_test("String manipulation tests", "replace_args()")
+  if verbose_mode:
+    report_test("String manipulation tests", "replace_args()")
   expect("replace args 1", mc.replace_args("[test]", "[", "]", "abc"), "abc")
   expect("replace args 2", mc.replace_args(" [test] ", "[", "]", "abc"), " abc ")
   expect("replace args 3", mc.replace_args("[test][]", "[", "]", "abc"), "abc[]")
   expect("replace args 4", mc.replace_args("[test", "[", "]", "abc"), "[test")
   expect("replace args 5", mc.replace_args("[]", "[", "]", "abc"), "abc")
 
-  report_test("String manipulation tests", "get_key_args()")
+  if verbose_mode:
+    report_test("String manipulation tests", "get_key_args()")
   expect("get key args 1", mc.get_key_args("$abc", "$"), ["abc"])
   expect("get key args 2", mc.get_key_args(" $abc", "$"), ["abc"])
   expect("get key args 3", mc.get_key_args("$abc ", "$"), ["abc"])
@@ -141,6 +152,7 @@ def setup():
 
 def loop():
   specs() 
+  print
   sys.exit()
 
 if __name__ == '__main__':
