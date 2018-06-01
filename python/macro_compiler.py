@@ -119,6 +119,11 @@ def process_macro_call(line):
     return str(resolved[macro_name]) + ":run"
   return line
 
+def immutable_resolved_value_check(variable_name, variable_value):
+  if variable_name in resolved:
+    if resolved[variable_name] != variable_value:
+      raise ValueError("The resolved value '%s' is being changed to '%s'" % (variable_name, str(variable_value)))
+
 def process_set_variable(line):
   line = line.strip()
   if len(line) > 0 and not line_has_unresolved(line):
@@ -127,6 +132,7 @@ def process_set_variable(line):
       variable_name = args[0]
       # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
       variable_value = line[len(variable_name) + 1:].strip()
+      immutable_resolved_value_check(variable_name, variable_value)
       set_resolved(variable_name, variable_value)
       return ''
   return line
