@@ -2,13 +2,14 @@
 
 import os
 
-global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number
+global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets
 macros = {}
 macro_commands = {}
 resolved = {}
 unresolved = {}
 passes = 0
 verbose_mode = False
+presets = {}
 
 # macros 10-13 are reserved for apps, 0-9 are memory
 starting_macro_number = 14
@@ -18,11 +19,17 @@ next_available_sequencer_number = 0
 
 # ----------------------------------------------------
 
-def begin(verbose_mode_ = False, starting_macro = 14, ending_macro = 50):
-  global verbose_mode, starting_macro_number, ending_macro_number
+def begin(verbose_mode_ = False, presets_ = {}, starting_macro = 14, ending_macro = 50):
+  global verbose_mode, starting_macro_number, ending_macro_number, presets
   verbose_mode = verbose_mode_
   starting_macro_number = starting_macro
   ending_macro_number = ending_macro
+  presets = presets_
+  resolve_presets(presets)
+
+def resolve_presets(presets):
+  for key in presets.keys():
+    set_resolved(key, presets[key])
 
 def set_macro(name, value):
   global macros
@@ -64,6 +71,7 @@ def reset():
   unresolved = {}
   passes = 0
   next_available_macro_number = starting_macro_number
+  resolve_presets(presets)
 
 # ----------------------------------------------------
 

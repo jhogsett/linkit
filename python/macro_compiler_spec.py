@@ -5,7 +5,13 @@ import macro_compiler as mc
 import os
 
 def initialize():
-  mc.begin(False)
+  mc.begin(False, presets())
+
+def presets():
+  return {
+    "NUM-LEDS": 90,
+    "NUM-FINE-ZONES": 6
+  }
 
 def expect(description, got, expected):
   if expected != got:
