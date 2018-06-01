@@ -47,6 +47,8 @@ def initialize():
     if not validate_options():
         sys.exit("\nExiting...\n")
     lc.begin(verbose_mode)
+    lc.attention()
+    lc.stop_all()
     num_leds = lc.get_num_leds()
     ui.begin(verbose_mode)
     starting_macro = lc.get_first_eeprom_macro()
@@ -54,9 +56,6 @@ def initialize():
     ending_macro = starting_macro + (1024 / num_macro_chars)
     number_of_sequencers = lc.get_num_sequencers()
     mc.begin(verbose_mode, get_device_presets(), starting_macro, ending_macro, number_of_sequencers)
-    lc.attention()
-    lc.stop_all()
-    lc.command("cnt")
 
 def get_device_presets():
   return {
@@ -157,8 +156,8 @@ def program_macros(program_name):
         set_script(script_text) 
 
 def print_script(script_lines):
-  for script_text in compiled_script:
-    ui.report_info(script_text)
+  for script_text in script_lines:
+    ui.report_warn(script_text)
 
 # --------------------------------------------------------------------------
     
@@ -171,17 +170,21 @@ def introduction():
     ui.report_verbose()
 
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
-    ui.report_info(ui.intro_entry("Number of macro chars", num_macro_chars))
-    ui.report_info(ui.intro_entry("First EEPROM macro", starting_macro))
-    ui.report_info(ui.intro_entry("Last EEPROM macro", ending_macro))
+    ui.report_info(ui.intro_entry("Number of macros", (ending_macro - starting_macro) + 1))
     ui.report_info(ui.intro_entry("Number of sequencers", number_of_sequencers))
-    ui.report_info("programs: " + tc.green(",".join(programs)))
+    ui.report_info(ui.intro_entry("Bytes per macro", num_macro_chars))
+    ui.report_info(ui.intro_entry("First macro", starting_macro))
+    ui.report_info(ui.intro_entry("Last macro", ending_macro))
+    ui.report_info("program: " + tc.green(",".join(programs)))
     print
 
 def summary():
     print
     print
     print tc.green(str(macro_count) + " macros successfully programmed\n")
+
+    remaining_macros = ((ending_macro - starting_macro) + 1) - macro_count
+    print tc.yellow(str(remaining_macros) + " free macros remaining\n")
     print
 
 def upload_programs():
