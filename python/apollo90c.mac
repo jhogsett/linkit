@@ -46,12 +46,12 @@ $render-time <base-timing>
   <hsl-angle>:rcl
   csh
 
-(( swinger RED     0 15 ))
-(( swinger ORANGE 15 30 ))
-(( swinger YELLOW 30 45 ))
-(( swinger GREEN  45 60 ))
-(( swinger BLUE   60 75 ))
-(( swinger PURPLE 75 90 ))
+((swinger RED     0 15))
+((swinger ORANGE 15 30))
+((swinger YELLOW 30 45))
+((swinger GREEN  45 60))
+((swinger BLUE   60 75))
+((swinger PURPLE 75 90))
 
 [[swinger X START END
     [setup-swinger-X]
