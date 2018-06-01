@@ -42,7 +42,7 @@ def get_options():
 
 def initialize():
     global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers
-    app_description = "Apollo Lighting System - Macro Programmer v.1.0 1-1-2018"
+    app_description = "Apollo Lighting System - Macro Programmer v.2.0 6-1-2018"
     get_options()
     if not validate_options():
         sys.exit("\nExiting...\n")
