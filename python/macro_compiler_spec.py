@@ -32,32 +32,29 @@ def test(description):
 
 def specs():
 
-  expect("extract args 1", mc.extract_args("[test]", "[]"), ["test"])
-  expect("extract args 2", mc.extract_args(" [test] ", "[]"), ["test"])
-  expect("extract args 3", mc.extract_args("[ test ]", "[]"), ["test"])
-  expect("extract args 4", mc.extract_args("/test/", "/"), ["test"])
-  expect("extract args 5", mc.extract_args("(t e s t)", "()"), ["t", "e", "s", "t"])
-  expect("extract args 6", mc.extract_args("[test] abc", "[]"), ["test"])
-  expect("extract args 7", mc.extract_args("abc [test] def", "[]"), ["test"])
-  expect("extract args 8", mc.extract_args("(t  e  s  t)", "()"), ["t", "e", "s", "t"])
-  expect("extract args 9", mc.extract_args("abc [test] def [test2]", "[]"), ["test"])
-  expect("extract args 10", mc.extract_args("( t e s t )", "()"), ["t", "e", "s", "t"])
-  expect("extract args 11", mc.extract_args("[test", "[]"), [])
-  expect("extract args 12", mc.extract_args("test]", "[]"), [])
-  expect("extract args 13", mc.extract_args("test", "[]"), [])
-  expect("extract args 14", mc.extract_args("[test", "[]"), [])
-  expect("extract args 1", mc.extract_args("[]", "[]"), [])
+  expect("extract args 1", mc.extract_args("[test]", "[", "]"), ["test"])
+  expect("extract args 2", mc.extract_args(" [test] ", "[", "]"), ["test"])
+  expect("extract args 3", mc.extract_args("[ test ]", "[", "]"), ["test"])
+  expect("extract args 4", mc.extract_args("/test/", "/", "/"), ["test"])
+  expect("extract args 5", mc.extract_args("(t e s t)", "(", ")"), ["t", "e", "s", "t"])
+  expect("extract args 6", mc.extract_args("[test] abc", "[", "]"), ["test"])
+  expect("extract args 7", mc.extract_args("abc [test] def", "[", "]"), ["test"])
+  expect("extract args 8", mc.extract_args("(t  e  s  t)", "(", ")"), ["t", "e", "s", "t"])
+  expect("extract args 9", mc.extract_args("abc [test] def [test2]", "[", "]"), ["test"])
+  expect("extract args 10", mc.extract_args("( t e s t )", "(", ")"), ["t", "e", "s", "t"])
+  expect("extract args 11", mc.extract_args("[test", "[", "]"), [])
+  expect("extract args 12", mc.extract_args("test]", "[", "]"), [])
+  expect("extract args 13", mc.extract_args("test", "[", "]"), [])
+  expect("extract args 14", mc.extract_args("[test", "[", "]"), [])
+  expect("extract args 15", mc.extract_args("[]", "[", "]"), [])
+  expect("extract args 16", mc.extract_args("[[test]]", "[[", "]]"), ["test"])
+  expect("extract args 16", mc.extract_args("[[[test]]]", "[[[", "]]]"), ["test"])
 
-  expect("replace args 1", mc.replace_args("[test]", "[]", "abc"), "abc")
-  expect("replace args 2", mc.replace_args(" [test] ", "[]", "abc"), " abc ")
-  expect("replace args 3", mc.replace_args("[test][]", "[]", "abc"), "abc[]")
-
-  expect("replace args 4", mc.replace_args("[test", "[]", "abc"), "[test")
-#failed: replace args 4
-#expected: [test
-#got: abctest
-
-  expect("replace args 5", mc.replace_args("[]", "[]", "abc"), "abc")
+  expect("replace args 1", mc.replace_args("[test]", "[", "]", "abc"), "abc")
+  expect("replace args 2", mc.replace_args(" [test] ", "[", "]", "abc"), " abc ")
+  expect("replace args 3", mc.replace_args("[test][]", "[", "]", "abc"), "abc[]")
+  expect("replace args 4", mc.replace_args("[test", "[", "]", "abc"), "[test")
+  expect("replace args 5", mc.replace_args("[]", "[", "]", "abc"), "abc")
 
   expect("get key args 1", mc.get_key_args("$abc", "$"), ["abc"])
   expect("get key args 2", mc.get_key_args(" $abc", "$"), ["abc"])

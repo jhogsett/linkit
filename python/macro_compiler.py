@@ -12,13 +12,13 @@ verbose_mode = False
 
 # macros 10-13 are reserved for apps, 0-9 are memory
 starting_macro_number = 14
-ending_macro_number = 51
+ending_macro_number = 50
 next_available_macro_number = starting_macro_number
 next_available_sequencer_number = 0
 
 # ----------------------------------------------------
 
-def begin(verbose_mode_ = False, starting_macro = 14, ending_macro = 51):
+def begin(verbose_mode_ = False, starting_macro = 14, ending_macro = 50):
   global verbose_mode, starting_macro_number, ending_macro_number
   verbose_mode = verbose_mode_
   starting_macro_number = starting_macro
@@ -83,7 +83,7 @@ def process_set_macro(line):
   macro_name = None
   macro_number = None
   line = line.strip()
-  args = extract_args(line, "[]")
+  args = extract_args(line, "[", "]")
   if len(args) > 0:
     macro_name = args[0]
     if len(args) > 1:
@@ -103,7 +103,7 @@ def process_set_macro(line):
 def process_macro_call(line):
   macro_name = None
   line = line.strip()
-  macro_name = extract_contents(line, "()")
+  macro_name = extract_contents(line, "(", ")")
   if macro_name in resolved:
     return str(resolved[macro_name]) + ":run"
   return line
@@ -123,19 +123,19 @@ def process_set_variable(line):
 def process_get_variable(line):
   if len(line) < 1:
     return line
-  args = extract_args(line, "<>")
+  args = extract_args(line, "<", ">")
   if len(args) > 0:
     variable_name = args[0]
     if variable_name in resolved:
       resolved_value = resolved[variable_name]
-      return replace_args(line, "<>", resolved_value)
+      return replace_args(line, "<", ">", resolved_value)
   return line
 
 def process_allocate_sequencer(line):
   global next_available_sequencer_number
   if len(line) < 1:
     return line
-  args = extract_args(line, "{}")
+  args = extract_args(line, "{", "}")
   if len(args) > 0:
     sequencer_name = args[0]
     resolved_value = None
@@ -145,17 +145,30 @@ def process_allocate_sequencer(line):
       resolved_value = next_available_sequencer_number
       set_resolved(sequencer_name, resolved_value)
       next_available_sequencer_number += 1
-      return replace_args(line, "{}", str(resolved_value))
+      return replace_args(line, "{", "}", str(resolved_value))
   return line
 
 def process_evaluate_python(line):
   if len(line) < 1:
     return line
   if not line_has_unresolved_variables(line):
-    expression = extract_contents(line, "`")
+    expression = extract_contents(line, "`", "`")
     if len(expression) > 0:
-      return replace_args(line, "`", str(eval(expression)))
+      return replace_args(line, "`", "`", str(eval(expression)))
   return line
+
+def process_place_template(line):
+  if len(line) < 1:
+    return line
+  args = extract_args(line, "((", "))")
+  if len(args) > 0:
+    variable_name = args[0]
+    if variable_name in resolved:
+      template_script = resolved[variable_name]
+      return replace_args(line, "<>", resolved_value)
+  return line  
+
+
 
 def process_line(line):
   line = process_blank_line(line)
@@ -166,6 +179,7 @@ def process_line(line):
   line = process_macro_call(line)
   line = process_get_variable(line)
   line = process_allocate_sequencer(line)
+  line = process_place_template(line)
   return line
 
 def line_has_unresolved_variables(line):
@@ -181,35 +195,33 @@ def line_has_unresolved(line):
 
 # locate the start and end positions of a delimited portion of a string
 # returns start, end
-def locate_delimiters(line, delimiters):
+def locate_delimiters(line, start_delimiter, end_delimiter):
   start = -1
   end = -1
-  start_mark = delimiters[0]
-  end_mark = delimiters[1] if len(delimiters) > 1 else delimiters[0]
-  if start_mark in line:
-    start = line.find(start_mark)
-    if end_mark in line[start + 1:]:
-      end = line.find(end_mark, start + 1)
+  if start_delimiter in line:
+    start = line.find(start_delimiter)
+    if end_delimiter in line[start + len(start_delimiter):]:
+      end = line.find(end_delimiter, start + 1)
   return start, end
 
-def cut_contents(line, start, end):
-  return line[start + 1:end].strip()
+def cut_contents(line, start_delimiter, end_delimiter, start, end):
+  return line[start + len(start_delimiter):end].strip()
 
 # pass in line and two delimiters, get back contents within
 # delimiters specified as one or two characters
-def extract_contents(line, delimiters):
+def extract_contents(line, start_delimiter, end_delimiter):
   line = line.strip()
   if len(line) == 0:
     return ''
-  start, end = locate_delimiters(line, delimiters)
+  start, end = locate_delimiters(line, start_delimiter, end_delimiter)
   if start != -1 and end != -1:
-    return cut_contents(line, start, end)
+    return cut_contents(line, start_delimiter, end_delimiter, start, end)
   return ''
   
 # pass in line and two delimiters, get back list of arguments within
 # delimiters specified as one or two characters
-def extract_args(line, delimiters):
-  return extract_contents(line, delimiters).split()
+def extract_args(line, start_delimiter, end_delimiter):
+  return extract_contents(line, start_delimiter, end_delimiter).split()
 
 def get_key_contents(line, key):
   line = line.strip()
@@ -220,8 +232,8 @@ def get_key_contents(line, key):
 def get_key_args(line, key):
   return get_key_contents(line, key).split()
 
-def replace_args(line, delimiters, replacement):
-  start, end = locate_delimiters(line, delimiters)
+def replace_args(line, start_delimiter, end_delimiter, replacement):
+  start, end = locate_delimiters(line, start_delimiter, end_delimiter)
   if start != -1 and end != -1:
     return line[0:start] + str(replacement) + line[end + 1:]
   return line
@@ -281,8 +293,13 @@ def resolve_macro_numbers():
 
 def resolve_script(script_lines):
   if verbose_mode:
-    print "-------------------------"
+    print "--------------------------------------------"
   new_lines = capture_templates(script_lines)
+  new_lines = expand_templates(new_lines)
+  if verbose_mode:
+    print "Expanded script:"
+    print_script(new_lines)
+    print
   new_lines = resolution_pass(new_lines)
   resolve_macro_numbers()
   while True:
@@ -333,6 +350,35 @@ def capture_templates(script_lines):
         capture_mode = True
       else:
         new_lines.append(line)
+  return new_lines
+
+def template_replacements(template_lines, keys, replacements):
+  new_lines = []
+  for line in template_lines:
+    for index, key in enumerate(keys):
+      line = line.replace(key, replacements[index])
+    new_lines.append(line)
+  return new_lines
+
+def expand_templates(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = line.strip()
+    args = extract_args(line, "((", "))")
+    if len(args) > 0:
+      template_name = args[0]
+      # remaining arguments, if any, are the search replacements
+      replacements = args[1:]
+      if template_name in resolved:
+        template_script = resolved[template_name]
+        # first line is the search keys
+        keys = template_script[0].split()
+        # remaining lines are the template contents
+        template_script = template_script[1:]
+        template_script = template_replacements(template_script, keys, replacements)
+        new_lines = new_lines + template_script
+    else:
+      new_lines.append(line)
   return new_lines
 
 # ----------------------------------------------------
