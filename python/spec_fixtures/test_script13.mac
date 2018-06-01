@@ -1,0 +1,4 @@
+# this building template will never complete building due to the missing end marker
+# so it will not get added as a resolved template
+[[partial-template
+

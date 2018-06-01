@@ -8,7 +8,7 @@ import terminal_colors as tc
 
 global verbose_mode
 
-verbose_mode = False
+verbose_mode = True
 
 def initialize():
   ui.begin(verbose_mode)

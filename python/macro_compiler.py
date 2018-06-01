@@ -199,8 +199,11 @@ def line_has_unresolved_variables(line):
 def line_has_python_expression(line):
   return len(line) > 0 and "`" in line
 
+def line_has_template_marker(line):
+  return len(line) > 0 and ("[[" in line or "]]" in line or "((" in line or "))" in line)
+
 def line_has_unresolved(line):
-  return line_has_unresolved_variables(line) or line_has_python_expression(line)
+  return line_has_unresolved_variables(line) or line_has_python_expression(line) or line_has_template_marker(line)
 
 # ----------------------------------------------------
 
