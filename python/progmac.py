@@ -20,7 +20,7 @@ programs = None
 macro_run_number = None
 
 def get_options():
-    global verbose_mode, debug_mode, programs, macro_run_number, starting_macro, num_macro_chars, ending_macro
+    global verbose_mode, debug_mode, programs, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencers
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("programs", metavar="P", nargs="+", help="one or more programs to transmit")
@@ -38,9 +38,10 @@ def get_options():
     starting_macro = 10
     num_macro_chars = 25
     ending_macro = 50
+    number_of_sequencers = 10
 
 def initialize():
-    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro
+    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers
     app_description = "Apollo Lighting System - Macro Programmer v.1.0 1-1-2018"
     get_options()
     if not validate_options():
@@ -49,9 +50,10 @@ def initialize():
     num_leds = lc.get_num_leds()
     ui.begin(verbose_mode)
     starting_macro = lc.get_first_eeprom_macro()
-    num_macro_chars - lc.get_num_macro_chars()
+    num_macro_chars = lc.get_num_macro_chars()
     ending_macro = starting_macro + (1024 / num_macro_chars)
-    mc.begin(verbose_mode, get_device_presets(), starting_macro, ending_macro)
+    number_of_sequencers = lc.get_num_sequencers()
+    mc.begin(verbose_mode, get_device_presets(), starting_macro, ending_macro, number_of_sequencers)
     lc.attention()
     lc.stop_all()
     lc.command("cnt")
