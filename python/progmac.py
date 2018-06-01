@@ -8,8 +8,9 @@ import led_command as lc
 import argparse
 import app_ui as ui
 import macro_compiler as mc
+import argparse_custom as ac
 
-global app_description, verbose_mode, debug_mode, legacy_mode, num_leds, macro_count, programs, macro_run_number
+global app_description, verbose_mode, debug_mode, legacy_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun
 app_description = None
 verbose_mode = None
 debug_mode = None
@@ -18,23 +19,31 @@ macro_count = 0
 num_leds = None
 programs = None
 macro_run_number = None
+presets = None
+dryrun = None
 
 def get_options():
-    global verbose_mode, debug_mode, programs, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencers
+    global verbose_mode, debug_mode, program, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencer, presets, dryrun
 
     parser = argparse.ArgumentParser(description=app_description)
-    parser.add_argument("programs", metavar="P", nargs="+", help="one or more programs to transmit")
+    parser.add_argument("program", help="program to transmit")
+
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-d", "--debug", dest="debug", action="store_true", help="display verbose info (False)")
     parser.add_argument("-l", "--legacy", dest="legacy", action="store_true", help="use legacy .mac file format (False)")
+    parser.add_argument("-r", "--dryrun", dest="dryrun", action="store_true", help="process the script but don't actually program the device (False)")
+
+    parser.add_argument("presets", nargs="*", help="resolved=value presets (None)")
 
     args = parser.parse_args()
-    programs = args.programs
+    program = args.program
     macro_run_number = args.macro
     verbose_mode = args.verbose
     debug_mode = args.debug
     legacy_mode = args.legacy
+    presets = args.presets
+    dryrun = args.dryrun
     starting_macro = 10
     num_macro_chars = 25
     ending_macro = 50
@@ -47,20 +56,42 @@ def initialize():
     if not validate_options():
         sys.exit("\nExiting...\n")
     lc.begin(verbose_mode)
-    lc.attention()
-    lc.stop_all()
+
+    if dryrun:
+      lc.pause()
+    else:
+      lc.attention()
+      lc.stop_all()
+
     num_leds = lc.get_num_leds()
     ui.begin(verbose_mode)
     starting_macro = lc.get_first_eeprom_macro()
     num_macro_chars = lc.get_num_macro_chars()
     ending_macro = starting_macro + (1024 / num_macro_chars)
     number_of_sequencers = lc.get_num_sequencers()
-    mc.begin(verbose_mode, get_device_presets(), starting_macro, ending_macro, number_of_sequencers)
+    all_presets = merge_two_dicts(get_device_presets(), get_command_line_presets())
+    mc.begin(verbose_mode, all_presets, starting_macro, ending_macro, number_of_sequencers)
+    if dryrun:
+      lc.resume()
+
+# https://stackoverflow.com/questions/38987/how-to-merge-two-dictionaries-in-a-single-expression
+def merge_two_dicts(x, y):
+    """Given two dicts, merge them into a new dict as a shallow copy."""
+    z = x.copy()
+    z.update(y)
+    return z
+
+def get_command_line_presets():
+    result = {}
+    for preset in presets:
+      args = preset.split("=")
+      result[args[0]] = args[1]
+    return result
 
 def get_device_presets():
-  return {
-    "NUM-LEDS": num_leds
-  }
+    return {
+      "NUM-LEDS": num_leds
+    }
 
 # returns True if they're valid
 def validate_options():
@@ -127,17 +158,6 @@ def import_file(program_name):
         script.append(line)
     return script
 
-def legacy_program_macros(program_name):
-    script = import_file(program_name)
-    for line in script:
-        words = line.split(";")
-        macro_num = int(words[0])
-        macro_text = words[1].strip()
-        expected_bytes = 0
-        if len(words) > 2:
-          expected_bytes = int(words[2])
-        set_macro(macro_num, macro_text, expected_bytes)
-
 def program_macros(program_name):
     compiled_script = mc.compile_file(program_name)
 
@@ -152,7 +172,8 @@ def program_macros(program_name):
         print_script(compiled_script)
       sys.exit("\nExiting...\n")
 
-    for script_text in compiled_script:
+    if not dryrun:
+      for script_text in compiled_script:
         set_script(script_text) 
 
 def print_script(script_lines):
@@ -175,8 +196,12 @@ def introduction():
     ui.report_info(ui.intro_entry("Bytes per macro", num_macro_chars))
     ui.report_info(ui.intro_entry("First macro", starting_macro))
     ui.report_info(ui.intro_entry("Last macro", ending_macro))
-    ui.report_info("program: " + tc.green(",".join(programs)))
+    ui.report_info("program: " + tc.green(program))
     print
+   
+    if dryrun:
+      ui.report_warn("Dry-run enabled. The device will not be programmed.")
+      print
 
 def summary():
     print
@@ -188,15 +213,14 @@ def summary():
     print
 
 def upload_programs():
-    if legacy_mode:
-        for program in programs:
-            legacy_program_macros(program)
-    else:
-        # to support multiple compiled macros, need to keep track of used macro numbers
-        program_macros(programs[0])
+    program_macros(program)
 
 def run_default_macro():
-    lc.run_macro(macro_run_number)
+    if dryrun:
+        #lc.resume()
+        pass
+    else:
+        lc.run_macro(macro_run_number)
 
 
 ############################################################################

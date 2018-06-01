@@ -119,10 +119,16 @@ def process_macro_call(line):
     return str(resolved[macro_name]) + ":run"
   return line
 
-def immutable_resolved_value_check(variable_name, variable_value):
+# return true if value is immutable and is a preset being overridden
+# raise ValueError if value is immutable and is not a preset
+def immutable_resolved_value(variable_name, variable_value):
   if variable_name in resolved:
     if resolved[variable_name] != variable_value:
-      raise ValueError("The resolved value '%s' is being changed to '%s'" % (variable_name, str(variable_value)))
+      if variable_name in presets:
+        return True 
+      else:
+        raise ValueError("The resolved value '%s' is being changed to '%s'" % (variable_name, str(variable_value)))
+  return False
 
 def process_set_variable(line):
   line = line.strip()
@@ -132,8 +138,8 @@ def process_set_variable(line):
       variable_name = args[0]
       # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
       variable_value = line[len(variable_name) + 1:].strip()
-      immutable_resolved_value_check(variable_name, variable_value)
-      set_resolved(variable_name, variable_value)
+      if not immutable_resolved_value(variable_name, variable_value):
+        set_resolved(variable_name, variable_value)
       return ''
   return line
 

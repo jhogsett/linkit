@@ -168,6 +168,12 @@ def push_command(cmd_text=None):
         # add this command text to the buffer
         cmd = cmd + cmd_text
 
+def pause():
+  command("3:pau")
+
+def resume():
+  command("3:cnt")
+
 def attention(erase=True):
     command("::pau")
     if erase:
