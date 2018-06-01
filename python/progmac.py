@@ -147,8 +147,18 @@ def program_macros(program_name):
         for script_text in compiled_script:
             ui.report_verbose(script_text)
 
+    if not mc.compilation_valid(compiled_script):
+      ui.report_error("Compilation failed!")
+      if not verbose_mode:
+        print_script(compiled_script)
+      sys.exit("\nExiting...\n")
+
     for script_text in compiled_script:
         set_script(script_text) 
+
+def print_script(script_lines):
+  for script_text in compiled_script:
+    ui.report_info(script_text)
 
 # --------------------------------------------------------------------------
     
