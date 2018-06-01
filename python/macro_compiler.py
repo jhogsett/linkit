@@ -2,7 +2,7 @@
 
 import os
 
-global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode
+global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -10,7 +10,7 @@ unresolved = {}
 passes = 0
 verbose_mode = False
 
-# macros 10-13 are reserved, 0-9 are memory
+# macros 10-13 are reserved for apps, 0-9 are memory
 starting_macro_number = 14
 ending_macro_number = 51
 next_available_macro_number = starting_macro_number
@@ -18,9 +18,11 @@ next_available_sequencer_number = 0
 
 # ----------------------------------------------------
 
-def begin(verbose_mode_ = False):
-  global verbose_mode
+def begin(verbose_mode_ = False, starting_macro = 14, ending_macro = 51):
+  global verbose_mode, starting_macro_number, ending_macro_number
   verbose_mode = verbose_mode_
+  starting_macro_number = starting_macro
+  ending_macro_number = ending_macro
 
 def set_macro(name, value):
   global macros
@@ -90,6 +92,8 @@ def process_set_macro(line):
       set_unresolved(macro_name)
       return "<" + macro_name + ">:set"
     else:
+      if macro_number == "!":
+        macro_number = ending_macro_number
       set_resolved(macro_name, macro_number)
       set_macro(macro_name, macro_number)
       return str(macro_number) + ":set"
@@ -209,8 +213,8 @@ def extract_args(line, delimiters):
 
 def get_key_contents(line, key):
   line = line.strip()
-  if len(line) > 0 and line[0] == key:
-    return line[1:].strip()
+  if len(line) > 0 and line.startswith(key):
+    return line[len(key):].strip()
   return ''
 
 def get_key_args(line, key):
@@ -278,7 +282,8 @@ def resolve_macro_numbers():
 def resolve_script(script_lines):
   if verbose_mode:
     print "-------------------------"
-  new_lines = resolution_pass(script_lines)
+  new_lines = capture_templates(script_lines)
+  new_lines = resolution_pass(new_lines)
   resolve_macro_numbers()
   while True:
     prev_lines = new_lines
@@ -303,6 +308,32 @@ def consolidate_macros(script_lines):
 
 def sort_script(script_lines):
   script_lines.sort()
+
+def capture_templates(script_lines):
+  new_lines = []
+  template_builder = []
+  capture_mode = False
+  template_name = None
+  for line in script_lines:
+    line = line.strip()
+    if capture_mode:
+      if line.startswith("]]"):
+        capture_mode = False
+        set_resolved(template_name, template_builder)
+        template_builder = []
+      else:
+        template_builder.append(line)
+    else:
+      if "[[" in line:
+        args = get_key_args(line, "[[")
+        template_name = args[0]
+        combined_args = " ".join(args[1:])
+        # store the search strings that will be replaced with passed arguments later
+        template_builder.append(combined_args)
+        capture_mode = True
+      else:
+        new_lines.append(line)
+  return new_lines
 
 # ----------------------------------------------------
 
