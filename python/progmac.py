@@ -20,7 +20,7 @@ programs = None
 macro_run_number = None
 
 def get_options():
-    global verbose_mode, debug_mode, programs, macro_run_number
+    global verbose_mode, debug_mode, programs, macro_run_number, starting_macro, num_macro_chars, ending_macro
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("programs", metavar="P", nargs="+", help="one or more programs to transmit")
@@ -35,19 +35,31 @@ def get_options():
     verbose_mode = args.verbose
     debug_mode = args.debug
     legacy_mode = args.legacy
+    starting_macro = 10
+    num_macro_chars = 25
+    ending_macro = 50
 
 def initialize():
-    global app_description, num_leds
+    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro
     app_description = "Apollo Lighting System - Macro Programmer v.1.0 1-1-2018"
     get_options()
     if not validate_options():
         sys.exit("\nExiting...\n")
     lc.begin(verbose_mode)
+    num_leds = lc.get_num_leds()
     ui.begin(verbose_mode)
+    starting_macro = lc.get_first_eeprom_macro()
+    num_macro_chars - lc.get_num_macro_chars()
+    ending_macro = starting_macro + (1024 / num_macro_chars)
+    mc.begin(verbose_mode, get_device_presets(), starting_macro, ending_macro)
     lc.attention()
     lc.stop_all()
-    num_leds = lc.get_num_leds()
     lc.command("cnt")
+
+def get_device_presets():
+  return {
+    "NUM-LEDS": num_leds
+  }
 
 # returns True if they're valid
 def validate_options():
@@ -147,6 +159,9 @@ def introduction():
     ui.report_verbose()
 
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
+    ui.report_info(ui.intro_entry("Number of macro chars", num_macro_chars))
+    ui.report_info(ui.intro_entry("First EEPROM macro", starting_macro))
+    ui.report_info(ui.intro_entry("Last EEPROM macro", ending_macro))
     ui.report_info("programs: " + tc.green(",".join(programs)))
     print
 

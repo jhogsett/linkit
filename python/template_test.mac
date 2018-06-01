@@ -2,7 +2,7 @@
 
 %include symbols
 
-$max 90
+$max <NUM-LEDS>
 $max-half <max>
 $render-time 50
 $sequence-time 20
