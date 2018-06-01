@@ -8,7 +8,6 @@ import led_command as lc
 import argparse
 import app_ui as ui
 import macro_compiler as mc
-import argparse_custom as ac
 
 global app_description, verbose_mode, debug_mode, legacy_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun
 app_description = None
