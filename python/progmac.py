@@ -162,6 +162,7 @@ def introduction():
     ui.report_info(ui.intro_entry("Number of macro chars", num_macro_chars))
     ui.report_info(ui.intro_entry("First EEPROM macro", starting_macro))
     ui.report_info(ui.intro_entry("Last EEPROM macro", ending_macro))
+    ui.report_info(ui.intro_entry("Number of sequencers", number_of_sequencers))
     ui.report_info("programs: " + tc.green(",".join(programs)))
     print
 

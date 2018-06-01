@@ -2,7 +2,7 @@
 
 import os
 
-global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets
+global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -16,14 +16,16 @@ starting_macro_number = 14
 ending_macro_number = 50
 next_available_macro_number = starting_macro_number
 next_available_sequencer_number = 0
+number_of_sequencers = 10
 
 # ----------------------------------------------------
 
-def begin(verbose_mode_ = False, presets_ = {}, starting_macro = 14, ending_macro = 50):
-  global verbose_mode, starting_macro_number, ending_macro_number, presets
+def begin(verbose_mode_ = False, presets_ = {}, starting_macro = 14, ending_macro = 50, number_of_sequencers_ = 10):
+  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
   verbose_mode = verbose_mode_
   starting_macro_number = starting_macro
   ending_macro_number = ending_macro
+  number_of_sequencers = number_of_sequencers_
   presets = presets_
   resolve_presets(presets)
 
@@ -64,13 +66,14 @@ def unresolved_exist():
   return len(unresolved) > 0
 
 def reset():
-  global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number
+  global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
   macros = {}
   macro_commands = {}
   resolved = {}
   unresolved = {}
   passes = 0
   next_available_macro_number = starting_macro_number
+  next_available_sequencer_number = 0
   resolve_presets(presets)
 
 # ----------------------------------------------------
@@ -146,10 +149,12 @@ def process_allocate_sequencer(line):
   args = extract_args(line, "{", "}")
   if len(args) > 0:
     sequencer_name = args[0]
-    resolved_value = None
+    resolnext_available_sequencer_numberved_value = None
     if sequencer_name in resolved:
       resolved_value = resolved[sequencer_name]
     else:
+      if next_available_sequencer_number > (number_of_sequencers - 1):
+        raise ValueError("No available sequence numbers available")
       resolved_value = next_available_sequencer_number
       set_resolved(sequencer_name, resolved_value)
       next_available_sequencer_number += 1
@@ -175,8 +180,6 @@ def process_place_template(line):
       template_script = resolved[variable_name]
       return replace_args(line, "<>", resolved_value)
   return line  
-
-
 
 def process_line(line):
   line = process_blank_line(line)
