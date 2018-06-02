@@ -8,11 +8,11 @@ import terminal_colors as tc
 
 global verbose_mode
 
-verbose_mode = True
+verbose_mode = False
 
 def initialize():
   ui.begin(verbose_mode)
-  mc.begin(False, presets())
+  mc.begin(verbose_mode, presets())
 
 def presets():
   return {
@@ -83,6 +83,7 @@ def specs():
   expect("extract args 15", mc.extract_args("[]", "[", "]"), [])
   expect("extract args 16", mc.extract_args("[[test]]", "[[", "]]"), ["test"])
   expect("extract args 16", mc.extract_args("[[[test]]]", "[[[", "]]]"), ["test"])
+  expect("extract args 17", mc.extract_args("(((test 1 2 3)))", "(((", ")))"), ["test", '1', '2', '3'])
 
   if verbose_mode:
     report_test("String manipulation tests", "replace_args()")
@@ -127,7 +128,7 @@ def specs():
   # negative tests
   # these are expected to fail to compile but not crash
   fixture_filename = "spec_fixtures/bad_script%d.mac"
-  script_number = 1
+  script_number = 111
   while(True):
     fixture_file = fixture_filename % script_number
     script_number += 1
@@ -146,7 +147,7 @@ def specs():
   # these are expected to raise compilation errors
   fixture_filename = "spec_fixtures/crash_script%d.mac"
   expected_filename = "spec_fixtures/crash_script%d_expected.txt"
-  script_number = 1
+  script_number = 111
   while(True):
     fixture_file = fixture_filename % script_number
     expected_file = expected_filename % script_number

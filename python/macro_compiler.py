@@ -190,7 +190,7 @@ def process_place_template(line):
     variable_name = args[0]
     if variable_name in resolved:
       template_script = resolved[variable_name]
-      return replace_args(line, "<>", resolved_value)
+      return replace_args(line, "((", "))", template_script)
   return line  
 
 def process_line(line):
@@ -321,6 +321,7 @@ def resolve_script(script_lines):
   if verbose_mode:
     print "--------------------------------------------"
   new_lines = capture_templates(script_lines)
+  new_lines = expand_meta_templates(new_lines)
   new_lines = expand_templates(new_lines)
   if verbose_mode:
     print "Expanded script:"
@@ -390,19 +391,37 @@ def expand_templates(script_lines):
   new_lines = []
   for line in script_lines:
     line = line.strip()
-    args = extract_args(line, "((", "))")
-    if len(args) > 0:
+    if "((" in line and "(((" not in line:
+      args = extract_args(line, "((", "))")
+      if len(args) > 0:
+        template_name = args[0]
+        # remaining arguments, if any, are the search replacements
+        replacements = args[1:]
+        if template_name in resolved:
+          template_script = resolved[template_name]
+          # first line is the search keys
+          keys = template_script[0].split()
+          # remaining lines are the template contents
+          template_script = template_script[1:]
+          template_script = template_replacements(template_script, keys, replacements)
+          new_lines = new_lines + template_script
+    else:
+      new_lines.append(line)
+  return new_lines
+
+def expand_meta_templates(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = line.strip()
+    args = extract_args(line, "(((", ")))")
+    if len(args) >= 2:
       template_name = args[0]
+      index_max = int(args[1])
       # remaining arguments, if any, are the search replacements
-      replacements = args[1:]
-      if template_name in resolved:
-        template_script = resolved[template_name]
-        # first line is the search keys
-        keys = template_script[0].split()
-        # remaining lines are the template contents
-        template_script = template_script[1:]
-        template_script = template_replacements(template_script, keys, replacements)
-        new_lines = new_lines + template_script
+      replacements = " ".join(args[2:])
+      for index in range(0, index_max):
+        new_line = "((" + template_name + " " + str(index) + " " + replacements + "))"
+        new_lines.append(new_line)
     else:
       new_lines.append(line)
   return new_lines
