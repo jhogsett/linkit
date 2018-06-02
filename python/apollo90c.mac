@@ -29,12 +29,7 @@ $render-time <base-timing>
   (setup-hsl-sequencer)
 
 [setup-swingers]
-    (setup-swinger-RED)
-    (setup-swinger-ORANGE)
-    (setup-swinger-YELLOW)
-    (setup-swinger-GREEN)
-    (setup-swinger-BLUE)
-    (setup-swinger-PURPLE)
+  (((start 6)))
 
 [setup-hsl-sequencer]
   {seq-hsl},360:seq
@@ -46,16 +41,15 @@ $render-time <base-timing>
   <hsl-angle>:rcl
   csh
 
-((swinger RED     0 15))
-((swinger ORANGE 15 30))
-((swinger YELLOW 30 45))
-((swinger GREEN  45 60))
-((swinger BLUE   60 75))
-((swinger PURPLE 75 90))
+(((swinger 6 15)))
 
-[[swinger X START END
+[[start X
+    (setup-swinger-X)
+]]
+
+[[swinger X WIDTH
     [setup-swinger-X]
-        {seq-X},END,START:<sequencer-type>
+        {seq-X},`X*WIDTH+WIDTH`,`X*WIDTH`:<sequencer-type>
         `<base-timing> + (<seq-X> * <timing-gap>)`,<swinger-X>:sch
 
     [swinger-X]

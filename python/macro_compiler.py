@@ -320,7 +320,9 @@ def resolve_macro_numbers():
 def resolve_script(script_lines):
   if verbose_mode:
     print "--------------------------------------------"
-  new_lines = capture_templates(script_lines)
+  new_lines = remove_blank_lines(script_lines)
+  new_lines = remove_comments(new_lines)
+  new_lines = capture_templates(new_lines)
   new_lines = expand_meta_templates(new_lines)
   new_lines = expand_templates(new_lines)
   if verbose_mode:
@@ -335,6 +337,22 @@ def resolve_script(script_lines):
     if new_lines == prev_lines:
       # no more resolving needed/possible
       break
+  return new_lines
+
+def remove_blank_lines(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = process_blank_line(line)
+    if len(line) > 0:
+      new_lines.append(line)
+  return new_lines
+
+def remove_comments(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = process_comment(line)
+    if len(line) > 0:
+      new_lines.append(line)
   return new_lines
 
 def consolidate_macros(script_lines):
