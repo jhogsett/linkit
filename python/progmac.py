@@ -26,13 +26,11 @@ def get_options():
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("program", help="program to transmit")
-
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-d", "--debug", dest="debug", action="store_true", help="display verbose info (False)")
     parser.add_argument("-l", "--legacy", dest="legacy", action="store_true", help="use legacy .mac file format (False)")
     parser.add_argument("-r", "--dryrun", dest="dryrun", action="store_true", help="process the script but don't actually program the device (False)")
-
     parser.add_argument("presets", nargs="*", help="resolved=value presets (None)")
 
     args = parser.parse_args()
@@ -208,7 +206,9 @@ def summary():
     print tc.green(str(macro_count) + " macros successfully programmed\n")
 
     remaining_macros = ((ending_macro - starting_macro) + 1) - macro_count
-    print tc.yellow(str(remaining_macros) + " free macros remaining\n")
+    remaining_sequencers = mc.remaining_sequencers()
+    print tc.yellow(str(remaining_macros) + " free macros remaining")
+    print tc.yellow(str(remaining_sequencers) + " free sequencers remaining\n")
     print
 
 def upload_programs():

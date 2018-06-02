@@ -3,6 +3,7 @@
 import os
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
+global number_of_macros
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -11,21 +12,22 @@ passes = 0
 verbose_mode = False
 presets = {}
 
-# macros 10-13 are reserved for apps, 0-9 are memory
-starting_macro_number = 14
+starting_macro_number = 10
 ending_macro_number = 50
 next_available_macro_number = starting_macro_number
 next_available_sequencer_number = 0
 number_of_sequencers = 10
+number_of_macros = 41
 
 # ----------------------------------------------------
 
-def begin(verbose_mode_ = False, presets_ = {}, starting_macro = 14, ending_macro = 50, number_of_sequencers_ = 10):
-  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
+def begin(verbose_mode_ = False, presets_ = {}, starting_macro = 10, ending_macro = 50, number_of_sequencers_ = 10):
+  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
   verbose_mode = verbose_mode_
   starting_macro_number = starting_macro
   ending_macro_number = ending_macro
   number_of_sequencers = number_of_sequencers_
+  number_of_macros = (ending_macro_number - starting_macro_number) + 1
   presets = presets_
   resolve_presets(presets)
 
@@ -76,6 +78,9 @@ def reset():
   next_available_sequencer_number = 0
   resolve_presets(presets)
 
+def reset_next_available_sequence_number():
+  next_available_sequencer_number = 0
+
 # ----------------------------------------------------
 
 def process_comment(line):
@@ -107,6 +112,12 @@ def process_set_macro(line):
         macro_number = ending_macro_number
       set_resolved(macro_name, macro_number)
       set_macro(macro_name, macro_number)
+      # setting a specific macro number is done for apps
+      # to combine apps, the next available sequence number
+      # needs to be reset. 
+      # if a macro number is passed, assume it's an app
+      # and do the resetting
+      reset_next_available_sequence_number()
       return str(macro_number) + ":set"
   return line
 
@@ -267,8 +278,8 @@ def replace_args(line, start_delimiter, end_delimiter, replacement):
 # ----------------------------------------------------
 
 def is_macro_number_in_use(macro_number):
-  for macro_name in macros:
-    if macros[macro_name] == macro_number:
+  for value in macros.values():
+    if str(value) == str(macro_number):
       return True
   return False
 
@@ -483,6 +494,9 @@ def compilation_valid(script):
     if line_has_unresolved(line):
       return False
   return True
+
+def remaining_sequencers():
+  return number_of_sequencers - next_available_sequencer_number 
 
 def print_script(script):
   for line in script:

@@ -1,0 +1,63 @@
+# 6 part rainbow consine swing
+
+%include symbols
+
+$fade-rate 8000
+$fade-type sfd
+$sequencer-type swc
+$hsl-angle 60
+$hsl-step 2
+$hsl-time 100
+$base-timing 150
+$timing-gap 1
+$render-time <base-timing>
+
+[fancy 10]
+  (init)
+  (setup-components)
+
+[init]
+  app
+  <CONFIG-FADE-RATE>,<fade-rate>:cfg
+  <render-time>,<render>:sch
+
+[render !]
+  flu
+
+[setup-components]
+  (setup-swingers)
+  (setup-hsl-sequencer)
+
+[setup-swingers]
+  (((start 6)))
+
+[setup-hsl-sequencer]
+  {seq-hsl},360:seq
+  <hsl-time>,<hsl-sequencer>:sch
+
+[hsl-sequencer]
+  <seq-hsl>,0,<hsl-step>:seq
+  sto
+  <hsl-angle>:rcl
+  csh
+
+(((swinger 6 15)))
+
+[[start X
+    (setup-swinger-X)
+]]
+
+[[swinger X WIDTH
+    [setup-swinger-X]
+        {seq-X},`X*WIDTH+WIDTH`,`X*WIDTH`:<sequencer-type>
+        `<base-timing> + (<seq-X> * <timing-gap>)`,<swinger-X>:sch
+
+    [swinger-X]
+        <seq-X>:snw
+        pos
+        <seq-X>:pal
+        <fade-type>
+        flo
+        rst
+]]
+
