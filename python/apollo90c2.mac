@@ -11,18 +11,20 @@ $hsl-time 100
 $base-timing 150
 $timing-gap 1
 $render-time <base-timing>
+$draw-mode <DRAW-PLUS>
 
-[fancy 10]
+[mellow 11]
     (init)
     (setup-components)
 
 [init]
     app
+    <draw-mode>:drw
     <CONFIG-FADE-RATE>,<fade-rate>:cfg
     <render-time>,<render>:sch
 
 [render !]
-    flu
+    mir:flu
 
 [setup-components]
     (setup-swingers)
@@ -80,7 +82,7 @@ $wander-neg-range `-(<wander-range> / 2)`
 
 $brightness 20
 
-[demo 13]
+[fancy 10]
     (init2)
     (setup-rendering2)
     (start-components)
@@ -88,13 +90,11 @@ $brightness 20
 
 [init2]
     app
-    <brightness>:lev
+    <draw-mode>:drw
+    <brightness>:lev   
 
 [setup-rendering2]
     <render-time2>,<render>:sch
-
-#[render2 !]
-#    flu
 
 [start-components]
     (((start2 6)))
@@ -113,7 +113,7 @@ $brightness 20
     [sequence-X]
         <seq-X>,<MACRO-SEQ>,<math-X>:seq
         pos
-        X,0,<ADD-COLOR>:pal
+        X:pal
         <fade-type2>
         rst
 
