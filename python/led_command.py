@@ -62,7 +62,7 @@ def wait_for_str():
 def send_command(cmd_text):
     if verbose_mode:
         print "sending: " + cmd_text
-    s.write((cmd_text + ':').encode())
+    s.write((cmd_text + ':\0:').encode())
 
 def command(cmd_text):
     send_command(cmd_text)

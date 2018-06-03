@@ -100,7 +100,7 @@ def wait_for_str():
 def command(cmd_text):
   global test_command
   test_command = cmd_text
-  s.write((cmd_text + ':').encode())
+  s.write((cmd_text + ':\0:').encode())
   wait_for_ack()
 
 def command_int(cmd_text):
