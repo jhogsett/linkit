@@ -82,6 +82,7 @@ class Commands
   void do_flood(byte type);
   void do_random(byte type, int times);
   void do_mirror();
+  void draw_mirror_step(rgb_color * buf_back, rgb_color * buf_front);
   void do_copy(byte size, int times, byte zoom);
   void do_repeat(byte times);
 
@@ -533,11 +534,39 @@ void Commands::do_random(byte type, int times)
         break;
     }
     
-    buffer->push_color(color, 1, 0, false, effect);  
+    buffer->push_color(color, 1, false, effect);  
   }
 }
 
-// this won't clobber dynamic effects because this is a copy operation
+void Commands::draw_mirror_step(rgb_color * buf_back, rgb_color * buf_front)
+{
+  switch(buffer->get_draw_mode()){
+    case DRAW_MODE_WRITE:
+    default:
+      *buf_back = *buf_front;
+      break;
+    case DRAW_MODE_PLUS:
+      buf_back->red += buf_front->red;
+      buf_back->green += buf_front->green;
+      buf_back->blue += buf_front->blue;
+      break;
+    case DRAW_MODE_MINUS:
+      buf_back->red -= buf_front->red;
+      buf_back->green -= buf_front->green;
+      buf_back->blue -= buf_front->blue;
+      break;
+    case DRAW_MODE_MIX:
+      buf_back->red = (buf_back->red + buf_front->red) / 2;
+      buf_back->green = (buf_back->green + buf_front->green) / 2;
+      buf_back->blue = (buf_back->blue + buf_front->blue) / 2;
+      break;
+    case DRAW_MODE_DIFF:
+      buf_back->red = abs(buf_back->red - buf_front->red);
+      buf_back->green = abs(buf_back->green - buf_front->green);
+      buf_back->blue = abs(buf_back->blue - buf_front->blue);
+      break;
+  } 
+}
 
 // arg0: number of cuts, 0: defaults to 1 
 // arg1: 0: draw mode, 0: defaults to 0=replace, 1=add
@@ -546,7 +575,13 @@ void Commands::do_mirror()
   bool reverse = buffer->get_reverse();
   byte front = buffer->get_offset();
   byte back = buffer->get_window() - 1;
-  byte width = buffer->get_width() / 2;
+  
+  byte width;
+
+  if(buffer->get_draw_mode() == DRAW_MODE_WRITE)
+    width = buffer->get_width() / 2;
+  else
+    width = buffer->get_width();
 
   rgb_color * buf_front = &buffer->get_buffer()[front];
   rgb_color * buf_back = &buffer->get_buffer()[back];
@@ -557,12 +592,14 @@ void Commands::do_mirror()
   {
     if(reverse)
     {
-      *(buf_front + i) = *(buf_back - i);;
+       draw_mirror_step(buf_front + i, buf_back - i);
+//      *(buf_front + i) = *(buf_back - i);
       *(effects_front + i) = *(effects_back - i);
     } 
     else 
     {
-      *(buf_back - i) = *(buf_front + i);
+       draw_mirror_step(buf_back - i, buf_front + i); 
+//      *(buf_back - i) = *(buf_front + i);
       *(effects_back - i) = *(effects_front + i);
     }
   }
@@ -710,7 +747,7 @@ void Commands::do_repeat(byte times = 1){
   byte offset = buffer->get_reverse() ? buffer->get_window() - 1 : buffer->get_offset();
   rgb_color color = ColorMath::correct_color(buffer->get_buffer()[offset]);
   byte effect = buffer->get_effects_buffer()[offset];
-  buffer->push_color(color, times, 0, false, effect);
+  buffer->push_color(color, times, false, effect);
 }
 
 //void Commands::do_elastic_shift(byte count, byte max = 0){
@@ -900,6 +937,7 @@ void Commands::clear(){
   }
 
   buffer->set_display(orig_display);
+  buffer->set_draw_mode();
 
   do_fan(false);
 }
@@ -1366,7 +1404,7 @@ void Commands::do_stop()
 // arg[1] if > 0, colors are inserted counting down from this position
 //                the counting down is done so the palette achieves a left-to-right order when inserted  
 //                in this case arg[0] is the stopping point when counting down
-// arg[2] push type 0=overwrite, 1=add
+// arg[2] 
 // for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
 void Commands::do_palette(byte arg0, byte arg1, byte arg2)
 {
@@ -1376,10 +1414,10 @@ void Commands::do_palette(byte arg0, byte arg1, byte arg2)
   {
     arg0 = max(0, arg0);
     for(int i = arg1; i >= arg0; i--)
-      buffer->push_color(palette[i], 1, arg2);                      
+      buffer->push_color(palette[i], 1);                      
   } 
   else 
-    buffer->push_color(palette[arg0], 1, arg2);                                                      
+    buffer->push_color(palette[arg0], 1);                                                      
 }
 
 #define SHUFFLE_RANDOM           0
@@ -1538,7 +1576,7 @@ void Commands::do_recall(int arg0, int arg1, int arg2)
 // arg2 the color.blue value for rendering type
 void Commands::do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect){
   rgb_color data = {arg0, arg1, arg2};
-  buffer->push_color(data, 1, 0, false, DYNAMIC_COLOR | effect, 0, 0, false);
+  buffer->push_color(data, 1, false, DYNAMIC_COLOR | effect, 0, 0, false);
 }
 
 // todo: optional

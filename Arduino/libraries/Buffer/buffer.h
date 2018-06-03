@@ -9,6 +9,12 @@
 #define NO_EFFECT 0
 #define OVERRIDE_OFF -1
 
+#define DRAW_MODE_WRITE 0
+#define DRAW_MODE_PLUS  1
+#define DRAW_MODE_MINUS 2
+#define DRAW_MODE_MIX   3
+#define DRAW_MODE_DIFF  4
+
 class Buffer
 {
   public:
@@ -17,7 +23,7 @@ class Buffer
   void display_buffer(rgb_color * pbuffer);
   void render_display();
   void erase(bool display);
-  void push_color(rgb_color color, byte times, byte mode, bool display, byte effect, byte max, byte start, bool color_correction);
+  void push_color(rgb_color color, byte times, bool display, byte effect, byte max, byte start, bool color_correction);
   void push_rgb_color(byte red, byte green, byte blue);
   void push_hsl_color(int hue, int sat, int lit);
   void push_carry_color();
@@ -50,6 +56,8 @@ class Buffer
   rgb_color black;
   int get_default_brightness();
   void set_default_effect(byte effect);
+  void set_draw_mode(byte mode = DRAW_MODE_WRITE);
+  byte get_draw_mode();
 
   // todo: is there an alternative to storing all these pointers?
   private:
@@ -72,6 +80,8 @@ class Buffer
   Zones *zones;
   byte current_zone = 0;
   bool reverse = false;
+
+  byte draw_mode = DRAW_MODE_WRITE;
 
   byte default_effect = NO_EFFECT;
 
@@ -96,6 +106,7 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte
   this->reverse = false;
   this->carry_color = black;
   this->carry_effect = NO_EFFECT;
+  this->draw_mode = DRAW_MODE_WRITE;
 }
 
 byte Buffer::get_display()
@@ -216,11 +227,8 @@ void Buffer::shift_buffer(rgb_color * buffer, byte * effects, byte max, byte sta
   }
 }
 
-#define PUSH_COLOR_MODE_OVERWRITE 0
-#define PUSH_COLOR_MODE_ADD       1
-
 // todo: only need to shift buffer multiple times if displaying (otherwise, shift the whole amount)
-void Buffer::push_color(rgb_color color, byte times = 1, byte mode = PUSH_COLOR_MODE_OVERWRITE, bool display = false, byte effect = DEFAULT_EFFECT, byte max = 0, byte start = 0, bool color_correction = true)
+void Buffer::push_color(rgb_color color, byte times = 1, bool display = false, byte effect = DEFAULT_EFFECT, byte max = 0, byte start = 0, bool color_correction = true)
 {
   rgb_color * buffer = buffers[current_display];
   byte * effects = effects_buffers[current_display];
@@ -252,12 +260,39 @@ void Buffer::push_color(rgb_color color, byte times = 1, byte mode = PUSH_COLOR_
   {
     shift_buffer(buffer, effects, max, start, this->reverse);
 
-    if(mode == PUSH_COLOR_MODE_ADD){
-      buf-> red += color.red;
-      buf-> green += color.green;
-      buf-> blue += color.blue;
-    } else {
-      *buf = color;
+//    if(mode == PUSH_COLOR_MODE_ADD){
+//      buf-> red += color.red;
+//      buf-> green += color.green;
+//      buf-> blue += color.blue;
+//    } else {
+//      *buf = color;
+//    }
+
+    switch(draw_mode){
+      case DRAW_MODE_WRITE:
+      default:
+        *buf = color;
+        break;
+      case DRAW_MODE_PLUS:
+        buf-> red += color.red;
+        buf-> green += color.green;
+        buf-> blue += color.blue;
+        break;
+      case DRAW_MODE_MINUS:
+        buf-> red -= color.red;
+        buf-> green -= color.green;
+        buf-> blue -= color.blue;
+        break;
+      case DRAW_MODE_MIX:
+        buf-> red = (buf->red + color.red) / 2;
+        buf-> green = (buf->green + color.green) / 2;
+        buf-> blue = (buf->blue + color.blue) / 2;
+        break;
+      case DRAW_MODE_DIFF:
+        buf-> red = abs(buf->red - color.red);
+        buf-> green = abs(buf->green - color.green);
+        buf-> blue = abs(buf->blue - color.blue);
+        break;
     }
 
     *eff = effect;
@@ -281,7 +316,7 @@ void Buffer::push_hsl_color(int hue, int sat, int lit)
 
 void Buffer::push_carry_color()
 {
-  push_color(carry_color, 1, PUSH_COLOR_MODE_OVERWRITE, false, carry_effect);
+  push_color(carry_color, 1, false, carry_effect);
 }
 
 // todo: is this used?
@@ -413,6 +448,14 @@ void Buffer::reset_black_level()
 int Buffer::get_default_brightness()
 {
   return (int)(this->default_brightness_scale * 100.0);
+}
+
+void Buffer::set_draw_mode(byte draw_mode){
+  this->draw_mode = draw_mode;
+}
+
+byte Buffer::get_draw_mode(){
+  return this->draw_mode;
 }
 
 void Buffer::set_default_effect(byte effect){

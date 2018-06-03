@@ -152,9 +152,9 @@
 #define BREATHE_PERIOD 80
 #define FADE_RATE 0.925
 #define NUM_MEMORY_MACROS 2
-#define NUM_SEQUENCERS 10
-#define USE_MAPPING
-#define RADIUS8_MAPPING
+#define NUM_SEQUENCERS 8
+//#define USE_MAPPING
+//#define RADIUS8_MAPPING
 #endif
 
 #ifdef WEATHER_72
