@@ -13,33 +13,33 @@ $timing-gap 1
 $render-time <base-timing>
 
 [fancy 10]
-  (init)
-  (setup-components)
+    (init)
+    (setup-components)
 
 [init]
-  app
-  <CONFIG-FADE-RATE>,<fade-rate>:cfg
-  <render-time>,<render>:sch
+    app
+    <CONFIG-FADE-RATE>,<fade-rate>:cfg
+    <render-time>,<render>:sch
 
 [render !]
-  flu
+    flu
 
 [setup-components]
-  (setup-swingers)
-  (setup-hsl-sequencer)
+    (setup-swingers)
+    (setup-hsl-sequencer)
 
 [setup-swingers]
-  (((start 6)))
+    (((start 6)))
 
 [setup-hsl-sequencer]
-  {seq-hsl},360:seq
-  <hsl-time>,<hsl-sequencer>:sch
+    {seq-hsl},360:seq
+    <hsl-time>,<hsl-sequencer>:sch
 
 [hsl-sequencer]
-  <seq-hsl>,0,<hsl-step>:seq
-  sto
-  <hsl-angle>:rcl
-  csh
+    <seq-hsl>,0,<hsl-step>:seq
+    sto
+    <hsl-angle>:rcl
+    csh
 
 (((swinger 6 15)))
 
@@ -84,6 +84,7 @@ $brightness 20
     (init2)
     (setup-rendering2)
     (start-components)
+    (setup-hsl-sequencer)
 
 [init2]
     app
