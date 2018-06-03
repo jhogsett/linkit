@@ -304,6 +304,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     dispatch_math(cmd);
     reset_args = false; 
     break;
+
+  case CMD_DRAW_MODE:
+    buffer->set_draw_mode(arg0);
+    break;
   }
   
   if(reset_args)
