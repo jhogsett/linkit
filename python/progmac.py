@@ -98,6 +98,7 @@ def validate_options():
 def set_macro(macro_num, macro_text, expected_bytes):
     global macro_count
 
+    bytes = 0
     try:
         bytes = lc.set_macro(macro_num, macro_text, expected_bytes, debug_mode)
 
@@ -108,7 +109,8 @@ def set_macro(macro_num, macro_text, expected_bytes):
       except StandardError, e:
         sys.exit("\nUnable to program macros. Macro file may be corrupt.")
 
-    lc.command_str("grn:flu")                                 
+    #lc.command_str("grn:flu")                                 
+    lc.command_str(str(bytes/2) + ":pal:flu")
     macro_count += 1
 
     if not debug_mode:                                             
@@ -121,7 +123,8 @@ def set_script(script_text):
 
         ui.report_verbose("bytes programmed: " + str(bytes))
 
-        lc.command_str("grn:flu")
+        #lc.command_str("grn:flu")
+        lc.command_str(str(bytes/2) + ":pal:flu")
         macro_count += 1
 
         if not debug_mode:
