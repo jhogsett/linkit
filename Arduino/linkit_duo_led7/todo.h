@@ -1,6 +1,65 @@
+// must document language
+
+// script should tell what macro to run upon completing programming somehow
+
+// program each macro to macro #0 to determine numnber of bytes (until python can compile macro commands)
+
+// predefined variables can be stuffed into resolved and then just used as <name>
+// ideas:
+  // number of leds
+  // number of fine zones
+  // default brightness?
+  // 
+  // 
+  // 
+  // 
+
+
+// may need to pass arguments to the macro call
+
+
+// start experimenting with using an arduino to tend batteries:
+    // disconnect when above or below a preset voltage
+
+// memory macro space could be used for:
+    // dampening
+    // storing variables for use in macros (even just as-is "1:set:19:1:run")    
+
+// what would it take to seal the ends for the wanderers?
+// what's required to draw mirrored versions? can the sequencer be queried for its limits?
+
+// what would it take to constrain a wanderer to a portion of the strip, which can be moved itself?
+
+
 // weather data shows rain as main forecast even when rain amount section is missing
 // in these cases consider the conditions clear
 
+// dampened sequencer, or sequencer dampening
+
+
+
+// feed preset variables on the command line into progmac.py
+
+// somne way to easily make the rendering macro the very last one
+
+// have pre-defined values for things like device number of pixels
+  // make them work only in variable assignments for ease of parsing
+
+// have something that substities the results of calling the device to get an integer, would only work at compile time
+
+// either have step be a sequence variable (so it can be changed and remembered as new value)
+//   or support arbitrary integer storage/recall so variables can be used
+
+
+// idea: dampening generator, for instance, averaging, lamp burning out, side-gravity
+
+// wanderer idea: do its own mirroring, allowing all 6 to travel anywhere
+  // also connect the ends (can this be made automatic in sequencer?)
+
+// idea: destination sequencer, set a point, it reaches it, linearly, or otherwise
+
+// metaprogramming: place N sequencers with render and math macros 
+  // in this case it would assign the names of things sequentially
 
 // button presses
   // examine an input
