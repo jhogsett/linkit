@@ -1,0 +1,8 @@
+(((template 6 2)))
+
+[[template X VAR
+    [macro-X]
+      `X * 2`:red
+      VAR:rpt
+]]
+

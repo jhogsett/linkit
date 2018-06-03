@@ -1,0 +1,5 @@
+# variables are immutable
+$var 100
+$var 200
+<var>
+

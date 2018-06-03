@@ -86,32 +86,32 @@ def get_device_config(config):
 def get_num_leds():
     return get_device_config(0)
 
-#def get_palette_size():
-#    return get_device_config(1)
-#
-#def get_offset():
-#    return get_device_config(2)
-#
-#def get_window():
-#    return get_device_config(3)
-#
-#def get_default_brightness():
-#    return get_device_config(4)
-#
-#def get_minimum_brightness():
-#    return get_device_config(5)
-#
-#def get_reverse():
-#    return get_device_config(6)
-#
-#def get_default_fade_rate():
-#    return get_device_config(7)
-#
-#def get_fade_rate():
-#    return get_device_config(8)
-#
-#def get_mapping_enabled():
-#    return get_device_config(9)
+def get_palette_size():
+    return get_device_config(1)
+
+def get_offset():
+    return get_device_config(2)
+
+def get_window():
+    return get_device_config(3)
+
+def get_default_brightness():
+    return get_device_config(4)
+
+def get_minimum_brightness():
+    return get_device_config(5)
+
+def get_reverse():
+    return get_device_config(6)
+
+def get_default_fade_rate():
+    return get_device_config(7)
+
+def get_fade_rate():
+    return get_device_config(8)
+
+def get_mapping_enabled():
+    return get_device_config(9)
 
 def get_default_lightness():
     return get_device_config(10)
@@ -121,6 +121,30 @@ def get_minimum_lightness():
 
 def get_max_string_length():
     return get_device_config(12)
+
+def get_test_framework_enabled():
+    return get_device_config(13)
+
+def get_extra_shuffles_enabled():
+    return get_device_config(14)
+
+def get_blend_enabled():
+    return get_device_config(15)
+
+def get_num_macro_chars():
+    return get_device_config(16)
+
+def get_num_memory_macros():
+    return get_device_config(17)
+
+def get_num_eeprom_macros():
+    return get_device_config(18)
+
+def get_first_eeprom_macro():
+    return get_device_config(19)
+
+def get_num_sequencers():
+    return get_device_config(20)
 
 def push_command(cmd_text=None):
     global cmd
@@ -143,6 +167,12 @@ def push_command(cmd_text=None):
     else:
         # add this command text to the buffer
         cmd = cmd + cmd_text
+
+def pause():
+  command("3:pau")
+
+def resume():
+  command("3:cnt")
 
 def attention(erase=True):
     command("::pau")

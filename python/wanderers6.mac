@@ -1,0 +1,175 @@
+# rainbow wandering pixels with mirror
+
+%include symbols
+
+$max 90
+$max-half 45
+$render-time 50
+$sequence-time 20
+
+$fade-type ffd
+
+$wander-range 3
+$wander-neg-range -1
+
+$brightness 20
+
+$GET-CURRENT -1
+$MACRO-SEQ -4
+$ADD-COLOR 1
+
+[fancy 10]
+    (init)
+    (setup-rendering)
+    (start-components)
+
+[init]
+    app
+    <brightness>:lev
+
+[setup-rendering]
+    <render-time>,<render>:sch
+
+[render]
+    mir
+    flu
+
+[start-components]
+    (start-red)
+    (start-orange)
+    (start-yellow)
+    (start-green)
+    (start-blue)
+    (start-purple)
+
+
+[start-red]
+    {red-seq},<max>,0:seq
+    <sequence-time>,<red-sequence>:sch
+
+[red-sequence]
+    <red-seq>,<MACRO-SEQ>,<red-math>:seq
+    pos
+    <red-seq>,0,<ADD-COLOR>:pal
+    <fade-type>
+    rst
+
+[red-math]
+    <wander-range>:rng:psh
+    <wander-neg-range>:psh
+    add
+    <red-seq>,<GET-CURRENT>:seq:psh
+    add
+    <max-half>:psh
+    mod
+
+
+[start-orange]
+    {orange-seq},<max>,0:seq
+    <sequence-time>,<orange-sequence>:sch
+
+[orange-sequence]
+    <orange-seq>,<MACRO-SEQ>,<orange-math>:seq
+    pos
+    <orange-seq>,0,<ADD-COLOR>:pal
+    <fade-type>
+    rst
+
+[orange-math]
+    <wander-range>:rng:psh
+    <wander-neg-range>:psh
+    add
+    <orange-seq>,<GET-CURRENT>:seq
+    psh
+    add
+    <max-half>:psh
+    mod
+
+
+[start-yellow]
+    {yellow-seq},<max>,0:seq
+    <sequence-time>,<yellow-sequence>:sch
+
+[yellow-sequence]
+    <yellow-seq>,<MACRO-SEQ>,<yellow-math>:seq
+    pos
+    <yellow-seq>,0,<ADD-COLOR>:pal
+    <fade-type>
+    rst
+
+[yellow-math]
+    <wander-range>:rng:psh
+    <wander-neg-range>:psh
+    add
+    <yellow-seq>,<GET-CURRENT>:seq
+    psh
+    add
+    <max-half>:psh
+    mod
+
+
+[start-green]
+    {green-seq},<max>,0:seq
+    <sequence-time>,<green-sequence>:sch
+
+[green-sequence]
+    <green-seq>,<MACRO-SEQ>,<green-math>:seq
+    pos
+    <green-seq>,0,<ADD-COLOR>:pal
+    <fade-type>
+    rst
+
+[green-math]
+    <wander-range>:rng:psh
+    <wander-neg-range>:psh
+    add
+    <green-seq>,<GET-CURRENT>:seq
+    psh
+    add
+    <max-half>:psh
+    mod
+
+
+[start-blue]
+    {blue-seq},<max>,0:seq
+    <sequence-time>,<blue-sequence>:sch
+
+[blue-sequence]
+    <blue-seq>,<MACRO-SEQ>,<blue-math>:seq
+    pos
+    <blue-seq>,0,<ADD-COLOR>:pal
+    <fade-type>
+    rst
+
+[blue-math]
+    <wander-range>:rng:psh
+    <wander-neg-range>:psh
+    add
+    <blue-seq>,<GET-CURRENT>:seq
+    psh
+    add
+    <max-half>:psh
+    mod
+
+
+[start-purple]
+    {purple-seq},<max>,0:seq
+    <sequence-time>,<purple-sequence>:sch
+
+[purple-sequence]
+    <purple-seq>,<MACRO-SEQ>,<purple-math>:seq
+    pos
+    <purple-seq>,0,<ADD-COLOR>:pal
+    <fade-type>
+    rst
+
+[purple-math]
+    <wander-range>:rng:psh
+    <wander-neg-range>:psh
+    add
+    <purple-seq>,<GET-CURRENT>:seq
+    psh
+    add
+    <max-half>:psh
+    mod
+

@@ -1,0 +1,15 @@
+10:set:21:run:22:run:24:run
+14:set:2,-4,25:seq:pos:2,0,1:pal:ffd:rst
+15:set:3:rng:psh:-1:psh:add:0,-1:seq:psh:add:45:psh:mod
+16:set:mir:flu
+17:set:0,-4,15:seq:pos:0,0,1:pal:ffd:rst
+18:set:3:rng:psh:-1:psh:add:1,-1:seq:psh:add:45:psh:mod
+19:set:2,90,0:seq:20,14:sch
+20:set:1,90,0:seq:20,23:sch
+21:set:app
+22:set:50,16:sch
+23:set:1,-4,18:seq:pos:1,0,1:pal:ffd:rst
+24:set:26:run:20:run:19:run
+25:set:3:rng:psh:-1:psh:add:2,-1:seq:psh:add:45:psh:mod
+26:set:0,90,0:seq:20,17:sch
+

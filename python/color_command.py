@@ -23,7 +23,7 @@ def wait_for_ack():
   print
 
 def command(cmd_text):
-  s.write((cmd_text + ':').encode())   
+  s.write((cmd_text + ':\0:').encode())   
 #  print (cmd_text + ':').encode()
   wait_for_ack()
 

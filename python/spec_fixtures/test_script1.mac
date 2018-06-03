@@ -1,0 +1,15 @@
+# test script
+
+$max 10
+
+[init]
+red
+<max>:rep
+(render)
+
+[doit 1]
+blu
+
+[render]
+flu
+

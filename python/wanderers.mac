@@ -1,0 +1,105 @@
+# red green and blue wandering pixels with mirror
+
+$max 90
+$max-half 45
+$render-time 50
+$sequence-time 20
+$fade-type ffd
+$red-seq 0
+$green-seq 1
+$blue-seq 2
+$wander-range 3
+$wander-neg-range -1
+
+$get-current -1
+$macro-seq -4
+
+[fancy 10]
+(init)
+(setup-rendering)
+(start-components)
+
+[init]
+# these should be an app command, including shuffle reset
+#-1:sch
+#1:pau
+#2:cnt
+#era
+#flu
+app
+
+[setup-rendering]
+<render-time>,<render>:sch
+
+[render]
+mir
+flu
+
+[start-components]
+(start-red)
+(start-green)
+(start-blue)
+
+[start-red]
+<red-seq>,<max>,0:seq
+<sequence-time>,<red-sequence>:sch
+
+[red-sequence]
+<red-seq>,<macro-seq>,<red-math>:seq
+pos
+<red-seq>,0,1:pal
+<fade-type>
+rst
+
+[red-math]
+<wander-range>:rng:psh
+<wander-neg-range>:psh
+add
+<red-seq>,<get-current>:seq:psh
+add
+<max-half>:psh
+mod
+
+[start-green]
+<green-seq>,<max>,0:seq
+<sequence-time>,<green-sequence>:sch
+
+[green-sequence]
+<green-seq>,<macro-seq>,<green-math>:seq
+pos
+<green-seq>,0,1:pal
+<fade-type>
+rst
+
+[green-math]
+<wander-range>:rng:psh
+<wander-neg-range>:psh
+add
+<green-seq>,<get-current>:seq
+psh
+add
+<max-half>:psh
+mod
+
+
+[start-blue]
+<blue-seq>,<max>,0:seq
+<sequence-time>,<blue-sequence>:sch
+
+[blue-sequence]
+<blue-seq>,<macro-seq>,<blue-math>:seq
+pos
+<blue-seq>,0,1:pal
+<fade-type>
+rst
+
+[blue-math]
+<wander-range>:rng:psh
+<wander-neg-range>:psh
+add
+<blue-seq>,<get-current>:seq
+psh
+add
+<max-half>:psh
+mod
+
