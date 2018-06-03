@@ -30,7 +30,11 @@
 #define TEST_INQUIRY_TEST_FRAMEWORK_ENABLED 13
 #define TEST_INQUIRY_EXTRA_SHUFFLES_ENABLED 14
 #define TEST_INQUIRY_BLEND_ENABLED     15
-// macro chars, # memory macros, # eeprom macros, first eeprom macro
+#define TEST_INQUIRY_NUM_MACRO_CHARS   16
+#define TEST_INQUIRY_NUM_MEMORY_MACROS 17
+#define TEST_INQUIRY_NUM_EEPROM_MACROS 18
+#define TEST_INQUIRY_FIRST_EEPROM_MACRO 19
+#define TEST_INQUIRY_NUM_SEQUENCERS 20
 
 void Commands::do_test_inquiry(byte type, int arg2)
 {
@@ -103,6 +107,25 @@ void Commands::do_test_inquiry(byte type, int arg2)
 #else
       result = 0;
 #endif
+      break;
+
+    case TEST_INQUIRY_NUM_MACRO_CHARS:
+      result = NUM_MACRO_CHARS;
+      break;
+    
+    case TEST_INQUIRY_NUM_MEMORY_MACROS:
+      result = NUM_MEMORY_MACROS;
+      break;
+
+    case TEST_INQUIRY_NUM_EEPROM_MACROS:
+      result = NUM_EEPROM_MACROS;
+      break;
+
+    case TEST_INQUIRY_FIRST_EEPROM_MACRO:
+      result = NUM_MEMORY_MACROS;
+      break;
+    case TEST_INQUIRY_NUM_SEQUENCERS:
+      result = NUM_SEQUENCERS;
       break;
     }  
 

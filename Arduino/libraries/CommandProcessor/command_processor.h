@@ -274,7 +274,10 @@ char * CommandProcessor::get_input_buffer()
 {
   if(input_available())
   {
+    // a timeout is not needed - the macro bytes are already present in the buffer
+    serial->setTimeout(0);
     int c = serial->readBytesUntil('\0', this->str, MAX_STRING_LENGTH-1);
+    serial->setTimeout(1000);
     this->str[c] = 0;
     return this->str;
   }
