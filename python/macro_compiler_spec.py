@@ -5,14 +5,24 @@ import macro_compiler as mc
 import os
 import app_ui as ui
 import terminal_colors as tc
+import argparse
 
-global verbose_mode
+global app_description, verbose_mode
+pp_description = None
+verbose_mode = None
 
-verbose_mode = True
+def get_options():
+  global verbose_mode
+  parser = argparse.ArgumentParser(description=app_description)
+  parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
+  args = parser.parse_args()
+  verbose_mode = args.verbose
 
 def initialize():
+  global app_description
   ui.begin(verbose_mode)
   mc.begin(verbose_mode, presets())
+  app_description = "Apollo Lighting System - Macro Compiler Specs v.0.0 6-0-2018"
 
 def presets():
   return {

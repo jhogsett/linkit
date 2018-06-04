@@ -1,44 +1,83 @@
-10;-1:sch:1:pau:2:cnt:era:flu:11:run:13:run
+# dual spinner, wandering, mirrored, colors set based on wander position
 
-11;8000,2:cfg:150,12:sch
-12;mir:flu
+%include symbols
 
-13;15:run:20:run:25:run
+$render-time 150
+$margin 2
+$margin-half `<margin>/2`
+$width <NUM-LEDS>
+$width-half `<width>/2`
+$color-timing 150
+$color-multiplier 8
+$color-step 180
+$spinner-width 18
+$fade-type ffd
+$spinner-time 175
+$draw-mode <DRAW-WRITE>
 
+[fancy 10]
+    app
+    <draw-mode>:drw
+    8000,<CONFIG-FADE-RATE>:cfg
+    <render-time>,<render>:sch
+    (start)
 
+[render !]
+    mir
+    flu
 
+[start]
+    (start-color)
+    (((start-spinner 2)))
 
-15;0,90,0:seq:150,16:sch
-16;0,-4,17:seq:psh:8:psh:2:mth:180:rcl:csh
-17;3:rng:psh:-1:psh:mth:0,-1:seq:psh:mth:45:psh:4:mth
+[[start-spinner X
+    (spinner-start-X)
+]]
 
+(((spinner 2)))
 
+[start-color]
+    {seq-hsl},<width>:seq
+    <color-timing>,<color-render>:sch
 
+[color-render]
+    <seq-hsl>,<MACRO-SEQ>,<color-math>:seq
+    psh
+    <color-multiplier>:psh
+    mul
+    <color-step>:rcl
+    csh
 
-20;1,18,0:swc:2,90:seq:175,21:sch
-21;2,-4,22:snw:pos:0,0,1:pal:ffd:flo:rst
-22;1:seq:psh:0,-1:seq:psh:mth
+[color-math]
+    <margin>:rng
+    psh
+    -<margin-half>:psh
+    add
+    <seq-hsl>,<GET-CURRENT>:seq
+    psh
+    add
+    <width-half>:psh
+    mod
 
+[[spinner X
+    [spinner-start-X]
+        {seq-spin-X},<spinner-width>:swc
+        {seq-pos-X},<width>:seq
+        <spinner-time>,<spinner-render-X>:sch
 
-25;3,18,0:sws:4,90:seq:175,26:sch
-26;4,-4,27:snw:pos:1,0,1:pal:ffd:flo:rst
-27;3:seq:psh:0,-1:seq:psh:mth
+    [spinner-render-X]
+        <seq-pos-X>,<MACRO-SEQ>,<spinner-math-X>:snw
+        pos
+        X:pal
+        <fade-type>
+        flo
+        rst
 
-
-
-
-
-
-#20;1,90,0:seq:20,21:sch
-#21;1,-4,22:seq:pos:3,0,1:pal:ffd:rst
-#22;3:rng:psh:-1:psh:mth:1,-1:seq:psh:mth:45:psh:4:mth
-
-
-
-
-#25;2,90,0:seq:20,26:sch
-#26;2,-4,27:seq:pos:4,0,1:pal:ffd:rst
-#27;3:rng:psh:-1:psh:mth:2,-1:seq:psh:mth:45:psh:4:mth
-
-
+    [spinner-math-X]
+        <seq-spin-X>:seq
+        psh
+        <seq-hsl>,<GET-CURRENT>:seq
+        psh
+        add
+]]
 

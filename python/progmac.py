@@ -9,7 +9,7 @@ import argparse
 import app_ui as ui
 import macro_compiler as mc
 
-global app_description, verbose_mode, debug_mode, legacy_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun
+global app_description, verbose_mode, debug_mode, legacy_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed
 app_description = None
 verbose_mode = None
 debug_mode = None
@@ -20,6 +20,7 @@ programs = None
 macro_run_number = None
 presets = None
 dryrun = None
+bytes_programmed = None
 
 def get_options():
     global verbose_mode, debug_mode, program, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencer, presets, dryrun
@@ -47,11 +48,13 @@ def get_options():
     number_of_sequencers = 10
 
 def initialize():
-    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers
+    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, bytes_programmed
     app_description = "Apollo Lighting System - Macro Programmer v.2.0 6-1-2018"
     get_options()
     if not validate_options():
         sys.exit("\nExiting...\n")
+
+    bytes_programmed = 0
     lc.begin(verbose_mode)
 
     if dryrun:
@@ -96,11 +99,12 @@ def validate_options():
     return not errors
 
 def set_macro(macro_num, macro_text, expected_bytes):
-    global macro_count
+    global macro_count, bytes_programmed
 
     bytes = 0
     try:
         bytes = lc.set_macro(macro_num, macro_text, expected_bytes, debug_mode)
+        bytes_programmed += bytes
 
     except StandardError, e:
       print str(e) + " - retrying"
@@ -109,7 +113,6 @@ def set_macro(macro_num, macro_text, expected_bytes):
       except StandardError, e:
         sys.exit("\nUnable to program macros. Macro file may be corrupt.")
 
-    #lc.command_str("grn:flu")                                 
     lc.command_str(str(bytes/2) + ":pal:flu")
     macro_count += 1
 
@@ -117,13 +120,13 @@ def set_macro(macro_num, macro_text, expected_bytes):
         ui.write(tc.green('.'))
 
 def set_script(script_text):
-    global macro_count
+    global macro_count, bytes_programmed
     try:
         bytes = lc.command_int(script_text);
+        bytes_programmed += bytes
 
         ui.report_verbose("bytes programmed: " + str(bytes))
 
-        #lc.command_str("grn:flu")
         lc.command_str(str(bytes/2) + ":pal:flu")
         macro_count += 1
 
@@ -204,15 +207,27 @@ def introduction():
       print
 
 def summary():
-    print
-    print
-    print tc.green(str(macro_count) + " macros successfully programmed\n")
-
-    remaining_macros = ((ending_macro - starting_macro) + 1) - macro_count
-    remaining_sequencers = mc.remaining_sequencers()
-    print tc.yellow(str(remaining_macros) + " free macros remaining")
-    print tc.yellow(str(remaining_sequencers) + " free sequencers remaining\n")
-    print
+  total_macros = (ending_macro - starting_macro) + 1
+  used_macros = macro_count
+  remaining_macros = total_macros - macro_count
+  used_macros_percent = (100.0 * used_macros / total_macros)
+  remaining_macros_percent = (100.0 * remaining_macros / total_macros)
+  remaining_sequencers = mc.remaining_sequencers()
+  used_sequencers = number_of_sequencers - remaining_sequencers
+  remaining_sequencers_percent = round((100.0 * remaining_sequencers / number_of_sequencers))
+  used_sequencers_percent = round((100.0 * used_sequencers / number_of_sequencers))
+  total_macro_bytes = 1024
+  remaining_macro_bytes = total_macro_bytes - bytes_programmed
+  used_bytes_percent = round((100.0 * bytes_programmed / total_macro_bytes))
+  remaining_bytes_percent = round((100.0 * remaining_macro_bytes / total_macro_bytes))
+  print
+  print tc.green("%d Macros successfully programmed" % macro_count)
+  print tc.yellow("%d Macros remaining (%d%%)" % (remaining_macros, remaining_macros_percent))
+  print tc.yellow("%d Used macro bytes (%d%%)" % (bytes_programmed, used_bytes_percent))
+  print tc.yellow("%d macro bytes remaining (%d%%)" % (remaining_macro_bytes, remaining_bytes_percent))
+  print tc.yellow("%d Used sequencers (%d%%)" % (used_sequencers, used_sequencers_percent))
+  print tc.yellow("%d free sequencers remaining (%d%%)" % (remaining_sequencers, remaining_sequencers_percent))
+  print
 
 def upload_programs():
     program_macros(program)
