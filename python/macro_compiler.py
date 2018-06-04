@@ -3,7 +3,7 @@
 import os
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
-global number_of_macros
+global number_of_macros, run_macro
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -18,6 +18,7 @@ next_available_macro_number = starting_macro_number
 next_available_sequencer_number = 0
 number_of_sequencers = 10
 number_of_macros = 41
+run_macro = 10
 
 # ----------------------------------------------------
 
@@ -334,7 +335,8 @@ def resolve_macro_numbers():
 def resolve_script(script_lines):
   if verbose_mode:
     print "--------------------------------------------"
-  new_lines = remove_blank_lines(script_lines)
+  new_lines = process_directives(script_lines)
+  new_lines = remove_blank_lines(new_lines)
   new_lines = remove_comments(new_lines)
   new_lines = capture_templates(new_lines)
   new_lines = expand_meta_templates(new_lines)
@@ -351,6 +353,18 @@ def resolve_script(script_lines):
     if new_lines == prev_lines:
       # no more resolving needed/possible
       break
+  return new_lines
+
+def process_directives(script_lines):
+  new_lines = []
+  for line in script_lines:
+    args = get_key_args(line, "%")
+    if len(args) >= 2:
+      directive_name = "%" + args[0]
+      directive_value = args[1]
+      set_resolved(directive_name, directive_value)
+    else:
+      new_lines.append(line)
   return new_lines
 
 def remove_blank_lines(script_lines):

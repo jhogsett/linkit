@@ -1,6 +1,8 @@
-# 6 part rainbow consine swing
+# fancy - 6 part rainbow consine swing
+# trippy - rainbow wandering pixels with mirror
 
 %include symbols
+%run-macro 11
 
 $fade-rate 8000
 $fade-type sfd
@@ -12,20 +14,25 @@ $base-timing 150
 $timing-gap 1
 $render-time <base-timing>
 $draw-mode <DRAW-MIX>
+$max <NUM-LEDS>
+$max-half <max>
+$render-time2 50
+$sequence-time 20
+$fade-type2 ffd
+$wander-range 3
+$wander-neg-range `-(<wander-range> / 2)`
+$brightness 100
 
 [fancy 10]
     app
     <DRAW-WRITE>:drw
     <CONFIG-FADE-RATE>,<fade-rate>:cfg
     <render-time>,<render>:sch
-    (setup-components)
+    (setup-swingers)
+    (setup-hsl-sequencer)
 
 [render !]
     flu
-
-[setup-components]
-    (setup-swingers)
-    (setup-hsl-sequencer)
 
 [setup-swingers]
     (((start 6)))
@@ -60,31 +67,12 @@ $draw-mode <DRAW-MIX>
         rst
 ]]
 
-
-
-
-
-# rainbow wandering pixels with mirror
-
-#%include symbols
-
-$max <NUM-LEDS>
-$max-half <max>
-$render-time2 50
-$sequence-time 20
-$fade-type2 ffd
-
-$wander-range 3
-$wander-neg-range `-(<wander-range> / 2)`
-
-$brightness 33
-
 [trippy 11]
     app
     <draw-mode>:drw
     <brightness>:lev
     (setup-rendering2)
-    (start-components)
+    (((start2 6)))
     (setup-hsl-sequencer)
 
 [setup-rendering2]
@@ -92,9 +80,6 @@ $brightness 33
 
 [render2]
     mir:flu
-
-[start-components]
-    (((start2 6)))
 
 (((wanderer 6)))
 

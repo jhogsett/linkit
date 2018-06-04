@@ -8,7 +8,7 @@ import terminal_colors as tc
 import argparse
 
 global app_description, verbose_mode
-pp_description = None
+app_description = None
 verbose_mode = None
 
 def get_options():
@@ -20,6 +20,7 @@ def get_options():
 
 def initialize():
   global app_description
+  get_options()
   ui.begin(verbose_mode)
   mc.begin(verbose_mode, presets())
   app_description = "Apollo Lighting System - Macro Compiler Specs v.0.0 6-0-2018"

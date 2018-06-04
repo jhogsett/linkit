@@ -14,6 +14,9 @@ def report_error(message):
 def report_info(message):
     print tc.cyan(message)
 
+def report_info_alt(message):
+    print tc.green(message)
+
 def report_warn(message):
     print tc.yellow(message)
 

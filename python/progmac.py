@@ -9,7 +9,7 @@ import argparse
 import app_ui as ui
 import macro_compiler as mc
 
-global app_description, verbose_mode, debug_mode, legacy_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed
+global app_description, verbose_mode, debug_mode, legacy_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output
 app_description = None
 verbose_mode = None
 debug_mode = None
@@ -21,18 +21,20 @@ macro_run_number = None
 presets = None
 dryrun = None
 bytes_programmed = None
+show_output = None
 
 def get_options():
-    global verbose_mode, debug_mode, program, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencer, presets, dryrun
+    global verbose_mode, debug_mode, program, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencer, presets, dryrun, show_output
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("program", help="program to transmit")
+    parser.add_argument("presets", nargs="*", help="resolved=value presets (None)")
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-d", "--debug", dest="debug", action="store_true", help="display verbose info (False)")
     parser.add_argument("-l", "--legacy", dest="legacy", action="store_true", help="use legacy .mac file format (False)")
     parser.add_argument("-r", "--dryrun", dest="dryrun", action="store_true", help="process the script but don't actually program the device (False)")
-    parser.add_argument("presets", nargs="*", help="resolved=value presets (None)")
+    parser.add_argument("-o", "--show-output", dest="show_output", action="store_true", help="display compiled script (False)")
 
     args = parser.parse_args()
     program = args.program
@@ -42,10 +44,13 @@ def get_options():
     legacy_mode = args.legacy
     presets = args.presets
     dryrun = args.dryrun
+    show_output = args.show_output
+
     starting_macro = 10
     num_macro_chars = 25
     ending_macro = 50
     number_of_sequencers = 10
+    show_output = args.show_output
 
 def initialize():
     global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, bytes_programmed
@@ -169,6 +174,11 @@ def program_macros(program_name):
         for script_text in compiled_script:
             ui.report_verbose(script_text)
 
+    if show_output and not verbose_mode:
+        ui.report_info("compiled script:")
+        for script_text in compiled_script:
+            ui.report_info_alt(script_text)
+
     if not mc.compilation_valid(compiled_script):
       ui.report_error("Compilation failed!")
       if not verbose_mode:
@@ -234,11 +244,13 @@ def upload_programs():
 
 def run_default_macro():
     if dryrun:
-        #lc.resume()
         pass
     else:
-        lc.run_macro(macro_run_number)
-
+        resolved = mc.get_resolved()
+        if "%run-macro" in resolved:
+          lc.run_macro(resolved["%run-macro"])
+        else:
+          lc.run_macro(macro_run_number)
 
 ############################################################################
 
