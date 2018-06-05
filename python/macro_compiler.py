@@ -112,15 +112,16 @@ def process_set_macro(line):
     else:
       if macro_number == "!":
         macro_number = ending_macro_number
-      set_resolved(macro_name, macro_number)
-      set_macro(macro_name, macro_number)
+      proxy_macro_number = "'" + str(macro_number) + "'"
+      set_resolved(macro_name, proxy_macro_number)
+      set_macro(macro_name, proxy_macro_number)
       # setting a specific macro number is done for apps
       # to combine apps, the next available sequence number
       # needs to be reset. 
       # if a macro number is passed, assume it's an app
       # and do the resetting
       reset_next_available_sequence_number()
-      return str(macro_number) + ":set"
+      return str(proxy_macro_number) + ":set"
   return line
 
 # todo: a way to pass args to run call
@@ -284,7 +285,12 @@ def replace_args(line, start_delimiter, end_delimiter, replacement):
 
 def is_macro_number_in_use(macro_number):
   for value in macros.values():
-    if str(value) == str(macro_number):
+    print "##########"
+    print value
+    print macro_number
+#    #if "'" + str(value) + "'" == macro_number
+#    if str(value) == str(macro_number)[1:-1] or value == macro_number:
+    if value[1:-1] == str(macro_number):
       return True
   return False
 
@@ -326,12 +332,16 @@ def proxy_macro_numbers():
     if unresolved[name] == None:
       new_macro_number = get_next_macro_number()
 
+      print "new macro number: " + str(new_macro_number)
+
       # proxy numbers will be in the form '10' 
       proxy_macro_value = "'" + str(new_macro_number) + "'"
 
+      print "proxy macro value: " + proxy_macro_value
+
       resolve_unresolved(name, new_macro_number)
-      set_resolved(name, new_macro_number)
-      set_macro(name, new_macro_number)
+      set_resolved(name, proxy_macro_value)
+      set_macro(name, proxy_macro_value)
 
       # also need to:
       # store in a dictionary of proxy macro numbers per line
@@ -437,11 +447,11 @@ def process_finalized_macro_numbers_pass(script_lines):
     args = int(extract_args(line, "'", "'"))
     if len(args) == 1:
       proxy_macro_number = int(args[0])
-        if proxy_macro_number in final_macro_numbers:
-          final_macro_number = final_macro_numbers[proxy_macro_number]
-          new_lines.append(replace_args(line, "'", "'", final_macro_number))
-        else:
-          new_lines.append(line)
+      if proxy_macro_number in final_macro_numbers:
+        final_macro_number = final_macro_numbers[proxy_macro_number]
+        new_lines.append(replace_args(line, "'", "'", final_macro_number))
+      else:
+        new_lines.append(line)
     else:
       new_lines.append(line)
   return new_lines
@@ -518,6 +528,8 @@ def resolve_script(script_lines):
 
   new_lines = resolution_pass(new_lines)
   proxy_macro_numbers()
+  for k,v in final_macro_numbers:
+    print k + ":" + v
 
   ########################################################################
   # main processing - processing passes until no more can be resolved
