@@ -75,7 +75,7 @@ def initialize():
     ending_macro = starting_macro + (1024 / num_macro_chars)
     number_of_sequencers = lc.get_num_sequencers()
     all_presets = merge_two_dicts(get_device_presets(), get_command_line_presets())
-    mc.begin(verbose_mode, all_presets, starting_macro, ending_macro, number_of_sequencers)
+    mc.begin(lc, verbose_mode, all_presets, starting_macro, ending_macro, number_of_sequencers)
     if dryrun:
       lc.resume()
 
@@ -267,10 +267,10 @@ def loop():
 if __name__ == '__main__':
     setup()
     while True:
-        try:
-            loop()
-        except KeyboardInterrupt:
-            sys.exit("\nExiting...\n")
-        except Exception:
-            raise
+#        try:
+       loop()
+#        except KeyboardInterrupt:
+#            sys.exit("\nExiting...\n")
+#        except Exception:
+#            raise
 
