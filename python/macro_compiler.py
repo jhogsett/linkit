@@ -391,6 +391,8 @@ def assign_final_macro_number(line):
     # return the line with the proxy macro number replaced so it's not processed a second time
   line = replace_args(line, "'", "'", str(final_macro_number))
 
+  print "recording final macro number: " + str(final_macro_number) + " for proxy number: " + str(proxy_macro_number)
+  final_macro_numbers[proxy_macro_number] = final_macro_number
 
 
 
@@ -417,8 +419,8 @@ def assign_final_macro_number(line):
 
   print "afmn3"
 
-  print "recording final macro number: " + str(final_macro_number) + " for proxy number: " + str(proxy_macro_number)
-  final_macro_numbers[proxy_macro_number] = final_macro_number
+#  print "recording final macro number: " + str(final_macro_number) + " for proxy number: " + str(proxy_macro_number)
+#  final_macro_numbers[proxy_macro_number] = final_macro_number
 
   # temporarily replace this macro's unresolved references 
   # with a memory macro to use to measure the size
