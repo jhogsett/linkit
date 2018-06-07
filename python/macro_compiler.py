@@ -384,6 +384,17 @@ def assign_final_macro_number(line):
 
   print "afmn2"
 
+
+
+  #@@@ have a final macro number, should edit it into the line
+
+    # return the line with the proxy macro number replaced so it's not processed a second time
+  line = replace_args(line, "'", "'", str(final_macro_number))
+
+
+
+
+
   # check the line for other unresolved macro references
   # and skip processing it if so
   line_ = line
@@ -529,8 +540,9 @@ def assign_final_macro_numbers(script_lines):
 
     processed_lines = assign_final_macro_numbers_pass_one(processed_lines)
     processed_lines = assign_final_macro_numbers_pass_two(processed_lines)
-    processed_lines = assign_final_macro_numbers_pass_one(processed_lines)
-    processed_lines = assign_final_macro_numbers_pass_two(processed_lines)
+
+    #processed_lines = assign_final_macro_numbers_pass_one(processed_lines)
+    #processed_lines = assign_final_macro_numbers_pass_two(processed_lines)
 
     if processed_lines == prev_lines:
       # no more processing is possible
@@ -756,7 +768,7 @@ def compile_script(script):
   print "script before post processing"
   print new_lines
 
-  post_processing(new_lines)
+  new_lines = post_processing(new_lines)
   return new_lines
 
 def compile_file(filename):

@@ -1,0 +1,20 @@
+
+
+[macro 10]
+  (((call 3)))
+
+(((something 3)))
+
+[[call X
+  (something-X)
+]]
+
+[[something X
+    [something-X]
+        red
+        grn
+        blu
+        flu
+]]
+
+
