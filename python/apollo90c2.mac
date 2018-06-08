@@ -79,7 +79,8 @@ $brightness 100
     <render-time2>,<render2>:sch
 
 [render2]
-    mir:flu
+    mir
+    flu
 
 (((wanderer 6)))
 

@@ -359,6 +359,11 @@ def proxy_macro_numbers():
 #      set_macro(name, new_macro_number)
 #  remove_resolved()
 
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+
 def assign_final_macro_number(line):
   global final_macro_numbers
   start, end = locate_delimiters(line, "'", "'")
@@ -371,7 +376,10 @@ def assign_final_macro_number(line):
 
   proxy_macro_number = int(extract_contents(line, "'", "'"))
 
-  print "exracted proxy macro number: " + str(proxy_macro_number)
+  print "extracted proxy macro number: " + str(proxy_macro_number)
+
+  # pre-assigned macro numbers should be fixed at this point, 
+  # but they still need testing
 
   final_macro_number = proxy_macro_number
   while final_macro_number in final_macro_numbers.values():
@@ -381,15 +389,15 @@ def assign_final_macro_number(line):
       raise ValueError("No available macro numbers available during final number assignment")
 
   print "using final macro number: " + str(final_macro_number)
-
   print "afmn2"
-
-
 
   #@@@ have a final macro number, should edit it into the line
 
-    # return the line with the proxy macro number replaced so it's not processed a second time
-  line = replace_args(line, "'", "'", str(final_macro_number))
+# this doesn't work because it doesn't see the line as needing testing if has other untested macro references 
+#    # return the line with the proxy macro number replaced so it's not processed a second time
+#  line = replace_args(line, "'", "'", str(final_macro_number))
+
+
 
   print "recording final macro number: " + str(final_macro_number) + " for proxy number: " + str(proxy_macro_number)
   final_macro_numbers[proxy_macro_number] = final_macro_number
@@ -397,35 +405,41 @@ def assign_final_macro_number(line):
 
 
 
-  # check the line for other unresolved macro references
-  # and skip processing it if so
-  line_ = line
-  while len(line_) > 0:
-    line_ = line_[end+1:]
-    print "portion of line: " + line_
-    start, end = locate_delimiters(line_, "'", "'")
-    print start, end
-    if start == -1:
-      # not found
-      print "additional proxy numbers not found"
-      break
-    if end != -1:
-      value = int(extract_contents(line_, "'", "'"))
-      if value != proxy_macro_number:
-        print "returns due to unresolved proxy macro: " + str(value)
-        return line
-    else:
-      break
+#  # check the line for other unresolved macro references
+#  # and skip processing it if so
+#  line_ = line
+#  while len(line_) > 0:
+#    line_ = line_[end+1:]
+#    print "portion of line: " + line_
+#    start, end = locate_delimiters(line_, "'", "'")
+#    print start, end
+#    if start == -1:
+#      # not found
+#      print "additional proxy numbers not found"
+#      break
+#    if end != -1:
+#      value = int(extract_contents(line_, "'", "'"))
+#      if value != proxy_macro_number:
+#        print "returns due to unresolved proxy macro: " + str(value)
+#        print line
+#        return line
+#    else:
+#      break
 
   print "afmn3"
 
 #  print "recording final macro number: " + str(final_macro_number) + " for proxy number: " + str(proxy_macro_number)
 #  final_macro_numbers[proxy_macro_number] = final_macro_number
 
-  # temporarily replace this macro's unresolved references 
-  # with a memory macro to use to measure the size
-  # use macro #0 to have the most available space
-  test_macro = line.replace("'" + str(proxy_macro_number) + "'", "0")
+#  # temporarily replace this macro's unresolved references 
+#  # with a memory macro to use to measure the size
+#  # use macro #0 to have the most available space
+#  test_macro = line.replace("'" + str(proxy_macro_number) + "'", "0")
+
+  test_macro = line
+  while "'" in test_macro:
+    #content = extract_contents(test_macro, "'", "'")
+    test_macro = replace_args(test_macro, "'", "'", "0")
 
   print "===> TEST MACRO: " + test_macro
 
@@ -549,6 +563,14 @@ def assign_final_macro_numbers(script_lines):
     if processed_lines == prev_lines:
       # no more processing is possible
       return processed_lines
+
+########################################################################################
+########################################################################################
+########################################################################################
+########################################################################################
+
+
+
 
 
 
