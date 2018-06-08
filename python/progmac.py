@@ -8,12 +8,12 @@ import led_command as lc
 import argparse
 import app_ui as ui
 import macro_compiler as mc
+import math
 
-global app_description, verbose_mode, debug_mode, legacy_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output
+global app_description, verbose_mode, debug_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output
 app_description = None
 verbose_mode = None
 debug_mode = None
-legacy_mode = None
 macro_count = 0
 num_leds = None
 programs = None
@@ -25,6 +25,7 @@ show_output = None
 
 def get_options():
     global verbose_mode, debug_mode, program, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencer, presets, dryrun, show_output
+    global num_macro_chars_override, starting_macro_override, ending_macro_override, char_buffer_override, char_buffer_size
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("program", help="program to transmit")
@@ -32,16 +33,22 @@ def get_options():
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-d", "--debug", dest="debug", action="store_true", help="display verbose info (False)")
-    parser.add_argument("-l", "--legacy", dest="legacy", action="store_true", help="use legacy .mac file format (False)")
     parser.add_argument("-r", "--dryrun", dest="dryrun", action="store_true", help="process the script but don't actually program the device (False)")
     parser.add_argument("-o", "--show-output", dest="show_output", action="store_true", help="display compiled script (False)")
+    parser.add_argument("-b", "--bytes-per-macro", type=int, dest="bytes_per_macro", default=0, help="bytes per macro override (none)")
+    parser.add_argument("-s", "--starting-macro", type=int, dest="starting_macro", default=0, help="starting macro override (none)")
+    parser.add_argument("-e", "--ending-macro", type=int, dest="ending_macro", default=0, help="ending macro override (none)")
+    parser.add_argument("-c", "--char-buffer", type=int, dest="char_buffer", default=0, help="char buffer size override (none)")
 
     args = parser.parse_args()
     program = args.program
     macro_run_number = args.macro
     verbose_mode = args.verbose
     debug_mode = args.debug
-    legacy_mode = args.legacy
+    num_macro_chars_override = args.bytes_per_macro
+    starting_macro_override = args.starting_macro
+    ending_macro_override = args.ending_macro
+    char_buffer_override = args.char_buffer
     presets = args.presets
     dryrun = args.dryrun
     show_output = args.show_output
@@ -49,11 +56,11 @@ def get_options():
     starting_macro = 10
     num_macro_chars = 25
     ending_macro = 50
+    char_buffer_size = 60
     number_of_sequencers = 10
-    show_output = args.show_output
 
 def initialize():
-    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, bytes_programmed
+    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, bytes_programmed, char_buffer_size
     app_description = "Apollo Lighting System - Macro Programmer v.2.0 6-1-2018"
     get_options()
     if not validate_options():
@@ -72,10 +79,21 @@ def initialize():
     ui.begin(verbose_mode)
     starting_macro = lc.get_first_eeprom_macro()
     num_macro_chars = lc.get_num_macro_chars()
-    ending_macro = starting_macro + (1024 / num_macro_chars)
+    ending_macro = starting_macro + int(math.ceil(1024.0 / num_macro_chars) - 1)
+    char_buffer_size = lc.get_max_string_length()
+
+    if num_macro_chars_override != 0:
+      num_macro_chars = num_macro_chars_override
+    if starting_macro_override != 0:
+      starting_macro = starting_macro_override
+    if ending_macro_override != 0:
+      ending_macro = ending_macro_override
+    if char_buffer_override != 0:
+      char_buffer_size = char_buffer_override
+
     number_of_sequencers = lc.get_num_sequencers()
     all_presets = merge_two_dicts(get_device_presets(), get_command_line_presets())
-    mc.begin(lc, verbose_mode, all_presets, starting_macro, ending_macro, number_of_sequencers)
+    mc.begin(lc, verbose_mode, all_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size)
     if dryrun:
       lc.resume()
 
@@ -175,9 +193,11 @@ def program_macros(program_name):
             ui.report_verbose(script_text)
 
     if show_output and not verbose_mode:
+        print
         ui.report_info("compiled script:")
         for script_text in compiled_script:
             ui.report_info_alt(script_text)
+        print
 
     if not mc.compilation_valid(compiled_script):
       ui.report_error("Compilation failed!")
@@ -199,8 +219,11 @@ def introduction():
     ui.app_description(app_description)
 
     ui.report_verbose("verbose mode")
-    ui.report_verbose("debug_mode: " + str(debug_mode))
-    ui.report_verbose("legacy_mode: " + str(legacy_mode))
+    ui.report_verbose("debug mode: " + str(debug_mode))
+    ui.report_verbose("macro chars override: " + str(num_macro_chars_override))
+    ui.report_verbose("start macro override: " + str(starting_macro_override))
+    ui.report_verbose("end macro override: " + str(ending_macro_override))
+    ui.report_verbose("char buffer override: " + str(char_buffer_override))
     ui.report_verbose()
 
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
@@ -209,6 +232,7 @@ def introduction():
     ui.report_info(ui.intro_entry("Bytes per macro", num_macro_chars))
     ui.report_info(ui.intro_entry("First macro", starting_macro))
     ui.report_info(ui.intro_entry("Last macro", ending_macro))
+    ui.report_info(ui.intro_entry("Char buffer size", char_buffer_size))
     ui.report_info("program: " + tc.green(program))
     print
    
@@ -247,8 +271,13 @@ def run_default_macro():
         pass
     else:
         resolved = mc.get_resolved()
+        final_macro_numbers = mc.get_final_macro_numbers()
         if "%run-macro" in resolved:
-          lc.run_macro(resolved["%run-macro"])
+          run_macro_name = resolved["%run-macro"]
+          orig_macro_number = int(resolved[run_macro_name][1:-1]) # remove '
+          run_macro_number = final_macro_numbers[orig_macro_number]
+          ui.report_verbose("Running macro: " + run_macro_name + "(" + str(run_macro_number) + ")")
+          lc.run_macro(run_macro_number)
         else:
           lc.run_macro(macro_run_number)
 

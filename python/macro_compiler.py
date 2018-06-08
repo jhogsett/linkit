@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+import app_ui as ui
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
 global number_of_macros, run_macro, led_command, final_macro_numbers
@@ -24,13 +25,15 @@ led_command = None
 
 # ----------------------------------------------------
 
-def begin(led_command_, verbose_mode_ = False, presets_ = {}, starting_macro = 10, ending_macro = 50, number_of_sequencers_ = 10):
-  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command
+def begin(led_command_, verbose_mode_ = False, presets_ = {}, starting_macro = 10, ending_macro = 50, number_of_sequencers_ = 10, bytes_per_macro_ = 25, max_string_length_ = 60):
+  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length
   led_command = led_command_
   verbose_mode = verbose_mode_
   starting_macro_number = starting_macro
   ending_macro_number = ending_macro
   number_of_sequencers = number_of_sequencers_
+  bytes_per_macro = bytes_per_macro_
+  max_string_length = max_string_length_
   number_of_macros = (ending_macro_number - starting_macro_number) + 1
   presets = presets_
   resolve_presets(presets)
@@ -70,6 +73,9 @@ def remove_resolved():
 
 def unresolved_exist():
   return len(unresolved) > 0
+
+def get_final_macro_numbers():
+  return final_macro_numbers
 
 def reset():
   global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
@@ -287,11 +293,6 @@ def replace_args(line, start_delimiter, end_delimiter, replacement):
 
 def is_macro_number_in_use(macro_number):
   for value in macros.values():
-    print "##########"
-    print value
-    print macro_number
-#    #if "'" + str(value) + "'" == macro_number
-#    if str(value) == str(macro_number)[1:-1] or value == macro_number:
     if value[1:-1] == str(macro_number):
       return True
   return False
@@ -314,9 +315,8 @@ def resolution_pass(script_lines):
     if new_line != None:
       new_lines.append(new_line)
   passes += 1
-
+  ui.write(".")
   new_lines = filter(None, new_lines)
-
   if verbose_mode:
     print
     print "pass# %d" % passes
@@ -324,7 +324,6 @@ def resolution_pass(script_lines):
     print
     print "resolved:"
     print_list(resolved)
-
   return new_lines
 
 # assign tentative macro numbers so everything else can resolve
@@ -333,119 +332,42 @@ def proxy_macro_numbers():
   for name in unresolved:
     if unresolved[name] == None:
       new_macro_number = get_next_macro_number()
-
-      print "new macro number: " + str(new_macro_number)
-
       # proxy numbers will be in the form '10' 
       proxy_macro_value = "'" + str(new_macro_number) + "'"
-
-      print "proxy macro value: " + proxy_macro_value
-
       resolve_unresolved(name, new_macro_number)
       set_resolved(name, proxy_macro_value)
       set_macro(name, proxy_macro_value)
-
-      # also need to:
-      # store in a dictionary of proxy macro numbers per line
-
   remove_resolved()
-
-#def resolve_macro_numbers():
-#  for name in unresolved:
-#    if unresolved[name] == None:
-#      new_macro_number = get_next_macro_number()
-#      resolve_unresolved(name, new_macro_number)
-#      set_resolved(name, new_macro_number)
-#      set_macro(name, new_macro_number)
-#  remove_resolved()
-
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
 
 def assign_final_macro_number(line):
   global final_macro_numbers
+  ui.write(".")
   start, end = locate_delimiters(line, "'", "'")
-
-  print "afmn1"
-
   # only process lines starting with proxy macro numbers
   if start != 0:
     return line
-
   proxy_macro_number = int(extract_contents(line, "'", "'"))
-
-  print "extracted proxy macro number: " + str(proxy_macro_number)
-
   # pre-assigned macro numbers should be fixed at this point, 
   # but they still need testing
-
   final_macro_number = proxy_macro_number
   while final_macro_number in final_macro_numbers.values():
     final_macro_number += 1
-    print "trying final macro number: " + str(final_macro_number)
     if final_macro_number > ending_macro_number:
       raise ValueError("No available macro numbers available during final number assignment")
-
-  print "using final macro number: " + str(final_macro_number)
-  print "afmn2"
-
-  #@@@ have a final macro number, should edit it into the line
-
-# this doesn't work because it doesn't see the line as needing testing if has other untested macro references 
-#    # return the line with the proxy macro number replaced so it's not processed a second time
-#  line = replace_args(line, "'", "'", str(final_macro_number))
-
-
-
-  print "recording final macro number: " + str(final_macro_number) + " for proxy number: " + str(proxy_macro_number)
   final_macro_numbers[proxy_macro_number] = final_macro_number
 
-
-
-
-#  # check the line for other unresolved macro references
-#  # and skip processing it if so
-#  line_ = line
-#  while len(line_) > 0:
-#    line_ = line_[end+1:]
-#    print "portion of line: " + line_
-#    start, end = locate_delimiters(line_, "'", "'")
-#    print start, end
-#    if start == -1:
-#      # not found
-#      print "additional proxy numbers not found"
-#      break
-#    if end != -1:
-#      value = int(extract_contents(line_, "'", "'"))
-#      if value != proxy_macro_number:
-#        print "returns due to unresolved proxy macro: " + str(value)
-#        print line
-#        return line
-#    else:
-#      break
-
-  print "afmn3"
-
-#  print "recording final macro number: " + str(final_macro_number) + " for proxy number: " + str(proxy_macro_number)
-#  final_macro_numbers[proxy_macro_number] = final_macro_number
-
-#  # temporarily replace this macro's unresolved references 
-#  # with a memory macro to use to measure the size
-#  # use macro #0 to have the most available space
-#  test_macro = line.replace("'" + str(proxy_macro_number) + "'", "0")
-
+ # temporarily replace this macro's unresolved references 
+ # with a memory macro to use to measure the size
+ # use macro #0 to have the most available space
   test_macro = line
   while "'" in test_macro:
-    #content = extract_contents(test_macro, "'", "'")
     test_macro = replace_args(test_macro, "'", "'", "0")
-
-  print "===> TEST MACRO: " + test_macro
-
-  print "afmn4"
-
   # send to the device and check for consumed macro bytes
+
+  if len(test_macro) > max_string_length:
+    raise ValueError("Macro being tested exceeds char buffer size")
+    # todo: handle this automatically
+
   bytes_used = 0
   tries = 3
   led_command.attention()
@@ -453,64 +375,37 @@ def assign_final_macro_number(line):
   while bytes_used == 0 and tries > 0:
     bytes_used = led_command.command_int(test_macro)
     tries -= 1
-
   if bytes_used == 0:
     raise ValueError("Macro size measurement failed with retries")
-
-
-
-  print "afmn5"
-
   # consume any additional macro numbers to account for byte overage
   consumed_macro_number = final_macro_number
-  remaining_bytes = bytes_used - bytes_per_macro
+  remaining_bytes = bytes_used - (bytes_per_macro - 1)
   while remaining_bytes > 0:
     consumed_macro_number += 1
-    remaining_bytes -= bytes_per_macro
+    remaining_bytes -= (bytes_per_macro - 1)
     # create a unique key to hold the additional consumed macro number value
     final_macro_numbers[str(proxy_macro_number) + "-" + str(consumed_macro_number)] = consumed_macro_number
-
-  print "afmn6"
-
   # return the line with the proxy macro number replaced so it's not processed a second time
   return replace_args(line, "'", "'", str(final_macro_number)) 
 
 def process_finalized_macro_numbers_pass(script_lines):
-
-  print "pfmnp1"
-  print str(final_macro_numbers)
-
+  ui.write(".")
   new_lines = []
   for line in script_lines:
-
-    print "pfmnp2"
-
     args = extract_args(line, "'", "'")
- 
-    print "pfmnp2 args" + str(args)
-
     if len(args) == 1:
       proxy_macro_number = int(args[0])
-
-      print "checking for " + str(proxy_macro_number) + " in " + str(final_macro_numbers)
       if proxy_macro_number in final_macro_numbers:
-        print "FOUND"
         final_macro_number = final_macro_numbers[proxy_macro_number]
-        print "final macro number: " + str(final_macro_number)
         new_line = replace_args(line, "'", "'", final_macro_number)
-        print "newly resolved line: " + new_line   
         new_lines.append(new_line)
       else:
-        print "NOT FOUND"
         new_lines.append(line)
     else:
       new_lines.append(line)
   return new_lines
 
 def process_finalized_macro_numbers(script_lines):
-
-  print "pfmn1"
-
   processed_lines = script_lines
   while True:
     prev_lines = processed_lines
@@ -521,57 +416,26 @@ def process_finalized_macro_numbers(script_lines):
 
 # first pass - assign final macro numbers, measure programmed size,
 # and allocate any additional macro slots needed for byte overage
-#global called
-#called = 0
 def assign_final_macro_numbers_pass_one(script_lines):
-#  global called
-#  called += 1
-#  if called == 1:
-#    raise ValueError("wtf")
-
-  print "afmnp1"
-
   new_lines = []
   for line in script_lines:
     new_lines.append(assign_final_macro_number(line))
-
-  print "lines after assign_final_macro_numbers_pass_one"
-  print str(new_lines)
-
   return new_lines
 
 # second pass - replace proxy macro numbers with final numbers
 def assign_final_macro_numbers_pass_two(script_lines):
-  print "afmnp2"
   new_lines = process_finalized_macro_numbers(script_lines)
-  print "lines after assign_final_macro_numbers_pass_two"
-  print str(new_lines)
   return new_lines
 
 def assign_final_macro_numbers(script_lines):
   processed_lines = script_lines
   while True:
-    print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     prev_lines = processed_lines
-
     processed_lines = assign_final_macro_numbers_pass_one(processed_lines)
     processed_lines = assign_final_macro_numbers_pass_two(processed_lines)
-
-    #processed_lines = assign_final_macro_numbers_pass_one(processed_lines)
-    #processed_lines = assign_final_macro_numbers_pass_two(processed_lines)
-
     if processed_lines == prev_lines:
       # no more processing is possible
       return processed_lines
-
-########################################################################################
-########################################################################################
-########################################################################################
-########################################################################################
-
-
-
-
 
 
 ########################################################################
@@ -610,8 +474,8 @@ def resolve_script(script_lines):
 
   new_lines = resolution_pass(new_lines)
   proxy_macro_numbers()
-  for k,v in final_macro_numbers:
-    print k + ":" + v
+#  for k,v in final_macro_numbers:
+#    print k + ":" + v
 
   ########################################################################
   # main processing - processing passes until no more can be resolved
@@ -627,16 +491,6 @@ def resolve_script(script_lines):
     if new_lines == prev_lines:
       # no more resolving needed/possible
       break
-
-#  ########################################################################
-#  # post-processing - measure macro bytes and assign final macro numbers
-#  ########################################################################
-#
-#  if verbose_mode:
-#    print "--------------------------------------------"
-#    print "post-processing\n"
-#
-#  assign_final_macro_numbers(new_lines) 
 
   return new_lines
 
@@ -785,14 +639,15 @@ def load_file(filename, default_ext=".mac"):
 # ----------------------------------------------------
 
 def compile_script(script):
+  print "Compiling",
   new_script = resolve_script(script)
   new_lines = consolidate_macros(new_script)
   sort_script(new_lines)
-
-  print "script before post processing"
-  print new_lines
-
+  print
+  print "Finalizing",
   new_lines = post_processing(new_lines)
+  print
+  print
   return new_lines
 
 def compile_file(filename):

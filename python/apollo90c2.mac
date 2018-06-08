@@ -2,7 +2,7 @@
 # trippy - rainbow wandering pixels with mirror
 
 %include symbols
-%run-macro 11
+%run-macro fancy
 
 $fade-rate 8000
 $fade-type sfd
@@ -28,14 +28,15 @@ $brightness 100
     <DRAW-WRITE>:drw
     <CONFIG-FADE-RATE>,<fade-rate>:cfg
     <render-time>,<render>:sch
-    (setup-swingers)
+#    (setup-swingers)
+    (((start 6)))
     (setup-hsl-sequencer)
 
 [render !]
     flu
 
-[setup-swingers]
-    (((start 6)))
+#[setup-swingers]
+#    (((start 6)))
 
 [setup-hsl-sequencer]
     {seq-hsl},360:seq
@@ -72,8 +73,12 @@ $brightness 100
     <draw-mode>:drw
     <brightness>:lev
     (setup-rendering2)
-    (((start2 6)))
+#    (((start2 6)))
+    (start-all)
     (setup-hsl-sequencer)
+
+[start-all]
+    (((start2 6)))
 
 [setup-rendering2]
     <render-time2>,<render2>:sch
