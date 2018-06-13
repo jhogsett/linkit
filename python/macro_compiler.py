@@ -37,6 +37,8 @@ def begin(led_command_, verbose_mode_ = False, presets_ = {}, starting_macro = 1
   number_of_macros = (ending_macro_number - starting_macro_number) + 1
   presets = presets_
   resolve_presets(presets)
+  ui.begin(verbose_mode)
+  ui.report_verbose("Beginning compilation engine")
 
 def resolve_presets(presets):
   for key in presets.keys():
@@ -116,19 +118,23 @@ def process_set_macro(line):
       macro_number = args[1]
     if macro_number == None:
       set_unresolved(macro_name)
+      ui.report_verbose("new unresolved macro: " + macro_name)
       return "<" + macro_name + ">:set"
     else:
       if macro_number == "!":
+        ui.report_verbose("- forced final macro: " + macro_name)
         macro_number = ending_macro_number
       proxy_macro_number = "'" + str(macro_number) + "'"
+      ui.report_verbose("new forced macro: " + macro_name)
       set_resolved(macro_name, proxy_macro_number)
       set_macro(macro_name, proxy_macro_number)
       # setting a specific macro number is done for apps
       # to combine apps, the next available sequence number
       # needs to be reset. 
       # if a macro number is passed, assume it's an app
-      # and do the resetting
-      reset_next_available_sequence_number()
+      # and do the resetting (unless it's the last)
+      if macro_number != ending_macro_number:
+        reset_next_available_sequence_number()
       return str(proxy_macro_number) + ":set"
   return line
 
@@ -183,13 +189,14 @@ def process_allocate_sequencer(line):
   args = extract_args(line, "{", "}")
   if len(args) > 0:
     sequencer_name = args[0]
-    resolnext_available_sequencer_numberved_value = None
+    resolved_value = None
     if sequencer_name in resolved:
       resolved_value = resolved[sequencer_name]
     else:
       if next_available_sequencer_number > (number_of_sequencers - 1):
         raise ValueError("No available sequence numbers available")
       resolved_value = next_available_sequencer_number
+      ui.report_verbose("allocating sequencer: " + str(resolved_value))
       set_resolved(sequencer_name, resolved_value)
       next_available_sequencer_number += 1
       return replace_args(line, "{", "}", str(resolved_value))
@@ -201,6 +208,7 @@ def process_evaluate_python(line):
   if not line_has_unresolved_variables(line):
     expression = extract_contents(line, "`", "`")
     if len(expression) > 0:
+      ui.report_verbose("-evaluating Python: " + expression)
       return replace_args(line, "`", "`", str(eval(expression)))
   return line
 
@@ -209,9 +217,10 @@ def process_place_template(line):
     return line
   args = extract_args(line, "((", "))")
   if len(args) > 0:
-    variable_name = args[0]
-    if variable_name in resolved:
-      template_script = resolved[variable_name]
+    template_name = args[0]
+    if template_name in resolved:
+      template_script = resolved[template_name]
+      ui.report_verbose("-placing template: " + template_name)
       return replace_args(line, "((", "))", template_script)
   return line  
 
@@ -315,24 +324,21 @@ def resolution_pass(script_lines):
     if new_line != None:
       new_lines.append(new_line)
   passes += 1
-  ui.write(".")
-  new_lines = filter(None, new_lines)
   if verbose_mode:
-    print
-    print "pass# %d" % passes
-    print_script(new_lines)
-    print
-    print "resolved:"
-    print_list(resolved)
+    ui.report_verbose("Resolution pass #" + str(passes))
+  #else:
+  #  ui.write(".")
+  new_lines = filter(None, new_lines)
   return new_lines
 
 # assign tentative macro numbers so everything else can resolve
-# these will be resolved to real macro numbers 
+# these will be resolved to real macro numbers later
 def proxy_macro_numbers():
   for name in unresolved:
     if unresolved[name] == None:
       new_macro_number = get_next_macro_number()
       # proxy numbers will be in the form '10' 
+      ui.report_verbose("-assigning proxy macro #" + str(new_macro_number) + " for macro: " + name)
       proxy_macro_value = "'" + str(new_macro_number) + "'"
       resolve_unresolved(name, new_macro_number)
       set_resolved(name, proxy_macro_value)
@@ -341,7 +347,6 @@ def proxy_macro_numbers():
 
 def assign_final_macro_number(line):
   global final_macro_numbers
-  ui.write(".")
   start, end = locate_delimiters(line, "'", "'")
   # only process lines starting with proxy macro numbers
   if start != 0:
@@ -354,6 +359,10 @@ def assign_final_macro_number(line):
     final_macro_number += 1
     if final_macro_number > ending_macro_number:
       raise ValueError("No available macro numbers available during final number assignment")
+  if verbose_mode:
+    ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
+#  else:
+#    ui.write(".")
   final_macro_numbers[proxy_macro_number] = final_macro_number
 
  # temporarily replace this macro's unresolved references 
@@ -361,7 +370,7 @@ def assign_final_macro_number(line):
  # use macro #0 to have the most available space
   test_macro = line
   while "'" in test_macro:
-    test_macro = replace_args(test_macro, "'", "'", "0")
+    test_macro = replace_args(test_macro, "'", "'", "1")
   # send to the device and check for consumed macro bytes
 
   if len(test_macro) > max_string_length:
@@ -373,23 +382,26 @@ def assign_final_macro_number(line):
   led_command.attention()
   led_command.stop_all()
   while bytes_used == 0 and tries > 0:
+    ui.report_verbose("Measuring macro #" + str(final_macro_number) + " on device")
     bytes_used = led_command.command_int(test_macro)
+    ui.report_verbose("-reported size: " + str(bytes_used) + " bytes")
     tries -= 1
   if bytes_used == 0:
+    # todo: need more appropriate error type
     raise ValueError("Macro size measurement failed with retries")
   # consume any additional macro numbers to account for byte overage
   consumed_macro_number = final_macro_number
-  remaining_bytes = bytes_used - (bytes_per_macro - 1)
+  remaining_bytes = bytes_used - (bytes_per_macro-1)
   while remaining_bytes > 0:
     consumed_macro_number += 1
-    remaining_bytes -= (bytes_per_macro - 1)
+    remaining_bytes -= (bytes_per_macro-1)
     # create a unique key to hold the additional consumed macro number value
+    ui.report_verbose("-allocating macro #" + str(consumed_macro_number) + " to macro #" + str(proxy_macro_number)) 
     final_macro_numbers[str(proxy_macro_number) + "-" + str(consumed_macro_number)] = consumed_macro_number
   # return the line with the proxy macro number replaced so it's not processed a second time
   return replace_args(line, "'", "'", str(final_macro_number)) 
 
 def process_finalized_macro_numbers_pass(script_lines):
-  ui.write(".")
   new_lines = []
   for line in script_lines:
     args = extract_args(line, "'", "'")
@@ -409,6 +421,10 @@ def process_finalized_macro_numbers(script_lines):
   processed_lines = script_lines
   while True:
     prev_lines = processed_lines
+    if verbose_mode:
+      ui.report_verbose("-processing pass to finalize macro numbers")
+#    else:
+#      ui.write(".")
     processed_lines = process_finalized_macro_numbers_pass(processed_lines)
     if processed_lines == prev_lines:
       # no more resolving is possible
@@ -437,7 +453,6 @@ def assign_final_macro_numbers(script_lines):
       # no more processing is possible
       return processed_lines
 
-
 ########################################################################
 # Main compilation engine
 ########################################################################
@@ -448,10 +463,7 @@ def resolve_script(script_lines):
   # pre-processing - template capturing, template expansion
   ########################################################################
 
-  if verbose_mode:
-    print "--------------------------------------------"
-    print "pre-processing\n"
-
+  ui.report_verbose("Pre-processing")
   new_lines = process_directives(script_lines)
   new_lines = remove_blank_lines(new_lines)
   new_lines = remove_comments(new_lines)
@@ -460,38 +472,29 @@ def resolve_script(script_lines):
   new_lines = expand_templates(new_lines)
 
   if verbose_mode:
-    print "Expanded script:"
+    ui.report_verbose("Expanded script:")
     print_script(new_lines)
-    print
+    ui.report_verbose()
 
   ########################################################################
   # initial processing - assign tentative macro numbers 
   ########################################################################
 
-  if verbose_mode:
-    print "--------------------------------------------"
-    print "initial processing\n"
-
+  ui.report_verbose("Initial processing")
   new_lines = resolution_pass(new_lines)
   proxy_macro_numbers()
-#  for k,v in final_macro_numbers:
-#    print k + ":" + v
 
   ########################################################################
   # main processing - processing passes until no more can be resolved
   ########################################################################
 
-  if verbose_mode:
-    print "--------------------------------------------"
-    print "main processing\n"
-
+  ui.report_verbose("Main processing")
   while True:
     prev_lines = new_lines
     new_lines = resolution_pass(new_lines)
     if new_lines == prev_lines:
       # no more resolving needed/possible
       break
-
   return new_lines
 
 def post_processing(script_lines):
@@ -639,15 +642,16 @@ def load_file(filename, default_ext=".mac"):
 # ----------------------------------------------------
 
 def compile_script(script):
-  print "Compiling",
+  ui.report_info("Compiling")
   new_script = resolve_script(script)
   new_lines = consolidate_macros(new_script)
   sort_script(new_lines)
-  print
-  print "Finalizing",
+  #ui.report_verbose()
+  if not compilation_valid(new_lines):
+    print_script(new_lines)
+    raise ValueError("The script did not compile successfully.")
+  ui.report_info("Packing")
   new_lines = post_processing(new_lines)
-  print
-  print
   return new_lines
 
 def compile_file(filename):
@@ -665,7 +669,7 @@ def remaining_sequencers():
 
 def print_script(script):
   for line in script:
-    print line
+    ui.report_error(line)
   print
 
 def print_list(list):

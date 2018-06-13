@@ -185,7 +185,11 @@ def import_file(program_name):
     return script
 
 def program_macros(program_name):
-    compiled_script = mc.compile_file(program_name)
+    try:
+      compiled_script = mc.compile_file(program_name)
+    except ValueError, e:
+      ui.report_error("Failed to compiled script")
+      print_script(compiled_script)
 
     if verbose_mode:
         ui.report_verbose("compiled script:")
@@ -274,10 +278,16 @@ def run_default_macro():
         final_macro_numbers = mc.get_final_macro_numbers()
         if "%run-macro" in resolved:
           run_macro_name = resolved["%run-macro"]
-          orig_macro_number = int(resolved[run_macro_name][1:-1]) # remove '
-          run_macro_number = final_macro_numbers[orig_macro_number]
-          ui.report_verbose("Running macro: " + run_macro_name + "(" + str(run_macro_number) + ")")
-          lc.run_macro(run_macro_number)
+          if run_macro_name in resolved:
+            orig_macro_number = int(resolved[run_macro_name][1:-1]) # remove '
+            if orig_macro_number in final_macro_numbers:
+              run_macro_number = final_macro_numbers[orig_macro_number]
+              ui.report_verbose("Running macro: " + run_macro_name + "(" + str(run_macro_number) + ")")
+              lc.run_macro(run_macro_number)
+            else:
+              ui.report_verbose("Skipping run macro: " + str(orig_macro_number) + " (not found)")
+          else:
+            ui.report_verbose("Skipping run macro: " + str(run_macro_name) + " (not found)")
         else:
           lc.run_macro(macro_run_number)
 
