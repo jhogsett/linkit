@@ -1,22 +1,53 @@
-// must document language
+// to do: get size of input buffer and don't exceed it
 
-// script should tell what macro to run upon completing programming somehow
+// to do: detect things like only a couple bytes left in last macro, or not enough room in memory macros to do measurements
+
+
+// todo: print out macro numbers for forced ones
+
+// todo: rearrange scripts to forced macro numbers work (?)
+
+
+// if I edit '10' to 10 early, it bypasses testing it.
+// might need to convert '10' to "10" as a final UNTESTED number
+
+// %dryrun
+// % others?
+
+// need to limit the outgoing test macro to the size of the command buffer
+
+// animation idea: wanderers, like red and green, could combine for a while as yellow and become one entangled wanderer. It could later split back into two separate wanders, or combine with a blue one to make white.
+//   what would the rules be for when to split and combine?
+
+// must document language
 
 // program each macro to macro #0 to determine numnber of bytes (until python can compile macro commands)
 
-// predefined variables can be stuffed into resolved and then just used as <name>
-// ideas:
-  // number of leds
-  // number of fine zones
-  // default brightness?
-  // 
-  // 
-  // 
-  // 
+// to save macro bytes, commands should have non-negative switching parameters when possible
 
+// -1 is common so maybe it should have it's own number encoding with zero data bytes
+// negative numbers are generally small; they could be encoded as 8-bits and expanded back to 16 (if needed).
+
+// app to collect timing metrics on various commands (can this be built into test suite?)
+
+// need command to quit macro early under certain conditions
+  // something like: default: exit if zero, exit if non-zero, exit if (conditions of various kinds)
+
+// memory macro space could be made availble for storing values, or having queues of values
+
+// show remaining macro bytes 
+
+// wrapper on argparse to make it easier to add my kind of options 
+
+// can something like a color swinger or wanderer be packaged up as a reusable object?
+
+// specs
+  // math, mirroring
+
+// could have this directive to tell it what macro to run on completion:
+// %run-macro 12
 
 // may need to pass arguments to the macro call
-
 
 // start experimenting with using an arduino to tend batteries:
     // disconnect when above or below a preset voltage
@@ -26,30 +57,11 @@
     // storing variables for use in macros (even just as-is "1:set:19:1:run")    
 
 // what would it take to seal the ends for the wanderers?
-// what's required to draw mirrored versions? can the sequencer be queried for its limits?
 
 // what would it take to constrain a wanderer to a portion of the strip, which can be moved itself?
 
-
 // weather data shows rain as main forecast even when rain amount section is missing
 // in these cases consider the conditions clear
-
-// dampened sequencer, or sequencer dampening
-
-
-
-// feed preset variables on the command line into progmac.py
-
-// somne way to easily make the rendering macro the very last one
-
-// have pre-defined values for things like device number of pixels
-  // make them work only in variable assignments for ease of parsing
-
-// have something that substities the results of calling the device to get an integer, would only work at compile time
-
-// either have step be a sequence variable (so it can be changed and remembered as new value)
-//   or support arbitrary integer storage/recall so variables can be used
-
 
 // idea: dampening generator, for instance, averaging, lamp burning out, side-gravity
 
@@ -58,34 +70,18 @@
 
 // idea: destination sequencer, set a point, it reaches it, linearly, or otherwise
 
-// metaprogramming: place N sequencers with render and math macros 
-  // in this case it would assign the names of things sequentially
-
 // button presses
   // examine an input
   // if it's positive X number of times and negative < Y number of times, consider it switched on
   // could be a special type of schedule that counts pin highs, and macro gets called if pin is high
 
-
-
-// these or a variation are needed whenever starting a new app
-// rst:era:flu:-1:sch:1:pau:2:cnt:11:run
-
 // may not need arg command given psh command
-
-// would save macro bytes to not have to set the drawing mode on each drawing operation
 
 // sequencers: one-time
 
 // figure out a scheme for spec randomization
 
 // command to convert percentage to perfect count of leds/width/whatever to make scaling more automatic
-
-// have the ability to set drawing mode: overwrite, add, etc.
-
-
-
-
 
 // add min/max fixing mth op
 
@@ -95,20 +91,9 @@
 
 // test: chaining math operations, leaving results in args
 
-// -1 is common so maybe it should have it's own number encoding with zero data bytes
-// negative numbers are generally small; they could be encoded as 8-bits and expanded back to 16 (if needed).
-
 // it might simplify things if there was a separate command to retrieve sequence numbers, so seq becomes sqw for setting, and then seq pulls the value
 
 // add a timing test on fade and crossfade, should happen in less than x
-
-// to save macro bytes, commands should have non-negative switching parameters when possible
-
-// could save macro bytes by having more commands
-// ex: command to get a sequencer current value instead of having to pass 2 extra bytes
-
-
-
 
 // sequencer that calls macro should restrain to bounds (?)
 
@@ -126,17 +111,11 @@
 
 // mir modes, like quarters insted of half, etc.
 
-// mir that blends
-
 // default sequencers to num leds
 
 // swing sequencer is reliant on a mode, and needs to be sensitive to the mode changing when stepping negatively
 
-
 // era doesn't work when width is one pixel
-
-
-// inquire: # of macro bytes
 
 // math: min/max
 
@@ -147,12 +126,9 @@
   // x,mf,ml:swt: mf,ml are first,last macros in range, x specifies switch (but in this case, ml isn't needed since x can be constrained)
     // could have ml be redefined as: macro to call if x is zero (is this needed?)
 
-// wrote latest failures to ./.led_specs so they can be rerun easily
+// write latest failures to ./.led_specs so they can be rerun easily
 
 // be able to update sequencer keeping present width (offset the sequencer)
-
-
-// program subsections need to stop other macros from running before going
 
 // add rgb terminal colors
 
@@ -166,28 +142,12 @@
       // could be part of the start-up procedure
       // make this a calibration program
 
-// app to collect timing metrics on various commands (can this be built into test suite?)
-
-
-
-
-
-
-
 // can a sequencer be used to simulate the effect of a spinning light intensity profile?
-
-// is it possible to create an on/off sequencer?
-
-// need command to quit macro early under certain conditions
-  // something like: default: exit if zero, exit if non-zero, exit if (conditions of various kinds)
 
 // macros need to set up effects pausing
   // annunciator needs fix
 
-// ensure macros do 1:pau to disable effects, unless they need them.
-
 // command document last modified date should be the later of it and http_command.py
-
 
 // dazzling intense flashy color pulsating and changing lights from apollo
 
