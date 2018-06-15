@@ -185,6 +185,7 @@ def import_file(program_name):
     return script
 
 def program_macros(program_name):
+    compiled_script = ""
     try:
       compiled_script = mc.compile_file(program_name)
     except ValueError, e:
