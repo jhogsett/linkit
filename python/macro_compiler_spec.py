@@ -6,10 +6,13 @@ import os
 import app_ui as ui
 import terminal_colors as tc
 import argparse
+import led_command as lc
+import math
 
-global app_description, verbose_mode
+global app_description, verbose_mode, num_leds
 app_description = None
 verbose_mode = None
+num_leds = None
 
 def get_options():
   global verbose_mode
@@ -19,17 +22,34 @@ def get_options():
   verbose_mode = args.verbose
 
 def initialize():
-  global app_description
-  get_options()
-  ui.begin(verbose_mode)
-  mc.begin(verbose_mode, presets())
-  app_description = "Apollo Lighting System - Macro Compiler Specs v.0.0 6-0-2018"
+    global app_description, num_leds
+    app_description = "Apollo Lighting System - Macro Compiler Specs v.0.0 6-0-2018"
+    get_options()
+
+    ui.begin(verbose_mode)
+
+    lc.begin(verbose_mode)
+    lc.attention()
+    lc.stop_all()
+    num_leds = lc.get_num_leds()
+    starting_macro = lc.get_first_eeprom_macro()
+    num_macro_chars = lc.get_num_macro_chars()
+    ending_macro = starting_macro + int(math.ceil(1024.0 / num_macro_chars) - 1)
+    char_buffer_size = lc.get_max_string_length()
+    number_of_sequencers = lc.get_num_sequencers()
+    mc.begin(lc, verbose_mode, presets(), starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size)
+    ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
+    ui.report_info(ui.intro_entry("Number of macros", (ending_macro - starting_macro) + 1))
+    ui.report_info(ui.intro_entry("Number of sequencers", number_of_sequencers))
+    ui.report_info(ui.intro_entry("Bytes per macro", num_macro_chars))
+    ui.report_info(ui.intro_entry("First macro", starting_macro))
+    ui.report_info(ui.intro_entry("Last macro", ending_macro))
+    ui.report_info(ui.intro_entry("Char buffer size", char_buffer_size))
 
 def presets():
-  return {
-    "NUM-LEDS": 90,
-    "NUM-FINE-ZONES": 6
-  }
+    return {
+      "NUM-LEDS": num_leds
+    }
 
 def report_failed(description, expected, got):
   description_ = tc.yellow(description)
@@ -37,10 +57,30 @@ def report_failed(description, expected, got):
   got_ = "\t" + tc.cyan("Got:     ") + "\n\t\t" + tc.red(str(got))
   ui.report_error("\nTest failed! %s\n%s\n%s\n" % (description_, expected_, got_))
 
+def report_failed_script(description, expected, got):
+  description_ = tc.yellow(description)
+  expected_ = tc.cyan("Expected:\n")
+  for line in expected:
+    expected_ += tc.green(line) + "\n"
+  got_ = tc.cyan("Got:\n")
+  for line in got:
+    got_ += tc.red(line) + "\n"
+  ui.report_error("\nTest failed! %s\n%s\n%s\n" % (description_, expected_, got_))
+
 def report_worked(description, expected, got):
   description_ = tc.yellow(description)
   expected_ = "\t" + tc.cyan("Expected:") + "\n\t\t" + tc.green(str(expected))
   got_ = "\t" + tc.cyan("Got Same:") + "\n\t\t" + tc.red(str(got))
+  ui.report_error("\nTest failed! %s\n%s\n%s\n" % (description_, expected_, got_))
+
+def report_worked_script(description, expected, got):
+  description_ = tc.yellow(description)
+  expected_ = tc.cyan("Expected:\n")
+  for line in expected:
+    expected_ += tc.green(line) + "\n"
+  got_ = tc.cyan("Got Same:\n")
+  for line in got:
+    got_ += tc.red(line) + "\n"
   ui.report_error("\nTest failed! %s\n%s\n%s\n" % (description_, expected_, got_))
 
 def report_success(description, expected, got):
@@ -56,9 +96,21 @@ def expect(description, got, expected):
   else:
     report_success(description, expected, got)
 
+def expect_script(description, got, expected):
+  if expected != got:
+    report_failed_script(description, expected, got)
+  else:
+    report_success(description, expected, got)
+
 def not_expect(description, got, expected):
   if expected == got:
     report_worked(description, expected, got)
+  else:
+    report_success(description, expected, got)
+
+def not_expect_script(description, got, expected):
+  if expected == got:
+    report_worked_script(description, expected, got)
   else:
     report_success(description, expected, got)
 
@@ -127,11 +179,15 @@ def specs():
     if(os.path.exists(fixture_file)):
       if verbose_mode:
         report_test("Positive script", fixture_file)
-      compiled_script = mc.compile_file(fixture_file)
+      try:
+        compiled_script = mc.compile_file(fixture_file)
+      except ValueError, e:
+        ui.report_error("Compilation error: " + str(e))
+        break
       if verbose_mode:
         print_script(compiled_script)
       expected_script = mc.load_file(expected_file, ".txt")
-      expect("Valid compilation of: " + fixture_file, compiled_script, expected_script)
+      expect_script("Valid compilation of: " + fixture_file, compiled_script, expected_script)
       mc.reset()
     else:
       break
@@ -184,8 +240,6 @@ def specs():
 
 def setup():
   initialize()
-#    introduction()
-#  pass
 
 def loop():
   specs() 

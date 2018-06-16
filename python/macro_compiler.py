@@ -80,11 +80,12 @@ def get_final_macro_numbers():
   return final_macro_numbers
 
 def reset():
-  global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
+  global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, final_macro_numbers
   macros = {}
   macro_commands = {}
   resolved = {}
   unresolved = {}
+  final_macro_numbers = {}
   passes = 0
   next_available_macro_number = starting_macro_number
   next_available_sequencer_number = 0
@@ -363,6 +364,7 @@ def assign_final_macro_number(line):
   final_macro_number = proxy_macro_number
   while final_macro_number in final_macro_numbers.values():
     final_macro_number += 1
+    ui.report_verbose("trying macro number: " + str(final_macro_number))
     if final_macro_number > ending_macro_number:
       raise ValueError("No available macro numbers available during final number assignment")
   if verbose_mode:
@@ -651,7 +653,7 @@ def load_file(filename, default_ext=".mac"):
 # ----------------------------------------------------
 
 def compile_script(script):
-  ui.report_info("Compiling")
+  ui.report_verbose("Compiling")
   new_script = resolve_script(script)
   new_lines = consolidate_macros(new_script)
   sort_script(new_lines)
@@ -659,7 +661,7 @@ def compile_script(script):
   if not compilation_valid(new_lines):
     print_script(new_lines)
     raise ValueError("The script did not compile successfully due to unresolved values.")
-  ui.report_info("Packing")
+  ui.report_verbose("Packing")
   new_lines = post_processing(new_lines)
   return new_lines
 
