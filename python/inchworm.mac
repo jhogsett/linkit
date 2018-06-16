@@ -8,6 +8,9 @@ $width2 75
 $time1 50
 $time2 200
 $color 1
+$seq-type sqs
+$fade-type ffd
+$step 2
 
 [fancy 10]
   app
@@ -22,27 +25,42 @@ $color 1
   flu
 
 [start]
-  {seq0},<width0>:sqs
-  {seq1},<width1>:sqs
-  {seq2},<width2>:sqs
-  <time1>,<doit1>:sch
-  <time2>,<doit2>:sch
+  (((worm-start 3)))
 
-[doit1]
-  <seq1>,<MACRO-SEQ>,<math>:snw
-  pos
-  <color>:pal
-  ffd
-  flo
-  rst
+#(((worm 1 <time1> <time2> <color> <step>)))
 
-[math]
-  <seq0>:seq
-  psh
-  <seq2>,<GET-CURRENT>:seq
-  psh
-  add
+((worm 0 50 200 0 1))
+((worm 1 45 195 3 2))
+((worm 2 40 190 4 3))
 
-[doit2]
-  <seq2>,0,2:seq
+[[worm-start X
+  (worm-start-X)
+]]
+
+[[worm X TIME1 TIME2 COLOR STEP
+  [worm-start-X]
+    {seq0-X},<width0>:<seq-type>
+    {seq1-X},<width1>:<seq-type>
+    {seq2-X},<width2>:<seq-type>
+    (worm-draw-X TIME1)
+    (worm-advance-X TIME2)
+
+  [worm-draw-X]
+    <seq1-X>,<MACRO-SEQ>,<worm-math-X>:snw
+    pos
+    COLOR:pal
+    <fade-type>
+    flo
+    rst
+
+  [worm-math-X]
+    <seq0-X>:seq
+    psh
+    <seq2-X>,<GET-CURRENT>:seq
+    psh
+    add
+
+  [worm-advance-X]
+    <seq2-X>,0,STEP:seq
+]]
 

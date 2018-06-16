@@ -11,6 +11,9 @@ def begin(verbose):
 def report_error(message):
     print tc.red(message)
 
+def report_error_alt(message):
+    print tc.yellow(message)
+
 def report_info(message):
     print tc.cyan(message)
 

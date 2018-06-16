@@ -138,13 +138,19 @@ def process_set_macro(line):
       return str(proxy_macro_number) + ":set"
   return line
 
-# todo: a way to pass args to run call
 def process_macro_call(line):
   macro_name = None
   line = line.strip()
-  macro_name = extract_contents(line, "(", ")")
-  if macro_name in resolved:
-    return str(resolved[macro_name]) + ":run"
+##  macro_name = extract_contents(line, "(", ")")
+  args = extract_args(line, "(", ")")
+  if len(args) > 0:
+    macro_name = args[0]
+    if macro_name in resolved:
+      if len(args) > 1:
+        macro_schedule = args[1]
+        return str(macro_schedule) + "," + str(resolved[macro_name]) + ":sch"
+      else:
+        return str(resolved[macro_name]) + ":run"
   return line
 
 # return true if value is immutable and is a preset being overridden
@@ -607,7 +613,10 @@ def expand_meta_templates(script_lines):
     args = extract_args(line, "(((", ")))")
     if len(args) >= 2:
       template_name = args[0]
-      index_max = int(args[1])
+      try:
+        index_max = int(args[1])
+      except:
+        raise ValueError("Meta template cannot be expanded due to non-integer argument: " + str(args[1]));
       # remaining arguments, if any, are the search replacements
       replacements = " ".join(args[2:])
       for index in range(0, index_max):
@@ -649,7 +658,7 @@ def compile_script(script):
   #ui.report_verbose()
   if not compilation_valid(new_lines):
     print_script(new_lines)
-    raise ValueError("The script did not compile successfully.")
+    raise ValueError("The script did not compile successfully due to unresolved values.")
   ui.report_info("Packing")
   new_lines = post_processing(new_lines)
   return new_lines
