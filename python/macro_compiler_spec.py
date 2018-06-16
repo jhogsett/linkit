@@ -86,6 +86,7 @@ def report_worked_script(description, expected, got):
 def report_success(description, expected, got):
   if not verbose_mode:
     sys.stdout.write(tc.green("."))
+    sys.stdout.flush()
   
 def report_test(type, description):
   print tc.cyan(type) + " " + tc.green(description)

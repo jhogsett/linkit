@@ -1,0 +1,12 @@
+
+:(((test 5 `X+1` `X+2`)))
+
+[[test X Y Z
+  [testX]
+    X:red
+    Y:grn
+    Z:blu
+    flu
+]]
+
+

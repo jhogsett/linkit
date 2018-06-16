@@ -579,12 +579,17 @@ def capture_templates(script_lines):
   return new_lines
 
 def template_replacements(template_lines, keys, replacements):
-  new_lines = []
-  for line in template_lines:
-    for index, key in enumerate(keys):
-      line = line.replace(key, replacements[index])
-    new_lines.append(line)
-  return new_lines
+  lines = template_lines
+  while(True):
+    orig_lines = lines
+    new_lines = []
+    for line in lines:
+      for index, key in enumerate(keys):
+        line = line.replace(key, replacements[index])
+      new_lines.append(line)
+    if new_lines == orig_lines:
+      return new_lines
+    lines = new_lines
 
 def expand_templates(script_lines):
   new_lines = []
