@@ -202,9 +202,8 @@ def program_macros(program_name):
     except ValueError, e:
       ui.report_error("Failed to compiled script. Reported error: ")
       ui.report_error_alt(str(e))
-      if not verbose_mode:
-        ui.report_error("compiled script:")
-        print_script(mc.get_saved_bad_script())
+      ui.report_error("compiled script:")
+      print_script(mc.get_saved_bad_script())
       return
 
     if verbose_mode:
