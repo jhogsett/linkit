@@ -11,6 +11,8 @@ $color 1
 $seq-type sqs
 $fade-type ffd
 $step 2
+$color-time 100
+$color-step 1
 
 [fancy 10]
   app
@@ -25,10 +27,10 @@ $step 2
   flu
 
 [start]
-  (((worm-start `NUM-LEDS/30`)))
-  (setup-hsl-sequencer)
+  (((worm-start 5)))
+  (hsl-sequencer-start)
 
-(((worm `NUM-LEDS/30` `<time1>-(X*5)` `<time2>-(X*5)` X `X+1`)))
+(((worm 5 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1`)))
 
 [[worm-start X
   (worm-start-X)
@@ -62,14 +64,4 @@ $step 2
 ]]
 
 %include hsl-sequencer
-
-#[colorseq-start]
-#  {colorseq},360:seq
-#  (colorseq-render <color-time>)
-#
-#[colorseq-render]
-#  <colorseq>,<GET-NEXT>,<color-step>:seq
-#  psh
-#  120:rcl
-#  csh
-  
+ 
