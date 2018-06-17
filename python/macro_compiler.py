@@ -4,7 +4,7 @@ import os
 import app_ui as ui
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
-global number_of_macros, run_macro, led_command, final_macro_numbers
+global number_of_macros, run_macro, led_command, final_macro_numbers, saved_bad_script
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -22,6 +22,7 @@ number_of_macros = 41
 run_macro = 10
 bytes_per_macro = 25
 led_command = None
+saved_bad_script = []
 
 # ----------------------------------------------------
 
@@ -79,6 +80,9 @@ def unresolved_exist():
 def get_final_macro_numbers():
   return final_macro_numbers
 
+def get_saved_bad_script():
+  return saved_bad_script
+
 def reset():
   global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, final_macro_numbers
   macros = {}
@@ -86,6 +90,7 @@ def reset():
   resolved = {}
   unresolved = {}
   final_macro_numbers = {}
+  saved_bad_script = []
   passes = 0
   next_available_macro_number = starting_macro_number
   next_available_sequencer_number = 0
@@ -162,7 +167,7 @@ def immutable_resolved_value(variable_name, variable_value):
       if variable_name in presets:
         return True 
       else:
-        raise ValueError("The resolved value '%s' is being changed to '%s'" % (variable_name, str(variable_value)))
+        raise ValueError("The immutable resolved value '%s' is being changed to '%s'" % (variable_name, str(variable_value)))
   return False
 
 def process_set_variable(line):
@@ -658,13 +663,14 @@ def load_file(filename, default_ext=".mac"):
 # ----------------------------------------------------
 
 def compile_script(script):
+  global saved_bad_script
   ui.report_verbose("Compiling")
   new_script = resolve_script(script)
   new_lines = consolidate_macros(new_script)
   sort_script(new_lines)
   #ui.report_verbose()
   if not compilation_valid(new_lines):
-    print_script(new_lines)
+    saved_bad_script = new_lines
     raise ValueError("The script did not compile successfully due to unresolved values.")
   ui.report_verbose("Packing")
   new_lines = post_processing(new_lines)

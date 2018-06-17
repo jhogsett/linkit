@@ -10,7 +10,7 @@ import app_ui as ui
 import macro_compiler as mc
 import math
 
-global app_description, verbose_mode, debug_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output
+global app_description, verbose_mode, debug_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, number_of_macros
 app_description = None
 verbose_mode = None
 debug_mode = None
@@ -22,9 +22,10 @@ presets = None
 dryrun = None
 bytes_programmed = None
 show_output = None
+number_of_macros = None
 
 def get_options():
-    global verbose_mode, debug_mode, program, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencer, presets, dryrun, show_output
+    global verbose_mode, debug_mode, program, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, presets, dryrun, show_output, number_of_macros
     global num_macro_chars_override, starting_macro_override, ending_macro_override, char_buffer_override, char_buffer_size
 
     parser = argparse.ArgumentParser(description=app_description)
@@ -53,14 +54,14 @@ def get_options():
     dryrun = args.dryrun
     show_output = args.show_output
 
-    starting_macro = 10
-    num_macro_chars = 25
-    ending_macro = 50
-    char_buffer_size = 60
-    number_of_sequencers = 10
+#    starting_macro = 10
+#    num_macro_chars = 25
+#    ending_macro = 50
+#    char_buffer_size = 60
+#    number_of_sequencers = 10
 
 def initialize():
-    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, bytes_programmed, char_buffer_size
+    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, bytes_programmed, char_buffer_size, number_of_macros
     app_description = "Apollo Lighting System - Macro Programmer v.2.0 6-1-2018"
     get_options()
     if not validate_options():
@@ -80,6 +81,7 @@ def initialize():
     starting_macro = lc.get_first_eeprom_macro()
     num_macro_chars = lc.get_num_macro_chars()
     ending_macro = starting_macro + int(math.ceil(1024.0 / num_macro_chars) - 1)
+    number_of_macros = (ending_macro - starting_macro) + 1
     char_buffer_size = lc.get_max_string_length()
 
     if num_macro_chars_override != 0:
@@ -113,7 +115,14 @@ def get_command_line_presets():
 
 def get_device_presets():
     return {
-      "NUM-LEDS": num_leds
+      "NUM-LEDS": num_leds,
+      "NUM-MACROS": number_of_macros,
+      "NUM-SEQUENCERS": number_of_sequencers,
+      "START-MACRO": starting_macro,
+      "END-MACRO": ending_macro,
+      "NUM-MACRO-CHARS": num_macro_chars,
+      "CHAR-BUFFER-SIZE": char_buffer_size,
+      "NUM-SEQUENCERS": number_of_sequencers
     }
 
 # returns True if they're valid

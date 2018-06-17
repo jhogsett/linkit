@@ -9,10 +9,16 @@ import argparse
 import led_command as lc
 import math
 
-global app_description, verbose_mode, num_leds
+global app_description, verbose_mode, num_leds, starting_macro, num_macro_chars, ending_macro, char_buffer_size, number_of_sequencers, number_of_macros
 app_description = None
 verbose_mode = None
 num_leds = None
+starting_macro = None
+num_macro_chars = None
+ending_macro = None
+char_buffer_size = None
+number_of_sequencers = None
+number_of_macros = None
 
 def get_options():
   global verbose_mode
@@ -22,7 +28,7 @@ def get_options():
   verbose_mode = args.verbose
 
 def initialize():
-    global app_description, num_leds
+    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, char_buffer_size, number_of_sequencers, number_of_macros
     app_description = "Apollo Lighting System - Macro Compiler Specs v.0.0 6-0-2018"
     get_options()
 
@@ -37,6 +43,7 @@ def initialize():
     ending_macro = starting_macro + int(math.ceil(1024.0 / num_macro_chars) - 1)
     char_buffer_size = lc.get_max_string_length()
     number_of_sequencers = lc.get_num_sequencers()
+    number_of_macros = (ending_macro - starting_macro) + 1
     mc.begin(lc, verbose_mode, presets(), starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size)
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
     ui.report_info(ui.intro_entry("Number of macros", (ending_macro - starting_macro) + 1))
@@ -48,7 +55,14 @@ def initialize():
 
 def presets():
     return {
-      "NUM-LEDS": num_leds
+      "NUM-LEDS": num_leds,
+      "NUM-MACROS": number_of_macros,
+      "NUM-SEQUENCERS": number_of_sequencers,
+      "START-MACRO": starting_macro,
+      "END-MACRO": ending_macro,
+      "NUM-MACRO-CHARS": num_macro_chars,
+      "CHAR-BUFFER-SIZE": char_buffer_size,
+      "NUM-SEQUENCERS": number_of_sequencers
     }
 
 def report_failed(description, expected, got):
@@ -196,18 +210,23 @@ def specs():
   # negative tests
   # these are expected to fail to compile but not crash
   fixture_filename = "spec_fixtures/bad_script%d.mac"
-  script_number = 111
+  script_number = 1
   while(True):
     fixture_file = fixture_filename % script_number
     script_number += 1
     if(os.path.exists(fixture_file)):
       if verbose_mode:
         report_test("Negative script", fixture_file)
-      compiled_script = mc.compile_file(fixture_file)
-      if verbose_mode:
-        print_script(compiled_script)
-      expect("Invalid compilation of: " + fixture_file, mc.compilation_valid(compiled_script), False)
-      mc.reset()
+      try:
+        compiled_script = mc.compile_file(fixture_file)
+        if verbose_mode:
+          print_script(compiled_script)
+        expect("Invalid compilation of: " + fixture_file, mc.compilation_valid(compiled_script), False)
+        mc.reset()
+      except ValueError, e:
+        ui.report_error("Compilation error: " + str(e))
+        print_script(mc.get_saved_bad_script())
+        expect("Exception caught", True, False)
     else:
       break
 
@@ -215,7 +234,7 @@ def specs():
   # these are expected to raise compilation errors
   fixture_filename = "spec_fixtures/crash_script%d.mac"
   expected_filename = "spec_fixtures/crash_script%d_expected.txt"
-  script_number = 111
+  script_number = 1
   while(True):
     fixture_file = fixture_filename % script_number
     expected_file = expected_filename % script_number
