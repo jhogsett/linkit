@@ -10,24 +10,32 @@ import app_ui as ui
 import macro_compiler as mc
 import math
 
-global app_description, verbose_mode, debug_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, number_of_macro, number_of_fine_zoness
+global app_description, verbose_mode, debug_mode, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output
 app_description = None
 verbose_mode = None
 debug_mode = None
 macro_count = 0
-num_leds = None
 programs = None
 macro_run_number = None
 presets = None
 dryrun = None
 bytes_programmed = None
 show_output = None
+
+global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
+device_profile = None
+num_leds = None
+starting_macro = None
+num_macro_chars = None
+ending_macro = None
 number_of_macros = None
+char_buffer_size = None
 number_of_fine_zones = None
+number_of_colors = None
+number_of_sequencers = None
 
 def get_options():
-    global verbose_mode, debug_mode, program, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, presets, dryrun, show_output, number_of_macros
-    global num_macro_chars_override, starting_macro_override, ending_macro_override, char_buffer_override, char_buffer_size
+    global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, num_macro_chars_override, starting_macro_override, ending_macro_override, char_buffer_override
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("program", help="program to transmit")
@@ -47,6 +55,7 @@ def get_options():
     macro_run_number = args.macro
     verbose_mode = args.verbose
     debug_mode = args.debug
+
     num_macro_chars_override = args.bytes_per_macro
     starting_macro_override = args.starting_macro
     ending_macro_override = args.ending_macro
@@ -55,18 +64,16 @@ def get_options():
     dryrun = args.dryrun
     show_output = args.show_output
 
-#    starting_macro = 10
-#    num_macro_chars = 25
-#    ending_macro = 50
-#    char_buffer_size = 60
-#    number_of_sequencers = 10
-
 def initialize():
-    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, bytes_programmed, char_buffer_size, number_of_macros, number_of_fine_zones
+    global app_description,bytes_programmed
+    global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
     app_description = "Apollo Lighting System - Macro Programmer v.2.0 6-1-2018"
     get_options()
+
     if not validate_options():
         sys.exit("\nExiting...\n")
+
+    ui.begin(verbose_mode)
 
     bytes_programmed = 0
     lc.begin(verbose_mode)
@@ -77,14 +84,17 @@ def initialize():
       lc.attention()
       lc.stop_all()
 
-    num_leds = lc.get_num_leds()
-    ui.begin(verbose_mode)
-    starting_macro = lc.get_first_eeprom_macro()
-    num_macro_chars = lc.get_num_macro_chars()
-    ending_macro = starting_macro + int(math.ceil(1024.0 / num_macro_chars) - 1)
-    number_of_macros = (ending_macro - starting_macro) + 1
-    char_buffer_size = lc.get_max_string_length()
-    number_of_fine_zones = lc.get_num_fine_zones()
+    device_profile = lc.get_device_profile()
+    num_leds = device_profile["NUM-LEDS"]
+    starting_macro = device_profile["START-MACRO"]
+    num_macro_chars = device_profile["NUM-MACRO-CHARS"]
+    ending_macro = device_profile["END-MACRO"]
+    number_of_macros = device_profile["NUM-MACRO-CHARS"]
+    char_buffer_size = device_profile["CHAR-BUFFER-SIZE"]
+    number_of_fine_zones = device_profile["NUM-FINE-ZONES"]
+    number_of_colors = device_profile["NUM-PALETTE-COLORS"]
+    number_of_sequencers = device_profile["NUM-SEQUENCERS"]
+
     if num_macro_chars_override != 0:
       num_macro_chars = num_macro_chars_override
     if starting_macro_override != 0:
@@ -94,8 +104,7 @@ def initialize():
     if char_buffer_override != 0:
       char_buffer_size = char_buffer_override
 
-    number_of_sequencers = lc.get_num_sequencers()
-    all_presets = merge_two_dicts(get_device_presets(), get_command_line_presets())
+    all_presets = merge_two_dicts(device_profile, get_command_line_presets())
     mc.begin(lc, verbose_mode, all_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size)
     if dryrun:
       lc.resume()
@@ -114,18 +123,19 @@ def get_command_line_presets():
       result[args[0]] = args[1]
     return result
 
-def get_device_presets():
-    return {
-      "NUM-LEDS": num_leds,
-      "NUM-MACROS": number_of_macros,
-      "NUM-SEQUENCERS": number_of_sequencers,
-      "START-MACRO": starting_macro,
-      "END-MACRO": ending_macro,
-      "NUM-MACRO-CHARS": num_macro_chars,
-      "CHAR-BUFFER-SIZE": char_buffer_size,
-      "NUM-SEQUENCERS": number_of_sequencers,
-      "NUM-FINE-ZONES": number_of_fine_zones
-    }
+#def get_device_presets():
+#    return {
+#      "NUM-LEDS": num_leds,
+#      "NUM-MACROS": number_of_macros,
+#      "NUM-SEQUENCERS": number_of_sequencers,
+#      "START-MACRO": starting_macro,
+#      "END-MACRO": ending_macro,
+#      "NUM-MACRO-CHARS": num_macro_chars,
+#      "CHAR-BUFFER-SIZE": char_buffer_size,
+#      "NUM-SEQUENCERS": number_of_sequencers,
+#      "NUM-FINE-ZONES": number_of_fine_zones,
+#      "NUM-PALETTE-COLORS": number_of_colors
+#    }
 
 # returns True if they're valid
 def validate_options():
@@ -161,7 +171,7 @@ def set_script(script_text):
 
         ui.report_verbose("bytes programmed: " + str(bytes))
 
-        lc.command_str(str(bytes/2) + ":pal:flu")
+        lc.command_str(str(bytes % number_of_colors) + ":pal:mir:flu")
         macro_count += 1
 
         if not debug_mode:

@@ -1,6 +1,7 @@
 import sys
 import serial
 import time
+import math
 
 response_wait = 0.01
 global s, verbose_mode, cmd, max_command_chars
@@ -148,6 +149,21 @@ def get_num_sequencers():
 
 def get_num_fine_zones():
     return get_device_config(21)
+
+# device parameteruseful for compiling and device programming
+def get_device_profile():
+    return {
+        "CHAR-BUFFER-SIZE": get_max_string_length(),
+        "NUM-LEDS": get_num_leds(),
+        "NUM-MACROS": get_num_eeprom_macros(),
+        "NUM-MACRO-CHARS": get_num_macro_chars(),
+        "NUM-SEQUENCERS": get_num_sequencers(),
+        "NUM-FINE-ZONES": get_num_fine_zones(),
+        "NUM-PALETTE-COLORS": get_palette_size(),
+        "START-MACRO": get_first_eeprom_macro(),
+        "END-MACRO": get_first_eeprom_macro() + int(math.ceil(1024.0 / get_num_macro_chars()) - 1),
+        "CHAR-BUFFER-SIZE": get_max_string_length()
+    }        
 
 def push_command(cmd_text=None):
     global cmd

@@ -9,17 +9,21 @@ import argparse
 import led_command as lc
 import math
 
-global app_description, verbose_mode, num_leds, starting_macro, num_macro_chars, ending_macro, char_buffer_size, number_of_sequencers, number_of_macro, number_of_fine_zones
+global app_description, verbose_mode
 app_description = None 
 verbose_mode = None
+
+global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
+device_profile = None
 num_leds = None
 starting_macro = None
 num_macro_chars = None
 ending_macro = None
-char_buffer_size = None
-number_of_sequencers = None
 number_of_macros = None
-number_of_fine_zoness = None
+char_buffer_size = None
+number_of_fine_zones = None
+number_of_colors = None
+number_of_sequencers = None
 
 def get_options():
   global verbose_mode
@@ -29,26 +33,29 @@ def get_options():
   verbose_mode = args.verbose
 
 def initialize():
-    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, char_buffer_size, number_of_sequencers, number_of_macrosi, number_of_fine_zones
+    global app_description
+    global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
     app_description = "Apollo Lighting System - Macro Compiler Specs v.0.0 6-0-2018"
     get_options()
-
     ui.begin(verbose_mode)
-
     lc.begin(verbose_mode)
     lc.attention()
     lc.stop_all()
-    num_leds = lc.get_num_leds()
-    starting_macro = lc.get_first_eeprom_macro()
-    num_macro_chars = lc.get_num_macro_chars()
-    ending_macro = starting_macro + int(math.ceil(1024.0 / num_macro_chars) - 1)
-    char_buffer_size = lc.get_max_string_length()
-    number_of_sequencers = lc.get_num_sequencers()
-    number_of_macros = (ending_macro - starting_macro) + 1
-    number_of_fine_zones = lc.get_num_fine_zones()
+
+    device_profile = lc.get_device_profile()
+    num_leds = device_profile["NUM-LEDS"]
+    starting_macro = device_profile["START-MACRO"]
+    num_macro_chars = device_profile["NUM-MACRO-CHARS"]
+    ending_macro = device_profile["END-MACRO"]
+    number_of_macros = device_profile["NUM-MACRO-CHARS"]
+    char_buffer_size = device_profile["CHAR-BUFFER-SIZE"]
+    number_of_fine_zones = device_profile["NUM-FINE-ZONES"]
+    number_of_colors = device_profile["NUM-PALETTE-COLORS"]
+    number_of_sequencers = device_profile["NUM-SEQUENCERS"]
+
     mc.begin(lc, verbose_mode, presets(), starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size)
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
-    ui.report_info(ui.intro_entry("Number of macros", (ending_macro - starting_macro) + 1))
+    ui.report_info(ui.intro_entry("Number of macros", number_of_macros))
     ui.report_info(ui.intro_entry("Number of sequencers", number_of_sequencers))
     ui.report_info(ui.intro_entry("Bytes per macro", num_macro_chars))
     ui.report_info(ui.intro_entry("First macro", starting_macro))
