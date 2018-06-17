@@ -1,0 +1,5 @@
+4:set:0:red
+5:set:0:blu
+6:set:1:grn
+7:set:1:wht
+

@@ -1,0 +1,17 @@
+
+[a]
+  {seq1}
+  red
+
+[b]
+  {seq2}
+   grn
+
+[c]
+  {seq1}
+  blu
+
+[d]
+  {seq2}
+  wht
+

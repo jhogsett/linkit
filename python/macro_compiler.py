@@ -213,7 +213,7 @@ def process_allocate_sequencer(line):
       ui.report_verbose("allocating sequencer: " + str(resolved_value))
       set_resolved(sequencer_name, resolved_value)
       next_available_sequencer_number += 1
-      return replace_args(line, "{", "}", str(resolved_value))
+    return replace_args(line, "{", "}", str(resolved_value))
   return line
 
 def process_evaluate_python(line):
