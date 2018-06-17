@@ -2,6 +2,7 @@
 
 import os
 import app_ui as ui
+import terminal_colors as tc
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
 global number_of_macros, run_macro, led_command, final_macro_numbers, saved_bad_script
@@ -43,6 +44,7 @@ def begin(led_command_, verbose_mode_ = False, presets_ = {}, starting_macro = 1
 
 def resolve_presets(presets):
   for key in presets.keys():
+    ui.report_verbose("setting preset resolved value " + tc.yellow(key + "=" + str(presets[key])))
     set_resolved(key, presets[key])
 
 def set_macro(name, value):
@@ -260,8 +262,11 @@ def line_has_macro_marker(line):
 def line_has_template_marker(line):
   return len(line) > 0 and ("[[" in line or "]]" in line or "((" in line or "))" in line)
 
+def line_has_sequence_marker(line):
+  return len(line) > 0 and ("{" in line or "}" in line)
+
 def line_has_unresolved(line):
-  return line_has_unresolved_variables(line) or line_has_python_expression(line) or line_has_template_marker(line) or line_has_macro_marker(line)
+  return line_has_unresolved_variables(line) or line_has_python_expression(line) or line_has_template_marker(line) or line_has_macro_marker(line) or line_has_sequence_marker(line)
 
 # ----------------------------------------------------
 
@@ -625,10 +630,20 @@ def expand_meta_templates(script_lines):
     args = extract_args(line, "(((", ")))")
     if len(args) >= 2:
       template_name = args[0]
-      try:
-        index_max = int(args[1])
-      except:
-        raise ValueError("Meta template cannot be expanded due to non-integer argument: " + str(args[1]));
+      index_arg = args[1]
+      index_max = None
+      start, end = locate_delimiters(index_arg, "`", "`")
+      if start != -1 and end != -1:
+        expression = extract_contents(index_arg, "`", "`")
+        # replace any preset arguments to allow use in computing macro index max
+        for key in presets:
+          expression = expression.replace(key, str(presets[key]))
+        index_max = eval(expression) 
+      else:
+        try:
+          index_max = int(index_arg)
+        except:
+          raise ValueError("Meta template cannot be expanded due to non-integer argument: " + str(args[1]));
       # remaining arguments, if any, are the search replacements
       replacements = " ".join(args[2:])
       for index in range(0, index_max):

@@ -10,7 +10,7 @@ import app_ui as ui
 import macro_compiler as mc
 import math
 
-global app_description, verbose_mode, debug_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, number_of_macros
+global app_description, verbose_mode, debug_mode, num_leds, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, number_of_macro, number_of_fine_zoness
 app_description = None
 verbose_mode = None
 debug_mode = None
@@ -23,6 +23,7 @@ dryrun = None
 bytes_programmed = None
 show_output = None
 number_of_macros = None
+number_of_fine_zones = None
 
 def get_options():
     global verbose_mode, debug_mode, program, macro_run_number, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, presets, dryrun, show_output, number_of_macros
@@ -61,7 +62,7 @@ def get_options():
 #    number_of_sequencers = 10
 
 def initialize():
-    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, bytes_programmed, char_buffer_size, number_of_macros
+    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_sequencers, bytes_programmed, char_buffer_size, number_of_macros, number_of_fine_zones
     app_description = "Apollo Lighting System - Macro Programmer v.2.0 6-1-2018"
     get_options()
     if not validate_options():
@@ -83,7 +84,7 @@ def initialize():
     ending_macro = starting_macro + int(math.ceil(1024.0 / num_macro_chars) - 1)
     number_of_macros = (ending_macro - starting_macro) + 1
     char_buffer_size = lc.get_max_string_length()
-
+    number_of_fine_zones = lc.get_num_fine_zones()
     if num_macro_chars_override != 0:
       num_macro_chars = num_macro_chars_override
     if starting_macro_override != 0:
@@ -122,7 +123,8 @@ def get_device_presets():
       "END-MACRO": ending_macro,
       "NUM-MACRO-CHARS": num_macro_chars,
       "CHAR-BUFFER-SIZE": char_buffer_size,
-      "NUM-SEQUENCERS": number_of_sequencers
+      "NUM-SEQUENCERS": number_of_sequencers,
+      "NUM-FINE-ZONES": number_of_fine_zones
     }
 
 # returns True if they're valid
@@ -200,9 +202,10 @@ def program_macros(program_name):
     except ValueError, e:
       ui.report_error("Failed to compiled script. Reported error: ")
       ui.report_error_alt(str(e))
-      #if not verbose_mode:
-      #  ui.report_error("compiled script:")
-      #  print_script(compiled_script)
+      if not verbose_mode:
+        ui.report_error("compiled script:")
+        print_script(mc.get_saved_bad_script())
+      return
 
     if verbose_mode:
         ui.report_verbose("compiled script:")

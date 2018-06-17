@@ -146,6 +146,9 @@ def get_first_eeprom_macro():
 def get_num_sequencers():
     return get_device_config(20)
 
+def get_num_fine_zones():
+    return get_device_config(21)
+
 def push_command(cmd_text=None):
     global cmd
 

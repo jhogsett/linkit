@@ -9,7 +9,7 @@ import argparse
 import led_command as lc
 import math
 
-global app_description, verbose_mode, num_leds, starting_macro, num_macro_chars, ending_macro, char_buffer_size, number_of_sequencers, number_of_macros
+global app_description, verbose_mode, num_leds, starting_macro, num_macro_chars, ending_macro, char_buffer_size, number_of_sequencers, number_of_macro, number_of_fine_zonesss
 app_description = None
 verbose_mode = None
 num_leds = None
@@ -19,6 +19,7 @@ ending_macro = None
 char_buffer_size = None
 number_of_sequencers = None
 number_of_macros = None
+number_of_fine_zoness = None
 
 def get_options():
   global verbose_mode
@@ -28,7 +29,7 @@ def get_options():
   verbose_mode = args.verbose
 
 def initialize():
-    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, char_buffer_size, number_of_sequencers, number_of_macros
+    global app_description, num_leds, starting_macro, num_macro_chars, ending_macro, char_buffer_size, number_of_sequencers, number_of_macrosi, number_of_fine_zoness
     app_description = "Apollo Lighting System - Macro Compiler Specs v.0.0 6-0-2018"
     get_options()
 
@@ -44,6 +45,7 @@ def initialize():
     char_buffer_size = lc.get_max_string_length()
     number_of_sequencers = lc.get_num_sequencers()
     number_of_macros = (ending_macro - starting_macro) + 1
+    number_of_fine_zoness = lc.get_num_fine_zones()
     mc.begin(lc, verbose_mode, presets(), starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size)
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
     ui.report_info(ui.intro_entry("Number of macros", (ending_macro - starting_macro) + 1))
@@ -62,7 +64,8 @@ def presets():
       "END-MACRO": ending_macro,
       "NUM-MACRO-CHARS": num_macro_chars,
       "CHAR-BUFFER-SIZE": char_buffer_size,
-      "NUM-SEQUENCERS": number_of_sequencers
+      "NUM-SEQUENCERS": number_of_sequencers,
+      "NUM-FINE-ZONES": number_of_fine_zones
     }
 
 def report_failed(description, expected, got):

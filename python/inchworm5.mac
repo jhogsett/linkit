@@ -30,14 +30,7 @@ $color-step 1
   (((worm-start 3)))
   (colorseq-start)
 
-# haven't found a way to dynamically set the "3"
-# problem is it's need way before variable resolution
-#(((worm `NUM-FINE-ZONES/2` `<time1>-(X*5)` `<time2>-(X*5)` X `X+1`)))
-(((worm `6/2` `<time1>-(X*5)` `<time2>-(X*5)` X `X+1`)))
-
-#((worm 0 50 200 0 1))
-#((worm 1 45 195 1 2))
-#((worm 2 40 190 2 3))
+(((worm `NUM-LEDS/30` `<time1>-(X*5)` `<time2>-(X*5)` X `X+1`)))
 
 [[worm-start X
   (worm-start-X)

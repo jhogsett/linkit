@@ -29,7 +29,7 @@ def report_verbose(message=""):
 
 def report_verbose_alt(message=""):
     if verbose_mode:
-        print tc.blue(message)
+        print tc.yellow(message)
 
 def verbose_entry(key, value):
     if verbose_mode:
