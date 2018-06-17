@@ -1,0 +1,69 @@
+
+%include symbols
+
+$render-time 50
+$width0 15
+$width1 90
+$width2 75
+$time1 50
+$time2 200
+$color 1
+$seq-type sqs
+$fade-type ffd
+$step 1
+$color-time 100
+$color-step 1
+$brightness 5
+
+[fancy 10]
+  app
+  (init)
+
+[init]
+  <brightness>:lev
+  <DRAW-PLUS>:drw
+  <render-time>,<render>:sch
+  (start)
+
+[render !]
+  flu
+
+[start]
+  (((worm-start 5)))
+  (hsl-sequencer-start)
+
+(((worm 5 `<time1>+(X*5)` `<time2>+(X*5)` X `X+1`)))
+
+[[worm-start X
+  (worm-start-X)
+]]
+
+[[worm X TIME1 TIME2 COLOR STEP
+  [worm-start-X]
+    {seq0-X},<width0>:sws
+    {seq1-X},<width1>:<seq-type>
+    {seq2-X},<width2>:swc
+    (worm-draw-X TIME1)
+    (worm-advance-X TIME2)
+
+  [worm-draw-X]
+    <seq1-X>,<MACRO-SEQ>,<worm-math-X>:snw
+    pos
+    COLOR:pal
+    <fade-type>
+    flo
+    rst
+
+  [worm-math-X]
+    <seq0-X>,<GET-COMPUTED>:seq
+    psh
+    <seq2-X>,<GET-COMPUTED>:seq
+    psh
+    add
+
+  [worm-advance-X]
+    <seq2-X>,0,STEP:seq
+]]
+
+%include hsl-sequencer
+ 
