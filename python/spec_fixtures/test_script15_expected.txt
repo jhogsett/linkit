@@ -1,7 +1,7 @@
-10:set:8:red:2:rpt
-11:set:10:red:2:rpt
-12:set:0:red:2:rpt
-13:set:2:red:2:rpt
-14:set:4:red:2:rpt
-15:set:6:red:2:rpt
+4:set:8:red:2:rpt
+5:set:10:red:2:rpt
+6:set:0:red:2:rpt
+7:set:2:red:2:rpt
+8:set:4:red:2:rpt
+9:set:6:red:2:rpt
 
