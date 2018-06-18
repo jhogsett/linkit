@@ -227,7 +227,12 @@ def print_table(description, table):
         key_diff = keys_width - key_len
         value = table[key]
         filler = " " * key_diff
-        ui.info_entry_alt(filler + str(key), str(value))
+        key_title = filler + str(key)
+        if type(value) is list:
+          ui.report_info_alt(key_title + ":")
+          print_script(value)
+        else:
+          ui.info_entry_alt(key_title, str(value))
 
 def program_macros(program_name):
     compiled_script = ""

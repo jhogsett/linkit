@@ -5,6 +5,7 @@
 
 %include swinger
 
-#%include wanderer
+%include wanderer
 
+%include hsl-sequencer
 
