@@ -16,41 +16,41 @@ $max-half <max>
 # 6 part rainbow consine swing
 # ----------------------------------------------------------------
 
-#[fancy 10]
-#    app
-#    <DRAW-WRITE>
-#    drw
-#    <CONFIG-FADE-RATE>,<fade-rate>
-#    cfg
-#    (render <render-time>)
-#    (hsl-sequencer-start)
-#    (((start 6)))
+[fancy 10]
+    app
+    <DRAW-WRITE>
+    drw
+    <CONFIG-FADE-RATE>,<fade-rate>
+    cfg
+    (render <render-time>)
+    (hsl-sequencer-start)
+    (((start 6)))
 
-#[render !]
-#    flu
+[render !]
+    flu
 
-#(((swinger 6 15)))
+(((swinger 6 15)))
 
-#[[start X
-#    (setup-swinger-X)
-#]]
+[[start X
+    (setup-swinger-X)
+]]
 
-#[[swinger X WIDTH
-#    [setup-swinger-X]
-#        {seq-X},`X*WIDTH+WIDTH`,`X*WIDTH`
-#        <sequencer-type>
-#        (swinger-X `<base-timing>+(<seq-X>*<timing-gap>)`)
+[[swinger X WIDTH
+    [setup-swinger-X]
+        {seq-X},`X*WIDTH+WIDTH`,`X*WIDTH`
+        <sequencer-type>
+        (swinger-X `<base-timing>+(<seq-X>*<timing-gap>)`)
 
-#    [swinger-X]
-#        <seq-X>
-#        snw
-#        pos
-#        <seq-X>
-#        pal
-#        <fade-type>
-#        flo
-#        rst
-#]]
+    [swinger-X]
+        <seq-X>
+        snw
+        pos
+        <seq-X>
+        pal
+        <fade-type>
+        flo
+        rst
+]]
 
 
 # ----------------------------------------------------------------
@@ -75,7 +75,7 @@ $wanderer-max-half <wanderer-max>
     <wanderer-brightness>
     lev
     (((wanderer-setup 6)))
-#    (hsl-sequencer-start)
+    (hsl-sequencer-start)
     (wanderer-render <wanderer-render-time>)
 
 [wanderer-render]
@@ -120,6 +120,6 @@ $wanderer-max-half <wanderer-max>
 ]]
 
 
-#%include hsl-sequencer
+%include hsl-sequencer
 
 

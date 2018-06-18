@@ -282,16 +282,15 @@ def summary():
   remaining_macro_bytes = total_macro_bytes - bytes_programmed
   used_bytes_percent = round(100.0 * bytes_programmed / total_macro_bytes)
   remaining_bytes_percent = round(100.0 * remaining_macro_bytes / total_macro_bytes)
-  bytes_used_per_macro = round(bytes_programmed / used_macros)
-  bytes_used_per_macro_percent = round(100.0 * num_macro_chars / bytes_used_per_macro)
+  bytes_used_per_macro = round(bytes_programmed / used_macros) if int(used_macros) > 0 else 0
+  bytes_used_per_macro_percent = round(100.0 * bytes_used_per_macro / num_macro_chars)
+  print
   print
   print tc.green("%d Macros successfully programmed" % macro_count)
   print tc.yellow("%d Macros remaining (%d%%)" % (remaining_macros, remaining_macros_percent))
-  print tc.yellow("%d Used macro bytes (%d%%)" % (bytes_programmed, used_bytes_percent))
-  print tc.yellow("%d Bytes used per macro (%d%%)" % (bytes_used_per_macro, bytes_used_per_macro_percent))
-  print tc.yellow("%d macro bytes remaining (%d%%)" % (remaining_macro_bytes, remaining_bytes_percent))
-  print tc.yellow("%d Used sequencers (%d%%)" % (used_sequencers, used_sequencers_percent))
-  print tc.yellow("%d free sequencers remaining (%d%%)" % (remaining_sequencers, remaining_sequencers_percent))
+  print tc.yellow("%d Used / %d free macro bytes (%d%% / %d%%)" % (bytes_programmed, remaining_macro_bytes, used_bytes_percent, remaining_bytes_percent))
+  print tc.yellow("%d Used / %d free sequencers (%d%% / %d%%)" % (used_sequencers, remaining_sequencers, used_sequencers_percent, remaining_sequencers_percent))
+  print tc.cyan("%d Bytes per macro (efficiency %d%%)" % (bytes_used_per_macro, bytes_used_per_macro_percent))
   print
 
 def upload_programs():
