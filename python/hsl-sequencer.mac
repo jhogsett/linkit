@@ -3,7 +3,7 @@
 # sequences palette colors automatically
 # ----------------------------------------------------------------
 
-%include symbols
+#%include symbols
 
 $hsl-angle 60
 $hsl-step 2

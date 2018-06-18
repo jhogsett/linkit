@@ -149,14 +149,17 @@ def process_set_macro(line):
 def process_macro_call(line):
   macro_name = None
   line = line.strip()
-##  macro_name = extract_contents(line, "(", ")")
   args = extract_args(line, "(", ")")
   if len(args) > 0:
     macro_name = args[0]
     if macro_name in resolved:
       if len(args) > 1:
         macro_schedule = args[1]
-        return str(macro_schedule) + "," + str(resolved[macro_name]) + ":sch"
+        if not line_has_unresolved(macro_schedule):
+          return str(macro_schedule) + "," + str(resolved[macro_name]) + ":sch"
+
+#also try without conditional
+
       else:
         return str(resolved[macro_name]) + ":run"
   return line
@@ -397,7 +400,6 @@ def assign_final_macro_number(line):
 
   bytes_used = 0
   tries = 3
-  led_command.attention()
   led_command.stop_all()
   while bytes_used == 0 and tries > 0:
     ui.report_verbose("Measuring macro #" + str(final_macro_number) + " on device")

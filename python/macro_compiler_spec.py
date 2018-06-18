@@ -39,7 +39,6 @@ def initialize():
     get_options()
     ui.begin(verbose_mode)
     lc.begin(verbose_mode)
-    lc.attention()
     lc.stop_all()
 
     device_profile = lc.get_device_profile()
