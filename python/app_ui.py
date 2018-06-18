@@ -48,6 +48,9 @@ def report_footer():
 def info_entry(key, value):
     print tc.cyan(key) + ": " + tc.green(str(value))
 
+def info_entry_alt(key, value):
+    print tc.cyan(key) + ": " + tc.yellow(str(value))
+
 # deprecated
 def intro_entry(key, value):
     return tc.cyan(key) + ": " + tc.green(str(value))

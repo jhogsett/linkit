@@ -10,7 +10,7 @@ import app_ui as ui
 import macro_compiler as mc
 import math
 
-global app_description, verbose_mode, debug_mode, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output
+global app_description, verbose_mode, debug_mode, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, show_tables
 app_description = None
 verbose_mode = None
 debug_mode = None
@@ -21,6 +21,7 @@ presets = None
 dryrun = None
 bytes_programmed = None
 show_output = None
+show_tables = None
 
 global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
 device_profile = None
@@ -35,7 +36,7 @@ number_of_colors = None
 number_of_sequencers = None
 
 def get_options():
-    global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, num_macro_chars_override, starting_macro_override, ending_macro_override, char_buffer_override
+    global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, show_tables, num_macro_chars_override, starting_macro_override, ending_macro_override, char_buffer_override
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("program", help="program to transmit")
@@ -45,6 +46,7 @@ def get_options():
     parser.add_argument("-d", "--debug", dest="debug", action="store_true", help="display verbose info (False)")
     parser.add_argument("-r", "--dryrun", dest="dryrun", action="store_true", help="process the script but don't actually program the device (False)")
     parser.add_argument("-o", "--show-output", dest="show_output", action="store_true", help="display compiled script (False)")
+    parser.add_argument("-t", "--show-tables", dest="show_tables", action="store_true", help="display compilation dictionaries (False)")
     parser.add_argument("-b", "--bytes-per-macro", type=int, dest="bytes_per_macro", default=0, help="bytes per macro override (none)")
     parser.add_argument("-s", "--starting-macro", type=int, dest="starting_macro", default=0, help="starting macro override (none)")
     parser.add_argument("-e", "--ending-macro", type=int, dest="ending_macro", default=0, help="ending macro override (none)")
@@ -63,6 +65,7 @@ def get_options():
     presets = args.presets
     dryrun = args.dryrun
     show_output = args.show_output
+    show_tables = args.show_tables
 
 def initialize():
     global app_description,bytes_programmed
@@ -204,6 +207,28 @@ def import_file(program_name):
         script.append(line)
     return script
 
+def get_list_width(list):
+  result = -1
+  for item in list:
+    length = len(str(item))
+    if length > result:
+      result = length
+  return result
+
+def print_table(description, table):
+    ui.report_info_alt(description + ":")
+    keys = table.keys()
+    values = table.values()
+    keys_width = get_list_width(keys)
+    values_width = get_list_width(values)    
+
+    for key in sorted(table.iterkeys()):
+        key_len = len(str(key))
+        key_diff = keys_width - key_len
+        value = table[key]
+        filler = " " * key_diff
+        ui.info_entry_alt(filler + str(key), str(value))
+
 def program_macros(program_name):
     compiled_script = ""
     try:
@@ -218,7 +243,7 @@ def program_macros(program_name):
     if verbose_mode:
         ui.report_verbose("compiled script:")
         for script_text in compiled_script:
-            ui.report_verbose(script_text)
+            ui.report_verbose_alt(script_text)
 
     if show_output and not verbose_mode:
         print
@@ -226,6 +251,13 @@ def program_macros(program_name):
         for script_text in compiled_script:
             ui.report_info_alt(script_text)
         print
+
+    if show_tables:
+      print_table("Presets", mc.get_presets())
+      print_table("Resolved Values", mc.get_resolved())
+      print_table("Unresolved Macros", mc.get_unresolved())
+      print_table("Final Macro Numbers", mc.get_final_macro_numbers())
+      print_table("Macros", mc.get_macros())
 
     if not mc.compilation_valid(compiled_script):
       ui.report_error("Compilation failed!")
@@ -290,7 +322,7 @@ def summary():
   print tc.yellow("%d Macros remaining (%d%%)" % (remaining_macros, remaining_macros_percent))
   print tc.yellow("%d Used / %d free macro bytes (%d%% / %d%%)" % (bytes_programmed, remaining_macro_bytes, used_bytes_percent, remaining_bytes_percent))
   print tc.yellow("%d Used / %d free sequencers (%d%% / %d%%)" % (used_sequencers, remaining_sequencers, used_sequencers_percent, remaining_sequencers_percent))
-  print tc.cyan("%d Bytes per macro (efficiency %d%%)" % (bytes_used_per_macro, bytes_used_per_macro_percent))
+  print tc.cyan("%d Bytes per macro (%d%% efficiency)" % (bytes_used_per_macro, bytes_used_per_macro_percent))
   print
 
 def upload_programs():

@@ -85,6 +85,12 @@ def get_final_macro_numbers():
 def get_saved_bad_script():
   return saved_bad_script
 
+def get_presets():
+  return presets
+
+def get_macros():
+  return macros
+
 def reset():
   global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, final_macro_numbers
   macros = {}
@@ -225,8 +231,10 @@ def process_evaluate_python(line):
   if not line_has_unresolved_variables(line):
     expression = extract_contents(line, "`", "`")
     if len(expression) > 0:
-      ui.report_verbose("-evaluating Python: " + expression)
-      return replace_args(line, "`", "`", str(eval(expression)))
+      ui.report_verbose_alt("-evaluating Python: " + expression)
+      result = eval(expression)
+      ui.report_verbose_alt("=evaluated result: " + str(result))
+      return replace_args(line, "`", "`", str(result))
   return line
 
 def process_place_template(line):
@@ -377,7 +385,7 @@ def assign_final_macro_number(line):
   final_macro_number = proxy_macro_number
   while final_macro_number in final_macro_numbers.values():
     final_macro_number += 1
-    ui.report_verbose("trying macro number: " + str(final_macro_number))
+    #ui.report_verbose("trying macro number: " + str(final_macro_number))
     if final_macro_number > ending_macro_number:
       raise ValueError("No available macro numbers available during final number assignment")
   if verbose_mode:
