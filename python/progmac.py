@@ -125,61 +125,40 @@ def get_command_line_presets():
       result[args[0]] = args[1]
     return result
 
-#def get_device_presets():
-#    return {
-#      "NUM-LEDS": num_leds,
-#      "NUM-MACROS": number_of_macros,
-#      "NUM-SEQUENCERS": number_of_sequencers,
-#      "START-MACRO": starting_macro,
-#      "END-MACRO": ending_macro,
-#      "NUM-MACRO-CHARS": num_macro_chars,
-#      "CHAR-BUFFER-SIZE": char_buffer_size,
-#      "NUM-SEQUENCERS": number_of_sequencers,
-#      "NUM-FINE-ZONES": number_of_fine_zones,
-#      "NUM-PALETTE-COLORS": number_of_colors
-#    }
-
 # returns True if they're valid
 def validate_options():
     errors = False
     return not errors
-
-def set_macro(macro_num, macro_text, expected_bytes):
-    global macro_count, bytes_programmed
-
-    bytes = 0
-    try:
-        bytes = lc.set_macro(macro_num, macro_text, expected_bytes, debug_mode)
-        bytes_programmed += bytes
-
-    except StandardError, e:
-      print str(e) + " - retrying"
-      try:
-        lc.set_macro(macro_num, macro_text, expected_bytes, debug_mode)        
-      except StandardError, e:
-        sys.exit("\nUnable to program macros. Macro file may be corrupt.")
-
-    lc.command_str(str(bytes/2) + ":pal:flu")
-    macro_count += 1
-
-    if not debug_mode:                                             
-        ui.write(tc.green('.'))
 
 def set_script(script_text):
     global macro_count, bytes_programmed
     try:
         bytes = lc.command_int(script_text);
         bytes_programmed += bytes
-
         ui.report_verbose("bytes programmed: " + str(bytes))
-
         lc.command_str(str(bytes % number_of_colors) + ":pal:mir:flu")
         macro_count += 1
-
         if not debug_mode:
             ui.write(tc.green('.'))
+        else:
+          macro_number = int(script_text.split(":")[0])
 
-    except StandardError, e:
+#          macro_bytes = lc.get_macro_bytes(macro_number)
+#          #print "bytes programmed: " + str(bytes)
+#          #print macro_bytes
+#          set_macro_string = str(macro_number) + ":set:" + lc.get_macro(macro_number)
+#          if set_macro_string != script_text:
+#            print
+#            ui.report_error("programmed script mismatch")
+#            ui.report_error("expected: " + script_text)
+#            ui.report_error("got: " + set_macro_string)
+#            print
+
+          print lc.get_macro(macro_number)
+
+#          else:
+#           ui.report_info(script_text)
+    except ValueError as e:
       print str(e) + " - retrying"
       set_script(script_text)
 
