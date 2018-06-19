@@ -213,8 +213,20 @@ def print_table(description, table):
         else:
           ui.info_entry_alt(key_title, str(value))
 
+def verify_programming(compiled_script):
+  for compiled_line in compiled_script:
+    macro_number = int(compiled_line.split(":")[0])
+    programmed_line = lc.get_macro(macro_number)
+    if programmed_line != compiled_line:
+      print
+      ui.report_error("Macro doesn't match:")
+      print tc.green("Expected: " + compiled_line)
+      print tc.red("     Got: " + programmed_line)
+      print
+
 def program_macros(program_name):
     compiled_script = ""
+    ui.report_info("1. Compiling")
     try:
       compiled_script = mc.compile_file(program_name)
     except ValueError, e:
@@ -250,8 +262,13 @@ def program_macros(program_name):
       sys.exit("\nExiting...\n")
 
     if not dryrun:
+      ui.report_info("2. Programming")
       for script_text in compiled_script:
         set_script(script_text) 
+      print
+      ui.report_info("3. Verifying")
+      verify_programming(compiled_script)
+
 
 def print_script(script_lines):
   for script_text in script_lines:

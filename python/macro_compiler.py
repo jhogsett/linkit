@@ -5,7 +5,7 @@ import app_ui as ui
 import terminal_colors as tc
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
-global number_of_macros, run_macro, led_command, final_macro_numbers, saved_bad_script
+global number_of_macros, led_command, final_macro_numbers, saved_bad_script
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -14,21 +14,20 @@ passes = 0
 verbose_mode = False
 presets = {}
 final_macro_numbers = {}
-starting_macro_number = 10
-ending_macro_number = 50
-next_available_macro_number = starting_macro_number
+starting_macro_number = None
+ending_macro_number = None
+next_available_macro_number = None
 next_available_sequencer_number = 0
-number_of_sequencers = 10
-number_of_macros = 41
-run_macro = 10
-bytes_per_macro = 25
+number_of_sequencers = None
+number_of_macros = None
+bytes_per_macro = None
 led_command = None
 saved_bad_script = []
 
 # ----------------------------------------------------
 
 def begin(led_command_, verbose_mode_ = False, presets_ = {}, starting_macro = 10, ending_macro = 50, number_of_sequencers_ = 10, bytes_per_macro_ = 25, max_string_length_ = 60):
-  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length
+  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length, next_available_macro_number
   led_command = led_command_
   verbose_mode = verbose_mode_
   starting_macro_number = starting_macro
@@ -37,6 +36,7 @@ def begin(led_command_, verbose_mode_ = False, presets_ = {}, starting_macro = 1
   bytes_per_macro = bytes_per_macro_
   max_string_length = max_string_length_
   number_of_macros = (ending_macro_number - starting_macro_number) + 1
+  next_available_macro_number = starting_macro_number
   presets = presets_
   resolve_presets(presets)
   ui.begin(verbose_mode)
