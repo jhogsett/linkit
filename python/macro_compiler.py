@@ -5,7 +5,7 @@ import app_ui as ui
 import terminal_colors as tc
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
-global number_of_macros, led_command, final_macro_numbers, saved_bad_script
+global number_of_macros, led_command, final_macro_numbers, saved_bad_script, includes
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -23,6 +23,7 @@ number_of_macros = None
 bytes_per_macro = None
 led_command = None
 saved_bad_script = []
+includes = {}
 
 # ----------------------------------------------------
 
@@ -91,14 +92,18 @@ def get_presets():
 def get_macros():
   return macros
 
+def get_includes():
+  return includes
+
 def reset():
-  global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, final_macro_numbers
+  global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, final_macro_numbers, includes
   macros = {}
   macro_commands = {}
   resolved = {}
   unresolved = {}
   final_macro_numbers = {}
   saved_bad_script = []
+  includes = {}
   passes = 0
   next_available_macro_number = starting_macro_number
   next_available_sequencer_number = 0
@@ -138,7 +143,7 @@ def process_set_macro(line):
       if macro_number == "!":
         ui.report_verbose("- forced final macro: " + macro_name)
         macro_number = ending_macro_number
-      proxy_macro_number = "'" + str(macro_number) + "'"
+      proxy_macro_number = "'" + ("0" + str(macro_number))[-2:] + "'"
       ui.report_verbose("new forced macro: " + macro_name)
       set_resolved(macro_name, proxy_macro_number)
       set_macro(macro_name, proxy_macro_number)
@@ -330,7 +335,7 @@ def replace_args(line, start_delimiter, end_delimiter, replacement):
 
 def is_macro_number_in_use(macro_number):
   for value in macros.values():
-    if value[1:-1] == str(macro_number):
+    if int(value[1:-1]) == macro_number:
       return True
   return False
 
@@ -362,12 +367,15 @@ def resolution_pass(script_lines):
 # assign tentative macro numbers so everything else can resolve
 # these will be resolved to real macro numbers later
 def proxy_macro_numbers():
+  ui.report_verbose("unresolved macro numbers:")
+  if verbose_mode:
+    print_list(unresolved)
   for name in unresolved:
     if unresolved[name] == None:
       new_macro_number = get_next_macro_number()
       # proxy numbers will be in the form '10' 
       ui.report_verbose("-assigning proxy macro #" + str(new_macro_number) + " for macro: " + name)
-      proxy_macro_value = "'" + str(new_macro_number) + "'"
+      proxy_macro_value = "'" + ("0" + str(new_macro_number))[-2:] + "'"
       resolve_unresolved(name, new_macro_number)
       set_resolved(name, proxy_macro_value)
       set_macro(name, proxy_macro_value)
@@ -510,7 +518,16 @@ def resolve_script(script_lines):
 
   ui.report_verbose("Initial processing")
   new_lines = resolution_pass(new_lines)
+
+  ui.report_verbose("script after initial resolution pass:")
+  if verbose_mode:
+    print_script(new_lines)
+
   proxy_macro_numbers()
+
+  ui.report_verbose("script after proxy macro number assignment:")
+  if verbose_mode:
+    print_script(new_lines)
 
   ########################################################################
   # main processing - processing passes until no more can be resolved
@@ -527,6 +544,20 @@ def resolve_script(script_lines):
 
 def post_processing(script_lines):
   return assign_final_macro_numbers(script_lines)
+
+def clean_up(script_lines):
+    clean_ups = {
+        # remove unnecessary (zero) arguments
+        ",0:" : ":",
+        ",0,0:" : ":",
+        ":0,0,0:" : ":"
+    }
+    new_lines = []
+    for line in script_lines:
+      for clean_up in clean_ups:
+        line = line.replace(clean_up, clean_ups[clean_up])
+      new_lines.append(line)
+    return new_lines
 
 def process_directives(script_lines):
   new_lines = []
@@ -678,9 +709,10 @@ def load_file(filename, default_ext=".mac"):
     if line.startswith("%include"):
       args = line.split()
       include_filename = args[1]
-      if len(include_filename) > 0:
-        include_filename = os.path.join(file_path, include_filename)
-        file_lines = file_lines + load_file(include_filename)
+      if len(include_filename) > 0 and include_filename not in includes.keys():
+        full_filename = os.path.join(file_path, include_filename)
+        file_lines = file_lines + load_file(full_filename)
+        includes[include_filename] = full_filename
         continue
     file_lines.append(line)
   return file_lines
@@ -692,13 +724,34 @@ def compile_script(script):
   ui.report_verbose("Compiling")
   new_script = resolve_script(script)
   new_lines = consolidate_macros(new_script)
+
+  ui.report_verbose("consolidated script with proxied macro numbers")
+  if verbose_mode:
+    print_script(new_lines)
+
   sort_script(new_lines)
+
+  ui.report_verbose("script after sorting")
+  if verbose_mode:
+    print_script(new_lines)
+
   #ui.report_verbose()
   if not compilation_valid(new_lines):
     saved_bad_script = new_lines
     raise ValueError("The script did not compile successfully due to unresolved values.")
   ui.report_verbose("Packing")
+  #print_script(new_lines)
+
   new_lines = post_processing(new_lines)
+  ui.report_verbose("script after final macro number assignment")
+  if verbose_mode:
+    print_script(new_lines)
+
+  new_lines = clean_up(new_lines)
+  ui.report_verbose("script after cleanup:")
+  if verbose_mode:
+    print_script(new_lines)
+
   return new_lines
 
 def compile_file(filename):

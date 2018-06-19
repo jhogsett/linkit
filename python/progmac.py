@@ -79,7 +79,7 @@ def initialize():
     ui.begin(verbose_mode)
 
     bytes_programmed = 0
-    lc.begin(verbose_mode)
+    lc.begin(False) #verbose_mode)
 
     if dryrun:
       lc.pause()
@@ -214,15 +214,18 @@ def print_table(description, table):
           ui.info_entry_alt(key_title, str(value))
 
 def verify_programming(compiled_script):
+  script_ok = True
   for compiled_line in compiled_script:
     macro_number = int(compiled_line.split(":")[0])
     programmed_line = lc.get_macro(macro_number)
     if programmed_line != compiled_line:
+      script_ok = False
       print
       ui.report_error("Macro doesn't match:")
       print tc.green("Expected: " + compiled_line)
       print tc.red("     Got: " + programmed_line)
       print
+  return script_ok
 
 def program_macros(program_name):
     compiled_script = ""
@@ -234,7 +237,7 @@ def program_macros(program_name):
       ui.report_error_alt(str(e))
       ui.report_error("compiled script:")
       print_script(mc.get_saved_bad_script())
-      return
+      return False
 
     if verbose_mode:
         ui.report_verbose("compiled script:")
@@ -250,6 +253,7 @@ def program_macros(program_name):
 
     if show_tables:
       print_table("Presets", mc.get_presets())
+      print_table("Includes", mc.get_includes())
       print_table("Resolved Values", mc.get_resolved())
       print_table("Unresolved Macros", mc.get_unresolved())
       print_table("Final Macro Numbers", mc.get_final_macro_numbers())
@@ -261,14 +265,16 @@ def program_macros(program_name):
         print_script(compiled_script)
       sys.exit("\nExiting...\n")
 
+    script_ok = True
     if not dryrun:
       ui.report_info("2. Programming")
       for script_text in compiled_script:
         set_script(script_text) 
       print
       ui.report_info("3. Verifying")
-      verify_programming(compiled_script)
+      script_ok = verify_programming(compiled_script)
 
+    return script_ok
 
 def print_script(script_lines):
   for script_text in script_lines:
@@ -327,7 +333,7 @@ def summary():
   print
 
 def upload_programs():
-    program_macros(program)
+    return program_macros(program)
 
 def run_default_macro():
     if dryrun:
@@ -357,8 +363,8 @@ def setup():
     introduction()
 
 def loop():
-    upload_programs()
-    run_default_macro()
+    if upload_programs():
+        run_default_macro()
     summary()
     sys.exit()
 
