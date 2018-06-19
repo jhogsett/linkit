@@ -1,11 +1,9 @@
 
 %include symbols
 
-%run-macro swinger-app
-
 %include swinger
-
 %include wanderer
-
 %include hsl-sequencer
+
+%run-macro swinger-app
 

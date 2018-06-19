@@ -1,5 +1,6 @@
 
 %include symbols
+%run-macro fancy
 
 $render-time 100
 $width0 15

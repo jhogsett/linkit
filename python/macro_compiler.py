@@ -333,6 +333,10 @@ def replace_args(line, start_delimiter, end_delimiter, replacement):
 
 # ----------------------------------------------------
 
+def report_progress():
+    if not verbose_mode:
+        ui.write(tc.green("."))
+
 def is_macro_number_in_use(macro_number):
   for value in macros.values():
     if int(value[1:-1]) == macro_number:
@@ -359,8 +363,7 @@ def resolution_pass(script_lines):
   passes += 1
   if verbose_mode:
     ui.report_verbose("Resolution pass #" + str(passes))
-  #else:
-  #  ui.write(".")
+  report_progress()
   new_lines = filter(None, new_lines)
   return new_lines
 
@@ -398,8 +401,7 @@ def assign_final_macro_number(line):
       raise ValueError("No available macro numbers available during final number assignment")
   if verbose_mode:
     ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
-#  else:
-#    ui.write(".")
+  report_progress()
   final_macro_numbers[proxy_macro_number] = final_macro_number
 
  # temporarily replace this macro's unresolved references 
@@ -459,8 +461,7 @@ def process_finalized_macro_numbers(script_lines):
     prev_lines = processed_lines
     if verbose_mode:
       ui.report_verbose("-processing pass to finalize macro numbers")
-#    else:
-#      ui.write(".")
+    report_progress()
     processed_lines = process_finalized_macro_numbers_pass(processed_lines)
     if processed_lines == prev_lines:
       # no more resolving is possible

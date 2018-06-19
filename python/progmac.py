@@ -225,11 +225,12 @@ def verify_programming(compiled_script):
       print tc.green("Expected: " + compiled_line)
       print tc.red("     Got: " + programmed_line)
       print
+    ui.write(tc.green('.'))
   return script_ok
 
 def program_macros(program_name):
     compiled_script = ""
-    ui.report_info("1. Compiling")
+    ui.report_info_header("1. Compiling ")
     try:
       compiled_script = mc.compile_file(program_name)
     except ValueError, e:
@@ -238,6 +239,7 @@ def program_macros(program_name):
       ui.report_error("compiled script:")
       print_script(mc.get_saved_bad_script())
       return False
+    print
 
     if verbose_mode:
         ui.report_verbose("compiled script:")
@@ -267,11 +269,11 @@ def program_macros(program_name):
 
     script_ok = True
     if not dryrun:
-      ui.report_info("2. Programming")
+      ui.report_info_header("2. Recording ")
       for script_text in compiled_script:
         set_script(script_text) 
       print
-      ui.report_info("3. Verifying")
+      ui.report_info_header("3. Verifying ")
       script_ok = verify_programming(compiled_script)
 
     return script_ok
@@ -326,7 +328,8 @@ def summary():
   print
   print
   print tc.green("%d Macros successfully programmed" % macro_count)
-  print tc.yellow("%d Macros remaining (%d%%)" % (remaining_macros, remaining_macros_percent))
+  print
+  print tc.yellow("%d Used / %d free macros  (%d%% / %d%%)" % (macro_count, remaining_macros, used_macros_percent, remaining_macros_percent))
   print tc.yellow("%d Used / %d free macro bytes (%d%% / %d%%)" % (bytes_programmed, remaining_macro_bytes, used_bytes_percent, remaining_bytes_percent))
   print tc.yellow("%d Used / %d free sequencers (%d%% / %d%%)" % (used_sequencers, remaining_sequencers, used_sequencers_percent, remaining_sequencers_percent))
   print tc.cyan("%d Bytes per macro (%d%% efficiency)" % (bytes_used_per_macro, bytes_used_per_macro_percent))
