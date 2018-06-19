@@ -223,7 +223,7 @@ def run_macro(macro):
 
 def get_macro(macro):
     macro_bytes = get_full_macro_bytes(macro)
-    return translate_macro_bytes(macro_bytes)
+    return str(macro) + ":set:" + translate_macro_bytes(macro_bytes)
 
 def get_macro_bytes(macro):
     bytes_string = command_str("1," + str(macro) + ":tst")[:-1]
@@ -325,7 +325,7 @@ def decode_args(bytes):
   value_bytes = remaining_bytes[:size]
   #print "value bytes: " + str(value_bytes)
   packed_as_bytes = struct.pack(str(size) + "B", *tuple(value_bytes))
-  values = struct.unpack(">" + format, packed_as_bytes)
+  values = struct.unpack(format, packed_as_bytes)
   #print "values: " + str(values)
   args_string = ""
   for value in values:
