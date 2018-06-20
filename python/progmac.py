@@ -195,7 +195,10 @@ def get_list_width(list):
   return result
 
 def print_table(description, table):
+    print
+    ui.report_info_alt("------------------------------------------------------")
     ui.report_info_alt(description + ":")
+    ui.report_info_alt("------------------------------------------------------")
     keys = table.keys()
     values = table.values()
     keys_width = get_list_width(keys)
@@ -212,6 +215,7 @@ def print_table(description, table):
           print_script(value)
         else:
           ui.info_entry_alt(key_title, str(value))
+    print
 
 def verify_programming(compiled_script):
   script_ok = True
@@ -246,6 +250,22 @@ def program_macros(program_name):
         for script_text in compiled_script:
             ui.report_verbose_alt(script_text)
 
+    compilation_valid = mc.compilation_valid(compiled_script)
+    if not mc.compilation_valid(compiled_script):
+      ui.report_error("Compilation failed!")
+      if not verbose_mode:
+        print_script(compiled_script)
+
+    script_ok = compilation_valid
+    if compilation_valid:
+      if not dryrun:
+        ui.report_info_header("2. Recording ")
+        for script_text in compiled_script:
+          set_script(script_text) 
+        print
+        ui.report_info_header("3. Verifying ")
+        script_ok = verify_programming(compiled_script)
+
     if show_output and not verbose_mode:
         print
         ui.report_info("compiled script:")
@@ -260,21 +280,6 @@ def program_macros(program_name):
       print_table("Unresolved Macros", mc.get_unresolved())
       print_table("Final Macro Numbers", mc.get_final_macro_numbers())
       print_table("Macros", mc.get_macros())
-
-    if not mc.compilation_valid(compiled_script):
-      ui.report_error("Compilation failed!")
-      if not verbose_mode:
-        print_script(compiled_script)
-      sys.exit("\nExiting...\n")
-
-    script_ok = True
-    if not dryrun:
-      ui.report_info_header("2. Recording ")
-      for script_text in compiled_script:
-        set_script(script_text) 
-      print
-      ui.report_info_header("3. Verifying ")
-      script_ok = verify_programming(compiled_script)
 
     return script_ok
 
@@ -311,8 +316,14 @@ def introduction():
 
 def summary():
   total_macros = (ending_macro - starting_macro) + 1
-  used_macros = macro_count
-  remaining_macros = total_macros - macro_count
+  # count the number of wasted macros
+  wasted_macros = 0
+  for key in mc.get_final_macro_numbers():
+    if "-" in str(key):
+      wasted_macros += 1
+  wasted_macros_percent = (100.0 * wasted_macros / total_macros)
+  used_macros = macro_count + wasted_macros
+  remaining_macros = total_macros - used_macros
   used_macros_percent = (100.0 * used_macros / total_macros)
   remaining_macros_percent = (100.0 * remaining_macros / total_macros)
   remaining_sequencers = mc.remaining_sequencers()
@@ -320,19 +331,22 @@ def summary():
   remaining_sequencers_percent = round(100.0 * remaining_sequencers / number_of_sequencers)
   used_sequencers_percent = round(100.0 * used_sequencers / number_of_sequencers)
   total_macro_bytes = 1024
-  remaining_macro_bytes = total_macro_bytes - bytes_programmed
-  used_bytes_percent = round(100.0 * bytes_programmed / total_macro_bytes)
+  total_bytes_programmed = used_macros * num_macro_chars
+  remaining_macro_bytes = total_macro_bytes - total_bytes_programmed
+  used_bytes_percent = round(100.0 * total_bytes_programmed / total_macro_bytes)
   remaining_bytes_percent = round(100.0 * remaining_macro_bytes / total_macro_bytes)
   bytes_used_per_macro = round(bytes_programmed / used_macros) if int(used_macros) > 0 else 0
   bytes_used_per_macro_percent = round(100.0 * bytes_used_per_macro / num_macro_chars)
+
   print
   print
   print tc.green("%d Macros successfully programmed" % macro_count)
   print
-  print tc.yellow("%d Used / %d free macros  (%d%% / %d%%)" % (macro_count, remaining_macros, used_macros_percent, remaining_macros_percent))
-  print tc.yellow("%d Used / %d free macro bytes (%d%% / %d%%)" % (bytes_programmed, remaining_macro_bytes, used_bytes_percent, remaining_bytes_percent))
+  print tc.yellow("%d Used / %d free macros  (%d%% / %d%%)" % (used_macros, remaining_macros, used_macros_percent, remaining_macros_percent))
+  print tc.yellow("%d Used / %d free macro bytes (%d%% / %d%%)" % (total_bytes_programmed, remaining_macro_bytes, used_bytes_percent, remaining_bytes_percent))
   print tc.yellow("%d Used / %d free sequencers (%d%% / %d%%)" % (used_sequencers, remaining_sequencers, used_sequencers_percent, remaining_sequencers_percent))
   print tc.cyan("%d Bytes per macro (%d%% efficiency)" % (bytes_used_per_macro, bytes_used_per_macro_percent))
+  print tc.cyan("%d Carry over macros (%d%% of total)" % (wasted_macros, wasted_macros_percent))
   print
 
 def upload_programs():
