@@ -234,13 +234,17 @@ def process_allocate_sequencer(line):
 def process_evaluate_python(line):
   if len(line) < 1:
     return line
-  if not line_has_unresolved_variables(line):
-    expression = extract_contents(line, "`", "`")
+#  if not line_has_unresolved_variables(line):
+  expression = extract_contents(line, "`", "`")
+  if not line_has_unresolved_variables(expression):
     if len(expression) > 0:
+      #print "python: " + expression
       ui.report_verbose_alt("-evaluating Python: " + expression)
       result = eval(expression)
       ui.report_verbose_alt("=evaluated result: " + str(result))
       return replace_args(line, "`", "`", str(result))
+  #else:
+    #print "can't process line due to unresolved variables " + line
   return line
 
 def process_place_template(line):

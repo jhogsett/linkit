@@ -1,6 +1,10 @@
+# ----------------------------------------------------------------
+# Inchworm
+# 5 rainbow wandering inchworms
+# ----------------------------------------------------------------
 
 %include symbols
-%run-macro fancy
+%run-macro inchworm-app
 
 $render-time 100
 $width0 15
@@ -9,51 +13,42 @@ $width2 75
 $time1 50
 $time2 200
 $color 1
-#$seq-type swing-sequencer
 $seq-type sqs
-#$fade-type fast-fade
 $fade-type ffd
 $step 2
 $color-time 100
 $color-step 1
 
-[fancy 10]
+[inchworm-app]
   application
-  (init)
-
-[init]
   <DRAW-PLUS>
   draw-mode
-  <render-time>,<render>
-  schedule
-  (start)
-
-[render !]
-  flush
-
-[start]
-  (((worm-start 5)))
+  (worm-render <render-time>)
+  (((worm-start 2)))
   (hsl-sequencer-start)
 
-(((worm 5 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1`)))
+[worm-render]
+  flush
+
+(((worm 2 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1` X `X+5` `X+10`)))
 
 [[worm-start X
   (worm-start-X)
 ]]
 
-[[worm X TIME1 TIME2 COLOR STEP
+[[worm X TIME1 TIME2 COLOR STEP SEQ1 SEQ2 SEQ3
   [worm-start-X]
-    {seq0-X},<width0>
+    {seq-SEQ1},<width0>
     <seq-type>
-    {seq1-X},<width1>
+    {seq-SEQ2},<width1>
     <seq-type>
-    {seq2-X},<width2>
+    {seq-SEQ3},<width2>
     <seq-type>
     (worm-draw-X TIME1)
     (worm-advance-X TIME2)
 
   [worm-draw-X]
-    <seq1-X>,<MACRO-SEQ>,<worm-math-X>
+    <seq-SEQ2>,<MACRO-SEQ>,<worm-math-X>
     sequence-next-window
     position
     COLOR
@@ -63,16 +58,16 @@ $color-step 1
     reset
 
   [worm-math-X]
-    <seq0-X>
+    <seq-SEQ1>
     sequence
     push
-    <seq2-X>,<GET-CURRENT>
+    <seq-SEQ3>,<GET-CURRENT>
     sequence
     push
     add
 
   [worm-advance-X]
-    <seq2-X>,0,STEP
+    <seq-SEQ3>,0,STEP
     sequence
 ]]
 

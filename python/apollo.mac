@@ -3,7 +3,32 @@
 
 %include swinger
 %include wanderer
+%include inchworm
 %include hsl-sequencer
 
-%run-macro wanderer-app
+%run-macro run1
+
+$rotate-time 30000
+
+[run0]
+  (run1 0)
+  (run2 0)
+  (run3 0)
+
+[run1]
+  (wanderer-app)
+  (run0)
+  (run2 <rotate-time>)
+
+[run2]
+#  <DEFAULT-BRIGHTNESS>
+#  level
+  (swinger-app)
+  (run0)
+  (run3 <rotate-time>)
+
+[run3]
+  (inchworm-app)
+  (run0)
+  (run1 <rotate-time>)
 

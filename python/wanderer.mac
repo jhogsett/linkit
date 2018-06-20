@@ -6,7 +6,7 @@
 %include symbols
 
 $wanderer-draw-mode <DRAW-MIX>
-$wanderer-brightness 100
+$wanderer-brightness 0
 $wanderer-render-time 50
 $wanderer-advance-time 20
 $wanderer-fade-type ffd
@@ -37,12 +37,12 @@ $wanderer-max-half <wanderer-max>
 
 [[wanderer X
     [wanderer-setup-X]
-        {wanderer-seq-X},<wanderer-max>
+        {seq-X},<wanderer-max>
         wheel-sequencer
         (wanderer-advance-X <wanderer-advance-time>)
 
     [wanderer-advance-X]
-        <wanderer-seq-X>,<MACRO-SEQ>,<wanderer-math-X>
+        <seq-X>,<MACRO-SEQ>,<wanderer-math-X>
         sequence
         position
         X
@@ -57,7 +57,7 @@ $wanderer-max-half <wanderer-max>
         <wander-neg-range>
         push
         add
-        <wanderer-seq-X>,<GET-CURRENT>
+        <seq-X>,<GET-CURRENT>
         sequence
         push
         add

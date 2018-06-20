@@ -222,6 +222,7 @@ def verify_programming(compiled_script):
 def program_macros(program_name):
     compiled_script = ""
     ui.report_info_header("1. Compiling ")
+    compilation_succeeded = True
     try:
         compiled_script = mc.compile_file(program_name)
     except ValueError, e:
@@ -229,7 +230,7 @@ def program_macros(program_name):
         ui.report_error_alt(str(e))
         ui.report_error("compiled script:")
         print_script(mc.get_saved_bad_script())
-        return False
+        compilation_succeeded = False
     print
 
     if verbose_mode:
@@ -238,23 +239,25 @@ def program_macros(program_name):
         for script_text in compiled_script:
             ui.report_verbose_alt(script_text)
 
-    compilation_valid = mc.compilation_valid(compiled_script)
-    if not mc.compilation_valid(compiled_script):
-      print
-      ui.report_error("Compilation failed!")
-      if not verbose_mode:
-        print
-        print_script(compiled_script)
+    script_ok = False
+    if compilation_succeeded:
+        compilation_valid = mc.compilation_valid(compiled_script)
+        if not mc.compilation_valid(compiled_script):
+          print
+          ui.report_error("Compilation failed!")
+          if not verbose_mode:
+            print
+            print_script(compiled_script)
 
-    script_ok = compilation_valid
-    if compilation_valid:
-      if not dryrun:
-        ui.report_info_header("2. Recording ")
-        for script_text in compiled_script:
-          set_script(script_text) 
-        print
-        ui.report_info_header("3. Verifying ")
-        script_ok = verify_programming(compiled_script)
+        script_ok = compilation_valid
+        if compilation_valid:
+          if not dryrun:
+            ui.report_info_header("2. Recording ")
+            for script_text in compiled_script:
+              set_script(script_text) 
+            print
+            ui.report_info_header("3. Verifying ")
+            script_ok = verify_programming(compiled_script)
 
     if show_output and not verbose_mode:
         print
