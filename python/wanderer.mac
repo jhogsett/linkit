@@ -16,18 +16,18 @@ $wanderer-max <NUM-LEDS>
 $wanderer-max-half <wanderer-max>
 
 [wanderer-app]
-    app
+    application
     <wanderer-draw-mode>
-    drw
+    draw-mode
     <wanderer-brightness>
-    lev
+    level
     (((wanderer-setup 6)))
     (hsl-sequencer-start)
     (wanderer-render <wanderer-render-time>)
 
 [wanderer-render]
-    mir
-    flu
+    mirror
+    flush
 
 (((wanderer 6)))
 
@@ -38,32 +38,32 @@ $wanderer-max-half <wanderer-max>
 [[wanderer X
     [wanderer-setup-X]
         {wanderer-seq-X},<wanderer-max>
-        seq
+        wheel-sequencer
         (wanderer-advance-X <wanderer-advance-time>)
 
     [wanderer-advance-X]
         <wanderer-seq-X>,<MACRO-SEQ>,<wanderer-math-X>
-        seq
-        pos
+        sequence
+        position
         X
-        pal
+        palette-color
         <wanderer-fade-type>
-        rst
+        reset
 
     [wanderer-math-X]
         <wander-range>
-        rng
-        psh
+        random-number
+        push
         <wander-neg-range>
-        psh
+        push
         add
         <wanderer-seq-X>,<GET-CURRENT>
-        seq
-        psh
+        sequence
+        push
         add
         <wanderer-max-half>
-        psh
-        mod
+        push
+        modulo
 ]]
 
 %include hsl-sequencer

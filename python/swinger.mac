@@ -15,17 +15,17 @@ $swinger-max <NUM-LEDS>
 $swinger-max-half <swinger-max>
 
 [swinger-app]
-    app
+    application
     <DRAW-WRITE>
-    drw
+    draw-mode
     <CONFIG-FADE-RATE>,<swinger-fade-rate>
-    cfg
+    configure
     (swinger-render <swinger-render-time>)
     (hsl-sequencer-start)
     (((swinger-start 6)))
 
 [swinger-render]
-    flu
+    flush
 
 (((swinger 6 15)))
 
@@ -41,13 +41,13 @@ $swinger-max-half <swinger-max>
 
     [swinger-X]
         <seq-X>
-        snw
-        pos
+        sequence-next-window
+        position
         <seq-X>
-        pal
+        palette-color
         <swinger-fade-type>
-        flo
-        rst
+        flood
+        reset
 ]]
 
 %include hsl-sequencer

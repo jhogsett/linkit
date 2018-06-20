@@ -5,5 +5,5 @@
 %include wanderer
 %include hsl-sequencer
 
-%run-macro swinger-app
+%run-macro wanderer-app
 

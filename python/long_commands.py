@@ -91,7 +91,7 @@ long_commands = {
  "run-macro" : "run",
  "delay" : "del",
  "stop" : "stp",
- "random-number-generator" : "rng",
+ "random-number" : "rng",
  "position" : "pos",
  "random-position" : "rps",
  "xy-position" : "xyp",
