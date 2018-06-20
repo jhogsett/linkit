@@ -3,6 +3,7 @@
 import os
 import app_ui as ui
 import terminal_colors as tc
+import long_commands as lc
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
 global number_of_macros, led_command, final_macro_numbers, saved_bad_script, includes
@@ -501,8 +502,10 @@ def resolve_script(script_lines):
   ########################################################################
 
   ui.report_verbose("Pre-processing")
+
   new_lines = pre_rewrite(script_lines)
-  new_lines = process_directives(script_lines)
+  new_lines = translate_commands(new_lines)
+  new_lines = process_directives(new_lines)
   new_lines = remove_blank_lines(new_lines)
   new_lines = remove_comments(new_lines)
   new_lines = capture_templates(new_lines)
@@ -542,6 +545,18 @@ def resolve_script(script_lines):
     if new_lines == prev_lines:
       # no more resolving needed/possible
       break
+  return new_lines
+
+# this assumes all commands are on individual lines
+def translate_commands(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = line.strip()
+    line = lc.translate(line)
+    new_lines.append(line)
+  ui.report_verbose("script after command translation:")
+  if verbose_mode:
+      print_script(new_lines)
   return new_lines
 
 def post_processing(script_lines):

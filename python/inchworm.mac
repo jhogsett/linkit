@@ -9,23 +9,27 @@ $width2 75
 $time1 50
 $time2 200
 $color 1
+#$seq-type swing-sequencer
 $seq-type sqs
+#$fade-type fast-fade
 $fade-type ffd
 $step 2
 $color-time 100
 $color-step 1
 
 [fancy 10]
-  app
+  application
   (init)
 
 [init]
-  <DRAW-PLUS>:drw
-  <render-time>,<render>:sch
+  <DRAW-PLUS>
+  draw-mode
+  <render-time>,<render>
+  schedule
   (start)
 
 [render !]
-  flu
+  flush
 
 [start]
   (((worm-start 5)))
@@ -39,29 +43,37 @@ $color-step 1
 
 [[worm X TIME1 TIME2 COLOR STEP
   [worm-start-X]
-    {seq0-X},<width0>:<seq-type>
-    {seq1-X},<width1>:<seq-type>
-    {seq2-X},<width2>:<seq-type>
+    {seq0-X},<width0>
+    <seq-type>
+    {seq1-X},<width1>
+    <seq-type>
+    {seq2-X},<width2>
+    <seq-type>
     (worm-draw-X TIME1)
     (worm-advance-X TIME2)
 
   [worm-draw-X]
-    <seq1-X>,<MACRO-SEQ>,<worm-math-X>:snw
-    pos
-    COLOR:pal
+    <seq1-X>,<MACRO-SEQ>,<worm-math-X>
+    sequence-next-window
+    position
+    COLOR
+    palette-color
     <fade-type>
-    flo
-    rst
+    flood
+    reset
 
   [worm-math-X]
-    <seq0-X>:seq
-    psh
-    <seq2-X>,<GET-CURRENT>:seq
-    psh
+    <seq0-X>
+    sequence
+    push
+    <seq2-X>,<GET-CURRENT>
+    sequence
+    push
     add
 
   [worm-advance-X]
-    <seq2-X>,0,STEP:seq
+    <seq2-X>,0,STEP
+    sequence
 ]]
 
 %include hsl-sequencer
