@@ -20,6 +20,7 @@ $brightness 20
 
 [init]
     app
+    <DRAW-PLUS>:drw
     <brightness>:lev
 
 [setup-rendering]
@@ -45,23 +46,33 @@ $brightness 20
 
 [[wanderer X
     [start-X]
-        {seq-X},<max>,0:seq
-        <sequence-time>,<sequence-X>:sch
+        {seq-X},<max>,0
+        seq
+        <sequence-time>,<sequence-X>
+        sch
 
     [sequence-X]
-        <seq-X>,<MACRO-SEQ>,<math-X>:seq
+        <seq-X>,<MACRO-SEQ>,<math-X>
+        seq
         pos
-        <seq-X>,0,<ADD-COLOR>:pal
+        <seq-X>
+        pal
         <fade-type>
         rst
 
     [math-X]
-        <wander-range>:rng:psh
-        <wander-neg-range>:psh
+        <wander-range>
+        rng
+        psh
+        <wander-neg-range>
+        psh
         add
-        <seq-X>,<GET-CURRENT>:seq:psh
+        <seq-X>,<GET-CURRENT>
+        seq
+        psh
         add
-        <max-half>:psh
+        <max-half>
+        psh
         mod
 ]]
 

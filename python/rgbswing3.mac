@@ -4,22 +4,26 @@
 
 $max <NUM-LEDS>
 $max-half `<max> / 2`
-$time 100
-$fade-type ffd
-$render-time 100
+$blue-time 100
+$fade-type sfd
+$render-time 90
+$red-time 90
+$green-time 110
 
 [fancy 10]
   app
   (init)
 
 [init]
-  <DRAW-WRITE>:drw
+  <DRAW-PLUS>:drw
   <render-time>,<render>:sch
   (((start 3)))
 
-[render !]
+[render]
+  <DRAW-WRITE>:drw
   mir
   flu
+  <DRAW-PLUS>:drw
 
 [[start X
   (start-X)
@@ -27,7 +31,7 @@ $render-time 100
 
 [start-0]
   {seq0},<max-half>:sws
-  <time>,<render-0>:sch
+  <red-time>,<render-0>:sch
 
 [render-0]
   <seq0>:snw
@@ -39,7 +43,7 @@ $render-time 100
 
 [start-1]
   {seq1},<max-half>:swc
-  <time>,<render-1>:sch
+  <green-time>,<render-1>:sch
 
 [render-1]
   <seq1>:snw
@@ -51,7 +55,7 @@ $render-time 100
 
 [start-2]
   {seq2},<max>:seq
-  <time>,<render-2>:sch
+  <blue-time>,<render-2>:sch
 
 [render-2]
   <seq2>,<MACRO-SEQ>,<math-2>:snw

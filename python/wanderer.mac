@@ -1,0 +1,70 @@
+# ----------------------------------------------------------------
+# Wanderers
+# rainbow wandering pixels with mirror
+# ----------------------------------------------------------------
+
+%include symbols
+
+$wanderer-draw-mode <DRAW-MIX>
+$wanderer-brightness 100
+$wanderer-render-time 50
+$wanderer-advance-time 20
+$wanderer-fade-type ffd
+$wander-range 3
+$wander-neg-range `-(<wander-range> / 2)`
+$wanderer-max <NUM-LEDS>
+$wanderer-max-half <wanderer-max>
+
+[wanderer-app]
+    app
+    <wanderer-draw-mode>
+    drw
+    <wanderer-brightness>
+    lev
+    (((wanderer-setup 6)))
+    (hsl-sequencer-start)
+    (wanderer-render <wanderer-render-time>)
+
+[wanderer-render]
+    mir
+    flu
+
+(((wanderer 6)))
+
+[[wanderer-setup X
+    (wanderer-setup-X)
+]]
+
+[[wanderer X
+    [wanderer-setup-X]
+        {wanderer-seq-X},<wanderer-max>
+        seq
+        (wanderer-advance-X <wanderer-advance-time>)
+
+    [wanderer-advance-X]
+        <wanderer-seq-X>,<MACRO-SEQ>,<wanderer-math-X>
+        seq
+        pos
+        X
+        pal
+        <wanderer-fade-type>
+        rst
+
+    [wanderer-math-X]
+        <wander-range>
+        rng
+        psh
+        <wander-neg-range>
+        psh
+        add
+        <wanderer-seq-X>,<GET-CURRENT>
+        seq
+        psh
+        add
+        <wanderer-max-half>
+        psh
+        mod
+]]
+
+%include hsl-sequencer
+

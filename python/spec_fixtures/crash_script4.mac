@@ -1,6 +1,5 @@
 
 %include symbols
-%run-macro fancy
 
 $render-time 100
 $width0 15
@@ -12,8 +11,6 @@ $color 1
 $seq-type sqs
 $fade-type ffd
 $step 2
-$color-time 100
-$color-step 1
 
 [fancy 10]
   app
@@ -28,10 +25,9 @@ $color-step 1
   flu
 
 [start]
-  (((worm-start 5)))
-  (hsl-sequencer-start)
+  (((worm-start 3)))
 
-(((worm 5 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1`)))
+(((worm 1 <time1> <time2> <color> <step>)))
 
 [[worm-start X
   (worm-start-X)
@@ -64,5 +60,3 @@ $color-step 1
     <seq2-X>,0,STEP:seq
 ]]
 
-%include hsl-sequencer
- 

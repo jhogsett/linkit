@@ -1,4 +1,4 @@
-14:set:red:10:rep:15:run
-15:set:flu
 1:set:blu
+10:set:red:10:rep:11:run
+11:set:flu
 

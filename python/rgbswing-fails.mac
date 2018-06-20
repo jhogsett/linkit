@@ -13,7 +13,6 @@ $render-time 100
   (init)
 
 [init]
-  <DRAW-WRITE>:drw
   <render-time>,<render>:sch
   (((start 3)))
 

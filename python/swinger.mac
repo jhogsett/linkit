@@ -1,0 +1,54 @@
+# ----------------------------------------------------------------
+# Swinger
+# 6 part rainbow consine swing
+# ----------------------------------------------------------------
+
+%include symbols
+
+$swinger-fade-rate 8000
+$swinger-fade-type sfd
+$swinger-sequencer-type swc
+$swinger-base-timing 150
+$swinger-timing-gap 1
+$swinger-render-time <swinger-base-timing>
+$swinger-max <NUM-LEDS>
+$swinger-max-half <swinger-max>
+
+[swinger-app]
+    app
+    <DRAW-WRITE>
+    drw
+    <CONFIG-FADE-RATE>,<swinger-fade-rate>
+    cfg
+    (swinger-render <swinger-render-time>)
+    (hsl-sequencer-start)
+    (((swinger-start 6)))
+
+[swinger-render]
+    flu
+
+(((swinger 6 15)))
+
+[[swinger-start X
+    (setup-swinger-X)
+]]
+
+[[swinger X WIDTH
+    [setup-swinger-X]
+        {seq-X},`X*WIDTH+WIDTH`,`X*WIDTH`
+        <swinger-sequencer-type>
+        (swinger-X `<swinger-base-timing>+(<seq-X>*<swinger-timing-gap>)`)
+
+    [swinger-X]
+        <seq-X>
+        snw
+        pos
+        <seq-X>
+        pal
+        <swinger-fade-type>
+        flo
+        rst
+]]
+
+%include hsl-sequencer
+

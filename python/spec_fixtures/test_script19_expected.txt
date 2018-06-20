@@ -1,0 +1,6 @@
+4:set:1:red:2:grn:3:blu:flu
+5:set:0:red:1:grn:2:blu:flu
+6:set:3:red:4:grn:5:blu:flu
+7:set:2:red:3:grn:4:blu:flu
+8:set:4:red:5:grn:6:blu:flu
+

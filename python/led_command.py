@@ -1,6 +1,8 @@
 import sys
 import serial
 import time
+import math
+import struct
 
 response_wait = 0.01
 global s, verbose_mode, cmd, max_command_chars
@@ -143,8 +145,29 @@ def get_num_eeprom_macros():
 def get_first_eeprom_macro():
     return get_device_config(19)
 
+def get_last_eeprom_macro():
+    return get_first_eeprom_macro() + int(math.ceil(1024.0 / get_num_macro_chars()) - 1);
+
 def get_num_sequencers():
     return get_device_config(20)
+
+def get_num_fine_zones():
+    return get_device_config(21)
+
+# device parameteruseful for compiling and device programming
+def get_device_profile():
+    return {
+        "CHAR-BUFFER-SIZE": get_max_string_length(),
+        "NUM-LEDS": get_num_leds(),
+        "NUM-MACROS": get_num_eeprom_macros(),
+        "NUM-MACRO-CHARS": get_num_macro_chars(),
+        "NUM-SEQUENCERS": get_num_sequencers(),
+        "NUM-FINE-ZONES": get_num_fine_zones(),
+        "NUM-PALETTE-COLORS": get_palette_size(),
+        "START-MACRO": get_first_eeprom_macro(),
+        "END-MACRO": get_last_eeprom_macro(),
+        "CHAR-BUFFER-SIZE": get_max_string_length()
+    }        
 
 def push_command(cmd_text=None):
     global cmd
@@ -184,23 +207,259 @@ def attention(erase=True):
 def set_macro(macro, macro_text, expected_bytes, debug_mode):
     if debug_mode:
       print "macro " + str(macro) + ": ",
-
     bytes = command_int(str(macro) + ":set:" + macro_text)
-
     if debug_mode:
-        print str(bytes) + " bytes"
-        print command_str("1," + str(macro) + ":tst")
-
+        #print str(bytes) + " bytes"
+        macro_bytes = command_str("1," + str(macro) + ":tst")
+        #print "Macro bytes: " + str(macro_bytes)
+        print "Macro: " + lc.get_macro(macro)
     else:
         if expected_bytes > 0 and expected_bytes != bytes:
             raise StandardError("Wrong number of bytes received for macro %s" % str(macro)) 
-
     return bytes
 
 def run_macro(macro):
     command("1:pau:2:cnt:%s:run" % macro)
 
+def get_macro(macro):
+    macro_bytes = get_full_macro_bytes(macro)
+    return str(macro) + ":set:" + translate_macro_bytes(macro_bytes)
+
+def get_macro_bytes(macro):
+    bytes_string = command_str("1," + str(macro) + ":tst")[:-1]
+    byte_strings = bytes_string.split(",")
+    result = []
+    for byte_string in byte_strings:
+      #print "byte string: " + byte_string
+      result.append(int(byte_string))
+    return result
+
+def get_full_macro_bytes(macro):
+  result = []
+  buffer = []
+  macro_size = get_num_macro_chars()
+  last_macro = get_last_eeprom_macro()
+  current_macro = macro
+  index = 0
+  script_terminator_found = False
+  macro_bytes_max = 0
+  while True:
+    if current_macro > last_macro:
+      raise ValueError("Ran out of macro numbers getting a consolidated macro")
+    macro_bytes = get_macro_bytes(current_macro)
+    buffer += macro_bytes
+    macro_bytes_max += macro_size
+    #print str(macro_bytes)
+    #index = 0
+    #script_terminator_found = False
+    while(index < macro_bytes_max):
+      #print "index: " + str(index)
+      #print "len: " + str(len(macro_bytes))
+      #print "max: " + str(macro_bytes_max)
+      byte = buffer[index]
+      if byte == 255 or byte == 0:
+        script_terminator_found = True
+        break
+      if is_arg_marker(byte):
+        format, size = get_arg_decode_info(byte)
+        # index could be the last byte in the buffer
+        # at least one more byte is needed
+        if index + size >= macro_bytes_max:
+          # break the inner loop to get the next set of bytes
+          # and don't increment the index so the byte is checked again
+          break
+        result.append(byte)
+        index += 1
+        for i in range(0, size):
+          #print "INDEX: " + str(index)
+          byte = buffer[index]
+          result.append(byte)
+          index += 1
+      else:
+        result.append(byte)
+        index += 1
+    if script_terminator_found:
+      break;
+    current_macro += 1
+  return result
+
 def stop_all():
     attention()
     command("stp")
+
+#define MACRO_END_MARKER 0xff
+#define MACRO_ARG1_MARKER 0xf9
+#define MACRO_ARG2_MARKER 0xfa
+#define MACRO_ARG3_MARKER 0xfb
+#define MACRO_ARG4_MARKER 0xfc
+#define MACRO_ARG5_MARKER 0xfd
+#define MACRO_ARG6_MARKER 0xfe
+
+def is_arg_marker(byte):
+  return byte >= 240 and byte <= 254
+
+def is_macro_end_marker(byte):
+  return byte == 255
+
+def get_arg_decode_info(marker):
+  decode_args = {
+    249: { "format": "B", "size": 1 },
+    250: { "format": "h", "size": 2 },
+    251: { "format": "hB", "size": 3 },
+    252: { "format": "hh", "size": 4 },
+    253: { "format": "hhB", "size": 5 },
+    254: { "format": "hhh", "size": 6}
+  }
+  format = decode_args[marker]["format"]
+  size = decode_args[marker]["size"]
+  return format, size
+
+def decode_args(bytes):
+  leftover_bytes = []
+  #print "bytes: " + str(bytes) #@@@
+
+  marker = bytes[0]
+  format, size = get_arg_decode_info(marker)
+  remaining_bytes = bytes[1:]
+  #print "remaining bytes: " + str(remaining_bytes)
+  value_bytes = remaining_bytes[:size]
+  #print "value bytes: " + str(value_bytes)
+  packed_as_bytes = struct.pack(str(size) + "B", *tuple(value_bytes))
+  values = struct.unpack(format, packed_as_bytes)
+  #print "values: " + str(values)
+  args_string = ""
+  for value in values:
+    args_string += str(value) + ","
+  return args_string[:-1], size
+
+def translate_macro_bytes(macro_bytes):
+    commands_cutoff = 240
+    macro = []
+    index = 0
+    while index < len(macro_bytes):
+        byte = macro_bytes[index]
+        if byte == 255:
+          break;
+        if is_arg_marker(byte):
+          args_string, size = decode_args(macro_bytes[index:])
+          macro.append(args_string)
+          index += size
+        else:
+          macro.append(lookup_command(byte))
+        index += 1
+    return ":".join(macro)
+
+def lookup_command(byte):
+  return commands()[byte]
+
+def commands():
+    return {
+        1: "flu",
+        2: "rst",
+        3: "era",
+        4: "rot",
+        5: "rep",
+        6: "cpy",
+        7: "flo",
+        8: "mir",
+        9: "dis",
+        10: "zon",
+        11: "win",
+        12: "off",
+        13: "rev",
+        14: "rgb",
+        15: "hsl",
+        16: "red",
+        17: "org",
+        18: "yel",
+        19: "grn",
+        20: "blu",
+        21: "pur",
+        22: "cyn",
+        23: "mag",
+        24: "lbl",
+        25: "lgr",
+        26: "sea",
+        27: "pnk",
+        28: "amb",
+        29: "olv",
+        30: "sky",
+        31: "tur",
+        32: "lav",
+        33: "ros",
+        34: "dgr",
+        35: "gry",
+        36: "wht",
+        37: "tun",
+        38: "neo",
+        39: "sod",
+        40: "blk",
+        41: "rnd",
+        42: "dyn",
+        43: "ble",
+        44: "max",
+        45: "dim",
+        46: "brt",
+        47: "sta",
+        48: "bli",
+        49: "bl1",
+        50: "bl2",
+        51: "bl3",
+        52: "bl4",
+        53: "bl5",
+        54: "bl6",
+        55: "bla",
+        56: "blb",
+        57: "bld",
+        58: "bre",
+        59: "brd",
+        60: "sfd",
+        61: "ffd",
+        62: "sto",
+        63: "rcl",
+        64: "psh",
+        65: "pau",
+        66: "cnt",
+        67: "clr",
+        68: "lev",
+        69: "fad",
+        70: "art",
+        71: "cfa",
+        72: "blr",
+        73: "efr",
+        74: "tst",
+        75: "cfg",
+        76: "pin",
+        77: "sch",
+        78: "car",
+        79: "set",
+        80: "run",
+        81: "del",
+        82: "stp",
+        83: "rng",
+        84: "pos",
+        85: "rps",
+        86: "xyp",
+        87: "pal",
+        88: "shf",
+        89: "sbl",
+        90: "seq",
+        91: "sqs",
+        92: "swc",
+        93: "sws",
+        94: "snw",
+        95: "csh",
+        96: "css",
+        97: "csl",
+        98: "fan",
+        99: "app",
+        100: "add",
+        101: "sub",
+        102: "mul",
+        103: "div",
+        104: "mod",
+        105: "dif",
+        106: "avg",
+        107: "drw"
+    }
 
