@@ -141,23 +141,9 @@ def set_script(script_text):
         if not debug_mode:
             ui.write(tc.green('.'))
         else:
-          macro_number = int(script_text.split(":")[0])
-
-#          macro_bytes = lc.get_macro_bytes(macro_number)
-#          #print "bytes programmed: " + str(bytes)
-#          #print macro_bytes
-#          set_macro_string = str(macro_number) + ":set:" + lc.get_macro(macro_number)
-#          if set_macro_string != script_text:
-#            print
-#            ui.report_error("programmed script mismatch")
-#            ui.report_error("expected: " + script_text)
-#            ui.report_error("got: " + set_macro_string)
-#            print
-
-          print lc.get_macro(macro_number)
-
-#          else:
-#           ui.report_info(script_text)
+            macro_number = int(script_text.split(":")[0])
+            print lc.get_macro(macro_number)
+        #print@@@
     except ValueError as e:
       print str(e) + " - retrying"
       set_script(script_text)
@@ -230,30 +216,34 @@ def verify_programming(compiled_script):
       print tc.red("     Got: " + programmed_line)
       print
     ui.write(tc.green('.'))
+  print
   return script_ok
 
 def program_macros(program_name):
     compiled_script = ""
     ui.report_info_header("1. Compiling ")
     try:
-      compiled_script = mc.compile_file(program_name)
+        compiled_script = mc.compile_file(program_name)
     except ValueError, e:
-      ui.report_error("Failed to compiled script. Reported error: ")
-      ui.report_error_alt(str(e))
-      ui.report_error("compiled script:")
-      print_script(mc.get_saved_bad_script())
-      return False
+        ui.report_error("Fatal error compiling script. Reported error: ")
+        ui.report_error_alt(str(e))
+        ui.report_error("compiled script:")
+        print_script(mc.get_saved_bad_script())
+        return False
     print
 
     if verbose_mode:
+        print
         ui.report_verbose("compiled script:")
         for script_text in compiled_script:
             ui.report_verbose_alt(script_text)
 
     compilation_valid = mc.compilation_valid(compiled_script)
     if not mc.compilation_valid(compiled_script):
+      print
       ui.report_error("Compilation failed!")
       if not verbose_mode:
+        print
         print_script(compiled_script)
 
     script_ok = compilation_valid
@@ -271,9 +261,9 @@ def program_macros(program_name):
         ui.report_info("compiled script:")
         for script_text in compiled_script:
             ui.report_info_alt(script_text)
-        print
 
     if show_tables:
+      print
       print_table("Presets", mc.get_presets())
       print_table("Includes", mc.get_includes())
       print_table("Resolved Values", mc.get_resolved())
@@ -338,7 +328,6 @@ def summary():
   bytes_used_per_macro = round(bytes_programmed / used_macros) if int(used_macros) > 0 else 0
   bytes_used_per_macro_percent = round(100.0 * bytes_used_per_macro / num_macro_chars)
 
-  print
   print
   print tc.green("%d Macros successfully programmed" % macro_count)
   print

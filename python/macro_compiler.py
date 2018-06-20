@@ -501,6 +501,7 @@ def resolve_script(script_lines):
   ########################################################################
 
   ui.report_verbose("Pre-processing")
+  new_lines = pre_rewrite(script_lines)
   new_lines = process_directives(script_lines)
   new_lines = remove_blank_lines(new_lines)
   new_lines = remove_comments(new_lines)
@@ -546,19 +547,34 @@ def resolve_script(script_lines):
 def post_processing(script_lines):
   return assign_final_macro_numbers(script_lines)
 
-def clean_up(script_lines):
+def do_clean_ups(script_lines, clean_ups):
+    new_lines = []
+    for line in script_lines:
+        for clean_up in clean_ups:
+            line = line.replace(clean_up, clean_ups[clean_up])
+        new_lines.append(line)
+    return new_lines
+
+# rewrite the script in the new style without the colons
+def pre_rewrite(script_lines):
+    new_lines = []
+    for line in script_lines:
+        segments = line.split(":")
+        for segment in segments:
+            new_lines.append(segment)
+    ui.report_verbose("script after pre-rewrite:")
+    if verbose_mode:
+        print_script(new_lines)
+    return new_lines
+
+def post_clean_up(script_lines):
     clean_ups = {
         # remove unnecessary (zero) arguments
         ",0:" : ":",
         ",0,0:" : ":",
         ":0,0,0:" : ":"
     }
-    new_lines = []
-    for line in script_lines:
-      for clean_up in clean_ups:
-        line = line.replace(clean_up, clean_ups[clean_up])
-      new_lines.append(line)
-    return new_lines
+    return do_clean_ups(script_lines, clean_ups)
 
 def process_directives(script_lines):
   new_lines = []
@@ -748,7 +764,7 @@ def compile_script(script):
   if verbose_mode:
     print_script(new_lines)
 
-  new_lines = clean_up(new_lines)
+  new_lines = post_clean_up(new_lines)
   ui.report_verbose("script after cleanup:")
   if verbose_mode:
     print_script(new_lines)
