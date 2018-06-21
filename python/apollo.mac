@@ -15,7 +15,7 @@ $rotate-time 30000
   (run2 0)
   (run3 0)
 
-[run1 13]
+[run1 10]
   (wanderer-app)
   (run0)
   (run2 <rotate-time>)

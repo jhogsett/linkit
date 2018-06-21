@@ -354,7 +354,9 @@ def run_default_macro():
         if "%run-macro" in resolved:
           run_macro_name = resolved["%run-macro"]
           if run_macro_name in resolved:
-            orig_macro_number = int(resolved[run_macro_name][1:-1]) # remove '
+            orig_macro_number = resolved[run_macro_name]
+            if "'" in str(orig_macro_number):
+              orig_macro_number = int(orig_macro_number[1:-1]) # remove '
             if orig_macro_number in final_macro_numbers:
               run_macro_number = final_macro_numbers[orig_macro_number]
               ui.report_verbose("Running macro: " + run_macro_name + "(" + str(run_macro_number) + ")")
