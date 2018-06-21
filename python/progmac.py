@@ -23,11 +23,11 @@ bytes_programmed = None
 show_output = None
 show_tables = None
 
-global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
+global device_profile, num_leds, starting_macro, num_macro_bytes, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
 device_profile = None
 num_leds = None
 starting_macro = None
-num_macro_chars = None
+num_macro_bytes = None
 ending_macro = None
 number_of_macros = None
 char_buffer_size = None
@@ -36,7 +36,7 @@ number_of_colors = None
 number_of_sequencers = None
 
 def get_options():
-    global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, show_tables, num_macro_chars_override, starting_macro_override, ending_macro_override, char_buffer_override
+    global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, show_tables, num_macro_bytes_override, starting_macro_override, ending_macro_override, char_buffer_override
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("program", help="program to transmit")
@@ -58,7 +58,7 @@ def get_options():
     verbose_mode = args.verbose
     debug_mode = args.debug
 
-    num_macro_chars_override = args.bytes_per_macro
+    num_macro_bytes_override = args.bytes_per_macro
     starting_macro_override = args.starting_macro
     ending_macro_override = args.ending_macro
     char_buffer_override = args.char_buffer
@@ -68,8 +68,8 @@ def get_options():
     show_tables = args.show_tables
 
 def initialize():
-    global app_description,bytes_programmed
-    global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
+    global app_description, bytes_programmed
+    global device_profile, num_leds, starting_macro, num_macro_bytes, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers, last_macro_bytes, total_macro_bytes
     app_description = "Apollo Lighting System - Macro Programmer v.2.0 6-1-2018"
     get_options()
 
@@ -89,16 +89,18 @@ def initialize():
     device_profile = lc.get_device_profile()
     num_leds = device_profile["NUM-LEDS"]
     starting_macro = device_profile["START-MACRO"]
-    num_macro_chars = device_profile["NUM-MACRO-CHARS"]
+    total_macro_bytes = device_profile["TOTAL-MACRO-BYTES"]
+    num_macro_bytes = device_profile["NUM-MACRO-BYTES"]
+    last_macro_bytes = device_profile["LAST-MACRO-BYTES"]
     ending_macro = device_profile["END-MACRO"]
-    number_of_macros = device_profile["NUM-MACRO-CHARS"]
+    number_of_macros = device_profile["NUM-MACRO-BYTES"]
     char_buffer_size = device_profile["CHAR-BUFFER-SIZE"]
     number_of_fine_zones = device_profile["NUM-FINE-ZONES"]
     number_of_colors = device_profile["NUM-PALETTE-COLORS"]
     number_of_sequencers = device_profile["NUM-SEQUENCERS"]
 
-    if num_macro_chars_override != 0:
-      num_macro_chars = num_macro_chars_override
+    if num_macro_bytes_override != 0:
+      num_macro_bytes = num_macro_bytes_override
     if starting_macro_override != 0:
       starting_macro = starting_macro_override
     if ending_macro_override != 0:
@@ -107,7 +109,7 @@ def initialize():
       char_buffer_size = char_buffer_override
 
     all_presets = merge_two_dicts(device_profile, get_command_line_presets())
-    mc.begin(lc, verbose_mode, all_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size)
+    mc.begin(lc, verbose_mode, all_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_bytes, char_buffer_size, last_macro_bytes)
     if dryrun:
       lc.resume()
 
@@ -260,12 +262,6 @@ def program_macros(program_name):
             ui.report_info_header("3. Verifying ")
             script_ok = verify_programming(compiled_script)
 
-    if show_output and not verbose_mode:
-        print
-        ui.report_info("compiled script:")
-        for script_text in compiled_script:
-            ui.report_info_alt(script_text)
-
     if show_tables:
       print
       print_table("Presets", mc.get_presets())
@@ -274,6 +270,12 @@ def program_macros(program_name):
       print_table("Unresolved Macros", mc.get_unresolved())
       print_table("Final Macro Numbers", mc.get_final_macro_numbers())
       print_table("Macros", mc.get_macros())
+
+    if show_output and not verbose_mode:
+        print
+        ui.report_info("compiled script:")
+        for script_text in compiled_script:
+            ui.report_info_alt(script_text)
 
     return script_ok
 
@@ -288,7 +290,7 @@ def introduction():
 
     ui.report_verbose("verbose mode")
     ui.report_verbose("debug mode: " + str(debug_mode))
-    ui.report_verbose("macro chars override: " + str(num_macro_chars_override))
+    ui.report_verbose("macro bytes override: " + str(num_macro_bytes_override))
     ui.report_verbose("start macro override: " + str(starting_macro_override))
     ui.report_verbose("end macro override: " + str(ending_macro_override))
     ui.report_verbose("char buffer override: " + str(char_buffer_override))
@@ -297,7 +299,7 @@ def introduction():
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
     ui.report_info(ui.intro_entry("Number of macros", (ending_macro - starting_macro) + 1))
     ui.report_info(ui.intro_entry("Number of sequencers", number_of_sequencers))
-    ui.report_info(ui.intro_entry("Bytes per macro", num_macro_chars))
+    ui.report_info(ui.intro_entry("Bytes per macro", num_macro_bytes))
     ui.report_info(ui.intro_entry("First macro", starting_macro))
     ui.report_info(ui.intro_entry("Last macro", ending_macro))
     ui.report_info(ui.intro_entry("Char buffer size", char_buffer_size))
@@ -324,13 +326,17 @@ def summary():
   used_sequencers = number_of_sequencers - remaining_sequencers
   remaining_sequencers_percent = round(100.0 * remaining_sequencers / number_of_sequencers)
   used_sequencers_percent = round(100.0 * used_sequencers / number_of_sequencers)
-  total_macro_bytes = 1024
-  total_bytes_programmed = used_macros * num_macro_chars
+  total_bytes_programmed = used_macros * num_macro_bytes
+
+  if ending_macro in mc.get_final_macro_numbers().keys():
+    #reduce by the missing bytes in the ending macro
+    total_bytes_programmed -= (num_macro_bytes - last_macro_bytes)
+
   remaining_macro_bytes = total_macro_bytes - total_bytes_programmed
   used_bytes_percent = round(100.0 * total_bytes_programmed / total_macro_bytes)
   remaining_bytes_percent = round(100.0 * remaining_macro_bytes / total_macro_bytes)
   bytes_used_per_macro = round(bytes_programmed / used_macros) if int(used_macros) > 0 else 0
-  bytes_used_per_macro_percent = round(100.0 * bytes_used_per_macro / num_macro_chars)
+  bytes_used_per_macro_percent = round(100.0 * bytes_used_per_macro / num_macro_bytes)
 
   print
   print tc.green("%d Macros successfully programmed" % macro_count)

@@ -133,7 +133,7 @@ def get_extra_shuffles_enabled():
 def get_blend_enabled():
     return get_device_config(15)
 
-def get_num_macro_chars():
+def get_num_macro_bytes():
     return get_device_config(16)
 
 def get_num_memory_macros():
@@ -146,7 +146,7 @@ def get_first_eeprom_macro():
     return get_device_config(19)
 
 def get_last_eeprom_macro():
-    return get_first_eeprom_macro() + int(math.ceil(1024.0 / get_num_macro_chars()) - 1);
+    return get_first_eeprom_macro() + int(math.ceil(1024.0 / get_num_macro_bytes()) - 1);
 
 def get_num_sequencers():
     return get_device_config(20)
@@ -154,13 +154,19 @@ def get_num_sequencers():
 def get_num_fine_zones():
     return get_device_config(21)
 
+def get_last_macro_bytes():
+    bytes_per_macro = get_num_macro_bytes()
+    return (1024 - ((1024 / bytes_per_macro) * bytes_per_macro))
+
 # device parameteruseful for compiling and device programming
 def get_device_profile():
     return {
         "CHAR-BUFFER-SIZE": get_max_string_length(),
         "NUM-LEDS": get_num_leds(),
         "NUM-MACROS": get_num_eeprom_macros(),
-        "NUM-MACRO-CHARS": get_num_macro_chars(),
+        "TOTAL-MACRO-BYTES": 1024,
+        "NUM-MACRO-BYTES": get_num_macro_bytes(),
+        "LAST-MACRO-BYTES": get_last_macro_bytes(),
         "NUM-SEQUENCERS": get_num_sequencers(),
         "NUM-FINE-ZONES": get_num_fine_zones(),
         "NUM-PALETTE-COLORS": get_palette_size(),
@@ -237,7 +243,7 @@ def get_macro_bytes(macro):
 def get_full_macro_bytes(macro):
   result = []
   buffer = []
-  macro_size = get_num_macro_chars()
+  macro_size = get_num_macro_bytes()
   last_macro = get_last_eeprom_macro()
   current_macro = macro
   index = 0

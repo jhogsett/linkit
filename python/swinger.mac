@@ -24,7 +24,7 @@ $swinger-max-half <swinger-max>
     (hsl-sequencer-start)
     (((swinger-start 6)))
 
-[swinger-render]
+[swinger-render !]
     flush
 
 (((swinger 6 15)))

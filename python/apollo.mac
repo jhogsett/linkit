@@ -10,19 +10,20 @@
 
 $rotate-time 30000
 
+[fancy 10]
+  (swinger-app)
+
 [run0]
   (run1 0)
   (run2 0)
   (run3 0)
 
-[run1 10]
+[run1 11]
   (wanderer-app)
   (run0)
   (run2 <rotate-time>)
 
 [run2]
-#  <DEFAULT-BRIGHTNESS>
-#  level
   (swinger-app)
   (run0)
   (run3 <rotate-time>)

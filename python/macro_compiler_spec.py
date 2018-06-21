@@ -44,9 +44,9 @@ def initialize():
     device_profile = lc.get_device_profile()
     num_leds = device_profile["NUM-LEDS"]
     starting_macro = device_profile["START-MACRO"]
-    num_macro_chars = device_profile["NUM-MACRO-CHARS"]
+    num_macro_chars = device_profile["NUM-MACRO-BYTES"]
     ending_macro = device_profile["END-MACRO"]
-    number_of_macros = device_profile["NUM-MACRO-CHARS"]
+    number_of_macros = device_profile["NUM-MACROS"]
     char_buffer_size = device_profile["CHAR-BUFFER-SIZE"]
     number_of_fine_zones = device_profile["NUM-FINE-ZONES"]
     number_of_colors = device_profile["NUM-PALETTE-COLORS"]

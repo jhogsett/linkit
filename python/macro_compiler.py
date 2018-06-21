@@ -7,7 +7,7 @@ import long_commands as lc
 import code
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
-global number_of_macros, led_command, final_macro_numbers, saved_bad_script, includes
+global number_of_macros, led_command, final_macro_numbers, saved_bad_script, includes, last_macro_bytes
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -26,11 +26,12 @@ bytes_per_macro = None
 led_command = None
 saved_bad_script = []
 includes = {}
+last_macro_bytes = None
 
 # ----------------------------------------------------
 
-def begin(led_command_, verbose_mode_ = False, presets_ = {}, starting_macro = 10, ending_macro = 50, number_of_sequencers_ = 10, bytes_per_macro_ = 25, max_string_length_ = 60):
-  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length, next_available_macro_number
+def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_):
+  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes
   led_command = led_command_
   verbose_mode = verbose_mode_
   starting_macro_number = starting_macro
@@ -40,6 +41,7 @@ def begin(led_command_, verbose_mode_ = False, presets_ = {}, starting_macro = 1
   max_string_length = max_string_length_
   number_of_macros = (ending_macro_number - starting_macro_number) + 1
   next_available_macro_number = starting_macro_number
+  last_macro_bytes = last_macro_bytes
   presets = presets_
   resolve_presets(presets)
   ui.begin(verbose_mode)
@@ -446,6 +448,8 @@ def assign_final_macro_number(line):
   if bytes_used == 0:
     # todo: need more appropriate error type
     raise ValueError("Macro size measurement failed with retries")
+  if final_macro_number == ending_macro_number and bytes_used > last_macro_bytes:
+    raise ValueError("Not enough remaining bytes in the last macro position for Macro %d" % final_macro_number)
   # consume any additional macro numbers to account for byte overage
   consumed_macro_number = final_macro_number
   remaining_bytes = bytes_used - (bytes_per_macro-1)
@@ -622,7 +626,12 @@ def process_directives(script_lines):
     args = get_key_args(line, "%")
     if len(args) >= 2:
       directive_name = "%" + args[0]
-      directive_value = args[1]
+      if len(args) == 2:
+        directive_value = args[1]
+      elif len(args) == 3:
+        directive_value = { args[2] : args[3] }
+      else:
+        directive_value = args[1:].split()
       set_resolved(directive_name, directive_value)
     else:
       new_lines.append(line)
