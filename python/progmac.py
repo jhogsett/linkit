@@ -226,6 +226,7 @@ def program_macros(program_name):
     try:
         compiled_script = mc.compile_file(program_name)
     except ValueError, e:
+        print
         ui.report_error("Fatal error compiling script. Reported error: ")
         ui.report_error_alt(str(e))
         ui.report_error("compiled script:")

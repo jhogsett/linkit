@@ -4,6 +4,7 @@ import os
 import app_ui as ui
 import terminal_colors as tc
 import long_commands as lc
+import code
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
 global number_of_macros, led_command, final_macro_numbers, saved_bad_script, includes
@@ -144,7 +145,11 @@ def process_set_macro(line):
       if macro_number == "!":
         ui.report_verbose("- forced final macro: " + macro_name)
         macro_number = ending_macro_number
-      proxy_macro_number = "'" + ("0" + str(macro_number))[-2:] + "'"
+#@@@      proxy_macro_number = "'" + ("0" + str(macro_number))[-2:] + "'"
+      proxy_macro_number = str(macro_number)
+
+      final_macro_numbers[macro_number] = int(macro_number)
+
       ui.report_verbose("new forced macro: " + macro_name)
       set_resolved(macro_name, proxy_macro_number)
       set_macro(macro_name, proxy_macro_number)
@@ -342,10 +347,19 @@ def report_progress():
     if not verbose_mode:
         ui.write(tc.green("."))
 
+# expects a proxy macro number in the form '4'
 def is_macro_number_in_use(macro_number):
   for value in macros.values():
-    if int(value[1:-1]) == macro_number:
-      return True
+    #print "!"
+    #print value
+#@@@
+    if "'" in str(value):
+      value = int(value[1:-1])
+    if value == macro_number:
+     #print "@@@@@@@@@@@@"
+     #print value
+     #print macro_number
+     return True
   return False
 
 def get_next_macro_number():
@@ -439,6 +453,12 @@ def assign_final_macro_number(line):
     consumed_macro_number += 1
     remaining_bytes -= (bytes_per_macro-1)
     # create a unique key to hold the additional consumed macro number value
+
+    if consumed_macro_number in final_macro_numbers.values():
+      raise ValueError("Macro %d is needed as a carry-over macro but is already assigned" % consumed_macro_number)
+    #print final_macro_number
+    #code.interact(local=dict(globals(), **locals()))
+
     ui.report_verbose("-allocating macro #" + str(consumed_macro_number) + " to macro #" + str(proxy_macro_number)) 
     final_macro_numbers[str(proxy_macro_number) + "-" + str(consumed_macro_number)] = consumed_macro_number
   # return the line with the proxy macro number replaced so it's not processed a second time
@@ -575,6 +595,7 @@ def do_clean_ups(script_lines, clean_ups):
     return new_lines
 
 # rewrite the script in the new style without the colons
+# this simplifies automatic modifying of the script
 def pre_rewrite(script_lines):
     new_lines = []
     for line in script_lines:
