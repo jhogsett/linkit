@@ -44,7 +44,7 @@ $wanderer-max-half <wanderer-max>
         (wanderer-advance-X <wanderer-advance-time>)
 
     [wanderer-advance-X]
-        <seq-X>,<MACRO-SEQ>,<wanderer-math-X>
+        <seq-X>,<MACRO-SEQ>,<wanderer-math-X>        
         sequence
         position
         X

@@ -466,6 +466,7 @@ def commands():
         104: "mod",
         105: "dif",
         106: "avg",
-        107: "drw"
+        107: "drw",
+        108: "pop"
     }
 
