@@ -1,0 +1,85 @@
+
+%include symbols
+%include hsl-sequencer
+
+%run-macro hslswing-app
+
+$max-width <NUM-LEDS>
+$max-width-half `<max-width> / 2`
+$cycle-time 100
+$render-time 100
+$fade-type ffd
+
+[hslswing-app 4]
+	application
+	<DRAW-WRITE>
+	draw-mode
+	(render <render-time>)
+	(init)
+
+[init]
+	(((start 3)))
+	(hsl-sequencer-start)
+
+[render !]
+	mirror
+	flush
+
+[[start X
+	(start-X)
+]]
+
+[start-0]
+	{sequencer0},<max-width-half>
+	wheel-sine-sequencer
+        (render-0 <cycle-time>)
+
+[render-0]
+	<sequencer0>
+	sequence-next-window
+	position
+	<RED>
+	palette-color
+	<fade-type>
+	flood
+	reset
+
+[start-1]
+	{sequencer1},<max-width-half>
+	wheel-cosine-sequencer
+        (render-1 <cycle-time>)
+
+[render-1]
+	<sequencer1>
+	sequence-next-window
+	position
+	<GREEN>
+	palette-color
+	<fade-type>
+	flood
+	reset
+
+[start-2]
+	{sequencer2},<max-width>
+	wheel-sequencer
+        (render-2 <cycle-time>)
+
+[render-2]
+	<sequencer2>,<MACRO-SEQ>,<math-2>
+	sequence-next-window
+	position
+	<BLUE>
+	palette-color
+	<fade-type>
+	flood
+	reset
+
+[math-2]
+	<sequencer0>,<GET-COMPUTED>
+	sequence
+	push
+	<sequencer1>,<GET-COMPUTED>
+	sequence
+	push
+	average
+
