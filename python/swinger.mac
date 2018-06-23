@@ -4,6 +4,8 @@
 # ----------------------------------------------------------------
 
 %include symbols
+%include hsl-sequencer
+
 %run-macro swinger-app
 
 $swinger-fade-rate 8000
@@ -28,15 +30,15 @@ $swinger-max-half <swinger-max>
 [swinger-render !]
     flush
 
-(((swinger 6 15)))
+(((swinger 6)))
 
 [[swinger-start X
     (setup-swinger-X)
 ]]
 
-[[swinger X WIDTH
+[[swinger X
     [setup-swinger-X]
-        {seq-X},`X*WIDTH+WIDTH`,`X*WIDTH`
+        {seq-X},`X*(<NUM-LEDS>/6)+(<NUM-LEDS>/6)`,`X*(<NUM-LEDS>/6)`
         <swinger-sequencer-type>
         (swinger-X `<swinger-base-timing>+(<seq-X>*<swinger-timing-gap>)`)
 
@@ -50,6 +52,4 @@ $swinger-max-half <swinger-max>
         flood
         reset
 ]]
-
-%include hsl-sequencer
 

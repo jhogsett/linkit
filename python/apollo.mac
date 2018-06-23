@@ -6,21 +6,19 @@
 #%include wanderer
 %include hsl-sequencer
 
-%run-macro mellow
-
 $rotate-time 30000
 
-[fancy 4]
+[fancy 11]
   (swinger-app)
 
-[mellow 5]
+[mellow 10]
   (inchworm-app)
 
-[run0]
+[run0 9]
   (run1 0)
   (run2 0)
 
-[run1 6]
+[run1 12]
   (swinger-app)
   (run0)
   (run2 <rotate-time>)
@@ -34,4 +32,6 @@ $rotate-time 30000
 #  (wanderer-app)
 #  (run0)
 #  (run1 <rotate-time>)
+
+%run-macro run1
 
