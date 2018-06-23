@@ -18,54 +18,45 @@ $fade-type ffd
 	(init)
 
 [init]
-	(((start 3)))
+	(((circular-swingers 2)))
+	(average-swinger)
 	(hsl-sequencer-start)
 
 [render !]
 	mirror
 	flush
 
-[[start X
+[[circular-swingers X
 	(start-X)
 ]]
 
-[start-0]
-	{sequencer0},<max-width-half>
-	wheel-sine-sequencer
-        (render-0 <cycle-time>)
+((circular-swinger 0 <RED> sws))
+((circular-swinger 1 <GREEN> swc))
 
-[render-0]
-	<sequencer0>
-	sequence-next-window
-	position
-	<RED>
-	palette-color
-	<fade-type>
-	flood
-	reset
+[[circular-swinger X COLOR TYPE
+	[start-X]
+		{sequencer-X},<max-width-half>
+	        TYPE
+	        (render-X <cycle-time>)
 
-[start-1]
-	{sequencer1},<max-width-half>
-	wheel-cosine-sequencer
-        (render-1 <cycle-time>)
+	[render-X]
+		<sequencer-X>
+		sequence-next-window
+		position
+		COLOR
+		palette-color
+		<fade-type>
+		flood
+		reset
+]]
 
-[render-1]
-	<sequencer1>
-	sequence-next-window
-	position
-	<GREEN>
-	palette-color
-	<fade-type>
-	flood
-	reset
+[average-swinger]
+	{sequencer-a},<max-width>
+        wheel-sequencer
+        (render-a <cycle-time>)
 
-[start-2]
-	{sequencer2},<max-width>
-	wheel-sequencer
-        (render-2 <cycle-time>)
-
-[render-2]
-	<sequencer2>,<MACRO-SEQ>,<math-2>
+[render-a]
+	<sequencer-a>,<MACRO-SEQ>,<math-a>
 	sequence-next-window
 	position
 	<BLUE>
@@ -74,11 +65,11 @@ $fade-type ffd
 	flood
 	reset
 
-[math-2]
-	<sequencer0>,<GET-COMPUTED>
+[math-a]
+	<sequencer-0>,<GET-COMPUTED>
 	sequence
 	push
-	<sequencer1>,<GET-COMPUTED>
+	<sequencer-1>,<GET-COMPUTED>
 	sequence
 	push
 	average
