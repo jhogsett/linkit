@@ -7,9 +7,9 @@
 %run-macro inchworm-app
 
 $render-time 100
-$width0 15
-$width1 90
-$width2 75
+$width0 `<NUM-LEDS> * 1 / 6`
+$width1 <NUM-LEDS>
+$width2 `<NUM-LEDS> * 5 / 6`
 $time1 50
 $time2 200
 $color 1
@@ -24,13 +24,16 @@ $color-step 1
   <DRAW-PLUS>
   draw-mode
   (worm-render <render-time>)
-  (((worm-start 2)))
+  (worms-start)
   (hsl-sequencer-start)
+
+[worms-start]
+  (((worm-start 5)))
 
 [worm-render]
   flush
 
-(((worm 2 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1` X `X+5` `X+10`)))
+(((worm 5 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1` X `X+5` `X+10`)))
 
 [[worm-start X
   (worm-start-X)

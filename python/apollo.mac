@@ -2,34 +2,36 @@
 %include symbols
 
 %include swinger
-%include wanderer
 %include inchworm
+#%include wanderer
 %include hsl-sequencer
 
-%run-macro run1
+%run-macro mellow
 
 $rotate-time 30000
 
-[fancy 10]
+[fancy 4]
   (swinger-app)
+
+[mellow 5]
+  (inchworm-app)
 
 [run0]
   (run1 0)
   (run2 0)
-  (run3 0)
 
-[run1 11]
-  (wanderer-app)
+[run1 6]
+  (swinger-app)
   (run0)
   (run2 <rotate-time>)
 
 [run2]
-  (swinger-app)
-  (run0)
-  (run3 <rotate-time>)
-
-[run3]
   (inchworm-app)
   (run0)
   (run1 <rotate-time>)
+
+#[run3]
+#  (wanderer-app)
+#  (run0)
+#  (run1 <rotate-time>)
 

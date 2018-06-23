@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------
 
 %include symbols
+%run-macro swinger-app
 
 $swinger-fade-rate 8000
 $swinger-fade-type sfd
