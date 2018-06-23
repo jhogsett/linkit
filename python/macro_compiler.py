@@ -406,7 +406,7 @@ def proxy_macro_numbers():
   remove_resolved()
 
 def assign_final_macro_number(line):
-  global final_macro_numbers
+  global final_macro_numbers, saved_bad_script
   start, end = locate_delimiters(line, "'", "'")
   # only process lines starting with proxy macro numbers
   if start != 0:
@@ -419,6 +419,7 @@ def assign_final_macro_number(line):
     final_macro_number += 1
     #ui.report_verbose("trying macro number: " + str(final_macro_number))
     if final_macro_number > ending_macro_number:
+      saved_bad_script = new_lines
       raise ValueError("No available macro numbers available during final number assignment")
   if verbose_mode:
     ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
@@ -459,6 +460,7 @@ def assign_final_macro_number(line):
     # create a unique key to hold the additional consumed macro number value
 
     if consumed_macro_number in final_macro_numbers.values():
+      saved_bad_script = [line]
       raise ValueError("Macro %d is needed as a carry-over macro but is already assigned" % consumed_macro_number)
     #print final_macro_number
     #code.interact(local=dict(globals(), **locals()))

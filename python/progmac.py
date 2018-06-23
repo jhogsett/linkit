@@ -231,7 +231,7 @@ def program_macros(program_name):
         print
         ui.report_error("Fatal error compiling script. Reported error: ")
         ui.report_error_alt(str(e))
-        ui.report_error("compiled script:")
+        ui.report_error("more error details:")
         print_script(mc.get_saved_bad_script())
         compilation_succeeded = False
     print
