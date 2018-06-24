@@ -122,6 +122,8 @@ def process_comment(line):
   line = line.strip()
   if len(line) > 0 and line[0] == "#":
     return ''
+  if "#" in line:
+    return line.split("#")[0]
   return line
 
 def process_blank_line(line):
@@ -533,11 +535,11 @@ def resolve_script(script_lines):
 
   ui.report_verbose("Pre-processing")
 
-  new_lines = pre_rewrite(script_lines)
+  new_lines = remove_blank_lines(script_lines)
+  new_lines = remove_comments(new_lines)
+  new_lines = pre_rewrite(new_lines)
   new_lines = translate_commands(new_lines)
   new_lines = process_directives(new_lines)
-  new_lines = remove_blank_lines(new_lines)
-  new_lines = remove_comments(new_lines)
   new_lines = capture_templates(new_lines)
   new_lines = expand_meta_templates(new_lines)
   new_lines = expand_templates(new_lines)
