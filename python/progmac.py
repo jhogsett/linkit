@@ -365,7 +365,7 @@ def run_default_macro():
               orig_macro_number = int(orig_macro_number[1:-1]) # remove '
             if orig_macro_number in final_macro_numbers:
               run_macro_number = final_macro_numbers[orig_macro_number]
-              ui.report_verbose("Running macro: " + run_macro_name + "(" + str(run_macro_number) + ")")
+              ui.report_info("Running macro: " + run_macro_name + " (" + str(run_macro_number) + ")")
               lc.run_macro(run_macro_number)
             else:
               ui.report_verbose("Skipping run macro: " + str(orig_macro_number) + " (not found)")

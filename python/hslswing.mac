@@ -4,9 +4,10 @@
 # ----------------------------------------------------------------
 
 # version zero of the Apollo language
+# the apollo language is a reverse-polish-notation architecture
 %version 0
-
 # standard device and common use numeric value symbols
+
 %include symbols
 
 # script to color-sequence the palette with a changing start angle
@@ -16,17 +17,17 @@
 %run-macro hslswing-app
 
 #
-# the apollo language is a reverse-polish-notation architecture
-
-#
 # set constants for use in the script
 # there are no variables; all constants are immutable
-#
+# these can be overridden on the command line, such as
+#   valuename=someothervalue
 
 # compute half of the device's total LEDs
-# this allows for scaling to run on any device
+# this value based on the current device allows for 
+# scaling to run on any device
 # recall the value for NUM-LEDS, which is automatically set per device
 # the contents between the back-ticks is a Python expression
+#   that will be evalated once any unresolved values are resolved
 $max-width-half `<NUM-LEDS> / 2`
 
 # cycle each swinger to the next state every 100 ticks

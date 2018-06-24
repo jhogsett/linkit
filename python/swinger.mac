@@ -25,6 +25,9 @@ $swinger-max-half <swinger-max>
     configure
     (swinger-render <swinger-render-time>)
     (hsl-sequencer-start)
+    (swingers-start)
+
+[swingers-start]
     (((swinger-start 6)))
 
 [swinger-render !]

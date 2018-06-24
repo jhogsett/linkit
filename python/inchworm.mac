@@ -4,6 +4,8 @@
 # ----------------------------------------------------------------
 
 %include symbols
+%include hsl-sequencer
+
 %run-macro inchworm-app
 
 $render-time 100
@@ -74,5 +76,4 @@ $color-step 1
     sequence
 ]]
 
-%include hsl-sequencer
  
