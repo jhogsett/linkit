@@ -1,298 +1,116 @@
 # ----------------------------------------------------------------
-# HSL Swing
+# HSL Swing v1.0 6-23-2018
 # 3 circular-swinging wanderers with changing colors
 # ----------------------------------------------------------------
 
-# version zero of the Apollo language
-# the apollo language is a reverse-polish-notation architecture
-%version 0
-# standard device and common use numeric value symbols
+%version 0					# version zero of the Apollo language (RPN)
+%include symbols				# standard device and common use numeric value symbols
+%include hsl-sequencer				# script to color-sequence the palette with a changing start angle
+%run-macro hslswing-app		 		# run this script's main app when done programming
 
-%include symbols
+$max-width-half `<NUM-LEDS> * 1/2`		# set constant for half of the device's total LEDs
+$cycle-time 100					# cycle each swinger to the next state every 100 ticks
+$render-time 100				# render the display buffer to the LEDs every 100 ticks
 
-# script to color-sequence the palette with a changing start angle
-%include hsl-sequencer
+# --------------------------------------------
+# setup
+# --------------------------------------------
 
-# run this script's main app when done programming
-%run-macro hslswing-app
+[hslswing-app 4]				# start a macro called `hslswing-app` and pre-assign macro #4
+	application				# mark this macro as an 'application' to clear and reset the device
 
-#
-# set constants for use in the script
-# there are no variables; all constants are immutable
-# these can be overridden on the command line, such as
-#   valuename=someothervalue
-
-# compute half of the device's total LEDs
-# this value based on the current device allows for 
-# scaling to run on any device
-# recall the value for NUM-LEDS, which is automatically set per device
-# the contents between the back-ticks is a Python expression
-#   that will be evalated once any unresolved values are resolved
-$max-width-half `<NUM-LEDS> / 2`
-
-# cycle each swinger to the next state every 100 ticks
-$cycle-time 100
-
-# render the display buffer to the LEDs every 100 ticks
-$render-time 100
-
-# start a macro called `hslswing-app` and pre-assign in macro position #4
-# pre-assigning macro numbers assures they can be easily restarted later
-[hslswing-app 4]
-
-        # mark this macro as an 'application'
-	# this resets several device parameters, stops all running schedules
-        #   and clears the display
-	application
-
-	# set the draw mode to overwrite (replace color)
-	<DRAW-WRITE>
+	<DRAW-WRITE>				# set the draw mode to overwrite (replace)
 	draw-mode
 
-	# schedule the render macro to run periodically
-	(render <render-time>)
+	(render <render-time>)			# schedule the render macro to run periodically
+	(init)					# call 'init' macro to set up swingers
 
-	# do the remainder of initializations
-	# this is split off into its own macro rather than being included
-	# with this one due to memory constraints and carry-over macros
-	#
-	# * there are 1024 bytes of macro memory
-	# * each macro has storage for 15 bytes
-	# * this leave room for 68 full-sized macros and a final 69th partial macro
-	# * macros longer than 15 bytes extended into the adjacement macros, causing 
-	#   them to be marked as 'used'
-	#
-	# when macros grow very large, they make it difficult for the packer to
-	# fit the script into the available macros; also the device has maximum
-	# command buffer size
-	(init)
+# --------------------------------------------
 
-# start a macro called 'init'
-# this will handle remaining setups
-# a macro number will be assigned automatically for it
-[init]
+[init]						# define macro 'init' to set up schedules
+	(((circular-swingers 2)))		# invoke meta-template 'circular-swingers' to start up th swingers'
+                                        	# this expands to: ((circular-swingers 0)) and ((circular-swingers 1))
+	(average-swinger)			# start up the averaging swinger
+	(hsl-sequencer-start)			# start up the hsl sequencer
 
-	# invoke a meta-template to start up the circular swingers
-	# this creates two template-invocations, 
-        # passing the string-replacement values "0" and "1"
-	(((circular-swingers 2)))
+# --------------------------------------------
 
-	# start up the averaging swinger
-	(average-swinger)
+[render !]					# define macro 'render' in the last (truncated) macro # to update the display
+	mirror					# duplicate the first half of the LED colors to the second half, reversed
+	flush					# push the display buffer to the LEDs
 
-	# start up the hsl sequencer
-	(hsl-sequencer-start)
+# --------------------------------------------
+# circular (sin/cos) swingers
+# --------------------------------------------
 
-# start a macro called 'render'
-# this will push the display buffer to the LEDs periodically
-# the special pre-assigned macro number "!" tells the compiler
-#   to put this macro in the very last macro position
-# rendering macros are typically small, so they're ideal to
-#   use for this otherwise unusable space
-# with 15-byte macros, the final macro has 4 bytes
-# a command requires a single byte so up to four commands 
-#   can be stored
-[render !]
+[[circular-swingers X				# create a template called 'circular-swingers' to call a variable number of macros
+	(start-X)				# replace 'X' with the passed value and call the macro name
+]]                                              # close the template definition
 
-	# duplicate the first half of the LED colors to the second half, reversed
-	mirror
+# --------------------------------------------
 
-	# push the display buffer to the LEDs
-	flush
+((circular-swinger 0 <RED> sws))		# expand template 'circular-swinger' with values for two swingers
+((circular-swinger 1 <GREEN> swc))		# 0, 1: unique name, RED/GREEN palette color index, sws/swc native sequencer type
 
-# create a template called 'circular-swingers' with 
-#   a string-replacement placeholder of "X"
-# this will create a copy of the template with
-#   the incoming value replacing and "X" found in 
-#   in the template (case-insensitively)
-# this is used above to create several macro invocations
-[[circular-swingers X
-	(start-X)
-]]
+# --------------------------------------------
 
-# invoke a template called 'circular-swinger' twice
-#   passing in the values "0" and "1" to replace
-#   the "X" in the duplicated tempates
-# also pass in values for the color and type of 
-#   circular sequencer to use
-# the unresolved RED and GREEN values are defined
-#   in symbols.mac, and resolve to their standard
-#   palette positions (zero and three)
-((circular-swinger 0 <RED> sws))
-((circular-swinger 1 <GREEN> swc))
+[[circular-swinger X COLOR TYPE			# define a template 'circular-swinger' with passed-in values:
+						# X (unique name), COLOR (palette color index), TYPE (sequencer type)
 
-# define a template called 'circular-swinger' with 
-#   three replacable values: 
-#   (case-insensitive)
-# when the template is invoked, the passed values
-#   will be replaced in the duplicated script
-[[circular-swinger X COLOR TYPE
+	[start-X]				# define templated macro 'start-X' to start up a circulr swinger
+		{sequencer-X},<max-width-half>	# allocate a new unique sequencer number; push it along with half the display width
+	        TYPE				# create a sequencer per the above pushed arguments
 
-	# create a templated macro called start-PASSED-VALUE
-	# when the template is invoked, the passed value will
-	#   be replaced with the first incoming value
-	#   creating a unique macro name
-	[start-X]
+	        (render-X <cycle-time>) 	# schedule the the swinger to advance and draw periodically
 
-		# allocate a number sequencer named sequencer-PASSED-VALUE
-		# when the template is invoked, the passed value will
-		#   be replaced with the first incoming value
-		#   naming a unique number sequencer
-		# the newly-allocated sequencer number is combined
-		#   with a second argument, and they're used below to 
-		#   actually create the sequencer
-		# the second argument specifies that the number sequencer
-		#   will go up to (but excluding) one half of the number
-		#   of device LEDs (for instance, 90 LEDs would be 0-44)
-		{sequencer-X},<max-width-half>
+	[render-X]				# define a templated macro 'render-X' to handle advancing and drawing the swinger
+		<sequencer-X>			# push the above allocated sequencer number onto the argument stack
+		sequence-next-window		# advance the swinger to the next position, leaving offset & window on the argument
+						# stack, used to draw contigious fast-moving pixels
+		position			# set the 'offset' and 'window' for drawing per to the arguments on the stack
 
-		# create a sequencer of the passed-in type
-		# using the above argument to set it up
-	        TYPE
+		COLOR				# push the passed-in color value (palette color index) to the argument stack
+		palette-color			# insert a palette color per the above color index argument
+		fast-fade			# apply a fast-to-compute fade to the pixel (uses bit shift for division)
 
-		# schedule a templated "drawing macro" called 
-		#   render-PASSED-VALUE used to draw the swinger periodically
-	        (render-X <cycle-time>)
+		flood				# flood the set up region with the inserted palette color and fade effect
+		reset				# reset the drawing region
+]]						# close the template definition
 
-	# create a templated macro called 'render-PASSED-VALUE'
-	# this will be called periodically to advance this swinger
-	#   to its next state, and draw it to the dispal buffer
-	[render-X]
+# --------------------------------------------
+# averaging (of the above) swinger
+# --------------------------------------------
 
-		# recall the sequencer number allocated above
-		# to use an as argument for the following command
-		<sequencer-X>
+[average-swinger]				# define a macro to set up a third swinger that averages the values of the first two
+	{sequencer-a},<NUM-LEDS>		# allocate a unique sequencer number and push it along with the device LED count
+        wheel-sequencer				# create a 'wheel sequencer' per the pushed arguments (repeats numbers 0, 1, 2, 3, 0, 1, 2, 3)
 
-		# advance this sequencer to its next state
-		# use "window-tracking" to specify a multiple
-		#   pixel region that can be filled with a color
-		#   to draw the animating swinger without gaps
-		# it leaves two arguments on the stack:
-		#   * offset
-		#   * window
-		# these define the starting and ending pixels
-		#   to fill (min,max)
-		sequence-next-window
+        (render-a <cycle-time>)			# schedule the swinger to periodically advance and draw
 
-		# set the offset and window according to the stack arguments
-		position
+# --------------------------------------------
 
-		# recall the second passed argument to use an an argument
-		# to the palette color command
-		COLOR
+[render-a]					# define a macro to advance and draw the swinger
+	<sequencer-a>,<MACRO-SEQ>,<math-a>	# push avove sequence number with option to compute macro and macro number 
+	sequence-next-window			# get the next contiguous draw region
 
-		# insert a pixel, colored from the palette at the specified 
-		#   position
-		# the pixel is inserted at the current offset position
-		palette-color
+	position				# set the fill region per the pushed arguments
 
-		# apply a fast-fade effect to the pixel
-		# the fast-fade effect does a quick fade using
-		#   bit-shifting for division
-		fast-fade
+	<BLUE>					# push the palette color index for the color blue
+	palette-color				# insert a palette color per the above color index argument
+        fast-fade				# apply a fast-to-compute fade to the pixel (uses bit shift for division)
 
-		# fill the entire region with the color and effect at
-		#   the insertion position (offset)
-		flood
+        flood                           	# flood the set up region with the inserted palette color and fade effect
+        reset                         		# reset the drawing region
 
-		# the offset and window must be reset to the default
-		#   at the end of the macro if they were changed
-		# if not reset, whatever operations occur next
-		#   may happen within an unexpected region
-		reset
+# --------------------------------------------
 
-# close the template definition
-]]
+[math-a]					# define a macro to compute the swinger position based on the other two swingers
+	<sequencer-0>,<GET-COMPUTED>		# push the first circular swinger's sequence number and option to get computed value
+	sequence				# get the computed value
+	push					# push onto the accumulator stack
 
-#
-# in addition to the two circular swingers above, 
-# a third swinger averages the the two values
-#
-
-# create a macro to set up the averaging swinger
-[average-swinger]
-
-	# allowcate a number sequencer name
-	#   and pass the total number of LEDs
-	#   as a sequencer maximum
-	# in this case, it is a macro-computed sequence
-	#   not a simple number sequence, so the
-	#   current integer value of the sequencer
-	#   isn't used, but it's good practice to
-	#   specify the maximum value, so it can be
-	#   used to prevent out-of-range values 
-	{sequencer-a},<NUM-LEDS>
-
-	# specify a "wheel sequencer" using the above arguments
-	# a wheel sequencer can be thought of as the numnber
-	#   sequence being wrapped around a circle, starting
-	#   over again when it reached the ends
-	# for example, a max value of 4 would yield the sequence
-	#   0 1 2 3 0 1 2 3 ...
-        wheel-sequencer
-
-	# schedule the swinger to periodically advance and draw
-        (render-a <cycle-time>)
-
-# create a macro to advance and draw the swinger
-[render-a]
-	# recall the allocated sequencer number
-	#   and pass it, along with a sequencing option
-	#   specifying to use a macro to compute the next
-	#   position, and along with the macro number to call
-	<sequencer-a>,<MACRO-SEQ>,<math-a>
-
-	# get the next offset and position for continguous draw
-	sequence-next-window
-
-	# set the region for contigious draw filling
-	position
-
-	# specify the blue standard palette position (4)
-	#   as an argument to the following palette color command
-	<BLUE>
-
-	# insert a pixel colored from the palette at the specified 
-	#   position, at the current offset
-	palette-color
-
-	# apply a fast fade to the pixel
-	fast-fade
-
-	# fill the entire contiguous draw region
-	flood
-
-	# reset the offset and window
-	reset
-
-# create a macro to compute the position of the averaging swinger
-[math-a]
-	# recall the sequence number for the first circular sequencer
-	#   and pass it along with a sequencer option to get the current
-	#   computed value from that sequencer
-	<sequencer-0>,<GET-COMPUTED>
-
-	# get the sequencer value
-	sequence
-
-	# push it on the accumulator stack
-	push
-
-	# also get the current value of the second circular sequencer
-	<sequencer-1>,<GET-COMPUTED>
-	sequence
-
-	# push its value on the accumulator stack
-	push
-
-	#
-	# at this point, the first pushed value is in accumulator #1
-	#   and the second pushed value in accumulator #0
-
-	# compute the average of the two most recent stack values
-	#   leaving the result on the accumulator stack and as 
-	#   a command argument
-	# the fact that it's a command argument will be used in the calling
-	#   macro's sequencer to get the computed value
-	average
+	<sequencer-1>,<GET-COMPUTED>		# push the first circular swinger's sequence number and option to get computed value
+	sequence				# get the computed value
+	push					# push onto the accumulator stack
+	average					# average the two values, leave result at head of argument and accumulator stacks
 
