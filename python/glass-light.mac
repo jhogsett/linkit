@@ -1,0 +1,23 @@
+%include symbols
+%run-macro glass-light-app
+
+$brightness 33
+
+[glass-light-app 10]
+    application
+    <brightness>
+    level
+    (glass-light-start)
+
+[glass-light-start]
+    (glass-light-side)
+    (glass-light-front)
+    flush
+
+
+[glass-light-side]
+    red
+    dim
+    dim
+    dim
+    7  
