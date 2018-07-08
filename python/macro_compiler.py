@@ -448,6 +448,37 @@ def assign_final_macro_number(line):
     raise ValueError("Macro being tested exceeds char buffer size")
     # todo: handle this automatically
 
+  # 
+
+
+
+
+#  final_macro_number = proxy_macro_number
+#  while final_macro_number in final_macro_numbers.values():
+#    final_macro_number += 1
+#    #ui.report_verbose("trying macro number: " + str(final_macro_number))
+#    if final_macro_number > ending_macro_number:
+#      saved_bad_script = new_lines
+#      raise ValueError("No available macro numbers available during final number assignment")
+#  if verbose_mode:
+#    ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
+#  report_progress()
+#  final_macro_numbers[proxy_macro_number] = final_macro_number
+
+
+
+  bytes_used = 0
+  tries = 3
+  led_command.stop_all()
+  while bytes_used == 0 and tries > 0:
+#    ui.report_verbose("Measuring macro #" + str(final_macro_number) + " on device")
+    bytes_used = led_command.command_int(test_macro)
+    ui.report_verbose("-reported size: " + str(bytes_used) + " bytes")
+    tries -= 1
+  if bytes_used == 0:
+    # todo: need more appropriate error type
+    raise ValueError("Macro size measurement failed with retries")
+
 
 
   final_macro_number = proxy_macro_number
@@ -464,17 +495,7 @@ def assign_final_macro_number(line):
 
 
 
-  bytes_used = 0
-  tries = 3
-  led_command.stop_all()
-  while bytes_used == 0 and tries > 0:
-    ui.report_verbose("Measuring macro #" + str(final_macro_number) + " on device")
-    bytes_used = led_command.command_int(test_macro)
-    ui.report_verbose("-reported size: " + str(bytes_used) + " bytes")
-    tries -= 1
-  if bytes_used == 0:
-    # todo: need more appropriate error type
-    raise ValueError("Macro size measurement failed with retries")
+
   if final_macro_number == ending_macro_number and bytes_used > last_macro_bytes:
     raise ValueError("Not enough remaining bytes in the last macro position for Macro %d" % final_macro_number)
   # consume any additional macro numbers to account for byte overage
