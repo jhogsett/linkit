@@ -413,9 +413,43 @@ def assign_final_macro_number(line):
   # only process lines starting with proxy macro numbers
   if start != 0:
     return line
+
   proxy_macro_number = int(extract_contents(line, "'", "'"))
+
   # pre-assigned macro numbers should be fixed at this point, 
   # but they still need testing
+
+#  final_macro_number = proxy_macro_number
+#  while final_macro_number in final_macro_numbers.values():
+#    final_macro_number += 1
+#    #ui.report_verbose("trying macro number: " + str(final_macro_number))
+#    if final_macro_number > ending_macro_number:
+#      saved_bad_script = new_lines
+#      raise ValueError("No available macro numbers available during final number assignment")
+#  if verbose_mode:
+#    ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
+#  report_progress()
+#  final_macro_numbers[proxy_macro_number] = final_macro_number
+
+ # temporarily replace this macro's unresolved references 
+ # with a memory macro to use to measure the size
+ # use macro #0 to have the most available space
+ # test_macro = line
+
+  # test using macro #0 to have the most room for testing
+  test_macro = replace_args(line, "'", "'", "0")
+
+  # replace remaining references with #1 to ensure args are stored
+  while "'" in test_macro:
+    test_macro = replace_args(test_macro, "'", "'", "1")
+  # send to the device and check for consumed macro bytes
+
+  if len(test_macro) > max_string_length:
+    raise ValueError("Macro being tested exceeds char buffer size")
+    # todo: handle this automatically
+
+
+
   final_macro_number = proxy_macro_number
   while final_macro_number in final_macro_numbers.values():
     final_macro_number += 1
@@ -428,17 +462,7 @@ def assign_final_macro_number(line):
   report_progress()
   final_macro_numbers[proxy_macro_number] = final_macro_number
 
- # temporarily replace this macro's unresolved references 
- # with a memory macro to use to measure the size
- # use macro #0 to have the most available space
-  test_macro = line
-  while "'" in test_macro:
-    test_macro = replace_args(test_macro, "'", "'", "1")
-  # send to the device and check for consumed macro bytes
 
-  if len(test_macro) > max_string_length:
-    raise ValueError("Macro being tested exceeds char buffer size")
-    # todo: handle this automatically
 
   bytes_used = 0
   tries = 3
