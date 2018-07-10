@@ -157,14 +157,19 @@ def process_set_macro(line):
       ui.report_verbose("new forced macro: " + macro_name)
       set_resolved(macro_name, proxy_macro_number)
       set_macro(macro_name, proxy_macro_number)
+
       # setting a specific macro number is done for apps
       # to combine apps, the next available sequence number
       # needs to be reset. 
       # if a macro number is passed, assume it's an app
       # and do the resetting (unless it's the last)
+
+      #needed????????
       if macro_number != ending_macro_number:
         reset_next_available_sequence_number()
-      return str(proxy_macro_number) + ":set"
+
+      #return str(proxy_macro_number) + ":set"
+      return "'" + str(int(macro_number) + 1000) + "':set"
   return line
 
 def process_macro_call(line):
@@ -412,24 +417,18 @@ def assign_final_macro_number(line):
   start, end = locate_delimiters(line, "'", "'")
   # only process lines starting with proxy macro numbers
   if start != 0:
+    print "#####"
+    print line
     return line
+
+
+# pickup: detect fixed macro numbers, need to test them
+
 
   proxy_macro_number = int(extract_contents(line, "'", "'"))
 
   # pre-assigned macro numbers should be fixed at this point, 
   # but they still need testing
-
-#  final_macro_number = proxy_macro_number
-#  while final_macro_number in final_macro_numbers.values():
-#    final_macro_number += 1
-#    #ui.report_verbose("trying macro number: " + str(final_macro_number))
-#    if final_macro_number > ending_macro_number:
-#      saved_bad_script = new_lines
-#      raise ValueError("No available macro numbers available during final number assignment")
-#  if verbose_mode:
-#    ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
-#  report_progress()
-#  final_macro_numbers[proxy_macro_number] = final_macro_number
 
  # temporarily replace this macro's unresolved references 
  # with a memory macro to use to measure the size
@@ -448,30 +447,13 @@ def assign_final_macro_number(line):
     raise ValueError("Macro being tested exceeds char buffer size")
     # todo: handle this automatically
 
-  # 
-
-
-
-
-#  final_macro_number = proxy_macro_number
-#  while final_macro_number in final_macro_numbers.values():
-#    final_macro_number += 1
-#    #ui.report_verbose("trying macro number: " + str(final_macro_number))
-#    if final_macro_number > ending_macro_number:
-#      saved_bad_script = new_lines
-#      raise ValueError("No available macro numbers available during final number assignment")
-#  if verbose_mode:
-#    ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
-#  report_progress()
-#  final_macro_numbers[proxy_macro_number] = final_macro_number
-
 
 
   bytes_used = 0
   tries = 3
   led_command.stop_all()
   while bytes_used == 0 and tries > 0:
-#    ui.report_verbose("Measuring macro #" + str(final_macro_number) + " on device")
+    ui.report_verbose("Measuring proxy macro #" + str(proxy_macro_number) + " on device")
     bytes_used = led_command.command_int(test_macro)
     ui.report_verbose("-reported size: " + str(bytes_used) + " bytes")
     tries -= 1
@@ -479,15 +461,42 @@ def assign_final_macro_number(line):
     # todo: need more appropriate error type
     raise ValueError("Macro size measurement failed with retries")
 
+  macro_slots_required = bytes_used / (bytes_per_macro - 1)
+  if bytes_used % (bytes_per_macro - 1) != 0:
+    macro_slots_required += 1
 
+  potential_macro_number = starting_macro_number
+  last_potential_macro_number = ending_macro_number - (macro_slots_required - 1)
+  retry = False
+  while potential_macro_number <= last_potential_macro_number:
+    ui.report_verbose("trying macro number: " + str(potential_macro_number))
+    for x in range(0, macro_slots_required):
+      try_macro_number = potential_macro_number + x
+      if try_macro_number in final_macro_numbers.values():
+        ui.report_verbose("macro #%d already in use" % try_macro_number)
+        retry = True
+        break
+    if retry:
+      retry = False
+      potential_macro_number += 1
+      ui.report_verbose("trying next macro #%d" % potential_macro_number)
+      if potential_macro_number > ending_macro_number:
+        saved_bad_script = line
+        raise ValueError("No available macro numbers available during final number assignment")
+      continue
+    break
 
-  final_macro_number = proxy_macro_number
-  while final_macro_number in final_macro_numbers.values():
-    final_macro_number += 1
-    #ui.report_verbose("trying macro number: " + str(final_macro_number))
-    if final_macro_number > ending_macro_number:
-      saved_bad_script = new_lines
-      raise ValueError("No available macro numbers available during final number assignment")
+  # if the last position was chosen, check that there are enough bytes in the last macro
+
+  final_macro_number = potential_macro_number
+
+#  while final_macro_number in final_macro_numbers.values():
+#    final_macro_number += 1
+#    #ui.report_verbose("trying macro number: " + str(final_macro_number))
+#    if final_macro_number > ending_macro_number:
+#      saved_bad_script = new_lines
+#      raise ValueError("No available macro numbers available during final number assignment")
+
   if verbose_mode:
     ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
   report_progress()
@@ -495,9 +504,10 @@ def assign_final_macro_number(line):
 
 
 
-
+  # FIX
   if final_macro_number == ending_macro_number and bytes_used > last_macro_bytes:
     raise ValueError("Not enough remaining bytes in the last macro position for Macro %d" % final_macro_number)
+
   # consume any additional macro numbers to account for byte overage
   consumed_macro_number = final_macro_number
   remaining_bytes = bytes_used - (bytes_per_macro-1)
@@ -716,7 +726,7 @@ def consolidate_macros(script_lines):
   return new_lines
 
 def sort_script(script_lines):
-  script_lines.sort()
+  script_lines.sort(reverse=True)
 
 def capture_templates(script_lines):
   new_lines = []
