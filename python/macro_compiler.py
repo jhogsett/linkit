@@ -248,17 +248,13 @@ def process_allocate_sequencer(line):
 def process_evaluate_python(line):
   if len(line) < 1:
     return line
-#  if not line_has_unresolved_variables(line):
   expression = extract_contents(line, "`", "`")
   if not line_has_unresolved_variables(expression):
     if len(expression) > 0:
-      #print "python: " + expression
       ui.report_verbose_alt("-evaluating Python: " + expression)
       result = eval(expression)
       ui.report_verbose_alt("=evaluated result: " + str(result))
       return replace_args(line, "`", "`", str(result))
-  #else:
-    #print "can't process line due to unresolved variables " + line
   return line
 
 def process_place_template(line):
@@ -359,15 +355,9 @@ def report_progress():
 # expects a proxy macro number in the form '4'
 def is_macro_number_in_use(macro_number):
   for value in macros.values():
-    #print "!"
-    #print value
-#@@@
     if "'" in str(value):
       value = int(value[1:-1])
     if value == macro_number:
-     #print "@@@@@@@@@@@@"
-     #print value
-     #print macro_number
      return True
   return False
 
@@ -417,38 +407,19 @@ def assign_final_macro_number(line):
   start, end = locate_delimiters(line, "'", "'")
   # only process lines starting with proxy macro numbers
   if start != 0:
-    print "#####"
-    print line
     return line
-
-
-# pickup: detect fixed macro numbers, need to test them
-
-
   proxy_macro_number = int(extract_contents(line, "'", "'"))
-
-  # pre-assigned macro numbers should be fixed at this point, 
-  # but they still need testing
-
- # temporarily replace this macro's unresolved references 
- # with a memory macro to use to measure the size
- # use macro #0 to have the most available space
- # test_macro = line
-
-  # test using macro #0 to have the most room for testing
+  # temporarily replace this macro's unresolved references 
+  # with a memory macro to use to measure the size
+  # use macro #0 to have the most available space
   test_macro = replace_args(line, "'", "'", "0")
-
   # replace remaining references with #1 to ensure args are stored
   while "'" in test_macro:
     test_macro = replace_args(test_macro, "'", "'", "1")
   # send to the device and check for consumed macro bytes
-
   if len(test_macro) > max_string_length:
     raise ValueError("Macro being tested exceeds char buffer size")
     # todo: handle this automatically
-
-
-
   bytes_used = 0
   tries = 3
   led_command.stop_all()
@@ -460,20 +431,15 @@ def assign_final_macro_number(line):
   if bytes_used == 0:
     # todo: need more appropriate error type
     raise ValueError("Macro size measurement failed with retries")
-
   macro_slots_required = bytes_used / (bytes_per_macro - 1)
   if bytes_used % (bytes_per_macro - 1) != 0:
     macro_slots_required += 1
-
   final_macro_number = None
-
   # handle fixed macro numbers
   if proxy_macro_number < 0:
     proxy_macro_number *= -1
     for x in range(1, macro_slots_required):
       try_macro_number = proxy_macro_number + x
-      print try_macro_number
-      print final_macro_numbers.values()
       if try_macro_number in final_macro_numbers.values():
         saved_bad_script = [line]
         raise ValueError("No block of macros for fixed macro during final number assignment")
@@ -501,20 +467,10 @@ def assign_final_macro_number(line):
       break
     # if the last position was chosen, check that there are enough bytes in the last macro
     final_macro_number = potential_macro_number
-
-#  while final_macro_number in final_macro_numbers.values():
-#    final_macro_number += 1
-#    #ui.report_verbose("trying macro number: " + str(final_macro_number))
-#    if final_macro_number > ending_macro_number:
-#      saved_bad_script = new_lines
-#      raise ValueError("No available macro numbers available during final number assignment")
-
   if verbose_mode:
     ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
   report_progress()
   final_macro_numbers[proxy_macro_number] = final_macro_number
-
-
 
   # FIX
   if final_macro_number == ending_macro_number and bytes_used > last_macro_bytes:
@@ -527,13 +483,9 @@ def assign_final_macro_number(line):
     consumed_macro_number += 1
     remaining_bytes -= (bytes_per_macro-1)
     # create a unique key to hold the additional consumed macro number value
-
     if consumed_macro_number in final_macro_numbers.values():
       saved_bad_script = [line]
       raise ValueError("Macro %d is needed as a carry-over macro but is already assigned" % consumed_macro_number)
-    #print final_macro_number
-    #code.interact(local=dict(globals(), **locals()))
-
     ui.report_verbose("-allocating macro #" + str(consumed_macro_number) + " to macro #" + str(proxy_macro_number)) 
     final_macro_numbers[str(proxy_macro_number) + "-" + str(consumed_macro_number)] = consumed_macro_number
   # return the line with the proxy macro number replaced so it's not processed a second time
@@ -572,7 +524,6 @@ def process_finalized_macro_numbers(script_lines):
 def assign_final_macro_numbers_pass_one(script_lines):
   new_lines = []
   for line in script_lines:
-    print line
     new_lines.append(assign_final_macro_number(line))
   return new_lines
 
@@ -661,7 +612,6 @@ def translate_commands(script_lines):
 
 def post_processing(script_lines):
   script_lines.sort()
-  print_script(script_lines)
   return assign_final_macro_numbers(script_lines)
 
 def do_clean_ups(script_lines, clean_ups):
