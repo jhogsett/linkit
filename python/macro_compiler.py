@@ -431,8 +431,9 @@ def assign_final_macro_number(line):
   if bytes_used == 0:
     # todo: need more appropriate error type
     raise ValueError("Macro size measurement failed with retries")
-  macro_slots_required = bytes_used / (bytes_per_macro - 1)
-  if bytes_used % (bytes_per_macro - 1) != 0:
+  usable_bytes_per_macro = bytes_per_macro - 1 
+  macro_slots_required = bytes_used / usable_bytes_per_macro
+  if bytes_used % usable_bytes_per_macro != 0:
     macro_slots_required += 1
   final_macro_number = None
   # handle fixed macro numbers
@@ -449,17 +450,17 @@ def assign_final_macro_number(line):
     last_potential_macro_number = ending_macro_number - (macro_slots_required - 1)
     retry = False
     while potential_macro_number <= last_potential_macro_number:
-      ui.report_verbose("trying macro number: " + str(potential_macro_number))
+      #ui.report_verbose("trying macro number: " + str(potential_macro_number))
       for x in range(0, macro_slots_required):
         try_macro_number = potential_macro_number + x
         if try_macro_number in final_macro_numbers.values():
-          ui.report_verbose("macro #%d already in use" % try_macro_number)
+          #ui.report_verbose("macro #%d already in use" % try_macro_number)
           retry = True
           break
       if retry:
         retry = False
         potential_macro_number += 1
-        ui.report_verbose("trying next macro #%d" % potential_macro_number)
+        #ui.report_verbose("trying next macro #%d" % potential_macro_number)
         if potential_macro_number > ending_macro_number:
           saved_bad_script = [line]
           raise ValueError("No available macro numbers available during final number assignment")
@@ -691,7 +692,7 @@ def consolidate_macros(script_lines):
   return new_lines
 
 def sort_script(script_lines):
-  script_lines.sort(reverse=True)
+  script_lines.sort(reverse=False)
 
 def capture_templates(script_lines):
   new_lines = []

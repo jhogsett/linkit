@@ -137,11 +137,13 @@ def set_script(script_text):
     try:
         bytes = lc.command_int(script_text);
         bytes_programmed += bytes
-        ui.report_verbose("bytes programmed: " + str(bytes))
+        ui.report_verbose("programmed: " + script_text)
+        ui.report_verbose_alt("bytes: " + str(bytes))
         lc.command_str(str(bytes % number_of_colors) + ":pal:mir:flu")
         macro_count += 1
         if not debug_mode:
-            ui.write(tc.green('.'))
+            if not verbose_mode:
+                ui.write(tc.green('.'))
         else:
             macro_number = int(script_text.split(":")[0])
             print lc.get_macro(macro_number)
@@ -237,7 +239,6 @@ def program_macros(program_name):
     print
 
     if verbose_mode:
-        print
         ui.report_verbose("compiled script:")
         for script_text in compiled_script:
             ui.report_verbose_alt(script_text)
@@ -256,6 +257,8 @@ def program_macros(program_name):
         if compilation_valid:
           if not dryrun:
             ui.report_info_header("2. Recording ")
+            if verbose_mode:
+              print
             for script_text in compiled_script:
               set_script(script_text) 
             print
