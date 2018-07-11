@@ -169,7 +169,7 @@ def process_set_macro(line):
         reset_next_available_sequence_number()
 
       #return str(proxy_macro_number) + ":set"
-      return "'" + str(int(macro_number) + 1000) + "':set"
+      return "'" + str(int(macro_number) * -1) + "':set"
   return line
 
 def process_macro_call(line):
@@ -465,30 +465,42 @@ def assign_final_macro_number(line):
   if bytes_used % (bytes_per_macro - 1) != 0:
     macro_slots_required += 1
 
-  potential_macro_number = starting_macro_number
-  last_potential_macro_number = ending_macro_number - (macro_slots_required - 1)
-  retry = False
-  while potential_macro_number <= last_potential_macro_number:
-    ui.report_verbose("trying macro number: " + str(potential_macro_number))
-    for x in range(0, macro_slots_required):
-      try_macro_number = potential_macro_number + x
+  final_macro_number = None
+
+  # handle fixed macro numbers
+  if proxy_macro_number < 0:
+    proxy_macro_number *= -1
+    for x in range(1, macro_slots_required):
+      try_macro_number = proxy_macro_number + x
+      print try_macro_number
+      print final_macro_numbers.values()
       if try_macro_number in final_macro_numbers.values():
-        ui.report_verbose("macro #%d already in use" % try_macro_number)
-        retry = True
-        break
-    if retry:
-      retry = False
-      potential_macro_number += 1
-      ui.report_verbose("trying next macro #%d" % potential_macro_number)
-      if potential_macro_number > ending_macro_number:
-        saved_bad_script = line
-        raise ValueError("No available macro numbers available during final number assignment")
-      continue
-    break
-
-  # if the last position was chosen, check that there are enough bytes in the last macro
-
-  final_macro_number = potential_macro_number
+        saved_bad_script = [line]
+        raise ValueError("No block of macros for fixed macro during final number assignment")
+    final_macro_number = proxy_macro_number
+  else:
+    potential_macro_number = starting_macro_number
+    last_potential_macro_number = ending_macro_number - (macro_slots_required - 1)
+    retry = False
+    while potential_macro_number <= last_potential_macro_number:
+      ui.report_verbose("trying macro number: " + str(potential_macro_number))
+      for x in range(0, macro_slots_required):
+        try_macro_number = potential_macro_number + x
+        if try_macro_number in final_macro_numbers.values():
+          ui.report_verbose("macro #%d already in use" % try_macro_number)
+          retry = True
+          break
+      if retry:
+        retry = False
+        potential_macro_number += 1
+        ui.report_verbose("trying next macro #%d" % potential_macro_number)
+        if potential_macro_number > ending_macro_number:
+          saved_bad_script = [line]
+          raise ValueError("No available macro numbers available during final number assignment")
+        continue
+      break
+    # if the last position was chosen, check that there are enough bytes in the last macro
+    final_macro_number = potential_macro_number
 
 #  while final_macro_number in final_macro_numbers.values():
 #    final_macro_number += 1
@@ -560,6 +572,7 @@ def process_finalized_macro_numbers(script_lines):
 def assign_final_macro_numbers_pass_one(script_lines):
   new_lines = []
   for line in script_lines:
+    print line
     new_lines.append(assign_final_macro_number(line))
   return new_lines
 
@@ -647,6 +660,8 @@ def translate_commands(script_lines):
   return new_lines
 
 def post_processing(script_lines):
+  script_lines.sort()
+  print_script(script_lines)
   return assign_final_macro_numbers(script_lines)
 
 def do_clean_ups(script_lines, clean_ups):
