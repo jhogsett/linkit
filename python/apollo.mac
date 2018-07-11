@@ -14,7 +14,7 @@ $rotate-time 30000
 [mellow 10]
   (inchworm-app)
 
-[run0 9]
+[run0]
   (run1 0)
   (run2 0)
 

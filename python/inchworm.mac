@@ -21,7 +21,7 @@ $step 2
 $color-time 100
 $color-step 1
 
-[inchworm-app]
+[inchworm-app 10]
   application
   <DRAW-PLUS>
   draw-mode

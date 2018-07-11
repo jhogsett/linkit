@@ -836,6 +836,26 @@ def expand_meta_templates(script_lines):
 
 # ----------------------------------------------------
 
+def remove_fixed_macro_numbers(line):
+  start, end = locate_delimiters(line, "[", "]")
+  if start != -1 and end != -1:
+    args = extract_args(line, "[", "]")
+    # leave only the name
+    return "[" + args[0] + "]"
+  else:
+    return line
+
+def rewrite_included_script_line(script_line):
+  new_line = remove_fixed_macro_numbers(script_line)
+  return new_line
+
+def rewrite_included_script_lines(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = line.strip()
+    new_lines.append(rewrite_included_script_line(line))
+  return new_lines
+
 def load_file(filename, default_ext=".mac"):
   file_lines = []
   if not filename.endswith(default_ext):
@@ -851,7 +871,9 @@ def load_file(filename, default_ext=".mac"):
       include_filename = args[1]
       if len(include_filename) > 0 and include_filename not in includes.keys():
         full_filename = os.path.join(file_path, include_filename)
-        file_lines = file_lines + load_file(full_filename)
+        include_lines = load_file(full_filename)
+        include_lines = rewrite_included_script_lines(include_lines)
+        file_lines = file_lines + include_lines
         includes[include_filename] = full_filename
         continue
     file_lines.append(line)
