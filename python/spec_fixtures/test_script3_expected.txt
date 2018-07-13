@@ -1,16 +1,16 @@
-10:set:18:run:14:run
-11:set:1:snw:pos:1:pal:sfd:flo:rst:flu
-12:set:153,8:sch:154,15:sch:155,5:sch
-14:set:21:run:6:run:16:run
-15:set:5:snw:pos:5:pal:sfd:flo:rst
-16:set:150,11:sch:151,22:sch:152,9:sch:12:run
-18:set:app:2,8000:cfg
-19:set:4,60,45:sws:5,75,60:sws:6,90,75:sws
-21:set:0,360:seq:100,4:sch
+10:set:19:run:15:run
 4:set:0,0,2:seq:sto:60:rcl:csh
 5:set:6:snw:pos:6:pal:sfd:flo:rst
-6:set:1,15,0:sws:2,30,15:sws:3,45,30:sws:19:run
+6:set:1,15:sws:2,30,15:sws:3,45,30:sws:20:run
 8:set:4:snw:pos:4:pal:sfd:flo:rst
 9:set:3:snw:pos:3:pal:sfd:flo:rst
-22:set:2:snw:pos:2:pal:sfd:flo:rst
+11:set:2:snw:pos:2:pal:sfd:flo:rst
+12:set:1:snw:pos:1:pal:sfd:flo:rst:flu
+13:set:153,8:sch:154,16:sch:155,5:sch
+15:set:22:run:6:run:17:run
+16:set:5:snw:pos:5:pal:sfd:flo:rst
+17:set:150,12:sch:151,11:sch:152,9:sch:13:run
+19:set:app:2,8000:cfg
+20:set:4,60,45:sws:5,75,60:sws:6,90,75:sws
+22:set:0,360:seq:100,4:sch
 
