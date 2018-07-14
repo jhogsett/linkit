@@ -4,6 +4,7 @@
 # ----------------------------------------------------------------
 
 %include symbols
+%include hsl-sequencer
 
 $wanderer-draw-mode <DRAW-MIX>
 $wanderer-brightness 0
@@ -77,6 +78,4 @@ $wanderer-max-half <wanderer-max>
         <wanderer-max-half>
         push
         modulo
-
-%include hsl-sequencer
 
