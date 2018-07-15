@@ -18,7 +18,7 @@ $wanderer-max-half <wanderer-max>
 
 %run-macro wanderer-app
 
-[wanderer-app]
+[wanderer-app 10]
     application
     <wanderer-draw-mode>
     draw-mode
