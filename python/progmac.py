@@ -34,12 +34,13 @@ char_buffer_size = None
 number_of_fine_zones = None
 number_of_colors = None
 number_of_sequencers = None
+print_macros = None
 
 def get_options():
     global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, show_tables, num_macro_bytes_override, starting_macro_override, ending_macro_override, char_buffer_override
-
+    global print_macros
     parser = argparse.ArgumentParser(description=app_description)
-    parser.add_argument("program", help="program to transmit")
+    parser.add_argument("program", nargs="*", help="program to transmit")
     parser.add_argument("presets", nargs="*", help="resolved=value presets (None)")
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
@@ -51,6 +52,7 @@ def get_options():
     parser.add_argument("-s", "--starting-macro", type=int, dest="starting_macro", default=0, help="starting macro override (none)")
     parser.add_argument("-e", "--ending-macro", type=int, dest="ending_macro", default=0, help="ending macro override (none)")
     parser.add_argument("-c", "--char-buffer", type=int, dest="char_buffer", default=0, help="char buffer size override (none)")
+    parser.add_argument("-p", "--print-macros", dest="print_macros", action="store_true", help="print current macros on device (False)")
 
     args = parser.parse_args()
     program = args.program
@@ -66,6 +68,7 @@ def get_options():
     dryrun = args.dryrun
     show_output = args.show_output
     show_tables = args.show_tables
+    print_macros = args.print_macros
 
 def initialize():
     global app_description, bytes_programmed
@@ -130,6 +133,10 @@ def get_command_line_presets():
 # returns True if they're valid
 def validate_options():
     errors = False
+    if not print_macros:
+      if len(program == 0):
+        ui.report_error("Must specify a progam to upload")
+        errors = True
     return not errors
 
 def set_script(script_text):
@@ -306,7 +313,8 @@ def introduction():
     ui.report_info(ui.intro_entry("First macro", starting_macro))
     ui.report_info(ui.intro_entry("Last macro", ending_macro))
     ui.report_info(ui.intro_entry("Char buffer size", char_buffer_size))
-    ui.report_info("program: " + tc.green(program))
+    if not print_macros:
+      ui.report_info("program: " + tc.green(program))
     print
    
     if dryrun:
@@ -377,6 +385,12 @@ def run_default_macro():
         else:
           lc.run_macro(macro_run_number)
 
+def print_device_macros():
+  macros = lc.get_macros()
+  ui.report_info("Macros on device:")
+  for macro in macros:
+    ui.report_info_alt(macro)
+
 ############################################################################
 
 def setup():
@@ -391,6 +405,11 @@ def loop():
 
 if __name__ == '__main__':
     setup()
+
+    if print_macros:
+      print_device_macros()
+      sys.exit()
+
     while True:
 #        try:
        loop()

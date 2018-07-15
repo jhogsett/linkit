@@ -231,6 +231,13 @@ def get_macro(macro):
     macro_bytes = get_full_macro_bytes(macro)
     return str(macro) + ":set:" + translate_macro_bytes(macro_bytes)
 
+def get_macros():
+    result = []
+    last_macro = get_last_eeprom_macro()
+    for i in range(0, last_macro + 1):
+      result.append(get_macro(i))
+    return result
+
 def get_macro_bytes(macro):
     bytes_string = command_str("1," + str(macro) + ":tst")[:-1]
     byte_strings = bytes_string.split(",")
