@@ -55,7 +55,7 @@ def get_options():
     parser.add_argument("-p", "--print-macros", dest="print_macros", action="store_true", help="print current macros on device (False)")
 
     args = parser.parse_args()
-    program = args.program
+    program = args.program[0] if len(args.program) > 0 else ''
     macro_run_number = args.macro
     verbose_mode = args.verbose
     debug_mode = args.debug
@@ -135,7 +135,7 @@ def validate_options():
     errors = False
     if not print_macros:
       print program
-      if len(program[0]) == 0:
+      if len(program) == 0:
         ui.report_error("Must specify a progam to upload")
         errors = True
     return not errors
