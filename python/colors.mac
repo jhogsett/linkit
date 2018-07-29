@@ -1,0 +1,31 @@
+# ----------------------------------------------------------------
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+
+%run-macro colors-app
+
+$render-time 100
+$draw-time 1000
+$color <RED>
+
+[colors-app 10]
+  application
+  (color-render <render-time>)
+  (color-start)
+  (hsl-sequencer-start)
+  (hsl-sequencer <draw-time>)
+
+[color-render]
+  flush
+
+[color-start]
+  (color-draw <draw-time>)
+
+[color-draw]
+  <color>
+  palette-color
+  flood
+
+ 

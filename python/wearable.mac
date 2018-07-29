@@ -1,28 +1,41 @@
 # swinging random colors
 
+%include symbols
+%include hsl-sequencer
+
 [init 10]
   app
   (setup)
+  (hsl-sequencer-start)
 
 [setup]
-0,9,0:swc
-500,<draw>:sch
-2,6000:cfg
-6,360:seq
-300,<advance>:sch
+  {seq0},9,0
+  swc
+  500,<draw>
+  sch
+  2,6000
+  cfg
+  {seq1},360
+  seq
+  300,<advance>
+  sch
 
 [draw]
-0:snw
-pos
-0:pal
-sfd
-flo
-rst
-flu
+  <seq0>
+  snw
+  pos
+  <RED>
+  pal
+  sfd
+  flo
+  rst
+  flu
 
 [advance]
-6,0,2:seq
-sto
-60:rcl
-csh
+  <seq1>,0,2
+  seq
+  sto
+  60
+  rcl
+  csh
 
