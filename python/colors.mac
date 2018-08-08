@@ -8,24 +8,20 @@
 
 $render-time 100
 $draw-time 1000
-$color <RED>
+$the-color <RED>
 
 [colors-app 10]
   application
   (color-render <render-time>)
-  (color-start)
+  (color-draw <draw-time>)
   (hsl-sequencer-start)
   (hsl-sequencer <draw-time>)
 
 [color-render]
   flush
 
-[color-start]
-  (color-draw <draw-time>)
-
 [color-draw]
-  <color>
+  <the-color>
   palette-color
   flood
-
  

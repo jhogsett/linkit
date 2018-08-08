@@ -3,8 +3,8 @@
 
 %include swinger
 %include inchworm
-#%include wanderer
 %include hsl-sequencer
+%include colors
 
 $rotate-time 30000
 
@@ -14,24 +14,18 @@ $rotate-time 30000
 [mellow 10]
   (inchworm-app)
 
-[run0]
-  (run1 0)
-  (run2 0)
+[demo 12]
+    (colors-app)
 
-[run1 12]
-  (swinger-app)
-  (run0)
-  (run2 <rotate-time>)
+#[run1 13]
+#  (swinger-app)
+#  (run1 0)
+#  (run2 <rotate-time>)
 
-[run2]
-  (inchworm-app)
-  (run0)
-  (run1 <rotate-time>)
-
-#[run3]
-#  (wanderer-app)
-#  (run0)
+#[run2]
+#  (inchworm-app)
+#  (run2 0)
 #  (run1 <rotate-time>)
 
-%run-macro run1
+%run-macro demo
 
