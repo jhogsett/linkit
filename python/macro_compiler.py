@@ -41,7 +41,7 @@ def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, n
   max_string_length = max_string_length_
   number_of_macros = (ending_macro_number - starting_macro_number) + 1
   next_available_macro_number = starting_macro_number
-  last_macro_bytes = last_macro_bytes
+  last_macro_bytes = last_macro_bytes_
   presets = presets_
   resolve_presets(presets)
   ui.begin(verbose_mode)
