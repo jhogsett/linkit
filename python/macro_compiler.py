@@ -133,6 +133,10 @@ def process_blank_line(line):
   return line
 
 def process_set_macro(line):
+
+  if line_has_unresolved_variables(line):
+    return line
+
   macro_name = None
   macro_number = None
   line = line.strip()
