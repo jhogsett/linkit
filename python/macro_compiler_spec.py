@@ -61,6 +61,7 @@ def initialize():
     ui.report_info(ui.intro_entry("Bytes per macro", num_macro_chars))
     ui.report_info(ui.intro_entry("First macro", starting_macro))
     ui.report_info(ui.intro_entry("Last macro", ending_macro))
+    ui.report_info(ui.intro_entry("Last macro bytes", last_macro_bytes))
     ui.report_info(ui.intro_entry("Char buffer size", char_buffer_size))
 
 def presets():
