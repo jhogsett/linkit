@@ -22,10 +22,8 @@
 #define TEST_INQUIRY_DEFAULT_FADE_RATE  7
 #define TEST_INQUIRY_FADE_RATE          8
 #define TEST_INQUIRY_MAPPING_ENABLED    9
-
 #define TEST_INQUIRY_DEFAULT_LIGHTNESS 10
 #define TEST_INQUIRY_MINIMUM_LIGHTNESS 11
-
 #define TEST_INQUIRY_MAX_STRING_LENGTH 12
 #define TEST_INQUIRY_TEST_FRAMEWORK_ENABLED 13
 #define TEST_INQUIRY_EXTRA_SHUFFLES_ENABLED 14
@@ -35,6 +33,7 @@
 #define TEST_INQUIRY_NUM_EEPROM_MACROS 18
 #define TEST_INQUIRY_FIRST_EEPROM_MACRO 19
 #define TEST_INQUIRY_NUM_SEQUENCERS 20
+#define TEST_INQUIRY_NUM_FINE_ZONES 21
 
 void Commands::do_test_inquiry(byte type, int arg2)
 {
@@ -126,6 +125,10 @@ void Commands::do_test_inquiry(byte type, int arg2)
       break;
     case TEST_INQUIRY_NUM_SEQUENCERS:
       result = NUM_SEQUENCERS;
+      break;
+
+    case TEST_INQUIRY_NUM_FINE_ZONES:
+      result = FINE_ZONES;
       break;
     }  
 

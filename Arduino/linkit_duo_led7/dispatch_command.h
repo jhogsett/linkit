@@ -218,7 +218,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
 
     case CMD_SCHEDULE: 
-      scheduler.set_schedule(arg0, arg1, arg2); 
+      scheduler.set_schedule(arg0, arg1); 
       break;
     
     case CMD_CARRY: 
@@ -308,6 +308,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   case CMD_DRAW_MODE:
     buffer->set_draw_mode(arg0);
     break;
+
+  case CMD_POP:
+    do_pop(arg0);
+    reset_args = false; 
+    break;    
   }
   
   if(reset_args)

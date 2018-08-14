@@ -118,8 +118,9 @@ class Commands
   void do_palette(byte arg0, byte arg1, byte arg2);
   void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
-  void do_store(int arg0, int arg1, int arg2);
   void do_push(int arg0, int arg1, int arg2);
+  void do_pop(byte times);
+  void do_store(int arg0, int arg1, int arg2);
   void do_recall(int arg0, int arg1, int arg2);
 
   void dispatch_effect(byte cmd);
@@ -1484,24 +1485,7 @@ void Commands::set_black_level(int arg0, int arg1, int arg2)
   buffer->set_black_level(black_level);
 }
 
-// maybe:
-// with only one argument, push it, as in: acc2=acc1, acc1=acc0, acc0=arg0
-// with two or three arguments, just store them to the accumulators
 
-// core
-void Commands::do_store(int arg0, int arg1, int arg2)
-{
-  int *accumulators = command_processor->accumulators;
-  accumulators[0] = arg0;
-  accumulators[1] = arg1;
-  accumulators[2] = arg2;
-
-//    byte nargs = command_processor->get_num_args();
-//    for(int i = 0; i < nargs; i++){
-//      accumulators[i] = sub_args[i];  
-//    }
-//  }
-}
 
 // push one or two arguments into accumulators
 void Commands::do_push(int arg0, int arg1, int arg2)
@@ -1520,6 +1504,40 @@ void Commands::do_push(int arg0, int arg1, int arg2)
 //  accumulators[2] = accumulators[1];
 //  accumulators[1] = accumulators[0];
   accumulators[0] = arg0;
+}
+
+// move acc0 into arg0 (setting arg1 and arg2 to zero), then move acc1 to acc0 and acc 2 to acc1, setting acc2 to zero
+void Commands::do_pop(byte times)
+{
+  times = max(1,min(3,times));
+  int *accumulators = command_processor->accumulators;
+  int *sub_args = command_processor->sub_args;
+
+  for(byte i = 0; i < times; i++){
+    sub_args[0] = accumulators[0];
+    accumulators[0] = accumulators[1];
+    accumulators[1] = accumulators[2];
+    accumulators[2] = 0;
+  }
+}
+
+// maybe:
+// with only one argument, push it, as in: acc2=acc1, acc1=acc0, acc0=arg0
+// with two or three arguments, just store them to the accumulators
+
+// core
+void Commands::do_store(int arg0, int arg1, int arg2)
+{
+  int *accumulators = command_processor->accumulators;
+  accumulators[0] = arg0;
+  accumulators[1] = arg1;
+  accumulators[2] = arg2;
+
+//    byte nargs = command_processor->get_num_args();
+//    for(int i = 0; i < nargs; i++){
+//      accumulators[i] = sub_args[i];  
+//    }
+//  }
 }
 
 // arg0 = 0                             : (no argument supplied)       restore all arguments from the accumulators
@@ -1554,7 +1572,7 @@ void Commands::do_recall(int arg0, int arg1, int arg2)
       // only one argument supplied
     if(arg1 == 0)
     {
-      // set arg0 and arg2 from accumulator 0 and 2
+      // set arg0 and arg2 from accumulator 0 and 1
       sub_args[0] = accumulators[0];
       sub_args[2] = accumulators[1];
     }

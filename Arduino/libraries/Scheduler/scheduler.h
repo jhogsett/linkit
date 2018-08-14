@@ -10,7 +10,7 @@ class Scheduler
   public:
 
   void begin(Macros * macros);
-  void set_schedule(unsigned int schedule_period_, byte schedule_number, byte macro_number_);
+  void set_schedule(unsigned int schedule_period_, byte schedule_number);
   void process_schedules();
   void reset_all_schedules();
   void reset_schedule(byte schedule_number);
@@ -18,14 +18,12 @@ class Scheduler
   private:
 
   static unsigned int schedule_period[NUM_SCHEDULES];  // zero means the schedule is turned off
-  static byte macro_number[NUM_SCHEDULES];             // could leave this off and assume schedule is same as macro to run,
   static unsigned int schedule_counter[NUM_SCHEDULES]; // but the ability to switch schedules to run different macros is the basis for toggling
 
   Macros * macros;
 };
 
 unsigned int Scheduler::schedule_period[NUM_SCHEDULES];  // zero means the schedule is turned off
-byte Scheduler::macro_number[NUM_SCHEDULES];             // could leave this off and assume schedule is same as macro to run,
 unsigned int Scheduler::schedule_counter[NUM_SCHEDULES]; // but the ability to switch schedules to run different macros is the basis for toggling
 
 void Scheduler::begin(Macros * macros)
@@ -46,7 +44,7 @@ void Scheduler::process_schedules()
       *sch_counter = (*sch_counter + 1) % sch_period;
 
       if(*sch_counter == 0)
-        macros->run_macro(macro_number[i]);
+        macros->run_macro(i);
     }
   }
 }
@@ -54,7 +52,7 @@ void Scheduler::process_schedules()
 // arg[0] schedule period 0-65534, -1 clears all schedules
 // arg[1] schedule number, default schedule #0
 // arg[2] macro number, default same as schedule #
-void Scheduler::set_schedule(unsigned int schedule_period_, byte schedule_number, byte macro_number_)
+void Scheduler::set_schedule(unsigned int schedule_period_, byte schedule_number)
 {
   if((int)schedule_period_ == -1)
   {
@@ -62,13 +60,8 @@ void Scheduler::set_schedule(unsigned int schedule_period_, byte schedule_number
     return;
   }
 
-  if(macro_number_ == 0)
-    // default the macro to be the same as the schedule
-    macro_number_ = schedule_number;
-
   reset_schedule(schedule_number);
   schedule_period[schedule_number]  = schedule_period_;
-  macro_number[schedule_number]     = macro_number_;
 
   // set to zero for a complete schedule period to pass before it runs the macro (probably best)
   // could set to schedule_period - 1 to have the macro run immediately upon being set
@@ -77,7 +70,6 @@ void Scheduler::set_schedule(unsigned int schedule_period_, byte schedule_number
 
 void Scheduler::reset_schedule(byte schedule_number)
 {
-  macro_number[schedule_number]     = 0;
   schedule_period[schedule_number]  = 0;
   schedule_counter[schedule_number] = 0;
 }

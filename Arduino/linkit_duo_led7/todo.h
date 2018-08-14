@@ -1,27 +1,183 @@
-// to do: get size of input buffer and don't exceed it
+// lines with # are still getting processed in some cases, see test_script23.mac
 
-// to do: detect things like only a couple bytes left in last macro, or not enough room in memory macros to do measurements
+// maybe prefix macro names with filenane on include to avoid name clashes
 
+// idea: command line switch that lists out settable command line presets per program along with their current value
+
+/* slightly odd
+------------------------------------------------------
+Final Macro Numbers:
+------------------------------------------------------
+    4: 4
+    5: 6
+    6: 7
+    7: 12
+    8: 14
+    9: 16
+ ->  10: 19
+   11: 22
+   12: 25
+   13: 28
+   14: 9
+   15: 31
+   16: 32
+   17: 33
+   18: 34
+   19: 35
+   20: 36
+   21: 37
+   22: 39
+   23: 41
+   24: 42
+   25: 43
+   26: 44
+   27: 45
+->   10: 10
+10-11: 11
+10-20: 20
+10-21: 21
+ */
+
+// arduino side dosn't handle compketely full macro without terminator
+// so this happens due to using macro bytes - 1
+/*
+ * 11:set:run:20:run:23:run:22:run:7:run:50,18:sch
+ * 12:set:
+ * 13:set:4:sto:5:run:rcl
+ */
+
+// test macro to find size, then find a block of macros and assign number
+//   do fixed macro numbers first
+
+//maybe measure all macros first, then do fitting
+
+
+
+
+/*
+(((worm 3 `X+1`)))
+
+[[[worm NUM-FINE-ZONES]]]
+
+
+idea: do replacements for all decice properties, incase they're used
+
+if first arg is a python expression, evaluation it and use as the index_max
+
+==> the python evaluation has to happen at meta template expansion time
+
+---------------------------------
+
+
+
+could always assume the argument is a python expression (`3` is OK) but it needs delimiters
+
+
+*/
+ 
+// make sure comments mid-line are stripped
+
+// can't use long names in macro expansions
+
+// error message if device config values come back as zero
+
+// directives in macros are not immutable (this may be good)
+
+// constants with evaluated python caused problems if they themselves are used in calculations, probably due to ` mismatch
+// idea: color command accepts long commands
+
+// to ease multi sequencing, could have sequencers that have base parent
+//   it's always an add operation because it sets the sequencers basis
+// . this can be a command similar to :snw:
+// . takes two sequence numbers, get's current on one, and get's next on the other and adds them to form basis
+
+// :s__:
+
+// idea: number ring, like the other number generators, except you feed it numbers to generate; could be used for dampening
+// .   fixed size
+
+// why does a double return from a macro wipe out arg0? mayube by design?
+
+// need to make schedulers a limited resource to no waste memory
+
+// print out fixed macro numbers / apps
+
+// display devcice profile only
+// dump macros from any device
+
+//need an easy way to see bytes per script line (save used bytes)
+
+// need a way to make the meta template expansion count variable, settable via command line or by including script
+
+// simple script run check: run be able to run, stop, and regain control over the device. (start/stop each app macro)
+// . , test each app
+
+
+// long command names don't work in variables assignnents
+  // since these can be specified on the command line, it's probably better to require real commands
+
+
+// table - list out sequencers
+
+// idea: for an included module, have a way to specify an "init" macro that must be run when any app starts up
+//   could be a directive
+// . adds (calls it) along with each "app" command
+// %init-macro hsl-sequencer-start
+//
+// when seen, add to a list of init macro names
+
+// before script is consolidated, 
+
+
+// add directives to shown tables
+
+// fix up macros table with final macro number assignments for printout
+
+// print out macros with fixed macro numbers
+
+// idea: run the test script for a few seconds and make sure the device can be taken control of
+
+// could use "=" or some other symbol to show configuring the device, like
+// instead of:
+//     <CONFIG-FADE-RATE>,<fade-rate>
+//     cfg
+//
+//     <CONFIG-FADE-RATE> = <fade-rate>
+//     <CONFIG-FADE-RATE> <= <fade-rate>
+//     <CONFIG-FADE-RATE> <- <fade-rate>
+//     <CONFIG-FADE-RATE> ~ <fade-rate>
+//     <CONFIG-FADE-RATE> | <fade-rate>
+//     <CONFIG-FADE-RATE> @ <fade-rate>
+//     /<CONFIG-FADE-RATE> <fade-rate>/
+//     \<CONFIG-FADE-RATE> <fade-rate>\
+//     |<CONFIG-FADE-RATE> <fade-rate>|
+//     /<CONFIG-FADE-RATE> <fade-rate>/
+//     @<CONFIG-FADE-RATE> <fade-rate>@
+
+// a simple way to invoke a sequencer that uses a macro for math
+
+// ununused brackets || <<>> [[[]]] <<<>>> '' "" // \\ 
+// unused operators = - _ ~
+
+// reusable components: 
+// -- need to share, or namespace, render routines
+// -- need to share sequencers
+
+// may need some concept of blending some method of components like starting
+
+// fix: using [render !] in spec test scripts caused failure
+
+// report line number of error (would require not adding/subtracting lines, or saving an original line identity per new lines
 
 // todo: print out macro numbers for forced ones
 
-// todo: rearrange scripts to forced macro numbers work (?)
-
-
-// if I edit '10' to 10 early, it bypasses testing it.
-// might need to convert '10' to "10" as a final UNTESTED number
-
 // %dryrun
 // % others?
-
-// need to limit the outgoing test macro to the size of the command buffer
 
 // animation idea: wanderers, like red and green, could combine for a while as yellow and become one entangled wanderer. It could later split back into two separate wanders, or combine with a blue one to make white.
 //   what would the rules be for when to split and combine?
 
 // must document language
-
-// program each macro to macro #0 to determine numnber of bytes (until python can compile macro commands)
 
 // to save macro bytes, commands should have non-negative switching parameters when possible
 

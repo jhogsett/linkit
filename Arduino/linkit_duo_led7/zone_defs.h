@@ -7,7 +7,13 @@
 
 //#if defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV)
 
-#if defined(ZONES_ANNUNCIATOR)
+#if defined(ZONES_STRAND_50)
+#define NUM_ZONES 6
+#define FINE_ZONES 5 //                              5 zones of 10
+const byte PROGMEM zone_offsets[NUM_ZONES]= {   0,    0, 10, 20, 30, 40 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 50,   10, 20, 30, 40, 50 };
+
+#elif defined(ZONES_ANNUNCIATOR)
 #define NUM_ZONES 10
 #define FINE_ZONES 3 //                              3 zones of 12    6 zones of 6
 const byte PROGMEM zone_offsets[NUM_ZONES]= {   0,    0, 12, 24,       0, 6,  12, 18, 24, 30 };

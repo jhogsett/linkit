@@ -12,7 +12,7 @@
 ///////////////////////////
 
 // single 90-LED strip in Apollo
-// #define APOLLO_DISPLAY
+//v#define APOLLO_DISPLAY
 
 // single 90-LED strip for dev
 #define LED_STRIP_90
@@ -25,6 +25,12 @@
 
 // single 72-LED strip
 // #define LED_STRIP_72
+
+// single 50-LED strand
+// #define LED_STRAND_50
+
+// single 50-LED strand on original wearable
+// #define WEARABLE_AND_STRAND_50
 
 // 72-LED weather display
 // #define WEATHER_72
@@ -45,7 +51,8 @@
 // #define PROJECTOR
 
 // 64-LED Glasses
-// #define WEARABLE_AND_GLASSES
+//#define WEARABLE_AND_GLASSES
+// spy:
 // #define WEARABLE_AND_GLASSES_TYPE2
 
 // 200-LED overhead
@@ -89,11 +96,11 @@
 #define FADE_PERIOD 100
 #define BLINK_PERIOD 6000
 #define BREATHE_PERIOD 300
-#define NUM_SEQUENCERS 10
+#define NUM_SEQUENCERS 16
 #define FAN_PIN 13
 #define FAN_AUTO_ON_BRIGHTNESS 50
 #define NUM_MACRO_CHARS 15
-#define NUM_MEMORY_MACROS 10
+#define NUM_MEMORY_MACROS 4
 #define NUM_EEPROM_MACROS 69
 
 #ifdef LED_STRIP_72
@@ -151,8 +158,11 @@
 #define BLINK_PERIOD 1000
 #define BREATHE_PERIOD 80
 #define FADE_RATE 0.925
+#define NUM_SEQUENCERS 10
+#define NUM_MACRO_CHARS 25
 #define NUM_MEMORY_MACROS 2
-#define NUM_SEQUENCERS 8
+#define NUM_EEPROM_MACROS 41
+
 //#define USE_MAPPING
 //#define RADIUS8_MAPPING
 #endif
@@ -200,6 +210,21 @@
 #define ANIM_LED_COUNT 44
 #define ZONES_HARDHAT
 #define DEFAULT_BRIGHTNESS_PERCENT 15
+#endif
+
+#ifdef LED_STRAND_50
+#define SWAP_REDGREEN
+#define ANIM_LED_COUNT 50
+#define ZONES_STRAND_50
+#define DEFAULT_BRIGHTNESS_PERCENT 33
+#endif
+
+#ifdef WEARABLE_AND_STRAND_50
+#define WEARABLE
+#define SWAP_REDGREEN
+#define ANIM_LED_COUNT 50
+#define ZONES_STRAND_50
+#define DEFAULT_BRIGHTNESS_PERCENT 20
 #endif
 
 #ifdef WEARABLE_AND_GLASSES
