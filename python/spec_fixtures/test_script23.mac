@@ -5,28 +5,26 @@
 $brightness 33
 
 [glass-light-white 10]
-  (light-set-wht)
+  (light-set-white)
 
-[glass-light-red 12]
+[glass-light-red 11]
   (light-set-red)
 
-[glass-light-tungsten 11]
-  (light-set-tun)
+[glass-light-tungsten 12]
+  (light-set-tungsten)
 
 [glass-light-neon 13]
-  (light-set-neo)
+  (light-set-neon)
 
-((light-setting wht red))
+((light-setting white red))
 ((light-setting red red))
-((light-setting tun sod))
-((light-setting neo neo))
+((light-setting tungsten sodium))
+((light-setting neon neon))
 
 [[light-setting FRONT-COLOR SIDE-COLOR
   [light-set-FRONT-COLOR]
     (light-side-FRONT-COLOR)
     (light-front-FRONT-COLOR)
-    (light-side-FRONT-COLOR)
-    flush
 
   [light-side-FRONT-COLOR]
     SIDE-COLOR
