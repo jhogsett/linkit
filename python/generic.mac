@@ -1,7 +1,7 @@
 
 %include symbols
 
-%include swinger
+%include wanderer
 %include inchworm
 %include hsl-sequencer
 %include colors
@@ -9,7 +9,7 @@
 $rotate-time 30000
 
 [fancy 11]
-  (swinger-app)
+  (wanderer-app)
 
 [mellow 10]
   (inchworm-app)
@@ -20,5 +20,5 @@ $rotate-time 30000
 [render !]
   flush
 
-%run-macro demo
+%run-macro mellow
 

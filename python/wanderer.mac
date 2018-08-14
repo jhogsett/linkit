@@ -24,7 +24,7 @@ $wanderer-max-half <wanderer-max>
     draw-mode
     <wanderer-brightness>
     level
-    (((wanderer-setup 6)))
+    (((wanderer-setup 5)))
     (hsl-sequencer-start)
     (wanderer-render <wanderer-render-time>)
 
@@ -32,7 +32,7 @@ $wanderer-max-half <wanderer-max>
     mirror
     flush
 
-(((wanderer 6)))
+(((wanderer 5)))
 
 [[wanderer-setup X
     (wanderer-setup-X)

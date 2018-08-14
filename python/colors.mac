@@ -12,13 +12,10 @@ $the-color <RED>
 
 [colors-app 10]
   application
-  (color-render <render-time>)
+  (render <render-time>)
   (color-draw <draw-time>)
   (hsl-sequencer-start)
   (hsl-sequencer <draw-time>)
-
-[color-render]
-  flush
 
 [color-draw]
   <the-color>

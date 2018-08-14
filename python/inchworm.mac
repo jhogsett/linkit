@@ -25,15 +25,12 @@ $color-step 1
   application
   <DRAW-PLUS>
   draw-mode
-  (worm-render <render-time>)
+  (render <render-time>)
   (worms-start)
   (hsl-sequencer-start)
 
 [worms-start]
   (((worm-start 5)))
-
-[worm-render !]
-  flush
 
 (((worm 5 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1` X `X+5` `X+10`)))
 
