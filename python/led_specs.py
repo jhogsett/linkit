@@ -1581,19 +1581,19 @@ def specs():
       expect_buffer("0,7,1:swc:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
       expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
       expect_buffer("seq:yel", 0, 9,       "20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 14,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 17,      "10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 18,      "20,0,0,10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:grn", 0, 15,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:blu", 0, 18,      "0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:pur", 0, 19,      "10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:red", 0, 20,      "20,0,0,10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
     if test("it does a wheel sine sequence"):
       expect_buffer("0,7,1:sws:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
       expect_buffer("seq:org", 0, 3,       "20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 4,       "20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 8,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 13,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 16,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 19,      "20,0,0,20,0,0,20,0,0,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:yel", 0, 5,       "20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:grn", 0, 10,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:pur", 0, 20,      "10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:red", 0, 24,      "20,0,0,20,0,0,20,0,0,20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
 
     if test("it does an opposite sequence"):
       expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
@@ -1904,126 +1904,126 @@ def specs():
   if group("math operations"):
 
     if test("should be able to add two values"):
-      expect_accumulators("2,5:psh:0:mth", "7,0,0")
+      expect_accumulators("2,5:psh:add", "7,0,0")
 
     if test("should be able to add positibve and negative values"):
-      expect_accumulators("3,-3:psh:0:mth", "0,0,0")
+      expect_accumulators("3,-3:psh:add", "0,0,0")
 
     if test("should be able to add positive and negative values and get a negative result"):
-      expect_accumulators("0,-3:psh:0:mth", "-3,0,0")
+      expect_accumulators("0,-3:psh:add", "-3,0,0")
 
     if test("should not crash when adding two large integers"):
-      expect_accumulators("32767,32767:psh:0:mth", "-2,0,0")
+      expect_accumulators("32767,32767:psh:add", "-2,0,0")
 
     if test("should not crash when adding two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:0:mth", "3390,0,0")
+      expect_accumulators("99999,99999:psh:add", "3390,0,0")
 
 
     if test("should be able to subtract two values"):
-      expect_accumulators("7,5:psh:1:mth", "2,0,0")
+      expect_accumulators("7,5:psh:sub", "2,0,0")
 
     if test("should be able to subtract negative and positive values"):
-      expect_accumulators("0,-3:psh:1:mth", "3,0,0")
+      expect_accumulators("0,-3:psh:sub", "3,0,0")
 
     if test("should not crash when subtracting two large integers"):
-      expect_accumulators("32767,32767:psh:1:mth", "0,0,0")
+      expect_accumulators("32767,32767:psh:sub", "0,0,0")
 
     if test("should not crash when subtracting two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:1:mth", "0,0,0")
+      expect_accumulators("99999,99999:psh:sub", "0,0,0")
     
 
     if test("should be able to multiply two values"):
-      expect_accumulators("2,5:psh:2:mth", "10,0,0")
+      expect_accumulators("2,5:psh:mul", "10,0,0")
 
     if test("should be able to multiply by zero"):
-      expect_accumulators("0,1000:psh:2:mth", "0,0,0")
+      expect_accumulators("0,1000:psh:mul", "0,0,0")
 
     if test("should be able to multiply by a negative number"):
-      expect_accumulators("2,-1:psh:2:mth", "-2,0,0")
+      expect_accumulators("2,-1:psh:mul", "-2,0,0")
 
     if test("should not crash when multiplying two large integers"):
-      expect_accumulators("32767,32767:psh:2:mth", "1,0,0")
+      expect_accumulators("32767,32767:psh:mul", "1,0,0")
 
     if test("should not crash when multiplying two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:2:mth", "-10559,0,0")
+      expect_accumulators("99999,99999:psh:mul", "-10559,0,0")
 
 
     if test("should be able to divide two values"):
-      expect_accumulators("3,10:psh:3:mth", "3,0,0")
+      expect_accumulators("3,10:psh:div", "3,0,0")
 
     if test("should be able to divide zero by something"):
-      expect_accumulators("5,0:psh:3:mth", "0,0,0")
+      expect_accumulators("5,0:psh:div", "0,0,0")
 
     if test("a divide by zero is ignored, leaving accumulators as were"):
-      expect_accumulators("0,5:psh:3:mth", "0,5,0")
+      expect_accumulators("0,5:psh:div", "0,5,0")
 
     if test("should be able to divide a negative number"):
-      expect_accumulators("2,-5:psh:3:mth", "-2,0,0")
+      expect_accumulators("2,-5:psh:div", "-2,0,0")
 
     if test("should be able to divide by a negative number"):
-      expect_accumulators("-2, 5:psh:3:mth", "-2,0,0")
+      expect_accumulators("-2, 5:psh:div", "-2,0,0")
 
     if test("should not crash when dividing two large integers"):
-      expect_accumulators("32767,32767:psh:3:mth", "1,0,0")
+      expect_accumulators("32767,32767:psh:div", "1,0,0")
 
     if test("should not crash when dividing two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:3:mth", "1,0,0")
+      expect_accumulators("99999,99999:psh:div", "1,0,0")
 
 
     if test("should be able to modulus two values"):
-      expect_accumulators("3,10:psh:4:mth", "1,0,0")
+      expect_accumulators("3,10:psh:mod", "1,0,0")
 
     if test("should be able to modulus zero by something"):
-      expect_accumulators("3,0,1:psh:4:mth", "0,0,0")
+      expect_accumulators("3,0,1:psh:mod", "0,0,0")
 
     if test("a modulus by zero is ignored, leaving accumulators as were"):
-      expect_accumulators("0,5:psh:4:mth", "0,5,0")
+      expect_accumulators("0,5:psh:mod", "0,5,0")
 
     if test("should be able to modulus a negative nunmber"):
       # mod returns an absolute value to ease restraining pixel location
-      expect_accumulators("3,-10:psh:4:mth", "1,0,0")
+      expect_accumulators("3,-10:psh:mod", "1,0,0")
 
     if test("should be able to modulus by a negative nunmber"):
-      expect_accumulators("-3,10:psh:4:mth", "1,0,0")
+      expect_accumulators("-3,10:psh:mod", "1,0,0")
 
     if test("should not crash when modulusing two large integers"):
-      expect_accumulators("32767,32767:psh:4:mth", "0,0,0")
+      expect_accumulators("32767,32767:psh:mod", "0,0,0")
 
     if test("should not crash when modulusing two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:4:mth", "0,0,0")
+      expect_accumulators("99999,99999:psh:mod", "0,0,0")
 
     if test("mod operation should also return a positive value"):
       # mod returns an absolute value to ease restraining pixel location
-      expect_accumulators("90,-26:psh:4:mth", "26,0,0")
+      expect_accumulators("90,-26:psh:mod", "26,0,0")
 
 
     if test("should be able to diff two values"):
-      expect_accumulators("27,45:psh:5:mth", "18,0,0")
+      expect_accumulators("27,45:psh:dif", "18,0,0")
 
     if test("should be able to diff two values in either direction"):
-      expect_accumulators("45,27:psh:5:mth", "18,0,0")
+      expect_accumulators("45,27:psh:dif", "18,0,0")
 
     if test("should be able to diff two negative values"):
-      expect_accumulators("-27,-45:psh:5:mth", "18,0,0")
+      expect_accumulators("-27,-45:psh:dif", "18,0,0")
 
     if test("should be able to diff two negative values in either direction"):
-      expect_accumulators("-45,-27:psh:5:mth", "18,0,0")
+      expect_accumulators("-45,-27:psh:dif", "18,0,0")
 
 
     if test("should be able to average two values"):
-      expect_accumulators("27,45:psh:6:mth", "36,0,0")
+      expect_accumulators("27,45:psh:avg", "36,0,0")
 
     if test("should be able to average two values in either direction"):
-      expect_accumulators("27,45:psh:6:mth", "36,0,0")
+      expect_accumulators("27,45:psh:avg", "36,0,0")
 
     if test("should be able to average two negative values"):
-      expect_accumulators("-27,-45:psh:6:mth", "-36,0,0")
+      expect_accumulators("-27,-45:psh:avg", "-36,0,0")
 
     if test("should be able to average two negative values in either direction"):
-      expect_accumulators("-45,-27:psh:6:mth", "-36,0,0")
+      expect_accumulators("-45,-27:psh:avg", "-36,0,0")
 
     if test("mth operations should automatically recall accumulators into arguments"):
-      expect_accumulators("3,9:psh:2:mth:sto", "27,0,0")
+      expect_accumulators("3,9:psh:mul:sto", "27,0,0")
 
 
 
