@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------
 
 %include symbols
-%include test_script23_include
+%include test_script24_include
 
 %run-macro colors-app
 

@@ -1,6 +1,1 @@
-10:set:app:100,6:sch:1000,7:sch:5:run:1000,4:sch
-4:set:0,0,2:seq:sto:60:rcl:csh
-5:set:0,360:seq:100,4:sch
-6:set:flu
-7:set:0:pal:flo
 
