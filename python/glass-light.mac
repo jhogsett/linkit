@@ -4,17 +4,35 @@
 
 $brightness 33
 
+$left-strip 1
+$right-strip 4
+$lenses-only 5
+
 [glass-light-white 10]
+  application
+  (init)
   (light-set-wht)
 
 [glass-light-red 12]
+  application
+  (init)
   (light-set-red)
 
 [glass-light-tungsten 11]
+  application
+  (init)
   (light-set-tun)
 
 [glass-light-neon 13]
+  application
+  (init)
   (light-set-neo)
+
+[init]
+  <brightness>
+  level
+  <EFFECTS-PROCESSING>
+  continue
 
 ((light-setting wht red))
 ((light-setting red red))
@@ -23,22 +41,31 @@ $brightness 33
 
 [[light-setting FRONT-COLOR SIDE-COLOR
   [light-set-FRONT-COLOR]
-    (light-side-FRONT-COLOR)
+    (light-sides-FRONT-COLOR)
     (light-front-FRONT-COLOR)
-    (light-side-FRONT-COLOR)
     flush
+
+  [light-sides-FRONT-COLOR]
+    <right-strip>
+    zone
+    (light-side-FRONT-COLOR)
+    <left-strip>
+    zone
+    (light-side-FRONT-COLOR)
 
   [light-side-FRONT-COLOR]
     SIDE-COLOR
     dim
     dim
     dim
-    7
-    repeat
+#    blink
+    breathe
+    flood
 
   [light-front-FRONT-COLOR]
+    <lenses-only>
+    zone
     FRONT-COLOR
-    47
-    repeat
+    flood
 ]]
 
