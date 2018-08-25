@@ -1284,8 +1284,22 @@ def specs():
     if test("it renders at an alternate brightness level"):
       expect_render("35:lev:sea:flu", 0, 1, "0,89,44")
 
+    if test("it renders at an automatic brightness level"):
+      expect_render("0:lev:sea:flu", 0, 1, "0,51,25")
 
-########################################################################
+    if test("it renders at a high brightness level"):
+      expect_render("-2:lev:sea:flu", 0, 1, "0,63,31")
+
+    if test("it renders at a low brightness level"):
+      expect_render("-3:lev:sea:flu", 0, 1, "0,12,6")
+
+    if test("it renders at a max brightness level"):
+      expect_render("-1:lev:sea:flu", 0, 1, "0,204,102")
+
+    if test("it renders at a min brightness level"):
+      expect_render("-4:lev:sea:flu", 0, 1, "0,5,2")
+
+
 # FADE ANIMATION
 ########################################################################
   if group("fade animation"):                                                             
@@ -1751,6 +1765,8 @@ def specs():
       expect_accumulators("1,2,3:sto:4,5,2:rcl:sto", "3,4,5")
 
     if test("can successfully shift arguments with sto/rcl tricks"):
+
+# needs a certain brightnss to work
 
       # no shift 
       expect_render("0:sto:50:rgb", 0, 1, "66,0,0")
