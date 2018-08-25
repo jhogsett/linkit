@@ -55,6 +55,8 @@ def initialize():
     last_macro_bytes = device_profile["LAST-MACRO-BYTES"]
 
     mc.begin(lc, verbose_mode, presets(), starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
+
+    ui.app_description(app_description)
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
     ui.report_info(ui.intro_entry("Number of macros", number_of_macros))
     ui.report_info(ui.intro_entry("Number of sequencers", number_of_sequencers))

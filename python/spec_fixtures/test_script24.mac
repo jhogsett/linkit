@@ -1,0 +1,33 @@
+# fix: when included with apollo.mac the commented out color-start macro got resolved somehow
+
+# ----------------------------------------------------------------
+# ----------------------------------------------------------------
+
+%include symbols
+%include test_script24_include
+
+%run-macro colors-app
+
+$render-time 100
+$draw-time 1000
+$the-color <RED>
+
+[colors-app 10]
+  application
+  (color-render <render-time>)
+  (color-draw <draw-time>)
+# (color-start)
+  (hsl-sequencer-start)
+  (hsl-sequencer <draw-time>)
+
+[color-render]
+  flush
+
+#[color-start]
+#
+
+[color-draw]
+  <the-color>
+  palette-color
+  flood
+ 
