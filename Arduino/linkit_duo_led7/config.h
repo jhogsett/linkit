@@ -12,10 +12,10 @@
 ///////////////////////////
 
 // single 90-LED strip in Apollo
-//v#define APOLLO_DISPLAY
+// #define APOLLO_DISPLAY
 
 // single 90-LED strip for dev
-#define LED_STRIP_90
+// #define LED_STRIP_90
 
 // 19-LED Mini Disc
 // #define MINI_DISC_19
@@ -53,7 +53,7 @@
 // 64-LED Glasses
 //#define WEARABLE_AND_GLASSES
 // spy:
-// #define WEARABLE_AND_GLASSES_TYPE2
+#define WEARABLE_AND_GLASSES_TYPE2
 
 // 200-LED overhead
 // #define RADIUS8
@@ -102,6 +102,10 @@
 #define NUM_MACRO_CHARS 15
 #define NUM_MEMORY_MACROS 4
 #define NUM_EEPROM_MACROS 69
+#define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    25
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
 
 #ifdef LED_STRIP_72
 #define USE_1_DISPLAYS
@@ -206,7 +210,7 @@
 
 #ifdef WEARABLE_AND_HARDHAT
 #define SWAP_REDGREEN
-#define WEARABLE_TYPE2
+#define WEARABLE
 #define ANIM_LED_COUNT 44
 #define ZONES_HARDHAT
 #define DEFAULT_BRIGHTNESS_PERCENT 15
@@ -240,9 +244,9 @@
 #define WEARABLE_TYPE2
 #define ANIM_LED_COUNT 64
 #define ZONES_GLASSES
-#define DEFAULT_BRIGHTNESS_PERCENT 10
-#define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 150
+#define DEFAULT_BRIGHTNESS_PERCENT 20
+#define BLINK_PERIOD 1500
+#define BREATHE_PERIOD 75
 #endif
 
 #ifdef WEARABLE_AND_PROJECTOR

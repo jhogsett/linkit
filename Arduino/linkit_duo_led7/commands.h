@@ -53,7 +53,7 @@ class Commands
   void process_events();
   void do_run_macro(byte macro, int times = 1, int delay_ = 0);
   void reset();
-  void set_brightness_level(byte level = 0);
+  void set_brightness_level(int level = 0);
   bool dispatch_command(int cmd, byte *dispatch_data = NULL);
   void flush_all(bool force_display = false);
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
@@ -335,17 +335,39 @@ void Commands::set_pin(byte pin, byte mode)
   digitalWrite(pin, mode == 0 ? LOW : HIGH);  
 }
 
-void Commands::set_brightness_level(byte level)
+#define MIN_LEVEL  -4
+#define LOW_LEVEL  -3
+#define HIGH_LEVEL -2
+#define MAX_LEVEL  -1
+#define DEF_LEVEL   0
+void Commands::set_brightness_level(int level)
 {
-  if(level == 0)
-  {
-#ifdef USE_AUTO_BRIGHTNESS
-    level = auto_brightness->get_auto_brightness_level();
-#else
-    level = default_brightness;
-#endif
-  }
+  switch(level){
+    case MIN_LEVEL:
+      level = MIN_BRIGHTNESS_PERCENT;
+      break;
 
+    case LOW_LEVEL:
+      level = LOW_BRIGHTNESS_PERCENT;
+      break;
+
+    case HIGH_LEVEL:
+      level = HIGH_BRIGHTNESS_PERCENT;
+      break;
+
+    case MAX_LEVEL:
+      level = MAX_BRIGHTNESS_PERCENT;
+      break;
+
+    case DEF_LEVEL:
+#ifdef USE_AUTO_BRIGHTNESS
+      level = auto_brightness->get_auto_brightness_level();
+#else
+      level = default_brightness;
+#endif
+      break;
+  }
+  
   renderer->set_default_brightness(level);
   do_fan(level >= FAN_AUTO_ON_BRIGHTNESS, true);  
   flush_all(true);

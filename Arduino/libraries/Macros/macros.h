@@ -301,6 +301,8 @@ byte Macros::set_macro(byte macro, char * commands){
 
   }while(cmd != CMD_NULL);
 
+///// todo don't write it if we've already written the last byte
+
   // write end of macro marker
   write_byte(macro_buffer, to_eeprom, MACRO_END_MARKER);
 

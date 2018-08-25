@@ -1,3 +1,13 @@
+// -p show # bytes and/or show all macro bytes don't stop on 255 to check on overrun macros
+
+// can't use long command names for passing values to template
+
+// for ((( ))) could have option to specify a list of values instead of only 0, 1, ...
+
+// would be nice not to have to use additional macros just to assign 10,11,12 as numbers.
+// maybe pass macro number in include line? (don't want extra args)
+// maybe a directive
+
 // lines with # are still getting processed in some cases, see test_script23.mac
 
 // maybe prefix macro names with filenane on include to avoid name clashes
