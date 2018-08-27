@@ -7,7 +7,7 @@
 %include hsl-sequencer
 
 $wanderer-draw-mode <DRAW-MIX>
-$wanderer-brightness 0
+$wanderer-brightness <BRIGHTNESS-AUTO>
 $wanderer-render-time 50
 $wanderer-advance-time 20
 $wanderer-fade-type ffd
@@ -16,65 +16,109 @@ $wander-neg-range `-(<wander-range> / 2)`
 $wanderer-max <NUM-LEDS>
 $wanderer-max-half <wanderer-max>
 
+# notes:
+# using mixed draw mode so the colors intermingle
+# use a fast fade to avoid clutter
+
 %run-macro wanderer-app
 
+# set up the application on macro #10
 [wanderer-app 10]
     application
+ 
+    # set the preset draw mode
     <wanderer-draw-mode>
     draw-mode
+
+    # set the preset brightness level
     <wanderer-brightness>
     level
+
+    # create 5 meta-templates for wanderer setup
     (((wanderer-setup 5)))
+
+    # start up the palette color sequencer
     (hsl-sequencer-start)
+ 
+    # schedule the display rendering
     (wanderer-render <wanderer-render-time>)
 
+# use a custom rendering
 [wanderer-render]
     mirror
     flush
 
+# create 5 meta-templates for wander processing
 (((wanderer 5)))
 
+# wanderer setup template
 [[wanderer-setup X
     (wanderer-setup-X)
 ]]
 
+# wanderer processing template
 [[wanderer X
     [wanderer-setup-X]
+        # allocate a wheel sequencer and set the limit
         {seq-X},<wanderer-max>
         wheel-sequencer
+
+        # schedule the sequencer to advance
         (wanderer-advance-X <wanderer-advance-time>)
 
     [wanderer-advance-X]
+        # advance the sequencer
         <seq-X>,<MACRO-SEQ>,<wanderer-math-X>        
         sequence
+
+        # set the pixel position from the sequencer value
         position
+
+        # use the template value as the palette index
         X
         palette-color
+
+        # set a fade effect
         <wanderer-fade-type>
+        
+        # restore viewport
         reset
 
     [wanderer-math-X]
+        # pass the sequencer number
         <seq-X>
         store
+
+        # calculate and return the next position 
         (wanderer-math)
+
+        # is this needed? there's some auto-recall after math stuff (maybe)
         recall
 ]]
 
 [wanderer-math]
+        # fill arg1 when recalling passed sequencer number into arg0
         <GET-CURRENT>
         recall
+
+        # get the sequencer's current value and push onto stack
         sequence
         push
 
+        # get a random number in the set range
         <wander-range>
         random-number
+
+        # push onto stack and add the two values
         push
         add
 
+        # subtract half the random number so direction is random
         <wander-neg-range>
         push
         add
 
+        # return the modulus of half the max width, since display will be mirrored
         <wanderer-max-half>
         push
         modulo
