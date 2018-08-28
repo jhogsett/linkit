@@ -40,37 +40,64 @@ $color-step 1
 
 [[worm X TIME1 TIME2 COLOR STEP SEQ1 SEQ2 SEQ3
   [worm-start-X]
+    # allocate a sequencer 1/6 the display width for the small/fast sequence
     {seq-SEQ1},<width0>
     <seq-type>
+
+    # allocate a sequencer for performing macro math on advance
     {seq-SEQ2},<width1>
     <seq-type>
+
+    # allocate a sequencer for the remaining 5/6 display width to swing the sequence
     {seq-SEQ3},<width2>
     <seq-type>
+
+    # schedule the draw macro
     (worm-draw-X TIME1)
+    
+    # schedule the advance macro
     (worm-advance-X TIME2)
 
+  # use the macro math sequencer to draw the next animation frame
   [worm-draw-X]
+    # use a macro to compute the next position
     <seq-SEQ2>,<MACRO-SEQ>,<worm-math-X>
+
+    # get and set the offset,window to fill in for this frame
     sequence-next-window
     position
+
+    # place the palette color
     COLOR
     palette-color
+
+    # set the fade type
     <fade-type>
+
+    # fill the whole space
     flood
+    
+    # restore the viewport
     reset
 
+  # macro used by the sequencer to compute the next position
   [worm-math-X]
+    # advance the 1/6 sequencer and push onto stack
     <seq-SEQ1>
     sequence
     push
+    
+    # advance the 5/6 sequencer and push onto stack
     <seq-SEQ3>,<GET-CURRENT>
     sequence
     push
+
+    # add the two values, leaving the result in arg0
     add
 
+  # macro to sequence the 5/6 sequencer at a variable rate
   [worm-advance-X]
+    # advance the sequencer, leaving the result in arg0
     <seq-SEQ3>,0,STEP
     sequence
 ]]
-
- 
