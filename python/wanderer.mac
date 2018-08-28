@@ -92,7 +92,7 @@ $wanderer-max-half <wanderer-max>
         # calculate and return the next position 
         (wanderer-math)
 
-        # is this needed? there's some auto-recall after math stuff (maybe)
+        # YES is this needed? there's some auto-recall after math stuff (maybe)
         recall
 ]]
 
