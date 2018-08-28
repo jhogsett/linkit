@@ -17,16 +17,16 @@
     <!-- banner -->
     <ul class="nav nav-tabs" id="maintabs">
       <li class="active"><a data-toggle="tab" href="#main"><i class="fa fa-home"></i> Main</a></li>
-      <li><a data-toggle="tab" href="#apps"><i class="fa fa-th-large"></i> Apps</a></li>
       <li><a data-toggle="tab" href="#colors"><i class="fa fa-paint-brush"></i> Colors</a></li>
       <li><a data-toggle="tab" href="#extra"><i class="fa fa-cog"></i> Extra</a></li>
+      <li><a data-toggle="tab" href="#links"><i class="fa fa-external-link"></i> Links</a></li>
+      <li><a data-toggle="tab" href="#cast"><i class="fa fa-bullhorn"></i> Cast</a></li>
+      <li><a data-toggle="tab" href="#admin"><i class="fa fa-lock"></i> Admin</a></li>
+      <li><a data-toggle="tab" href="#apps"><i class="fa fa-th-large"></i> Apps</a></li>
       <li><a data-toggle="tab" href="#car"><i class="fa fa-car"></i> Car</a></li>
       <li><a data-toggle="tab" href="#specs"><i class="fa fa-eye"></i> Specs</a></li>
       <li><a data-toggle="tab" href="#disc"><i class="fa fa-circle-o"></i> Disc</a></li>
       <!-- <li><a data-toggle="tab" href="#mini"><i class="fa fa-globe"></i> Mini</a></li> -->
-      <li><a data-toggle="tab" href="#links"><i class="fa fa-external-link"></i> Links</a></li>
-      <li><a data-toggle="tab" href="#admin"><i class="fa fa-lock"></i> Admin</a></li>
-      <li><a data-toggle="tab" href="#cast"><i class="fa fa-bullhorn"></i> Cast</a></li>
     </ul>
 
     <script type="text/javascript">
@@ -51,44 +51,45 @@
       <div id="main" class="tab-pane fade in active">
         <h3>Main</h3>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=0:lev#main">Auto %</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=0:lev#main">Auto Level</a></div>
           <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=stp#main">Stop</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=1:lev#main">1%</a></div>
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=stop#main">Stop App</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=-2:lev#main">High Level</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?macro=10#main">FANCY</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=2:lev#main">2%</a></div>
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?macro=10#main">FANCY</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=5:lev#main">5%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=-3:lev#main">Low Level</a></div>
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?macro=11#main">MELLOW</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=10:lev#main">10%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=-4:lev#main">Min Level</a></div>
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?macro=12#main">LAMP</a></div>
         </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=20:lev#main">20%</a></div>
+        <div class="row row-margin">
+          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=-1:lev#main">Max Level</a></div>
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?macro=13#main">DEMO</a></div>
-        </div>
+        </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=33:lev:main">33%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=2:lev#main">2% Level</a></div>
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=1:fan#main">Fan On</a></div>
         </div>
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=50:lev:main">50%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=5:lev:main">5% Level</a></div>
           <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?cmd=0:fan#main">Fan Off</a></div>
         </div>
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=70:lev#main">70%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=20:lev:main">20% Level</a></div>
           <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=clr#main">Clear</a></div>
+        </div>
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=33:lev#main">33%</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=cnt#main">Cont</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=100:lev#main">100%</a></div>
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=cnt#main">Cont</a></div>
+          <div class="col-xs-4"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=50:lev#main">50% Level</a></div>
+          <div class="col-xs-4"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=100:lev#main">100% Level</a></div>
+          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=stop#main">Stop App</a></div>
         </div>    
         <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-3"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?color=wht:flo#main">Xe</a></div>
@@ -494,74 +495,54 @@
           <div class="col-xs-12"><h4>Devices by 192.168.x.x</h4></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.100.1:8080/command">Apollo 192.168.100.1</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.100.1:8080/command">Apollo 192.168.100.1</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.100">Linkit 192.168.100.1</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.100">Linkit 192.168.100.1</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.243:8080/command">Apollo 192.168.43.243</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.243">Linkit 192.168.43.243</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.243:8080/command">Apollo 192.168.43.243</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.243">Linkit 192.168.43.243</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.108:8080/command">Wearable 192.168.43.108</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.108:8080/command">Wearable 192.168.43.108</a></div>    
         </div>                                                                                                                                                                                                  
 
         <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-12"><h4>Devices by 10.x.x.x</h4></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.4:8080/command">Apollo 10.0.0.4</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.4:8080/command">Apollo 10.0.0.4</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.4">Linkit 10.0.0.4</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.4">Linkit 10.0.0.4</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.172:8080/command">blinkit 10.0.0.172</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.53:8080/command">Wearable 10.0.0.53</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.172:8080/command">blinkit 10.0.0.172</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.198:8080/command">Overhead 10.0.0.198</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.188:8080/command">Projector 10.0.0.188</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.53:8080/command">Wearable 10.0.0.53</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.101:8080/command">Sphere 10.0.0.101</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.121:8080/command">Apollo(r) 10.0.0.121</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.198:8080/command">Overhead 10.0.0.198</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.192:8080/command">Spy 10.0.0.192</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.192:8080/command">Repeater 10.0.0.192</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.188:8080/command">Projector 10.0.0.188</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.247:8080/command">Repeater 10.0.0.247</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.181:8080/command">Apollo 10.0.0.181</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.101:8080/command">Sphere 10.0.0.101</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.189:8080/command">Platform 10.0.0.189</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.166:8080/command">Annunciator 10.0.0.166</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.121:8080/command">Apollo(r) 10.0.0.121</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.124:8080/command">Annunciator2 10.0.0.124</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.208:8080/command">Monument 10.0.0.208</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.192:8080/command">Spy 10.0.0.192</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.192:8080/command">Repeater 10.0.0.192</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.247:8080/command">Repeater 10.0.0.247</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.181:8080/command">Apollo 10.0.0.181</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.189:8080/command">Platform 10.0.0.189</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.166:8080/command">Annunciator 10.0.0.166</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.124:8080/command">Annunciator2 10.0.0.124</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.208:8080/command">Monument 10.0.0.208</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.205:8080/command">Weather 10.0.0.205</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.205:8080/command">Weather 10.0.0.205</a></div>    
         </div>                                                                                                                                                                                                  
       </div>
       
@@ -569,28 +550,20 @@
         <h3>Admin</h3>
         <div class="row row-margin">
           <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+apollo#admin">Apollo Program</a></div>
-        </div>
-        <div class="row row-margin">
           <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+apollo144#admin">Apollo144 Program</a></div>
         </div>
         <div class="row row-margin">
           <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+oneway#admin">One-Way Program</a></div>
-        </div>
-        <div class="row row-margin">
           <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+threeway#admin">Three-Way Program</a></div>
         </div>
         <div class="row row-margin">
           <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+annunciator#admin">Annunciator Program</a></div>
-        </div>
-        <div class="row row-margin">
           <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+annunciator2#admin">Annunciator2 Program</a></div>
         </div>
         <div class="row row-margin">
           <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+monument#admin">Monument Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=led_specs.py#admin">Run Test Suite</a></div>
         </div>
-          <div class="row row-margin">
-              <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=led_specs.py#admin">Run Test Suite</a></div>
-          </div>
       </div>
       
       <div id="cast" class="tab-pane fade in">
@@ -607,33 +580,25 @@
           <div class="col-xs-3"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?cast=2:pau:1:cnt:neo:flo#cast">NEO</a></div>
         </div>
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cast=1:pau:2:cnt:10:run#cast">All Start 10</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=0:lev#cast">All Auto %</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cast=1:pau:2:cnt:10:run#cast">All FANCY</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=0:lev#cast">All AUTO</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cast=1:pau:2:cnt:11:run#cast">All Start 11</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=1:lev#cast">All 1%</a></div>    
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cast=1:pau:2:cnt:11:run#cast">All MELLOW</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=-2:lev#cast">All HIGH</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cast=1:pau:2:cnt:12:run#cast">All Start 12</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=2:lev#cast">All 2%</a></div>    
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cast=1:pau:2:cnt:12:run#cast">All LAMP</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=-3:lev#cast">All LOW</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cast=1:pau:2:cnt:13:run#cast">All Start 13</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=5:lev#cast">All 5%</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cast=1:pau:2:cnt:13:run#cast">All DEMO</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=-4:lev#cast">All MIN</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=10:lev#cast">All 10%</a></div>
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=20:lev#cast">All 20%</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=-1:lev#cast">All MAX</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=2:lev#cast">All 2%</a></div>
         </div>                                                                                                                                                                                                  
-        <div class="row row-margin">
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cast=33:lev#cast">All 33%</a></div>
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cast=50:lev#cast">All 50%</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cast=70:lev:cast">All 70%</a></div>
-          <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cast=100:lev:cast">All 100%</a></div>
-        </div>
         <div class="row row-margin">
           <div class="col-xs-2"><a class="btn btn-red btn-lg btn-block" role="button" href="/command?cast=2:pau:1:cnt:red:flo#cast">&nbsp;</a></div>
           <div class="col-xs-2"><a class="btn btn-orange btn-lg btn-block" role="button" href="/command?cast=2:pau:1:cnt:org:flo#cast">&nbsp;</a></div>
