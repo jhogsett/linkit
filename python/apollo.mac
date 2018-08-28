@@ -17,8 +17,5 @@ $rotate-time 30000
 [demo 12]
   (colors-app)
 
-[render !]
-  flush
-
 %run-macro demo
 

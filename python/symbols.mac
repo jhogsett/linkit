@@ -47,3 +47,6 @@ $ROSE 17
 #$SODIUM 23
 #$BLACK 24
 
+[render !]
+  flush
+

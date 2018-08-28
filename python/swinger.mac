@@ -23,15 +23,12 @@ $swinger-max-half <swinger-max>
     draw-mode
     <CONFIG-FADE-RATE>,<swinger-fade-rate>
     configure
-    (swinger-render <swinger-render-time>)
+    (render <swinger-render-time>)
     (hsl-sequencer-start)
     (swingers-start)
 
 [swingers-start]
     (((swinger-start 6)))
-
-[swinger-render !]
-    flush
 
 (((swinger 6)))
 

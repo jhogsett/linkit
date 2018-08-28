@@ -795,10 +795,17 @@ def remove_fixed_macro_numbers(line):
   start, end = locate_delimiters(line, "[", "]")
   if start != -1 and end != -1:
     args = extract_args(line, "[", "]")
-    # leave only the name
-    return "[" + args[0] + "]"
-  else:
-    return line
+    if len(args) == 2 and is_number(args[1]):
+      # leave only the name
+      return "[" + args[0] + "]"
+  return line
+
+def is_number(str):
+  try:
+    int(str)
+    return True
+  except ValueError:
+    return False
 
 def rewrite_included_script_line(script_line):
   new_line = remove_fixed_macro_numbers(script_line)
