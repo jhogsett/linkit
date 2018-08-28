@@ -14,31 +14,50 @@ $width1 <NUM-LEDS>
 $width2 `<NUM-LEDS> * 5 / 6`
 $time1 50
 $time2 200
-$color 1
 $seq-type sqs
 $fade-type ffd
-$step 2
-$color-time 100
-$color-step 1
 
 [inchworm-app 10]
   application
+
+  # make colors intermingle
   <DRAW-PLUS>
   draw-mode
+
+  # schedule the renderer
   (render <render-time>)
+  
+  # start the worms
   (worms-start)
+  
+  # start the palette color sequencer
   (hsl-sequencer-start)
 
+# start up all worms
 [worms-start]
+  # expand 5 wornm start meta-templates
   (((worm-start 5)))
 
+# expand 5 meta-templates for worms, computing the various values
 (((worm 5 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1` X `X+5` `X+10`)))
 
+# template for starting worms
+# X - worm number
 [[worm-start X
   (worm-start-X)
 ]]
 
+# template for all worm processing
+# X - worm number
+# TIME1 - draw time / fast advance time
+# TIME2 - slow advance time
+# COLOR - palette color index
+# STEP - advance step for the slow advancing sequencer
+# SEQ1 - fast advancing sequencer number
+# SEQ2 - macro math sequencer number
+# SEQ3 - slow advancing sequencer number
 [[worm X TIME1 TIME2 COLOR STEP SEQ1 SEQ2 SEQ3
+  # start up a worm
   [worm-start-X]
     # allocate a sequencer 1/6 the display width for the small/fast sequence
     {seq-SEQ1},<width0>
