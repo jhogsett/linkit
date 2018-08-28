@@ -22,10 +22,10 @@
       <li><a data-toggle="tab" href="#links"><i class="fa fa-external-link"></i> Links</a></li>
       <li><a data-toggle="tab" href="#cast"><i class="fa fa-bullhorn"></i> Cast</a></li>
       <li><a data-toggle="tab" href="#admin"><i class="fa fa-lock"></i> Admin</a></li>
-      <li><a data-toggle="tab" href="#apps"><i class="fa fa-th-large"></i> Apps</a></li>
-      <li><a data-toggle="tab" href="#car"><i class="fa fa-car"></i> Car</a></li>
-      <li><a data-toggle="tab" href="#specs"><i class="fa fa-eye"></i> Specs</a></li>
-      <li><a data-toggle="tab" href="#disc"><i class="fa fa-circle-o"></i> Disc</a></li>
+      <!-- <li><a data-toggle="tab" href="#apps"><i class="fa fa-th-large"></i> Apps</a></li> -->
+      <!-- <li><a data-toggle="tab" href="#car"><i class="fa fa-car"></i> Car</a></li> -->
+      <!-- <li><a data-toggle="tab" href="#specs"><i class="fa fa-eye"></i> Specs</a></li> -->
+      <!-- <li><a data-toggle="tab" href="#disc"><i class="fa fa-circle-o"></i> Disc</a></li> -->
       <!-- <li><a data-toggle="tab" href="#mini"><i class="fa fa-globe"></i> Mini</a></li> -->
     </ul>
 
@@ -83,13 +83,12 @@
           <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=clr#main">Clear</a></div>
         </div>
         <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=33:lev#main">33%</a></div>
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=cnt#main">Cont</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=33:lev#main">33% Level</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=stop#main">Stop App</a></div>
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-4"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=50:lev#main">50% Level</a></div>
           <div class="col-xs-4"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=100:lev#main">100% Level</a></div>
-          <div class="col-xs-4"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?run=stop#main">Stop App</a></div>
         </div>    
         <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-3"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?color=wht:flo#main">Xe</a></div>
@@ -111,7 +110,7 @@
         </div>
       </div>
 
-      <div id="apps" class="tab-pane fade">
+<!--       <div id="apps" class="tab-pane fade">
         <h3>Apps</h3>
         <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-12"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=stop#apps">Stop App</a></div>    
@@ -165,7 +164,8 @@
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+1+1+1+5#apps">Dyn Rainbo 1</a></div>
         </div>
       </div>
-
+-->
+      
       <div id="colors" class="tab-pane fade">
         <h3>Colors</h3>
         <div class="row row-margin">
@@ -286,7 +286,7 @@
         </div>
       </div> -->
       
-      <div id="disc" class="tab-pane fade">
+<!--       <div id="disc" class="tab-pane fade">
         <h3>Disc</h3>
         <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-12"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=stop#disc">Stop!</a></div>    
@@ -379,7 +379,9 @@
           <div class="col-xs-12"><a class="btn btn-link btn-lg btn-block" role="button" href="/command?run=turning_rings.py#disc">turning_rings.py</a></div>
         </div>
       </div>
+-->
       
+<!--       
       <div id="car" class="tab-pane fade">
         <h3>Car</h3>
         <div class="row row-margin">                                                                                                                                                                                       
@@ -441,7 +443,9 @@
           <div class="col-xs-12"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?color=pur:bl6:4:rep:blu:bl5:4:rep:grn:bl4:4:rep&color=yel:bl3:4:rep:org:bl2:4:rep:red:bl1:4:rep:30:cpy#car">Chasing Rainbow 2</a></div>
         </div>
       </div>
+-->
       
+<!--       
       <div id="specs" class="tab-pane fade">
         <h3>Glasses</h3>
         <div class="row row-margin">                                                                                                                                                                                       
@@ -487,24 +491,9 @@
           <div class="col-xs-12"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?run=glasses13.py#specs">glasses13.py</a></div>
         </div>
       </div>
-      
+-->      
       <div id="links" class="tab-pane fade">
         <h3>Links</h3>
-
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-12"><h4>Devices by 192.168.x.x</h4></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.100.1:8080/command">Apollo 192.168.100.1</a></div>    
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.100">Linkit 192.168.100.1</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.243:8080/command">Apollo 192.168.43.243</a></div>    
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.243">Linkit 192.168.43.243</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row row-margin">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.108:8080/command">Wearable 192.168.43.108</a></div>    
-        </div>                                                                                                                                                                                                  
 
         <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-12"><h4>Devices by 10.x.x.x</h4></div>    
@@ -545,23 +534,59 @@
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.205:8080/command">Weather 10.0.0.205</a></div>    
         </div>                                                                                                                                                                                                  
       </div>
+
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-12"><h4>Devices by 192.168.x.x</h4></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.100.1:8080/command">192.168.100.1</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.100.1">L 192.168.100.1</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.243:8080/command">192.168.43.243</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.243">L 192.168.43.243</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.122:8080/command">192.168.43.122</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.122">L 192.168.43.122</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.93:8080/command">192.168.43.93</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.93">L 192.168.43.93</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.136:8080/command">192.168.43.136</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.136">L 192.168.43.136</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.122:8080/command">192.168.43.122</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.122">L 192.168.43.122</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.76:8080/command">192.168.43.76</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.76">L 192.168.43.76</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.108:8080/command">192.168.43.108</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.108">L 192.168.43.108</a></div>    
+        </div>                                                                                                                                                                                                  
       
       <div id="admin" class="tab-pane fade in">
         <h3>Admin</h3>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+apollo#admin">Apollo Program</a></div>
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+apollo144#admin">Apollo144 Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=progmac.py+apollo#admin">Apollo App</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=progmac.py+wanderer#admin">Apollo144 Program</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+oneway#admin">One-Way Program</a></div>
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+threeway#admin">Three-Way Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=progmac.py+inchworm#admin">One-Way Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=progmac.py+swinger#admin">Three-Way Program</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+annunciator#admin">Annunciator Program</a></div>
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+annunciator2#admin">Annunciator2 Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=progmac.py+generic#admin">Annunciator Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=progmac.py+colors#admin">Annunciator2 Program</a></div>
         </div>
         <div class="row row-margin">
-          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=program_macros.py+monument#admin">Monument Program</a></div>
+          <div class="col-xs-12"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=progmac.py+glass-light#admin">Monument Program</a></div>
           <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=led_specs.py#admin">Run Test Suite</a></div>
         </div>
       </div>
