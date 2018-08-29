@@ -9,15 +9,15 @@
 $draw-mode <DRAW-MIX>
 $brightness <BRIGHTNESS-AUTO>
 
-$render-time 100
-$advance-time-x 100
-$advance-time-y 100
-$draw-time 100
+$render-time 150
+$advance-time-x 75
+$advance-time-y 75
+$draw-time 75
 $fade-type sfd
 
 $color 0
 
-$factor 10
+$factor 1
 $max 16
 $high-limit 16
 $low-limit 0
@@ -56,13 +56,20 @@ $low-limit 0
 
 [circle-setup]
     # allocate a sequencer for X
-    
     {seq-x},<high-limit>,<low-limit>
     wheel-cosine-sequencer
 
-    # allocae a sequencer for Y
+    # allocate a sequencer for Y
     {seq-y},<high-limit>,<low-limit>
     wheel-sine-sequencer
+
+    # allocate a sequencer for drawing X
+    {seq-draw-x},<max>
+    wheel-sequencer
+
+    # allocate a sequencer for drawing Y
+    {seq-draw-y},<max>
+    wheel-sequencer
 
 [circle-advance-x]
     <seq-x>,<GET-NEXT>
@@ -72,12 +79,20 @@ $low-limit 0
     <seq-y>,<GET-NEXT>
     sequence
 
-[circle-draw]
+[circle-math-x]
     <seq-x>,<GET-COMPUTED>
+    sequence
+
+[circle-math-y]
+    <seq-y>,<GET-COMPUTED>
+    sequence
+
+[circle-draw]
+    <seq-draw-x>,<MACRO-SEQ>,<circle-math-x>
     sequence
     push
 
-    <seq-y>,<GET-COMPUTED>
+    <seq-draw-y>,<MACRO-SEQ>,<circle-math-y>
     sequence
     push
 
