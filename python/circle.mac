@@ -1,0 +1,92 @@
+# ----------------------------------------------------------------
+# 
+# 
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+
+$draw-mode <DRAW-MIX>
+$brightness <BRIGHTNESS-AUTO>
+
+$render-time 100
+$advance-time-x 100
+$advance-time-y 100
+$draw-time 100
+$fade-type sfd
+
+$color 0
+
+$factor 10
+$max 16
+$high-limit 16
+$low-limit 0
+
+# notes:
+# using mixed draw mode so the colors intermingle
+# use a fast fade to avoid clutter
+
+%run-macro circle-app
+
+# set up the application on macro #10
+[circle-app 10]
+    application
+ 
+    # set the preset draw mode
+    <draw-mode>
+    draw-mode
+
+    # set the preset brightness level
+    <brightness>
+    level
+
+    # start up the palette color sequencer
+    (hsl-sequencer-start)
+
+    # schedule the sequencer advance and draw
+    (circle-advance-x <advance-time-x>)
+    (circle-advance-y <advance-time-y>)
+    (circle-draw <draw-time>)
+
+    # set up the sequencers
+    (circle-setup)
+
+    # schedule the display rendering
+    (render <render-time>)
+
+[circle-setup]
+    # allocate a sequencer for X
+    
+    {seq-x},<high-limit>,<low-limit>
+    wheel-cosine-sequencer
+
+    # allocae a sequencer for Y
+    {seq-y},<high-limit>,<low-limit>
+    wheel-sine-sequencer
+
+[circle-advance-x]
+    <seq-x>,<GET-NEXT>
+    sequence
+
+[circle-advance-y]
+    <seq-y>,<GET-NEXT>
+    sequence
+
+[circle-draw]
+    <seq-x>,<GET-COMPUTED>
+    sequence
+    push
+
+    <seq-y>,<GET-COMPUTED>
+    sequence
+    push
+
+    recall
+    xy-position
+
+    <color>
+    palette-color
+    <fade-type>
+
+    reset
+
