@@ -110,7 +110,7 @@ void Sequence::set_limit(int low, int high){
   {
     case SEQUENCE_WHEEL_COSINE:
     case SEQUENCE_WHEEL_SINE:
-      this->factor = COSINE_RANGE / this->width();
+      this->factor = SINE_RANGE / this->width();
       break;
   }
 }
@@ -282,8 +282,23 @@ int Sequence::increment_wheel_sine(int step)
 
 int Sequence::evaluate_macro(byte macro)
 {
+  // save stack so macro can do isolated math
+  int *accumulators = command_processor->accumulators;
+  int acc0 = accumulators[0];
+  int acc1 = accumulators[1];
+  int acc2 = accumulators[2];
+  accumulators[0] = 0;
+  accumulators[1] = 0;
+  accumulators[2] = 0;
+
   this->macros->run_macro(macro);
-  return this->command_processor->sub_args[0]; 
+
+  // restore stack
+  accumulators[0] = acc0;
+  accumulators[1] = acc1;
+  accumulators[2] = acc2;
+
+  return this->command_processor->sub_args[0];
 }
 
 int Sequence::current_position()

@@ -1,3 +1,6 @@
+// unable to use stack in a sequencer math macro and also use it later to add a couple sequencers
+// idea: save/restore stack around macro math calls so they have an isolated stack
+
 // -p show # bytes and/or show all macro bytes don't stop on 255 to check on overrun macros
 
 // can't use long command names for passing values to template

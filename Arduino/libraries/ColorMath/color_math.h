@@ -8,9 +8,23 @@
 #include <power_ease.h>
 
 #define CROSSFADE_STEPS   20
-#define NUM_COSINES       25
-#define NUM_SINES         25
-#define COSINE_RANGE    24.0
+
+#define SINE_24_STEPS
+// #define SINE_36_STEPS
+// #define SINE_48_STEPS
+
+#if defined(SINE_24_STEPS)
+#define NUM_SINES    25
+#define SINE_RANGE 24.0
+
+#elif defined(SINE_36_STEPS)
+#define NUM_SINES    37
+#define SINE_RANGE 36.0
+
+#elif defined(SINE_48_STEPS)
+#define NUM_SINES    49
+#define SINE_RANGE 48.0
+#endif
 
 #define COLOR_SCALE_FACTOR (255.0 / BRIGHTNESS_DIVISOR)
 
@@ -53,8 +67,8 @@ class ColorMath
   static const float PROGMEM crossfade[];
 #endif
 
-  static const float PROGMEM cosines[NUM_COSINES];
-  static const float PROGMEM sines[NUM_COSINES];
+  static const float PROGMEM cosines[NUM_SINES];
+  static const float PROGMEM sines[NUM_SINES];
 
 #ifdef USE_BLEND
   static byte blend_component(byte component1, byte component2, float strength);
@@ -171,13 +185,14 @@ const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
 };
 #endif
 
+#ifdef SINE_24_STEPS
 /* ruby code
   steps = 24
   cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
   sines = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
 only elements 0-12 are needed of cosines array to compute both sine and cosine values
 */
-const float PROGMEM ColorMath::cosines[NUM_COSINES]
+const float PROGMEM ColorMath::cosines[NUM_SINES]
 = {
     0.0,
     0.017037086855466,
@@ -234,6 +249,211 @@ const float PROGMEM ColorMath::sines[NUM_SINES]
     0.62940952255126,
     0.5
 };
+
+#elif defined(SINE_36_STEPS)
+/* ruby code
+  steps = 24
+  cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+  sines = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+only elements 0-12 are needed of cosines array to compute both sine and cosine values
+*/
+
+const float PROGMEM ColorMath::cosines[NUM_SINES]
+= {
+    0.0,
+    0.007596123493896,
+    0.030153689607046,
+    0.066987298107781,
+    0.116977778440511,
+    0.17860619515673,
+    0.25,
+    0.328989928337166,
+    0.413175911166535,
+    0.5,
+    0.586824088833465,
+    0.671010071662834,
+    0.75,
+    0.82139380484327,
+    0.883022221559489,
+    0.933012701892219,
+    0.969846310392954,
+    0.992403876506104,
+    1.0,
+    0.992403876506104,
+    0.969846310392954,
+    0.933012701892219,
+    0.883022221559489,
+    0.82139380484327,
+    0.75,
+    0.671010071662835,
+    0.586824088833465,
+    0.5,
+    0.413175911166535,
+    0.328989928337165,
+    0.25,
+    0.17860619515673,
+    0.116977778440511,
+    0.066987298107781,
+    0.030153689607046,
+    0.007596123493896,
+    0.0
+};
+
+const float PROGMEM ColorMath::sines[NUM_SINES]
+= {
+    0.5,
+    0.413175911166535,
+    0.328989928337166,
+    0.25,
+    0.17860619515673,
+    0.116977778440511,
+    0.066987298107781,
+    0.030153689607046,
+    0.007596123493896,
+    0.0,
+    0.007596123493896,
+    0.030153689607046,
+    0.066987298107781,
+    0.116977778440511,
+    0.17860619515673,
+    0.25,
+    0.328989928337166,
+    0.413175911166535,
+    0.5,
+    0.586824088833465,
+    0.671010071662834,
+    0.75,
+    0.82139380484327,
+    0.883022221559489,
+    0.933012701892219,
+    0.969846310392954,
+    0.992403876506104,
+    1.0,
+    0.992403876506104,
+    0.969846310392954,
+    0.933012701892219,
+    0.883022221559489,
+    0.82139380484327,
+    0.75,
+    0.671010071662835,
+    0.586824088833465,
+    0.5
+};
+
+#elif defined(SINE_48_STEPS)
+/* ruby code
+  steps = 48
+  cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+  sines = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+only elements 0-12 are needed of cosines array to compute both sine and cosine values
+*/
+
+const float PROGMEM ColorMath::cosines[NUM_SINES]
+= {
+    0.0,
+    0.004277569313095,
+    0.017037086855466,
+    0.038060233744357,
+    0.066987298107781,
+    0.103323329854382,
+    0.146446609406726,
+    0.19561928549564,
+    0.25,
+    0.308658283817455,
+    0.37059047744874,
+    0.434736903889974,
+    0.5,
+    0.565263096110026,
+    0.62940952255126,
+    0.691341716182545,
+    0.75,
+    0.80438071450436,
+    0.853553390593274,
+    0.896676670145618,
+    0.933012701892219,
+    0.961939766255643,
+    0.982962913144534,
+    0.995722430686905,
+    1.0,
+    0.995722430686905,
+    0.982962913144534,
+    0.961939766255643,
+    0.933012701892219,
+    0.896676670145618,
+    0.853553390593274,
+    0.804380714504361,
+    0.75,
+    0.691341716182545,
+    0.62940952255126,
+    0.565263096110026,
+    0.5,
+    0.434736903889974,
+    0.37059047744874,
+    0.308658283817455,
+    0.25,
+    0.19561928549564,
+    0.146446609406726,
+    0.103323329854383,
+    0.066987298107781,
+    0.038060233744357,
+    0.017037086855466,
+    0.004277569313095,
+    0.0
+};
+
+const float PROGMEM ColorMath::sines[NUM_SINES]
+= {
+    0.5,
+    0.434736903889974,
+    0.37059047744874,
+    0.308658283817455,
+    0.25,
+    0.19561928549564,
+    0.146446609406726,
+    0.103323329854382,
+    0.066987298107781,
+    0.038060233744357,
+    0.017037086855466,
+    0.004277569313095,
+    0.0,
+    0.004277569313095,
+    0.017037086855466,
+    0.038060233744357,
+    0.066987298107781,
+    0.103323329854382,
+    0.146446609406726,
+    0.19561928549564,
+    0.25,
+    0.308658283817455,
+    0.37059047744874,
+    0.434736903889974,
+    0.5,
+    0.565263096110026,
+    0.62940952255126,
+    0.691341716182545,
+    0.75,
+    0.80438071450436,
+    0.853553390593274,
+    0.896676670145618,
+    0.933012701892219,
+    0.961939766255643,
+    0.982962913144534,
+    0.995722430686905,
+    1.0,
+    0.995722430686905,
+    0.982962913144534,
+    0.961939766255643,
+    0.933012701892219,
+    0.896676670145618,
+    0.853553390593274,
+    0.804380714504361,
+    0.75,
+    0.691341716182545,
+    0.62940952255126,
+    0.565263096110026,
+    0.5
+};
+#endif
 
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
   float factor = scale * COLOR_SCALE_FACTOR;
