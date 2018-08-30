@@ -9,21 +9,24 @@
 $draw-mode <DRAW-MIX>
 $brightness <BRIGHTNESS-AUTO>
 
-$render-time 185
-$advance-time-x 47
-$advance-time-y 37
-$step-time 37
+$render-time 200
+$advance-time-x 50
+$advance-time-y 45
+$step-time 50
 $fade-type sfd
 
 $color 0
 
-$factor 6
+$factor 4
 $max 16
+
 $margin 2
 $upper `<max>-<margin>`
 $lower <margin>
 $high-limit `<upper>*<factor>`
 $low-limit `<lower>*<factor>`
+
+$fade-rate 9000
 
 # notes:
 # using mixed draw mode so the colors intermingle
@@ -39,6 +42,9 @@ $low-limit `<lower>*<factor>`
     <draw-mode>
     draw-mode
 
+    <CONFIG-FADE-RATE>,<fade-rate>
+    configure
+
     # set the preset brightness level
     <brightness>
     level
@@ -46,16 +52,20 @@ $low-limit `<lower>*<factor>`
     # start up the palette color sequencer
     (hsl-sequencer-start)
 
+    # start up the circle processing
+    (circle-init)
+
+    # schedule the display rendering
+    (render <render-time>)
+
+[circle-init]
+    # set up the sequencers
+    (circle-setup)
+
     # schedule the sequencer advance and draw
     (circle-advance-x <advance-time-x>)
     (circle-advance-y <advance-time-y>)
     (circle-step <step-time>)
-
-    # set up the sequencers
-    (circle-setup)
-
-    # schedule the display rendering
-    (render <render-time>)
 
 [circle-setup]
     # allocate a sequencer for X
