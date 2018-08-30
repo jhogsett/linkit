@@ -17,5 +17,5 @@ $rotate-time 30000
 [demo 12]
   (colors-app)
 
-%run-macro demo
+%run-macro fancy
 
