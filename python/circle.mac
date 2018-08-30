@@ -9,15 +9,15 @@
 $draw-mode <DRAW-MIX>
 $brightness <BRIGHTNESS-AUTO>
 
-$render-time 150
-$advance-time-x 49
-$advance-time-y 51
-$step-time 50
+$render-time 100
+$advance-time-x 53
+$advance-time-y 37
+$step-time 37
 $fade-type sfd
 
 $color 0
 
-$factor 4
+$factor 6
 $max 16
 $margin 2
 $upper `<max>-<margin>`
