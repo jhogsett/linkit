@@ -189,8 +189,7 @@ const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
 /* ruby code
   steps = 24
   cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
-  sines = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
-only elements 0-12 are needed of cosines array to compute both sine and cosine values
+  sines   = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
 */
 const float PROGMEM ColorMath::cosines[NUM_SINES]
 = {

@@ -189,7 +189,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   
     case CMD_XYPOSITION:
  #ifdef USE_MAPPING
-     do_xy_position(arg0, arg1);
+     do_xy_position(arg0, arg1, arg2);
 #endif
       break;
   

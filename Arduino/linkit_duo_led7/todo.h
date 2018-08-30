@@ -1,5 +1,11 @@
-// unable to use stack in a sequencer math macro and also use it later to add a couple sequencers
-// idea: save/restore stack around macro math calls so they have an isolated stack
+// idea: in addition to xy positioning, have angle/radius positioning
+// how would that work?
+// 0..359 (angle), 0..100 (percent)
+// radius max is half the mapping width
+// angle computed using cos()/sin() instead of lookup table
+
+
+// need test for saved stack on sequencer macro math call
 
 // -p show # bytes and/or show all macro bytes don't stop on 255 to check on overrun macros
 

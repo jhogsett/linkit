@@ -127,7 +127,7 @@ class Commands
   void dispatch_color(byte cmd, int arg0, int arg1);
   void dispatch_math(byte cmd);
 
-  void do_xy_position(byte arg0, byte arg1);
+  void do_xy_position(int arg0, int arg1, int arg2);
   void do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect=NO_EFFECT);
   void do_fan(bool fan_on, bool auto_set=false);
   void do_app_setup();
@@ -1651,13 +1651,43 @@ void Commands::do_app_setup(){
   Colors::reset_palette();
 }
 
+#define COORDIINATE_POSITION 0
+#define ANGULAR_POSITION -1
+
 #ifdef USE_MAPPING
-void Commands::do_xy_position(byte arg0, byte arg1)
+// coordinates:
+
+// when arg2 = 0:
+// arg0 = X position
+// arg1 = Y position
+
+// when arg2 > 0:
+// arg0 = X position
+// arg1 = Y position
+// arg2 = macro number to run for drawing if the position is valid
+
+// when arg2 = -1:
+// arg0 = angle 0-359
+// arg1 = radius 0-100%
+
+
+// arg2 values:
+// 0  = position normally
+// >0 = macro number to call to draw if the position is valid
+// -1 = angular positioning, arg0 = angle 0-359, arg1 = radius 0-100%
+
+// arg2 = if not zero, macro number to call to draw if the position was valid
+void Commands::do_xy_position(int arg0, int arg1, int arg2)
 {
   byte led = maps.get_led(arg0, arg1); 
   if(led != Maps::INVALID_POS){
     buffer->set_zone(0);
     set_position(led);
+
+    // run a drawing macro if specified
+    if(arg2 > 0){
+      macros.run_macro(arg2);
+    }
   }
 }
 #endif
