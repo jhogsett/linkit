@@ -23,8 +23,8 @@ $max 16
 $margin 2
 $upper `<max>-<margin>`
 $lower <margin>
-$high-limit `<upper>*<factor>`
-$low-limit `<lower>*<factor>`
+#$high-limit `<upper>*<factor>`
+#$low-limit `<lower>*<factor>`
 
 $fade-rate 9000
 
@@ -53,80 +53,89 @@ $fade-rate 9000
     (hsl-sequencer-start)
 
     # start up the circle processing
-    (circle-init)
+    (((circle-init 1)))
 
     # schedule the display rendering
     (render <render-time>)
 
-[circle-init]
-    # set up the sequencers
-    (circle-setup)
+((circle 0 50 45 50 `<upper>*<factor>` `<lower>*<factor>` 4 0))
 
-    # schedule the sequencer advance and draw
-    (circle-advance-x <advance-time-x>)
-    (circle-advance-y <advance-time-y>)
-    (circle-step <step-time>)
+[[circle-init INSTANCE
+  (circle-init-INSTANCE)
+]]
 
-[circle-setup]
-    # allocate a sequencer for X
-    {seq-x},<high-limit>,<low-limit>
-    wheel-cosine-sequencer
+[[circle INSTANCE TIMEX TIMEY TIMES HIGH LOW FACTOR COLOR
 
-    # allocate a sequencer for Y
-    {seq-y},<high-limit>,<low-limit>
-    wheel-sine-sequencer
+    [circle-init-INSTANCE]
+        # set up the sequencers
+        (circle-setup-INSTANCE)
 
-    # allocate a sequencer for drawing X
-    {seq-step-x},<high-limit>
-    wheel-sequencer
+        # schedule the sequencer advance and draw
+        (circle-advance-x-INSTANCE TIMEX)
+        (circle-advance-y-INSTANCE TIMEY)
+        (circle-step-INSTANCE TIMES)
 
-    # allocate a sequencer for drawing Y
-    {seq-step-y},<high-limit>
-    wheel-sequencer
+    [circle-setup-INSTANCE]
+        # allocate a sequencer for X
+        {seq-x-INSTANCE},HIGH,LOW
+        wheel-cosine-sequencer
 
-[circle-advance-x]
-    <seq-x>,<GET-NEXT>
-    sequence
+        # allocate a sequencer for Y
+        {seq-y-INSTANCE},HIGH,LOW
+        wheel-sine-sequencer
 
-[circle-advance-y]
-    <seq-y>,<GET-NEXT>
-    sequence
+        # allocate a sequencer for drawing X
+        {seq-step-x-INSTANCE},HIGH
+        wheel-sequencer
 
-[circle-math-x]
-    <seq-x>,<GET-COMPUTED>
-    sequence
-    push
-    <factor>
-    push
-    div
+        # allocate a sequencer for drawing Y
+        {seq-step-y-INSTANCE},HIGH
+        wheel-sequencer
 
-[circle-math-y]
-    <seq-y>,<GET-COMPUTED>
-    sequence
-    push
-    <factor>
-    push
-    div
+    [circle-advance-x-INSTANCE]
+        <seq-x-INSTANCE>,<GET-NEXT>
+        sequence
 
-[circle-draw]
-    <color>
-    palette-color
-    <fade-type>
+    [circle-advance-y-INSTANCE]
+        <seq-y-INSTANCE>,<GET-NEXT>
+        sequence
 
-[circle-step]
-    <circle-draw>
-    push
+    [circle-math-x-INSTANCE]
+        <seq-x-INSTANCE>,<GET-COMPUTED>
+        sequence
+        push
+        FACTOR
+        push
+        div
 
-    <seq-step-y>,<MACRO-SEQ>,<circle-math-y>
-    sequence
-    push
+    [circle-math-y-INSTANCE]
+        <seq-y-INSTANCE>,<GET-COMPUTED>
+        sequence
+        push
+        FACTOR
+        push
+        div
 
-    <seq-step-x>,<MACRO-SEQ>,<circle-math-x>
-    sequence
-    push
+    [circle-draw-INSTANCE]
+        COLOR
+        palette-color
+        <fade-type>
 
-    recall
-    xy-position
+    [circle-step-INSTANCE]
+        <circle-draw-INSTANCE>
+        push
 
-    reset
+        <seq-step-y-INSTANCE>,<MACRO-SEQ>,<circle-math-y-INSTANCE>
+        sequence
+        push
+
+        <seq-step-x-INSTANCE>,<MACRO-SEQ>,<circle-math-x-INSTANCE>
+        sequence
+        push
+
+        recall
+        xy-position
+
+        reset
+]]
 
