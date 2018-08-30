@@ -53,10 +53,10 @@
 // 64-LED Glasses
 //#define WEARABLE_AND_GLASSES
 // spy:
-#define WEARABLE_AND_GLASSES_TYPE2
+// #define WEARABLE_AND_GLASSES_TYPE2
 
 // 200-LED overhead
-// #define RADIUS8
+#define RADIUS8
 
 // 44-LED Wearable and Hard Hat
 // #define WEARABLE_AND_HARDHAT
@@ -122,6 +122,10 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #define BLINK_PERIOD 2000
 #define BREATHE_PERIOD 150
+#define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    25
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
 #endif
 
 #ifdef LED_STRIP_144
@@ -142,6 +146,10 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 100
 #define BLINK_PERIOD 2000
 #define BREATHE_PERIOD 150
+#define MAX_BRIGHTNESS_PERCENT     75 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    50
+#define LOW_BRIGHTNESS_PERCENT     25
+#define MIN_BRIGHTNESS_PERCENT     5
 #endif
 
 #ifdef SPHERE
@@ -166,9 +174,13 @@
 #define NUM_MACRO_CHARS 25
 #define NUM_MEMORY_MACROS 2
 #define NUM_EEPROM_MACROS 41
-
-//#define USE_MAPPING
-//#define RADIUS8_MAPPING
+#define DEFAULT_BRIGHTNESS_PERCENT 20
+#define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    30
+#define LOW_BRIGHTNESS_PERCENT     10
+#define MIN_BRIGHTNESS_PERCENT     5
+#define USE_MAPPING
+#define RADIUS8_MAPPING
 #endif
 
 #ifdef WEATHER_72
@@ -177,6 +189,11 @@
 #define ZONES_72_LEDS
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 150
+#define DEFAULT_BRIGHTNESS_PERCENT 15
+#define MAX_BRIGHTNESS_PERCENT     30 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    20
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
 #endif
 
 #ifdef PROJECTOR
@@ -214,6 +231,10 @@
 #define ANIM_LED_COUNT 44
 #define ZONES_HARDHAT
 #define DEFAULT_BRIGHTNESS_PERCENT 15
+#define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    25
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
 #endif
 
 #ifdef LED_STRAND_50
@@ -247,6 +268,10 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #define BLINK_PERIOD 1500
 #define BREATHE_PERIOD 75
+#define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    25
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
 #endif
 
 #ifdef WEARABLE_AND_PROJECTOR
