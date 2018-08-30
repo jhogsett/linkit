@@ -9,9 +9,9 @@
 
 #define CROSSFADE_STEPS   20
 
-#define SINE_24_STEPS
+// #define SINE_24_STEPS
 // #define SINE_36_STEPS
-// #define SINE_48_STEPS
+#define SINE_48_STEPS
 
 #if defined(SINE_24_STEPS)
 #define NUM_SINES    25
