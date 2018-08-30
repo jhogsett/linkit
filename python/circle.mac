@@ -9,8 +9,8 @@
 $draw-mode <DRAW-MIX>
 $brightness <BRIGHTNESS-AUTO>
 
-$render-time 200
-$advance-time-x 53
+$render-time 185
+$advance-time-x 47
 $advance-time-y 37
 $step-time 37
 $fade-type sfd
