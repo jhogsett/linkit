@@ -9,9 +9,13 @@
 
 #define CROSSFADE_STEPS   20
 
+#define SINE_INTS
+//#define SINE_FLOATS
+
 // #define SINE_24_STEPS
 // #define SINE_36_STEPS
-#define SINE_48_STEPS
+//#define SINE_48_STEPS
+#define SINE_60_STEPS
 
 #if defined(SINE_24_STEPS)
 #define NUM_SINES    25
@@ -24,6 +28,10 @@
 #elif defined(SINE_48_STEPS)
 #define NUM_SINES    49
 #define SINE_RANGE 48.0
+
+#elif defined(SINE_60_STEPS)
+#define NUM_SINES    61
+#define SINE_RANGE 60.0
 #endif
 
 #define COLOR_SCALE_FACTOR (255.0 / BRIGHTNESS_DIVISOR)
@@ -67,8 +75,13 @@ class ColorMath
   static const float PROGMEM crossfade[];
 #endif
 
+#if defined(SINE_FLOATS)
   static const float PROGMEM cosines[NUM_SINES];
   static const float PROGMEM sines[NUM_SINES];
+#elif defined(SINE_INTS)
+  static const int PROGMEM cosines[NUM_SINES];
+  static const int PROGMEM sines[NUM_SINES];
+#endif
 
 #ifdef USE_BLEND
   static byte blend_component(byte component1, byte component2, float strength);
@@ -184,6 +197,8 @@ const float PROGMEM ColorMath::crossfade[] // CROSSFADE_STEPS + 1]
     1.0
 };
 #endif
+
+#if defined(SINE_FLOATS)
 
 #ifdef SINE_24_STEPS
 /* ruby code
@@ -454,6 +469,295 @@ const float PROGMEM ColorMath::sines[NUM_SINES]
 };
 #endif
 
+#elif defined(SINE_INTS)
+
+#ifdef SINE_24_STEPS
+/* ruby code
+  steps = 24
+  cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+  sines   = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+*/
+const float PROGMEM ColorMath::cosines[NUM_SINES]
+= {
+    0.0,
+    0.017037086855466,
+    0.066987298107781,
+    0.146446609406726,
+    0.25,
+    0.37059047744874,
+    0.5,
+    0.62940952255126,
+    0.75,
+    0.853553390593274,
+    0.933012701892219,
+    0.982962913144534,
+    1.0,
+    0.982962913144534,
+    0.933012701892219,
+    0.853553390593274,
+    0.75,
+    0.62940952255126,
+    0.5,
+    0.37059047744874,
+    0.25,
+    0.146446609406726,
+    0.066987298107781,
+    0.017037086855466,
+    0.0
+};
+
+const float PROGMEM ColorMath::sines[NUM_SINES]
+= {
+    0.5,
+    0.37059047744874,
+    0.25,
+    0.146446609406726,
+    0.066987298107781,
+    0.017037086855466,
+    0.0,
+    0.017037086855466,
+    0.066987298107781,
+    0.146446609406726,
+    0.25,
+    0.37059047744874,
+    0.5,
+    0.62940952255126,
+    0.75,
+    0.853553390593274,
+    0.933012701892219,
+    0.982962913144534,
+    1.0,
+    0.982962913144534,
+    0.933012701892219,
+    0.853553390593274,
+    0.75,
+    0.62940952255126,
+    0.5
+};
+
+#elif defined(SINE_36_STEPS)
+/* ruby code
+  steps = 24
+  cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+  sines = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+only elements 0-12 are needed of cosines array to compute both sine and cosine values
+*/
+
+const float PROGMEM ColorMath::cosines[NUM_SINES]
+= {
+    0.0,
+    0.007596123493896,
+    0.030153689607046,
+    0.066987298107781,
+    0.116977778440511,
+    0.17860619515673,
+    0.25,
+    0.328989928337166,
+    0.413175911166535,
+    0.5,
+    0.586824088833465,
+    0.671010071662834,
+    0.75,
+    0.82139380484327,
+    0.883022221559489,
+    0.933012701892219,
+    0.969846310392954,
+    0.992403876506104,
+    1.0,
+    0.992403876506104,
+    0.969846310392954,
+    0.933012701892219,
+    0.883022221559489,
+    0.82139380484327,
+    0.75,
+    0.671010071662835,
+    0.586824088833465,
+    0.5,
+    0.413175911166535,
+    0.328989928337165,
+    0.25,
+    0.17860619515673,
+    0.116977778440511,
+    0.066987298107781,
+    0.030153689607046,
+    0.007596123493896,
+    0.0
+};
+
+const float PROGMEM ColorMath::sines[NUM_SINES]
+= {
+    0.5,
+    0.413175911166535,
+    0.328989928337166,
+    0.25,
+    0.17860619515673,
+    0.116977778440511,
+    0.066987298107781,
+    0.030153689607046,
+    0.007596123493896,
+    0.0,
+    0.007596123493896,
+    0.030153689607046,
+    0.066987298107781,
+    0.116977778440511,
+    0.17860619515673,
+    0.25,
+    0.328989928337166,
+    0.413175911166535,
+    0.5,
+    0.586824088833465,
+    0.671010071662834,
+    0.75,
+    0.82139380484327,
+    0.883022221559489,
+    0.933012701892219,
+    0.969846310392954,
+    0.992403876506104,
+    1.0,
+    0.992403876506104,
+    0.969846310392954,
+    0.933012701892219,
+    0.883022221559489,
+    0.82139380484327,
+    0.75,
+    0.671010071662835,
+    0.586824088833465,
+    0.5
+};
+
+#elif defined(SINE_48_STEPS)
+/* ruby code
+  steps = 48
+  cosines = (0..steps).map{|n| (((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5) * 255).floor}
+  sines = (0..steps).map{|n| (((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5)* 255).floor}
+*/
+
+const int PROGMEM ColorMath::cosines[NUM_SINES]
+= {
+    0,
+    1,
+    4,
+    9,
+    17,
+    26,
+    37,
+    49,
+    63,
+    78,
+    94,
+    110,
+    127,
+    144,
+    160,
+    176,
+    191,
+    205,
+    217,
+    228,
+    237,
+    245,
+    250,
+    253,
+    255,
+    253,
+    250,
+    245,
+    237,
+    228,
+    217,
+    205,
+    191,
+    176,
+    160,
+    144,
+    127,
+    110,
+    94,
+    78,
+    63,
+    49,
+    37,
+    26,
+    17,
+    9,
+    4,
+    1,
+    0
+};
+
+const int PROGMEM ColorMath::sines[NUM_SINES]
+= {
+    127,
+    110,
+    94,
+    78,
+    63,
+    49,
+    37,
+    26,
+    17,
+    9,
+    4,
+    1,
+    0,
+    1,
+    4,
+    9,
+    17,
+    26,
+    37,
+    49,
+    63,
+    78,
+    94,
+    110,
+    127,
+    144,
+    160,
+    176,
+    191,
+    205,
+    217,
+    228,
+    237,
+    245,
+    250,
+    253,
+    255,
+    253,
+    250,
+    245,
+    237,
+    228,
+    217,
+    205,
+    191,
+    176,
+    160,
+    144,
+    127
+};
+
+#elif defined(SINE_60_STEPS)
+/* ruby code
+  steps = 60
+  cosines = (0..steps).map{|n| (((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5) * 255).floor}
+  sines = (0..steps).map{|n| (((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5)* 255).floor}
+*/
+
+const int PROGMEM ColorMath::cosines[NUM_SINES]
+= {
+0, 0, 2, 6, 11, 17, 24, 32, 42, 52, 63, 75, 88, 100, 114, 127, 140, 154, 166, 179, 191, 202, 212, 222, 230, 237, 243, 248, 252, 254, 255, 254, 252, 248, 243, 237, 230, 222, 212, 202, 191, 179, 166, 154, 140, 127, 114, 100, 88, 75, 63, 52, 42, 32, 24, 17, 11, 6, 2, 0, 0
+};
+
+const int PROGMEM ColorMath::sines[NUM_SINES]
+= {
+127, 114, 100, 88, 75, 63, 52, 42, 32, 24, 17, 11, 6, 2, 0, 0, 0, 2, 6, 11, 17, 24, 32, 42, 52, 63, 75, 88, 100, 114, 127, 140, 154, 166, 179, 191, 202, 212, 222, 230, 237, 243, 248, 252, 254, 255, 254, 252, 248, 243, 237, 230, 222, 212, 202, 191, 179, 166, 154, 140, 127
+};
+#endif
+
+#endif
+
 rgb_color ColorMath::scale_color(rgb_color color, float scale){
   float factor = scale * COLOR_SCALE_FACTOR;
   return (rgb_color){
@@ -620,7 +924,7 @@ bool ColorMath::equal(rgb_color color1, rgb_color color2)
   return color1.red == color2.red && color1.green == color2.green && color1.blue == color2.blue;
 }
 
-// steps 0-12
+#if defined(SINE_FLOATS)
 float ColorMath::read_cosine_array(byte step)
 {
   return pgm_read_float(&cosines[step]);
@@ -630,35 +934,27 @@ float ColorMath::read_sine_array(byte step)
 {
   return pgm_read_float(&sines[step]);
 }
+#elif defined(SINE_INTS)
+float ColorMath::read_cosine_array(byte step)
+{
+  return pgm_read_byte(&cosines[step]) / 255.0;
+}
 
-// steps 0-24
+float ColorMath::read_sine_array(byte step)
+{
+  return pgm_read_byte(&sines[step]) / 255.0;
+}
+#endif
+
 float ColorMath::get_cosine(byte step)
 {
   return read_cosine_array(step);
-
-//  if(step >= 0 && step <= 12)
-//    return read_cosine_array(step);
-//  else
-//    return read_cosine_array(25 - step);
 }
 
 // steps 0-24
 float ColorMath::get_sine(byte step)
 {
   return read_sine_array(step);
-
-//  if(step >= 0 && step <= 12)
-//    return read_sine_array(step);
-//  else
-//    return read_sine_array(25 - step);
-//  if(step >= 0 && step <= 6){
-//    return read_cosine_array(step + 6);
-//  } else if(step >= 7 && step <= 18){
-//    return read_cosine_array(11 - (step - 7));
-//  } else {
-//    return read_cosine_array(step - 18);
-//  }
-//  return get_cosine((step + 6) % 24);
 }
 
 #endif
