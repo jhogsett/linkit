@@ -10,8 +10,9 @@ $draw-mode <DRAW-MIX>
 $brightness <BRIGHTNESS-AUTO>
 
 $render-time 250
-$advance-time 75
-$draw-time 75
+$advance-time-x 75
+$advance-time-y 80
+$step-time 75
 $fade-type sfd
 
 $color 0
@@ -46,8 +47,9 @@ $low-limit `<lower>*<factor>`
     (hsl-sequencer-start)
 
     # schedule the sequencer advance and draw
-    (circle-advance <advance-time>)
-    (circle-draw <draw-time>)
+    (circle-advance-x <advance-time-x>)
+    (circle-advance-y <advance-time-y>)
+    (circle-step <step-time>)
 
     # set up the sequencers
     (circle-setup)
@@ -65,16 +67,18 @@ $low-limit `<lower>*<factor>`
     wheel-sine-sequencer
 
     # allocate a sequencer for drawing X
-    {seq-draw-x},<high-limit>
+    {seq-step-x},<high-limit>
     wheel-sequencer
 
     # allocate a sequencer for drawing Y
-    {seq-draw-y},<high-limit>
+    {seq-step-y},<high-limit>
     wheel-sequencer
 
-[circle-advance]
+[circle-advance-x]
     <seq-x>,<GET-NEXT>
     sequence
+
+[circle-advance-y]
     <seq-y>,<GET-NEXT>
     sequence
 
@@ -95,22 +99,24 @@ $low-limit `<lower>*<factor>`
     div
 
 [circle-draw]
-    <seq-draw-x>,<MACRO-SEQ>,<circle-math-x>
+    <color>
+    palette-color
+    <fade-type>
+
+[circle-step]
+    <circle-draw>
+    push
+
+    <seq-step-y>,<MACRO-SEQ>,<circle-math-y>
     sequence
     push
 
-    <seq-draw-y>,<MACRO-SEQ>,<circle-math-y>
+    <seq-step-x>,<MACRO-SEQ>,<circle-math-x>
     sequence
     push
 
     recall
     xy-position
-
-    # need to abort if bad position, or mask the next command
-
-    <color>
-    palette-color
-    <fade-type>
 
     reset
 
