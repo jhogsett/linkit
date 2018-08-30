@@ -16,9 +16,9 @@ $fade-type sfd
 
 $color 0
 
-$factor 1
+$factor 2
 $max 16
-$high-limit 16
+$high-limit `<max>*<factor>`
 $low-limit 0
 
 # notes:
@@ -62,11 +62,11 @@ $low-limit 0
     wheel-sine-sequencer
 
     # allocate a sequencer for drawing X
-    {seq-draw-x},<max>
+    {seq-draw-x},<high-limit>
     wheel-sequencer
 
     # allocate a sequencer for drawing Y
-    {seq-draw-y},<max>
+    {seq-draw-y},<high-limit>
     wheel-sequencer
 
 [circle-advance]
@@ -78,10 +78,18 @@ $low-limit 0
 [circle-math-x]
     <seq-x>,<GET-COMPUTED>
     sequence
+    push
+    <factor>
+    push
+    div
 
 [circle-math-y]
     <seq-y>,<GET-COMPUTED>
     sequence
+    push
+    <factor>
+    push
+    div
 
 [circle-draw]
     <seq-draw-x>,<MACRO-SEQ>,<circle-math-x>
@@ -94,6 +102,8 @@ $low-limit 0
 
     recall
     xy-position
+
+    # need to abort if bad position, or mask the next command
 
     <color>
     palette-color
