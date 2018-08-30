@@ -9,7 +9,7 @@
 $draw-mode <DRAW-MIX>
 $brightness <BRIGHTNESS-AUTO>
 
-$render-time 100
+$render-time 200
 $advance-time-x 53
 $advance-time-y 37
 $step-time 37
