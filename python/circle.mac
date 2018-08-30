@@ -18,8 +18,11 @@ $color 0
 
 $factor 2
 $max 16
-$high-limit `<max>*<factor>`
-$low-limit 0
+$margin 1
+$upper `<max>-<margin>`
+$lower <margin>
+$high-limit `<upper>*<factor>`
+$low-limit `<lower>*<factor>`
 
 # notes:
 # using mixed draw mode so the colors intermingle
