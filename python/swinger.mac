@@ -17,7 +17,7 @@ $swinger-render-time <swinger-base-timing>
 $swinger-max <NUM-LEDS>
 $swinger-max-half <swinger-max>
 
-[swinger-app]
+[swinger-app 10]
     application
     <DRAW-WRITE>
     draw-mode
