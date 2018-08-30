@@ -17,9 +17,9 @@ $fade-type sfd
 
 $color 0
 
-$factor 2
+$factor 4
 $max 16
-$margin 1
+$margin 2
 $upper `<max>-<margin>`
 $lower <margin>
 $high-limit `<upper>*<factor>`
