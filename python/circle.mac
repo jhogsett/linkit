@@ -15,7 +15,7 @@ $fade-rate 9000
 $factor 8
 $base-timing 25
 $base-margin 1
-$timing-offset 1
+$timing-offset 5
 
 # notes:
 # using mixed draw mode so the colors intermingle
