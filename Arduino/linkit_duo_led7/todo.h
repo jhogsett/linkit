@@ -1,3 +1,5 @@
+// need to inquire mapping bounds
+
 // idea: in addition to xy positioning, have angle/radius positioning
 // how would that work?
 // 0..359 (angle), 0..100 (percent)
