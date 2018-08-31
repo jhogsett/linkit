@@ -1298,6 +1298,7 @@ void Commands::do_configure(int arg0, int arg1, int arg2)
       set_fade_rate(arg1);
       break;
 
+    // todo: is this used?
     case CONFIG_SET_DEFAULT_EFFECT:
       buffer->set_default_effect(arg1);
       break;

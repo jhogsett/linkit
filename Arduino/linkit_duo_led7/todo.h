@@ -1,3 +1,5 @@
+// if value passed to template expansion is a python expression, and it's used later in another python expression, the backticks conflict.
+
 // need to inquire mapping bounds
 
 // idea: in addition to xy positioning, have angle/radius positioning
