@@ -15,7 +15,7 @@
 // #define APOLLO_DISPLAY
 
 // single 90-LED strip for dev
-// #define LED_STRIP_90
+#define LED_STRIP_90
 
 // 19-LED Mini Disc
 // #define MINI_DISC_19
@@ -56,7 +56,7 @@
 // #define WEARABLE_AND_GLASSES_TYPE2
 
 // 200-LED overhead
-#define RADIUS8
+// #define RADIUS8
 
 // 44-LED Wearable and Hard Hat
 // #define WEARABLE_AND_HARDHAT
@@ -317,9 +317,13 @@
 #ifdef ANNUNCIATOR
 #define ANIM_LED_COUNT 36
 #define ZONES_ANNUNCIATOR
-#define DEFAULT_BRIGHTNESS_PERCENT 33
+#define DEFAULT_BRIGHTNESS_PERCENT 30
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 125
+#define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    40
+#define LOW_BRIGHTNESS_PERCENT     10
+#define MIN_BRIGHTNESS_PERCENT     5
 #endif
 
 #ifdef ANNUNCIATOR2

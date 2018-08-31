@@ -135,9 +135,9 @@ bool BreatheEffects::is_handled_effect(byte effect)
 float BreatheEffects::breathe_ratio()
 {
 #ifndef BYTE_MAP
-  return pgm_read_float(&breathe_steps[BREATHE_MAX_STEP - breathe_step]);
+  return pgm_read_float(&breathe_steps[(BREATHE_MAX_STEP - 1) - breathe_step]);
 #else
-  return pgm_read_byte(&breathe_steps[BREATHE_MAX_STEP - breathe_step]) / 255.0;
+  return pgm_read_byte(&breathe_steps[(BREATHE_MAX_STEP - 1) - breathe_step]) / 255.0;
 #endif
 }
 
