@@ -12,9 +12,10 @@ $render-time 120
 $fade-type sfd
 $max 16
 $fade-rate 9000
-$factor 6
-$base-timing 30
+$factor 8
+$base-timing 25
 $base-margin 1
+$timing-offset 1
 
 # notes:
 # using mixed draw mode so the colors intermingle
@@ -46,8 +47,8 @@ $base-margin 1
     # schedule the display rendering
     (render <render-time>)
 
-((circle 0 1 <factor> `<base-timing>-5` <base-timing> <base-timing>))
-((circle 1 2 <factor> <base-timing> `<base-timing>-5` <base-timing>))
+((circle 0 2 <factor> `<base-timing>+<timing-offset>` <base-timing> <base-timing>))
+((circle 1 3 <factor> `<base-timing>-<timing-offset>` <base-timing> <base-timing>))
 
 [[circle-init INSTANCE
   (circle-init-INSTANCE)
@@ -114,13 +115,17 @@ $base-margin 1
         <circle-draw-INSTANCE>
         push
 
+        <seq-step-x-INSTANCE>,<MACRO-SEQ>,<circle-math-x-INSTANCE>
+        sequence
+        push
+
         <seq-step-y-INSTANCE>,<MACRO-SEQ>,<circle-math-y-INSTANCE>
         sequence
         push
 
-        <seq-step-x-INSTANCE>,<MACRO-SEQ>,<circle-math-x-INSTANCE>
-        sequence
-        push
+#        <seq-step-x-INSTANCE>,<MACRO-SEQ>,<circle-math-x-INSTANCE>
+#        sequence
+#        push
 
         recall
         xy-position
