@@ -1220,8 +1220,8 @@ def specs():
       #                           50, 49, 47, 46, 44, 41, 39, 36, 32, 29, 25, 21, 17, 13,  8,  4,  0,  0,  0,  0,  0,  0 ]
 
       # these are the expected values if using the bytes for breathe ratio
-      expected_render_values = [ 0,  0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 48, 49, 50, 50,
-                                50, 49, 48, 46, 44, 41, 39, 36, 32, 29, 25, 21, 17, 13,  8,  4,  0,  0,  0,  0,  0,  0 ]
+      expected_render_values = [ 0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 48, 49, 50, 50, 51,
+                                50, 50, 49, 48, 46, 44, 41, 39, 36, 32, 29, 25, 21, 17, 13,  8,  4,  0,  0,  0,  0,  0 ]
 
       # simulate rendering through each breathe step period
       for n in range(0, len(expected_render_values)):
@@ -1285,7 +1285,7 @@ def specs():
       expect_render("35:lev:sea:flu", 0, 1, "0,89,44")
 
     if test("it renders at an automatic brightness level"):
-      expect_render("0:lev:sea:flu", 0, 1, "0,51,25")
+      expect_render("0:lev:sea:flu", 0, 1, "0,38,19")
 
     if test("it renders at a high brightness level"):
       expect_render("-2:lev:sea:flu", 0, 1, "0,63,31")
@@ -1294,7 +1294,7 @@ def specs():
       expect_render("-3:lev:sea:flu", 0, 1, "0,12,6")
 
     if test("it renders at a max brightness level"):
-      expect_render("-1:lev:sea:flu", 0, 1, "0,204,102")
+      expect_render("-1:lev:sea:flu", 0, 1, "0,153,76")
 
     if test("it renders at a min brightness level"):
       expect_render("-4:lev:sea:flu", 0, 1, "0,5,2")
@@ -1456,10 +1456,10 @@ def specs():
       # for n in range(0, len(expected_render_values)):
       #   expect_render("0," + str(n) + ":run", 0, 1, "0," + str(expected_render_values[n]) + ",0", False)
 
-      expect_render("0,10:run", 0, 1, "0,0,25", False)
-      expect_render("0,11:run", 0, 1, "0,0,29", False)
-      expect_render("0,12:run", 0, 1, "0,0,32", False)
-      expect_render("0,13:run", 0, 1, "0,0,36", False)
+      expect_render("0,10:run", 0, 1, "0,0,29", False)
+      expect_render("0,11:run", 0, 1, "0,0,32", False)
+      expect_render("0,12:run", 0, 1, "0,0,36", False)
+      expect_render("0,13:run", 0, 1, "0,0,39", False)
 
       test("setting an alternate custom breathe time")
 
@@ -1473,10 +1473,10 @@ def specs():
       # place a breathing blue
       command_str("blu:bre")
 
-      expect_render("0,10:run", 0, 1, "0,0,4", False)
-      expect_render("0,11:run", 0, 1, "0,0,4", False)
-      expect_render("0,12:run", 0, 1, "0,0,8", False)
-      expect_render("0,13:run", 0, 1, "0,0,8", False)
+      expect_render("0,10:run", 0, 1, "0,0,8", False)
+      expect_render("0,11:run", 0, 1, "0,0,8", False)
+      expect_render("0,12:run", 0, 1, "0,0,13", False)
+      expect_render("0,13:run", 0, 1, "0,0,13", False)
 
 
 ########################################################################
