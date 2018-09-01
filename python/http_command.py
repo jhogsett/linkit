@@ -339,7 +339,7 @@ class Handler(BaseHTTPRequestHandler):
     if 'run' in args:
       self.do_run(args)
     if 'runonce' in args:
-      self.runonce(args)
+      self.do_runonce(args)
     if 'sys' in args:
       self.do_sys(args)
     if 'cast' in args:
