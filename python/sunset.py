@@ -6,18 +6,23 @@ import time
 from subprocess import call
 import argparse
 
-global app_description, verbose_mode, api_key, zipcode, timezone_offset, sleep_time, last_command_time, command_line
+global app_description, verbose_mode, api_key, zipcode, update_freq, timezone_offset, sleep_time, last_command_time, dryrun_mode, command_line, dryrun_time, command_sent, target_time, dryrun_time
 app_description = None
 verbose_mode = None
 api_key = None
 zipcode = None
-update_frequency = None
+update_freq = None
 timezone_offset = None
 last_command_time = None
 command_line = None
+dryrun_mode = None
+dryrun_time = None
+command_sent = True
+target_time = None
+dryrun_time = None
 
 def get_options():
-    global app_description, verbose_mode, api_key, zipcode, update_freq, timezone_offset, command_line
+    global app_description, verbose_mode, api_key, zipcode, update_freq, timezone_offset, dryrun_mode, command_line
     app_description = "Sunset Commander - Apollo Lighting System v.0.0 9-0-18"
 
     parser = argparse.ArgumentParser(description=app_description)
@@ -26,6 +31,7 @@ def get_options():
     parser.add_argument("-z", "--zipcode", dest="zipcode", help="local postal zip code")
     parser.add_argument("-f", "--update_frequency", type=int, dest="update_freq", default=15, help="update freqency (seconds) (15)")
     parser.add_argument("-t", "--timezone_offset", type=int, dest="timezone_offset", default=8, help="timezone offset from UTC (hours) (8)")
+    parser.add_argument("-r", "--dryrun", dest="dryrun", action="store_true", help="use a fake event time (False)")
     parser.add_argument("command_line", nargs=argparse.REMAINDER, help="command line to run at sunset (None)")
     args = parser.parse_args()
     verbose_mode = args.verbose
@@ -33,6 +39,7 @@ def get_options():
     zipcode = args.zipcode
     update_freq = args.update_freq
     timezone_offset = args.timezone_offset
+    dryrun_mode = args.dryrun
     command_line = args.command_line
 
 def validate_options():
@@ -56,41 +63,45 @@ def setup():
 def do_command():
       call(command_line, shell=True)
 
+def set_dryrun_time():
+    global dryrun_time
+    data = wx.get_daily_data()
+    current_time = int(wx.current_time())
+    dryrun_time = current_time + (3 * update_freq)
+    print "dry run: setting sunset time to " + wx.format_unix_timestamp(dryrun_time)
+
 def loop():
-    global last_command_time
+    global last_command_time, target_time, dryrun_time, command_sent
     try:
         data = wx.get_daily_data()
         current_time = int(wx.current_time())
-        sunset_time = int(wx.daily_sunset(data))
+        event_time = int(wx.daily_sunset(data))
 
-#        sunset_time = current_time
+	if dryrun_mode:
+	    if dryrun_time == None:
+                set_dryrun_time()
+            event_time = dryrun_time
 
-        print "Sunset: " + wx.format_unix_timestamp(sunset_time)
+        print "Sunset: " + wx.format_unix_timestamp(event_time)
         print "Current time: " + wx.format_unix_timestamp(current_time)
 
-        if last_command_time == None:
-	    # command never sent, record an earlier time for comparison
-            print "command not yet sent"
-	    last_command_time = current_time
-            return
+        if target_time != None and current_time > target_time:
+            print "target time is in the past"
+	    if not command_sent:
+                print "sending command"
+                do_command()
+                command_sent = True
+		if dryrun_mode:
+                     set_dryrun_time()
 
-	if last_command_time == sunset_time:
-	    # command already sent
-            print "command already sent"
-	    return
-
-	if sunset_time > current_time:
-	    # not time to send command yet
-	    print "waiting for sunset ..."
-	    return
-
-	# sunset_time is in the past but doesn't match
-        # the last time the command was sent, so sent it
-        print "doing command ..."
-        do_command()
-
-	# record that it was sent
-        last_command_time = sunset_time
+	if target_time == None or target_time < event_time:
+	    print "target time not set or in the past"
+            if event_time <= current_time:
+                print "sunset time still in the past"
+            if event_time > current_time:
+	        target_time = event_time
+                print "new target time: " + wx.format_unix_timestamp(target_time)
+                command_sent = False
 
     finally:
 	print
