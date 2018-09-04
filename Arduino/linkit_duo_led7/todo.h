@@ -1,4 +1,26 @@
+// add a way to reverse a swing sequencer, to flip the direction any time
+
 // if value passed to template expansion is a python expression, and it's used later in another python expression, the backticks conflict.
+
+/*
+$value 3
+
+[macro 10]
+  ((test <value> `<value>*3`))
+
+[[test X Y
+  [macro-X]
+    `Y*2`
+     palette-color
+     flush
+]]
+
+The script did not compile successfully due to unresolved values.
+more error details:
+'-10':set
+<macro-3>:set:``3*3`*2`:pal:flu
+
+ */
 
 // need to inquire mapping bounds
 
@@ -7,7 +29,6 @@
 // 0..359 (angle), 0..100 (percent)
 // radius max is half the mapping width
 // angle computed using cos()/sin() instead of lookup table
-
 
 // need test for saved stack on sequencer macro math call
 

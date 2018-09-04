@@ -76,12 +76,13 @@ void Commands::do_test_inquiry(byte type, int arg2)
 #endif
       break;
 
-//    case TEST_INQUIRY_DEFAULT_LIGHTNESS:
-//      result = (255 * (buffer->get_default_brightness() / 100.0)) + 1;
-//      break;
-//    case TEST_INQUIRY_MINIMUM_LIGHTNESS:
-//      result = (255 * (renderer->get_minimum_brightness() / 100.0)) + 1;
-//      break;
+    case TEST_INQUIRY_DEFAULT_LIGHTNESS:
+      result = (255 * (buffer->get_default_brightness() / 100.0)) + 1;
+      break;
+
+    case TEST_INQUIRY_MINIMUM_LIGHTNESS:
+      result = (255 * (renderer->get_minimum_brightness() / 100.0)) + 1;
+      break;
 
     case TEST_INQUIRY_MAX_STRING_LENGTH:
       result = command_processor->get_max_string_length();
