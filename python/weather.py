@@ -137,16 +137,16 @@ def report_footer():
 def weather_entry(key, value):
     return tc.green(key) + ": " + tc.cyan(str(value))
 
-def format_unix_timestamp(ts):
-    return wx.format_datetime(wx.get_datetime(ts))
+#def format_unix_timestamp(ts):
+#    return wx.format_datetime(wx.get_datetime(ts))
 
 def report_weather(data):
     report_header()
-    print weather_entry("Local Time", format_unix_timestamp(int(wx.current_time())))
-    print weather_entry("Data As Of", format_unix_timestamp(int(wx.daily_timestamp(data))))
+    print weather_entry("Local Time", wx.format_unix_timestamp(int(wx.current_time())))
+    print weather_entry("Data As Of", wx.format_unix_timestamp(int(wx.daily_timestamp(data))))
     print weather_entry("Visibility", wx.daily_visibility(data))
-    print weather_entry("Sunrise", format_unix_timestamp(int(wx.daily_sunrise(data))))
-    print weather_entry("Sunset", format_unix_timestamp(int(wx.daily_sunset(data))))
+    print weather_entry("Sunrise", wx.format_unix_timestamp(int(wx.daily_sunrise(data))))
+    print weather_entry("Sunset", wx.format_unix_timestamp(int(wx.daily_sunset(data))))
     print weather_entry("Wind Speed", wx.daily_wind_speed(data))
     print weather_entry("Wind Direction", wx.daily_wind_deg(data))
     print weather_entry("Pressure", wx.daily_pressure(data))
@@ -161,7 +161,7 @@ def report_weather(data):
 
 def report_forecast(data):
     for x in range(0, wx.forecast_count(data)):
-        print weather_entry("Date/Time", format_unix_timestamp(int(wx.forecast_timestamp(data, x)))),
+        print weather_entry("Date/Time", wx.format_unix_timestamp(int(wx.forecast_timestamp(data, x)))),
         print weather_entry(" Pressure", wx.forecast_pressure(data, x)),
         print weather_entry(" Temp", wx.forecast_temp(data, x)),
         print weather_entry(" Temp Min", wx.forecast_temp_min(data, x)),
