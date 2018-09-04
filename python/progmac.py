@@ -40,8 +40,6 @@ def get_options():
     global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, show_tables, num_macro_bytes_override, starting_macro_override, ending_macro_override, char_buffer_override
     global print_macros
     parser = argparse.ArgumentParser(description=app_description)
-    parser.add_argument("program", nargs="*", help="program to transmit")
-    parser.add_argument("presets", nargs="*", help="resolved=value presets (None)")
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-d", "--debug", dest="debug", action="store_true", help="display verbose info (False)")
@@ -53,9 +51,11 @@ def get_options():
     parser.add_argument("-e", "--ending-macro", type=int, dest="ending_macro", default=0, help="ending macro override (none)")
     parser.add_argument("-c", "--char-buffer", type=int, dest="char_buffer", default=0, help="char buffer size override (none)")
     parser.add_argument("-p", "--print-macros", dest="print_macros", action="store_true", help="print current macros on device (False)")
+    parser.add_argument("program", nargs="?", help="program to transmit")
+    parser.add_argument("presets", nargs=argparse.REMAINDER, help="resolved=value presets (None)")
 
     args = parser.parse_args()
-    program = args.program[0] if len(args.program) > 0 else ''
+    program = args.program
     macro_run_number = args.macro
     verbose_mode = args.verbose
     debug_mode = args.debug
@@ -316,6 +316,9 @@ def introduction():
     ui.report_info(ui.intro_entry("Char buffer size", char_buffer_size))
     if not print_macros:
       ui.report_info("program: " + tc.green(program))
+      if len(presets) > 0:
+        for preset in presets:
+          ui.report_info("command-line preset: " + tc.yellow(preset))
     print
    
     if dryrun:

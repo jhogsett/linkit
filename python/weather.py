@@ -13,6 +13,7 @@ import argparse
 import datetime
 import weather_conditions as wc
 import led_command as lc
+import wx
 
 #script_path = os.getcwd()
 #log_path = script_path + "/circleci.log"
@@ -58,7 +59,6 @@ def get_options():
     suppress_spew = args.suppress_spew
 
 def setup_palette():
-#    lc.command("1:shf")
     lc.command("era:wht:pur:blu:grn:org:red:6,-1:cpy:era")
 
 def initialize():
@@ -67,6 +67,7 @@ def initialize():
     get_options()
     if not validate_options():
         sys.exit("\nExiting...\n")
+    wx.begin(api_key, zip_code, timezone_offset)
     lc.begin(verbose_mode)
     lc.command("::pau")
     lc.command("::pau:era:flu")
@@ -119,120 +120,13 @@ def introduction():
     report_verbose(intro_entry("Default Lightness", default_lightness))
     report_verbose()
 
-    data = get_daily_data()
-    report_info(intro_entry("City", daily_city(data)))
-    report_info(intro_entry("Latitude", daily_lat(data)))
-    report_info(intro_entry("Longitude", daily_lon(data)))
+    data = wx.get_daily_data()
+    report_info(intro_entry("City", wx.daily_city(data)))
+    report_info(intro_entry("Latitude", wx.daily_lat(data)))
+    report_info(intro_entry("Longitude", wx.daily_lon(data)))
     report_info(intro_entry("Zip Code", zip_code))
     report_info(intro_entry("Update Frequency", update_freq))
     report_info(intro_entry("Number of LEDs", num_leds))
-
-def get_daily_url():
-    return "http://api.openweathermap.org/data/2.5/weather?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
-
-def get_forecast_url():
-    return "http://api.openweathermap.org/data/2.5/forecast?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
-
-def retrieve_data(url):
-    request = requests.get(url)
-    request = request.text.encode('utf-8')
-    json_data = json.loads(request)
-    report_verbose("api delay...")
-    time.sleep(min_api_delay)
-    return json_data
-
-def daily_main(data):
-    return data["main"]
-
-def daily_sys(data):
-    return data["sys"]
-
-def daily_wind(data):
-    return data["wind"]
-
-def daily_timestamp(data):
-    return data["dt"]
-
-def daily_visibility(data):
-    try:
-        return data["visibility"]
-    except:
-        return 5280 * 10
-
-def daily_weather(data):
-    return data["weather"][0]
-
-def daily_sunrise(data):
-    return daily_sys(data)["sunrise"]
-
-def daily_sunset(data):
-    return daily_sys(data)["sunset"]
-
-def daily_wind_speed(data):
-    return daily_wind(data)["speed"]
-
-def daily_wind_deg(data):
-    return daily_wind(data)["deg"]
-
-def daily_pressure(data):
-    return daily_main(data)["pressure"]
-
-def daily_humidity(data):
-    return daily_main(data)["humidity"]
-
-def daily_temp_min(data):
-    return daily_main(data)["temp_min"]
-
-def daily_temp_max(data):
-    return daily_main(data)["temp_max"]
-
-def daily_temp(data):
-    return daily_main(data)["temp"]
-
-def daily_city(data):
-    return data["name"]
-
-def daily_coord(data):
-    return data["coord"]
-
-def daily_lat(data):
-    return daily_coord(data)["lat"]
-
-def daily_lon(data):
-    return daily_coord(data)["lon"] 
-
-def daily_description(data):
-    return daily_weather(data)["description"]
-
-def daily_conditions(data):
-    return daily_weather(data)["main"]
-
-def daily_id(data):
-    return daily_weather(data)["id"]
-
-def time_zone_timestamp(ts):
-    return int(ts) - (timezone_offset * 60 * 60)
-
-def get_datetime(ts):
-    ts = time_zone_timestamp(ts)
-    return datetime.datetime.fromtimestamp(ts)
-
-def format_unix_timestamp(ts):
-    return format_datetime(get_datetime(ts))
-
-def format_datetime(dt):
-    return dt.strftime('%A %Y-%m-%d %I:%M:%S %p')
-
-def weather_entry(key, value):
-    return tc.green(key) + ": " + tc.cyan(str(value))
-
-def current_time():
-    dt = datetime.datetime.now()
-    return int(time.mktime(dt.timetuple()))
-
-def current_weekday():
-    dt = get_datetime(current_time())
-    return dt.weekday()
 
 def report_header():
     print "\n----------------------------------------------------"
@@ -240,114 +134,45 @@ def report_header():
 def report_footer():
     print
 
+def weather_entry(key, value):
+    return tc.green(key) + ": " + tc.cyan(str(value))
+
+#def format_unix_timestamp(ts):
+#    return wx.format_datetime(wx.get_datetime(ts))
+
 def report_weather(data):
     report_header()
-    print weather_entry("Local Time", format_unix_timestamp(int(current_time())))
-    print weather_entry("Data As Of", format_unix_timestamp(int(daily_timestamp(data))))
-    print weather_entry("Visibility", daily_visibility(data))
-    print weather_entry("Sunrise", format_unix_timestamp(int(daily_sunrise(data))))
-    print weather_entry("Sunset", format_unix_timestamp(int(daily_sunset(data))))
-    print weather_entry("Wind Speed", daily_wind_speed(data))
-    print weather_entry("Wind Direction", daily_wind_deg(data))
-    print weather_entry("Pressure", daily_pressure(data))
-    print weather_entry("Hunidity", daily_humidity(data))
-    print weather_entry("Temp Min", daily_temp_min(data))
-    print weather_entry("Temp Max", daily_temp_max(data))
-    print weather_entry("Temp", daily_temp(data))
-    print weather_entry("Description", daily_description(data))
-    print weather_entry("Conditions", daily_conditions(data))
-    print weather_entry("Cond ID", daily_id(data))
+    print weather_entry("Local Time", wx.format_unix_timestamp(int(wx.current_time())))
+    print weather_entry("Data As Of", wx.format_unix_timestamp(int(wx.daily_timestamp(data))))
+    print weather_entry("Visibility", wx.daily_visibility(data))
+    print weather_entry("Sunrise", wx.format_unix_timestamp(int(wx.daily_sunrise(data))))
+    print weather_entry("Sunset", wx.format_unix_timestamp(int(wx.daily_sunset(data))))
+    print weather_entry("Wind Speed", wx.daily_wind_speed(data))
+    print weather_entry("Wind Direction", wx.daily_wind_deg(data))
+    print weather_entry("Pressure", wx.daily_pressure(data))
+    print weather_entry("Hunidity", wx.daily_humidity(data))
+    print weather_entry("Temp Min", wx.daily_temp_min(data))
+    print weather_entry("Temp Max", wx.daily_temp_max(data))
+    print weather_entry("Temp", wx.daily_temp(data))
+    print weather_entry("Description", wx.daily_description(data))
+    print weather_entry("Conditions", wx.daily_conditions(data))
+    print weather_entry("Cond ID", wx.daily_id(data))
     report_footer()
 
-def get_daily_data():
-    url = get_daily_url()
-    report_verbose("requesting: %s" % url)
-    data = retrieve_data(url)
-    report_verbose("received data:")
-    if verbose_mode:
-        report_json(data)    
-    return data
-
-def get_forecast_data():
-    url = get_forecast_url()
-    report_verbose("requesting: %s" % url)
-    data = retrieve_data(url)
-    report_verbose("received data:")
-    if verbose_mode:
-        report_json(data)
-    return data
-
-def forecast_list(data):
-    return data["list"]
-
-def forecast_count(data):
-    return len(forecast_list(data))
-
-def forecast_entry(data, entry):
-    return forecast_list(data)[int(entry)]
-
-def forecast_timestamp(data, entry):
-    return forecast_entry(data, entry)["dt"]
-
-def forecast_main(data, entry):
-    return forecast_entry(data, entry)["main"]
-
-def forecast_wind(data, entry):
-    return forecast_entry(data, entry)["wind"]
-
-def forecast_clouds(data, entry):
-    return forecast_entry(data, entry)["clouds"]
-
-def forecast_weather(data, entry):
-    return forecast_entry(data, entry)["weather"][0]
-
-def forecast_pressure(data, entry):
-    return forecast_main(data, entry)["pressure"]
-
-def forecast_temp(data, entry):
-    return forecast_main(data, entry)["temp"]
-
-def forecast_temp_min(data, entry):
-    return forecast_main(data, entry)["temp_min"]
-
-def forecast_temp_max(data, entry):
-    return forecast_main(data, entry)["temp_max"]
-
-def forecast_humidity(data, entry):
-    return forecast_main(data, entry)["humidity"]
-
-def forecast_wind_speed(data, entry):
-    return forecast_wind(data, entry)["speed"]
-
-def forecast_wind_direction(data, entry):
-    return forecast_wind(data, entry)["deg"]
-
-def forecast_cloudiness(data, entry):
-    return forecast_clouds(data, entry)["all"]
-
-def forecast_description(data, entry):
-    return forecast_weather(data, entry)["description"]
-
-def forecast_conditions(data, entry):
-    return forecast_weather(data, entry)["main"]
-
-def forecast_cond_id(data, entry):
-    return forecast_weather(data, entry)["id"]
-
 def report_forecast(data):
-    for x in range(0, forecast_count(data)):
-        print weather_entry("Date/Time", format_unix_timestamp(int(forecast_timestamp(data, x)))),
-        print weather_entry(" Pressure", forecast_pressure(data, x)),
-        print weather_entry(" Temp", forecast_temp(data, x)),
-        print weather_entry(" Temp Min", forecast_temp_min(data, x)),
-        print weather_entry(" Temp Max", forecast_temp_max(data, x)),
-        print weather_entry(" Humidity", forecast_humidity(data, x)),
-        print weather_entry(" Wind Spd", forecast_wind_speed(data, x)),
-        print weather_entry(" Wind Dir", forecast_wind_direction(data, x)),
-        print weather_entry(" Clouds", forecast_cloudiness(data, x)),
-        print weather_entry(" Cond ID", forecast_cond_id(data, x)),
-        print weather_entry(" Conditions", forecast_conditions(data, x)),
-        print weather_entry(" Description", forecast_description(data, x))        
+    for x in range(0, wx.forecast_count(data)):
+        print weather_entry("Date/Time", wx.format_unix_timestamp(int(wx.forecast_timestamp(data, x)))),
+        print weather_entry(" Pressure", wx.forecast_pressure(data, x)),
+        print weather_entry(" Temp", wx.forecast_temp(data, x)),
+        print weather_entry(" Temp Min", wx.forecast_temp_min(data, x)),
+        print weather_entry(" Temp Max", wx.forecast_temp_max(data, x)),
+        print weather_entry(" Humidity", wx.forecast_humidity(data, x)),
+        print weather_entry(" Wind Spd", wx.forecast_wind_speed(data, x)),
+        print weather_entry(" Wind Dir", wx.forecast_wind_direction(data, x)),
+        print weather_entry(" Clouds", wx.forecast_cloudiness(data, x)),
+        print weather_entry(" Cond ID", wx.forecast_cond_id(data, x)),
+        print weather_entry(" Conditions", wx.forecast_conditions(data, x)),
+        print weather_entry(" Description", wx.forecast_description(data, x))        
 
 def begin_display_sequence():
     lc.command("::pau")
@@ -399,21 +224,21 @@ def analyze_forecast(data):
     day_index = -1
     segment_index = 0
     current_day = None
-    count = forecast_count(data)
+    count = wx.forecast_count(data)
     # data is pushed oldest first
     for x in xrange(count - 1, -1, -1):
-        timestamp = get_datetime(forecast_timestamp(data, x))
+        timestamp = wx.get_datetime(wx.forecast_timestamp(data, x))
         entry_day = timestamp.day
         if entry_day != current_day:
             day_index += 1
             segment_index = 0
             current_day = entry_day
             weekdays[day_index] = timestamp.weekday()
-        condition_slots[day_index][segment_index] = forecast_cond_id(data, x)
-        temperature_slots[day_index][segment_index] = forecast_temp(data, x)
-        humidity_slots[day_index][segment_index] = forecast_humidity(data, x)
-        wind_speed_slots[day_index][segment_index] = forecast_wind_speed(data, x)
-        cloudiness_slots[day_index][segment_index] = forecast_cloudiness(data, x)
+        condition_slots[day_index][segment_index] = wx.forecast_cond_id(data, x)
+        temperature_slots[day_index][segment_index] = wx.forecast_temp(data, x)
+        humidity_slots[day_index][segment_index] = wx.forecast_humidity(data, x)
+        wind_speed_slots[day_index][segment_index] = wx.forecast_wind_speed(data, x)
+        cloudiness_slots[day_index][segment_index] = wx.forecast_cloudiness(data, x)
         segment_index += 1
     fixup_data()
 
@@ -456,18 +281,6 @@ def map_to_weekdays(slots):
         week_slots[x] = week_slots[x-1]
     week_slots[0] = carry_slot
 
-#def send_week_slots(day_spacer):
-#    day_spacer = (wc.weather_conditions[day_spacer] + ":") * 4
-#    begin_display_sequence()
-#    for x in xrange(7 -1, -1, -1):
-#        lc.push_command(day_spacer)
-#        for y in range(num_segments):
-#            style = week_slots[x][y]
-#            lc.push_command((style + ":") * 2)
-#   / lc.push_command(day_spacer)
-#    lc.push_command()
-#    end_display_sequence()
-
 def send_week_slots(type_style):
     if double_size:
         day_spacer = "4:blk:"
@@ -482,7 +295,7 @@ def send_week_slots(type_style):
             lc.push_command(day_spacer)
         for y in range(num_segments):
             style = week_slots[x][y]
-            if ((x - 1) % 7) == current_weekday():
+            if ((x - 1) % 7) == wx.current_weekday():
                 style += ":bre"
             cmd_text = style + ":"
             if double_size:
@@ -522,7 +335,11 @@ def render_forecast_temperature():
             if temperature == None:
                 week_slots[x][y] = filler_data
             else:
+                
                 temperature = int(temperature)
+
+                #print temperature
+                
                 # restrict to 32-111
                 temperature = max(minimum_temperature, temperature)
                 temperature = min(maximum_temperature-1, temperature)
@@ -530,39 +347,18 @@ def render_forecast_temperature():
                 temperature -= minimum_temperature
                 # convert to 79-0 so that a lower temperature is blue
                 temperature = temperature_range - temperature
+
+                #print temperature
+
                 # convert to hue 237-0
+
+
                 hue = temperature * 3
+
+
+                #print hue
+
                 week_slots[x][y] = hsl_color(hue)
-
-#def render_forecast_humidity():
-#    map_to_weekdays(humidity_slots)
-#    for x in xrange(7 -1, -1, -1):
-#        for y in range(num_segments):
-#            humidity = week_slots[x][y]
-#            if humidity == None:
-#                week_slots[x][y] = filler_data
-#            else:
-#                humidity = int(humidity)
-#                # map 0-100 humidity to 0-300 hue (last 60 degrees head back to red)
-#                hue = humidity * 3
-#                week_slots[x][y] = hsl_color(hue)
-
-#def render_forecast_humidity():
-##    filler_data = "120,255," + str(minimum_lightness) + ":hsl"
-#    filler_data = "0,0," + str(minimum_lightness) + ":hsl"
-#    hue = 220 # blue less purple
-#    sat = 255
-#    map_to_weekdays(humidity_slots)
-#    for x in xrange(7 -1, -1, -1):
-#        for y in range(num_segments):
-#            humidity = week_slots[x][y]
-#            if humidity == None:
-#                week_slots[x][y] = filler_data
-#            else:
-#                humidity = int(humidity)
-#                # map 0-100 humidity to 0-max default lightness
-#                lit = (humidity / 100.0) * default_lightness
-#                week_slots[x][y] = hsl_color(hue, sat, lit)
 
 def render_forecast_humidity():
     filler_data = "0,0," + str(minimum_lightness) + ":hsl"
@@ -610,37 +406,6 @@ def render_forecast_wind_speed():
                 else:
                     week_slots[x][y] = filler_data
 
-#def render_forecast_cloudiness():
-#    map_to_weekdays(cloudiness_slots)
-#    for x in xrange(7 -1, -1, -1):
-#        for y in range(num_segments):
-#            cloudiness = week_slots[x][y]
-#            if cloudiness == None:
-#                week_slots[x][y] = filler_data
-#            else:
-#                cloudiness = int(cloudiness)
-#                # if there are no clouds, show nothing
-#                if cloudiness < 1:
-#                    week_slots[x][y] = filler_data
-#                else:
-#                    # map 0-100 cloudiness to 0-300 hue (last 60 degrees head back to red)
-#                    hue = cloudiness * 3
-#                    week_slots[x][y] = hsl_color(hue)
-
-#def render_forecast_cloudiness():
-#    hue = 0 # red
-#    sat = 0 # b&w only
-#    map_to_weekdays(cloudiness_slots)
-#    for x in xrange(7 -1, -1, -1):
-#        for y in range(num_segments):
-#            cloudiness = week_slots[x][y]
-#            if cloudiness == None:
-#                week_slots[x][y] = filler_data
-#            else:
-#                cloudiness = int(cloudiness)
-#                lit = (cloudiness / 100.0) * (default_lightness / 2)
-#                week_slots[x][y] = hsl_color(hue, sat, lit)
-
 def render_forecast_cloudiness():
     filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     hue = 220 # blue less purple
@@ -661,7 +426,6 @@ def render_forecast_cloudiness():
                     # convert 100-0 to 255-0
                     sat = int(255 * (cloudiness / 100.0))
                     week_slots[x][y] = hsl_color(hue, sat)
-
 
 def send_forecast_conditions():
     render_forecast_conditions()
@@ -684,7 +448,6 @@ def send_forecast_cloudiness():
     send_week_slots(6)
 
 
-
 ############################################################################
 
 def setup():
@@ -699,8 +462,8 @@ def loop():
     global current_display_type,daily_data,forecast_data
 
     if current_display_type == 0:
-        daily_data = get_daily_data()
-        forecast_data = get_forecast_data()
+        daily_data = wx.get_daily_data()
+        forecast_data = wx.get_forecast_data()
 
     if not suppress_spew:
         report_weather(daily_data)
@@ -721,7 +484,6 @@ def loop():
         send_forecast_cloudiness()
 
     current_display_type = (current_display_type + 1) % num_displays
-
 
 if __name__ == '__main__':
     setup()

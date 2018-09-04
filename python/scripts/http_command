@@ -2,7 +2,7 @@
 
 SCRIPT_NAME="LED Web UI"
 SCRIPT_PGM="http_command.py"
-SCRIPT_PATH="/root/http_command.py /root/http_command.html /root/dev/linkit/python"
+SCRIPT_PATH="/root/http_command.py /root/http_command.html /root/dev/linkit/python/"
 #LOG_FILE="/root/dev/linkit/python/http_command.log"
 LOG_FILE="/dev/null"
 
