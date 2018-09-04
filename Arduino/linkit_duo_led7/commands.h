@@ -1674,9 +1674,8 @@ void Commands::do_app_setup(){
 
 // arg2 values:
 // 0  = position normally
-// >0 = macro number to call to draw if the position is valid
-// -1 = angular positioning, arg0 = angle 0-359, arg1 = radius 0-100%
-
+// >0 = macro number to call if the position is valid
+// <0 = macro number to call if the position is invalid
 // arg2 = if not zero, macro number to call to draw if the position was valid
 void Commands::do_xy_position(int arg0, int arg1, int arg2)
 {

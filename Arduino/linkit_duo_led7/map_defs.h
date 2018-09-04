@@ -1,12 +1,11 @@
 #ifndef MAP_DEFS_H
 #define MAP_DEFS_H
 
-#ifdef RADIUS8_MAPPING
-
-#define NUM_ROWS 16
-#define NUM_COLS 16
 #define X 255
 
+#ifdef RADIUS8_MAPPING
+#define NUM_ROWS 16
+#define NUM_COLS 16
 const byte map_row_01[] PROGMEM = {   X,   X,   X,   X,   X,   0,   1,   2,   3,   4,   5,   X,   X,   X,   X,   X,  };
 const byte map_row_02[] PROGMEM = {   X,   X,   X,   X,  13,  12,  11,  10,   9,   8,   7,   6,   X,   X,   X,   X,  };
 const byte map_row_03[] PROGMEM = {   X,   X,  14,  15,  16,  17,  18,  19,  20,  21,  22,  23,  24,  25,   X,   X,  };
@@ -27,6 +26,25 @@ const byte map_row_16[] PROGMEM = {   X,   X,   X,   X,   X, 199, 198, 197, 196,
 const byte* const map_rows[] PROGMEM = {
   map_row_01, map_row_02, map_row_03, map_row_04, map_row_05, map_row_06, map_row_07, map_row_08,  
   map_row_09, map_row_10, map_row_11, map_row_12, map_row_13, map_row_14, map_row_15, map_row_16
+};
+#endif
+
+#ifdef SPHERE_MAPPING
+#define NUM_ROWS 10
+#define NUM_COLS 17
+const byte map_row_01[] PROGMEM =   {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0};
+const byte map_row_02[] PROGMEM =   {  1,  1,  1,  2,  2,  2,  3,  3,  3,  4,  4,  4,  5,  5,  5,  5,  6};
+const byte map_row_03[] PROGMEM =   {  7,  8,  8,  9,  9, 10, 11, 11, 12, 13, 13, 14, 15, 15, 16, 16, 17};  
+const byte map_row_04[] PROGMEM =   { 18, 19, 20, 21, 21, 22, 23, 24, 25, 26, 27, 28, 29, 29, 30, 31, 32};
+const byte map_row_05[] PROGMEM =   { 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49};
+const byte map_row_06[] PROGMEM =   { 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66};
+const byte map_row_07[] PROGMEM =   { 67, 68, 69, 70, 70, 71, 72, 73, 74, 75, 76, 77, 78, 78, 79, 80, 81};
+const byte map_row_08[] PROGMEM =   { 82, 83, 83, 84, 84, 85, 86, 86, 87, 88, 88, 89, 90, 90, 91, 91, 92};
+const byte map_row_09[] PROGMEM =   { 93, 93, 93, 94, 94, 94, 95, 95, 95, 96, 96, 96, 97, 97, 97, 97, 98};
+const byte map_row_10[] PROGMEM =   { 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99};
+
+const byte* const map_rows[] PROGMEM = {
+  map_row_01, map_row_02, map_row_03, map_row_04, map_row_05, map_row_06, map_row_07, map_row_08, map_row_09, map_row_10
 };
 #endif
 
