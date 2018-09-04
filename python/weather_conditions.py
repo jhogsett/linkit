@@ -38,7 +38,7 @@ None: "blk",        # segment filler
 501: "grn",         # moderate rain
 511: "grn",         # freezing rain
 521: "grn:bre",     # shower rain
-531: "grn:bew",     # ragged shower rain
+531: "grn:bre",     # ragged shower rain
 502: "grn:bli",     # heavy intensity rain
 522: "grn:bli",     # heavy intensity shower rain
 503: "grn:bla",     # very heavy rain
