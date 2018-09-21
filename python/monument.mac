@@ -1,0 +1,43 @@
+
+
+
+
+[monument-app 10]
+  0:lev
+  (sixteen)
+  (eleven)
+  (twelve)
+
+[sixteen]
+  (fourteen 800)
+  (fifteen 1600)
+  (thirteen 10000)
+
+[eleven]
+  3:zon
+  0,3:pal
+  3,0,4:cpy
+
+[twelve]
+  2:zon
+  0,3:pal
+  3,0,2:cpy
+
+[fourteen]
+  3:zon
+  art
+  flu
+  rst
+
+[fifteen]
+  2:zon
+  art
+  flu
+  rst
+
+[thirteen]
+  3:shf
+  (eleven)
+  (twelve)
+  rst
+
