@@ -1,43 +1,70 @@
+%include symbols
 
+%include hsl-sequencer
+%include colors
 
-
+%run-macro monument-app
 
 [monument-app 10]
-  0:lev
+  application
+  <DEFAULT-BRIGHTNESS>
+  level
   (sixteen)
   (eleven)
   (twelve)
+  (hsl-sequencer-start)
+
+#[demo11 11]
+#  (colors-app)
+
+#[demo12 12]
+#  (colors-app)
+
+[demo13 13]
+  (colors-app)
 
 [sixteen]
   (fourteen 800)
   (fifteen 1600)
-  (thirteen 10000)
+  (thirteen 30000)
 
 [eleven]
-  3:zon
-  0,3:pal
-  3,0,4:cpy
+  3
+  zone
+  0,3
+  palette-color
+  3,0,4
+  copy
+  reset
 
 [twelve]
-  2:zon
-  0,3:pal
-  3,0,2:cpy
+  2
+  zone
+  0,3
+  palette-color
+  3,0,2
+  copy
+  reset
 
 [fourteen]
-  3:zon
-  art
-  flu
-  rst
+  3
+  zone
+  animated-rotate
+  flush
+  reset
 
 [fifteen]
-  2:zon
-  art
-  flu
-  rst
+  2
+  zone
+  animated-rotate
+  flush
+  reset
 
 [thirteen]
-  3:shf
+#  3:shf
   (eleven)
   (twelve)
-  rst
+  crossfade
+  flush
+  reset
 
