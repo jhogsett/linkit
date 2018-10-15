@@ -16,4 +16,5 @@ rsync -ut /Media/SD-P1/dev/linkit/python/sunrise.* /root
 /etc/init.d/http_command restart
 /etc/init.d/udp_command restart
 /etc/init.d/weather restart
+/etc/init.d/sunrise restart
 
