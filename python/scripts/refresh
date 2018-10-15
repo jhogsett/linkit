@@ -11,6 +11,7 @@ rsync -ut /Media/SD-P1/dev/linkit/python/weather.* /root
 rsync -ut /Media/SD-P1/dev/linkit/python/weather_conditions.* /root
 rsync -ut /Media/SD-P1/dev/linkit/python/led_command.* /root
 rsync -ut /Media/SD-P1/dev/linkit/python/app_ui.* /root
+rsync -ut /Media/SD-P1/dev/linkit/python/wx.* /root
 rsync -ut /Media/SD-P1/dev/linkit/python/sunrise.* /root
 #/etc/init.d/circleci restart
 /etc/init.d/http_command restart
