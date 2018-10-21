@@ -143,10 +143,18 @@ void Buffer::erase(bool display = false)
 
   rgb_color erase_color = ColorMath ::correct_color(black);
 
-  for(byte i = offset; i < window; i++)
+  if(offset == window)
   {
-    buf[i] = erase_color;
-    effects[i] = NO_EFFECT;
+    buf[offset] = erase_color;
+    effects[offset] = NO_EFFECT;
+  }
+  else
+  {
+    for(byte i = offset; i < window; i++)
+    {
+      buf[i] = erase_color;
+      effects[i] = NO_EFFECT;
+    }
   }
 
   if(display)
