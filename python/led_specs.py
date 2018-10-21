@@ -56,7 +56,7 @@ verbose_mode = False
 verbose_test_outcome = ""
 group_name_only = ""
 test_number_only = 0
-
+skip_led_report = None
 
 # -----------------------------------------------------------------------------
 # --- Serial I/O ---
@@ -210,18 +210,22 @@ def do_reset_device():
 # --- Setup ---
 
 def setup(): 
-  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only 
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report 
 
   parser = argparse.ArgumentParser(description=app_description)
-  parser.add_argument("-g", "--group",     type=int, dest="group",     default=0)
-  parser.add_argument("-n", "--groupname",           dest="groupname", default="")
-  parser.add_argument("-t", "--test",       type=int, dest="test",      default=0)
-  parser.add_argument("-v", "--verbose",             dest="verbose",   action='store_true')
+  parser.add_argument("-g", "--group",     type=int, dest="group",      default=0, help="group number to test")
+  parser.add_argument("-n", "--groupname",           dest="groupname",  default="", help="group name matching text to test")
+  parser.add_argument("-t", "--test",      type=int, dest="test",       default=0, help="test number to test")
+  parser.add_argument("-s", "--skip-report",         dest="skip_report",action='store_true', help="skip showing results on LED display")
+  parser.add_argument("-v", "--verbose",             dest="verbose",    action='store_true', help="enable verbose mode")
   args = parser.parse_args()
   group_number_only = args.group
   group_name_only = args.groupname
   test_number_only = args.test
   verbose_mode = args.verbose
+  skip_led_report = args.skip_report
+
+  print skip_led_report
 
   s = serial.Serial("/dev/ttyS0", 115200) 
   do_reset_device()
@@ -324,7 +328,7 @@ def skip_test(command, description, num_to_skip=1):
     if verbose_mode:
       print tc.yellow(skipped_message(command))
     else:
-      write(tc.red("."))
+      write(tc.red("*"))
 
 
 # -----------------------------------------------------------------------------
@@ -1593,12 +1597,12 @@ def specs():
 
     if test("it does a wheel cosine sequence"):
       expect_buffer("0,7,1:swc:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 9,       "20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 15,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 18,      "0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 19,      "10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 20,      "20,0,0,10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:org", 0, 5,       "20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:yel", 0, 11,      "20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:grn", 0, 17,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:blu", 0, 20,      "0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:pur", 0, 21,      "10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:red", 0, 22,      "20,0,0,10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
     if test("it does a wheel sine sequence"):
       expect_buffer("0,7,1:sws:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
@@ -1606,8 +1610,8 @@ def specs():
       expect_buffer("seq:yel", 0, 5,       "20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
       expect_buffer("seq:grn", 0, 10,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
       expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 20,      "10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 24,      "20,0,0,20,0,0,20,0,0,20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:pur", 0, 19,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:red", 0, 22,      "20,0,0,20,0,0,20,0,0,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
 
     if test("it does an opposite sequence"):
       expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
@@ -1661,9 +1665,9 @@ def specs():
       expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
       expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
-      expect_buffer("seq:grn", 0, 8,       "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 10,      "0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 13,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True) 
 
     pending_test("the low limit can be changed")
 
@@ -2049,7 +2053,6 @@ def specs():
 def loop():                                  
   print
   specs()
-#  test("")
   print 
 
   for error in test_failures:
@@ -2072,19 +2075,21 @@ def loop():
   )                                                                     
   print                                                                                                                                                                                            
 
-  total = success_count + failure_count + num_pending + num_skipped
-  show_success = 0.5 + (success_count * num_leds / total)
-  show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
-  show_pending = 0.5 + (num_pending * num_leds / total)
   pre_test_reset()
-  command_str("rst:era:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
-  # do_reset_device();
-  command_str(str(int(show_success)) + ":grn") 
-  if show_failure >= 1.0:  
-    command_str(str(int(show_failure)) + ":red")                                                                                                                                                                  
-  if show_success >= 1.0:
-    command_str(str(int(show_pending)) + ":yel")                                                                                                                                                                  
-  command_str("flu:cnt")
+  if skip_led_report == True:
+    command_str("stp");
+  else:
+    total = success_count + failure_count + num_pending + num_skipped
+    show_success = 0.5 + (success_count * num_leds / total)
+    show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
+    show_pending = 0.5 + (num_pending * num_leds / total)
+    command_str("rst:era:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
+    command_str(str(int(show_success)) + ":grn") 
+    if show_failure >= 1.0:  
+      command_str(str(int(show_failure)) + ":red")                                                                                                                                                                  
+    if show_success >= 1.0:
+      command_str(str(int(show_pending)) + ":yel")                                                                                                                                                                  
+    command_str("flu:cnt")
 
 if __name__ == '__main__': 
   print tc.magenta("\n" + app_description + "\n")
