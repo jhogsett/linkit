@@ -39,7 +39,7 @@ $fade-type ffd
   (((worm-start 5)))
 
 # expand 5 meta-templates for worms, computing the various values
-(((worm 5 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1` X `X+5` `X+10`)))
+(((worm 5 `<time1>-(X*5)` `<time2>-(X*5)` X `X+1` X `X+5`)))
 
 # template for starting worms
 # X - worm number
@@ -49,26 +49,21 @@ $fade-type ffd
 
 # template for all worm processing
 # X - worm number
-# TIME1 - draw time / fast advance time
+# TIME1 - fast advance time
 # TIME2 - slow advance time
 # COLOR - palette color index
 # STEP - advance step for the slow advancing sequencer
 # SEQ1 - fast advancing sequencer number
-# SEQ2 - macro math sequencer number
-# SEQ3 - slow advancing sequencer number
-[[worm X TIME1 TIME2 COLOR STEP SEQ1 SEQ2 SEQ3
+# SEQ2 - slow advancing sequencer number
+[[worm X TIME1 TIME2 COLOR STEP SEQ1 SEQ2
   # start up a worm
   [worm-start-X]
     # allocate a sequencer 1/6 the display width for the small/fast sequence
     {seq-SEQ1},<width0>
     <seq-type>
 
-    # allocate a sequencer for performing macro math on advance
-    {seq-SEQ2},<width1>
-    <seq-type>
-
     # allocate a sequencer for the remaining 5/6 display width to swing the sequence
-    {seq-SEQ3},<width2>
+    {seq-SEQ2},<width2>
     <seq-type>
 
     # schedule the draw macro
@@ -77,13 +72,18 @@ $fade-type ffd
     # schedule the advance macro
     (worm-advance-X TIME2)
 
-  # use the macro math sequencer to draw the next animation frame
+  # draw the next animation frame
   [worm-draw-X]
-    # use a macro to compute the next position
-    <seq-SEQ2>,<MACRO-SEQ>,<worm-math-X>
+    # advance the 1/6 sequencer
+    <seq-SEQ1>
+    sequence
 
+    # add the two sequencers
     # get and set the offset,window to fill in for this frame
+    <seq-SEQ1>,<ADD-SEQ>,<seq-SEQ2>
     sequence-next-window
+
+    # set drawing window
     position
 
     # place the palette color
@@ -99,24 +99,10 @@ $fade-type ffd
     # restore the viewport
     reset
 
-  # macro used by the sequencer to compute the next position
-  [worm-math-X]
-    # advance the 1/6 sequencer and push onto stack
-    <seq-SEQ1>
-    sequence
-    push
-    
-    # advance the 5/6 sequencer and push onto stack
-    <seq-SEQ3>,<GET-CURRENT>
-    sequence
-    push
-
-    # add the two values, leaving the result in arg0
-    add
-
   # macro to sequence the 5/6 sequencer at a variable rate
   [worm-advance-X]
-    # advance the sequencer, leaving the result in arg0
-    <seq-SEQ3>,0,STEP
+    # advance the sequencer
+    <seq-SEQ2>,0,STEP
     sequence
 ]]
+

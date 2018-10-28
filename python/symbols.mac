@@ -1,22 +1,37 @@
+
+# configuration
 $CONFIG-FADE-RATE 2
+
+# sequencing
 $GET-NEXT 0
 $GET-CURRENT -1
 $GET-COMPUTED -2
 $GET-OPPOSITE -3
 $MACRO-SEQ -4
+$ADD-SEQ -5
+$SUB-SEQ -6
+$SEQ-NEW-HIGH -7
+$SEQ-NEW-LOW -8
+$SEQ-RESET -9
+
+# draw modes
 $DRAW-WRITE 0
 $DRAW-PLUS 1
 $DRAW-MINUS 2
 $DRAW-MIX 3
 $DRAW-DIFF 4
+
+# brightness levels
 $DEFAULT-BRIGHTNESS 0
-$EFFECTS-PROCESSING 1
-$SCHEDULE-PROCESSING 2
 $BRIGHTNESS-AUTO 0
 $BRIGHTNESS-MAX -1
 $BRIGHTNESS-HIGH -2
 $BRIGHTNESS-LOW -3
 $BRIGHTNESS-MIN -4
+
+# pause/continue control
+$EFFECTS-PROCESSING 1
+$SCHEDULE-PROCESSING 2
 
 # palette colors
 $RED 0
@@ -47,6 +62,7 @@ $ROSE 17
 #$SODIUM 23
 #$BLACK 24
 
+# standard render function, consumes partial final macro
 [render !]
   flush
 
