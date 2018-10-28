@@ -15,7 +15,7 @@
 // #define APOLLO_DISPLAY
 
 // single 90-LED strip for dev
-// #define LED_STRIP_90
+#define LED_STRIP_90
 
 // 19-LED Mini Disc
 // #define MINI_DISC_19
@@ -33,7 +33,7 @@
 // #define WEARABLE_AND_STRAND_50
 
 // 72-LED weather display
-#define WEATHER_72
+// #define WEATHER_72
 
 // 36-LED annunciator
 // #define ANNUNCIATOR
@@ -237,6 +237,11 @@
 #define ZONES_MINI_DISC
 #define BLINK_PERIOD 12000
 #define BREATHE_PERIOD 1000
+#define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    33
+#define LOW_BRIGHTNESS_PERCENT     10
+#define MIN_BRIGHTNESS_PERCENT     5
+
 #endif
 
 #ifdef WEARABLE_AND_HARDHAT
@@ -326,16 +331,20 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #define BLINK_PERIOD 2000
 #define BREATHE_PERIOD 125
+#define MAX_BRIGHTNESS_PERCENT     40 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    30
+#define LOW_BRIGHTNESS_PERCENT     10
+#define MIN_BRIGHTNESS_PERCENT     5
 #endif
 
 #ifdef ANNUNCIATOR
 #define ANIM_LED_COUNT 36
 #define ZONES_ANNUNCIATOR
-#define DEFAULT_BRIGHTNESS_PERCENT 30
+#define DEFAULT_BRIGHTNESS_PERCENT 25
 #define BLINK_PERIOD 3000
 #define BREATHE_PERIOD 125
-#define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
-#define HIGH_BRIGHTNESS_PERCENT    40
+#define MAX_BRIGHTNESS_PERCENT     40 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    30
 #define LOW_BRIGHTNESS_PERCENT     10
 #define MIN_BRIGHTNESS_PERCENT     5
 #endif

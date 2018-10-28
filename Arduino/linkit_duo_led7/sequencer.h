@@ -27,7 +27,7 @@ class Sequence
 {
   public:
 
-  void begin(Macros * macros, CommandProcessor * command_processor);
+  void begin(Macros * macros, CommandProcessor * command_processor, Sequence * sequences);
   void set(byte type, int low, int high);
   void set_limit(int low, int high);
   void fix_current();
@@ -77,21 +77,24 @@ class Sequence
 
   static Macros * macros;
   static CommandProcessor * command_processor;
+  static Sequence * sequences;
  };
 
 Macros * Sequence::macros;
 CommandProcessor * Sequence::command_processor;
+Sequence * Sequence::sequences;
 
 int Sequence::width()
 {
   return this->max - this->low;    
 }
   
-void Sequence::begin(Macros * macros, CommandProcessor * command_processor)
+void Sequence::begin(Macros * macros, CommandProcessor * command_processor, Sequence * sequences)
 {
   set(DEFAULT_TYPE, DEFAULT_LOW, DEFAULT_HIGH);
   this->macros = macros;
   this->command_processor = command_processor;
+  this->sequences = sequences;
   this->reset();
 }
 
@@ -138,9 +141,11 @@ void Sequence::reset()
 #define ADVANCE_COMPUTED -2
 #define ADVANCE_OPPOSITE -3
 #define ADVANCE_MACRO    -4
-#define ADVANCE_NEW_HIGH -5
-#define ADVANCE_NEW_LOW  -6
-#define ADVANCE_RESET    -7
+#define ADVANCE_SEQADD   -5
+#define ADVANCE_SEQSUB   -6
+#define ADVANCE_NEW_HIGH -7
+#define ADVANCE_NEW_LOW  -8
+#define ADVANCE_RESET    -9
 #define SAFETY_MARGIN 1
 
 int Sequence::next(int advancement, int step) // step or macro
@@ -170,7 +175,19 @@ int Sequence::next(int advancement, int step) // step or macro
       }
       return this->current;
     }
- 
+
+    case ADVANCE_SEQADD:
+    {
+      Sequence * other = &this->sequences[step];
+      return this->computed + other->computed;
+    }
+    
+    case ADVANCE_SEQSUB:
+    {
+      Sequence * other = &this->sequences[step];
+      return this->computed - other->computed;
+    }
+
     case ADVANCE_MACRO:
       return this->current = this->evaluate_macro(step);
     
@@ -223,7 +240,7 @@ int Sequence::increment_wheel(int step)
     this->current = this->low + step_carry;    
   }
 
-  return this->current;
+  return this->computed = this->current;
 }
 
 int Sequence::increment_swing(int step)
@@ -249,7 +266,7 @@ int Sequence::increment_swing_normal(int step)
     this->state = STATE_REVERSE;
   }
 
-  return this->current;
+  return this->computed = this->current;
 }
 
 int Sequence::increment_swing_reverse(int step)
@@ -263,7 +280,7 @@ int Sequence::increment_swing_reverse(int step)
     this->state = STATE_NORMAL;
   }
   
-  return this->current;
+  return this->computed = this->current;
 }
 
 int Sequence::increment_wheel_cosine(int step)
@@ -339,6 +356,8 @@ class Sequencer
   int previous_computed(int sequencer);
   void set_previous_computed(int sequencer, int position);
 
+  static Sequence get_sequence(int sequencer) { return sequences[sequencer]; } 
+
   private:
 
   static Sequence sequences[NUM_SEQUENCERS];
@@ -350,7 +369,7 @@ void Sequencer::begin(Macros * macros, CommandProcessor * command_processor)
 {
   // set default sequences
   for(int i = 0; i < NUM_SEQUENCERS; i++)
-    sequences[i].begin(macros, command_processor);
+    sequences[i].begin(macros, command_processor, sequences);
 }
 
 void Sequencer::set(int sequencer, byte type, int low, int high)

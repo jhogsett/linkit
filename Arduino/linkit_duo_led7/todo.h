@@ -1,3 +1,5 @@
+// show the device uptime at the bottom of the html page (or have an admin page to view it)
+
 // add a way to reverse a swing sequencer, to flip the direction any time
 
 // if value passed to template expansion is a python expression, and it's used later in another python expression, the backticks conflict.

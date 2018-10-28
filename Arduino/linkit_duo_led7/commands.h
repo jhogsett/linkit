@@ -1146,8 +1146,12 @@ int Commands::random_num(int max, int min)
 // arg1 -3 = reset current number to low limit and return it without advancing
 // arg1 -4 = step (arg2) instead is a macro # to run for each position, filling gaps
 
-// arg1 -5 = set new upper limit
-// arg1 -6 = set new lower limit
+// arg1 -5 = step (arg2) instead is another sequencer to get the current value for and ADD to this sequencer
+// arg1 -6 = step (arg2) instead is another sequencer to get the current value for and SUB from this sequencer
+
+// arg1 -7 = set new upper limit
+// arg1 -8 = set new lower limit
+// arg1 -9 = reset
 
 // arg2 - step, default = 1
 // 1,0,0:seq - get next number from #1
