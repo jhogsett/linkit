@@ -1663,9 +1663,6 @@ def specs():
       expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
       expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
       expect_buffer("seq:grn", 0, 8,       "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 10,      "0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 13,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 14,      "20,0,0,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
     if test("the low limit can be changed"):
       expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
@@ -1681,13 +1678,37 @@ def specs():
       expect_buffer("seq:yel", 0, 13,      "20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
       expect_buffer("seq:grn", 0, 19,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
       expect_buffer("seq:blu", 0, 22,      "0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 26,      "10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 31,      "20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
+
+    if test("the sequencer can be reset"):
+      expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
+      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+      expect_buffer("0,-9:seq:grn", 0, 8,  "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+
+    if test("wheel sequencer stores index value as computed value"):
+      expect_buffer("0,7,1:seq:0:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)      
+      expect_buffer("0,-2:seq:org", 0, 5, "20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+
+    if test("swing sequencer stores index value as computed value"):
+      expect_buffer("0,3,1:sqs:0:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
+      expect_buffer("0,-2:seq:org", 0, 5, "20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+      expect_buffer("0:seq:0,-2:seq:yel", 0, 6, "20,20,0,20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+      expect_buffer("0:seq:0,-2:seq:grn", 0, 8, "0,20,0,0,20,0,20,20,0,20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+      expect_buffer("0:seq:0,-2:seq:blu", 0, 9, "0,0,20,0,20,0,0,20,0,20,20,0,20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+
+    if test("two sequencers can be added"):
+      expect_buffer("0,4,1:seq:1,4,1:seq:0,-5,1:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
+
+    if test("two sequencers can be subtracted"):
+      expect_buffer("0,5,3:seq:1,3,1:seq:0,-6,1:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
+
+
+
 
 
 # steps, negative step
 # next window
-# marcos, resetting, limits
+# marcos, resetting
 
 ########################################################################
 # TESTING
@@ -2094,16 +2115,17 @@ def loop():
     command_str("stp");
   else:
     total = success_count + failure_count + num_pending + num_skipped
-    show_success = 0.5 + (success_count * num_leds / total)
-    show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
-    show_pending = 0.5 + (num_pending * num_leds / total)
-    command_str("rst:era:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
-    command_str(str(int(show_success)) + ":grn") 
-    if show_failure >= 1.0:  
-      command_str(str(int(show_failure)) + ":red")                                                                                                                                                                  
-    if show_success >= 1.0:
-      command_str(str(int(show_pending)) + ":yel")                                                                                                                                                                  
-    command_str("flu:cnt")
+    if total > 0:
+      show_success = 0.5 + (success_count * num_leds / total)
+      show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
+      show_pending = 0.5 + (num_pending * num_leds / total)
+      command_str("rst:era:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
+      command_str(str(int(show_success)) + ":grn") 
+      if show_failure >= 1.0:  
+        command_str(str(int(show_failure)) + ":red")                                                                                                                                                                  
+      if show_success >= 1.0:
+        command_str(str(int(show_pending)) + ":yel")                                                                                                                                                                  
+      command_str("flu:cnt")
 
 if __name__ == '__main__': 
   print tc.magenta("\n" + app_description + "\n")
