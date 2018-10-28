@@ -8,14 +8,14 @@
 
 $rotate-time 30000
 
-[fancy 11]
-  (swinger-app)
-
-[mellow 10]
+[fancy 10]
   (inchworm-app)
+
+[mellow 11]
+  (swinger-app)
 
 [demo 12]
   (colors-app)
 
-%run-macro fancy
+%run-macro mellow
 
