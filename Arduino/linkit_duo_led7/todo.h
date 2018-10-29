@@ -1,3 +1,9 @@
+// integers need to be passed in to meta-templates, but there ought to be a way to pre-process variables and python expressions so those can be resolved prior to expansion
+//   what if part of pre-processing is trying to resolve all variables and python expressions?
+//   problem: python expressions within metatemplates using passed in values can't be evaluated, 
+//     because the upper case name gets used, but there's no marking of those variables to be able to detect the line as unresolved
+//     one possible fix would be to consider upper-case chars as unresolved
+
 // show the device uptime at the bottom of the html page (or have an admin page to view it)
 
 // add a way to reverse a swing sequencer, to flip the direction any time
