@@ -22,7 +22,7 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 	<DRAW-WRITE>				# set the draw mode to overwrite (replace)
 	draw-mode
 
-	(render <render-time>)			# schedule the render macro to run periodically
+	(hslrender <render-time>)		# schedule the render macro to run periodically
 	(init)					# call 'init' macro to set up swingers
 
 # --------------------------------------------
@@ -35,7 +35,7 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 
 # --------------------------------------------
 
-[render !]					# define macro 'render' in the last (truncated) macro # to update the display
+[hslrender]					# define macro 'render' in the last (truncated) macro # to update the display
 	mirror					# duplicate the first half of the LED colors to the second half, reversed
 	flush					# push the display buffer to the LEDs
 
@@ -58,13 +58,13 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 						# X (unique name), COLOR (palette color index), TYPE (sequencer type)
 
 	[start-X]				# define templated macro 'start-X' to start up a circulr swinger
-		{sequencer-X},<max-width-half>	# allocate a new unique sequencer number; push it along with half the display width
+		{seq-X},<max-width-half>	# allocate a new unique sequencer number; push it along with half the display width
 	        TYPE				# create a sequencer per the above pushed arguments
 
 	        (render-X <cycle-time>) 	# schedule the the swinger to advance and draw periodically
 
 	[render-X]				# define a templated macro 'render-X' to handle advancing and drawing the swinger
-		<sequencer-X>			# push the above allocated sequencer number onto the argument stack
+		<seq-X>				# push the above allocated sequencer number onto the argument stack
 		sequence-next-window		# advance the swinger to the next position, leaving offset & window on the argument
 						# stack, used to draw contigious fast-moving pixels
 		position			# set the 'offset' and 'window' for drawing per to the arguments on the stack
@@ -82,7 +82,7 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 # --------------------------------------------
 
 [average-swinger]				# define a macro to set up a third swinger that averages the values of the first two
-	{sequencer-a},<NUM-LEDS>		# allocate a unique sequencer number and push it along with the device LED count
+	{seq-a},<NUM-LEDS>			# allocate a unique sequencer number and push it along with the device LED count
         wheel-sequencer				# create a 'wheel sequencer' per the pushed arguments (repeats numbers 0, 1, 2, 3, 0, 1, 2, 3)
 
         (render-a <cycle-time>)			# schedule the swinger to periodically advance and draw
@@ -90,7 +90,7 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 # --------------------------------------------
 
 [render-a]					# define a macro to advance and draw the swinger
-	<sequencer-a>,<MACRO-SEQ>,<math-a>	# push avove sequence number with option to compute macro and macro number 
+	<seq-a>,<MACRO-SEQ>,<math-a>	# push avove sequence number with option to compute macro and macro number 
 	sequence-next-window			# get the next contiguous draw region
 
 	position				# set the fill region per the pushed arguments
@@ -105,11 +105,11 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 # --------------------------------------------
 
 [math-a]					# define a macro to compute the swinger position based on the other two swingers
-	<sequencer-0>,<GET-COMPUTED>		# push the first circular swinger's sequence number and option to get computed value
+	<seq-0>,<GET-COMPUTED>			# push the first circular swinger's sequence number and option to get computed value
 	sequence				# get the computed value
 	push					# push onto the accumulator stack
 
-	<sequencer-1>,<GET-COMPUTED>		# push the first circular swinger's sequence number and option to get computed value
+	<seq-1>,<GET-COMPUTED>			# push the first circular swinger's sequence number and option to get computed value
 	sequence				# get the computed value
 	push					# push onto the accumulator stack
 	average					# average the two values, leave result at head of argument and accumulator stacks

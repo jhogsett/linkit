@@ -5,6 +5,7 @@
 %include inchworm
 %include hsl-sequencer
 %include colors
+%include hslswing
 
 $rotate-time 30000
 
@@ -14,8 +15,11 @@ $rotate-time 30000
 [mellow 11]
   (swinger-app)
 
-[demo 12]
+[lamp 12]
   (colors-app)
 
-%run-macro mellow
+[demo 13]
+  (hslswing-app)
+
+%run-macro demo
 
