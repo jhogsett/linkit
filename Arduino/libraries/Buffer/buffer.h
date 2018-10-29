@@ -26,6 +26,7 @@ class Buffer
   void push_color(rgb_color color, byte times, bool display, byte effect, byte max, byte start, bool color_correction);
   void push_rgb_color(byte red, byte green, byte blue);
   void push_hsl_color(int hue, int sat, int lit);
+//  void push_kelvin_color(int kelvin);
   void push_carry_color();
   void shift(byte count, byte maxx, bool fast_render);
   void finalize_shift(byte count, byte max);
@@ -321,6 +322,12 @@ void Buffer::push_hsl_color(int hue, int sat, int lit)
   rgb_color color = ColorMath::hsl_to_rgb(hue, sat, lit);
   push_rgb_color(color.red, color.green, color.blue);
 }
+
+//void Buffer::push_kelvin_color(int kelvin)
+//{
+//  rgb_color color = ColorMath::kelvin_to_rgb(kelvin);
+//  push_rgb_color(color.red, color.green, color.blue);
+//}
 
 void Buffer::push_carry_color()
 {

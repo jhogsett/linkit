@@ -54,6 +54,7 @@ class ColorMath
   static rgb_color scale_color(rgb_color color, float scale);
   static rgb_color unscale_color(rgb_color color, float scale);
   static rgb_color hsl_to_rgb(int hue, int sat, int val);
+//  static rgb_color kelvin_to_rgb(int kelvin);
   static rgb_color add_color(rgb_color color1, rgb_color color2);
   static rgb_color subtract_color(rgb_color color1, rgb_color color2);
 
@@ -800,6 +801,35 @@ rgb_color ColorMath::unscale_color(rgb_color color, float scale){
     color.blue / factor
   };
 }
+
+//rgb_color ColorMath::kelvin_to_rgb(int kelvin) {
+//    int red, green, blue;
+//    kelvin = kelvin / 100;
+//
+//    if(kelvin <= 66)
+//        red = 255;
+//    else {
+//        red = 329.698727446 * pow(kelvin - 60, -0.1332047592);
+//        red = min(255, max(0, red));
+//    }
+//
+//    if(kelvin <= 66)
+//        green = 99.4708025861 * log(kelvin) - 161.1195681661;
+//    else
+//        green = 288.1221695283 * pow(kelvin - 60, -0.0755148492);
+//    green = min(255, max(0, green));
+//
+//    if(kelvin >= 66)
+//        blue = 255;
+//    else if(kelvin <= 19)
+//	      blue = 0;
+//    else {
+//        blue = 138.5177312231 * log(kelvin - 10) - 305.0447927307;
+//        blue = min(255, max(0, blue));
+//    }
+//
+//    return (rgb_color){red, green, blue};
+//}
 
 // hue: 0-359, sat: 0-255, val (lightness): 0-255
 rgb_color ColorMath::hsl_to_rgb(int hue, int sat, int val) {

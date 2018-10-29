@@ -313,6 +313,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     do_pop(arg0);
     reset_args = false; 
     break;    
+
+//  case CMD_KELCOLOR: 
+//    buffer->push_kelvin_color(arg0); 
+//    break;
   }
   
   if(reset_args)
