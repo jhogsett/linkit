@@ -1,0 +1,109 @@
+# ----------------------------------------------------------------
+# Inchworm
+# Multiple rainbow wandering inchworms
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+
+%run-macro inchworm-app
+
+$render-time 100
+$width0 `<NUM-LEDS> * 1 / 6`
+$width1 <NUM-LEDS>
+$width2 `<NUM-LEDS> * 5 / 6`
+$time1 50
+$time2 200
+$seq-type sqs
+$fade-type ffd
+$num-worms 5
+
+[inchworm-app 10]
+  application
+
+  # make colors intermingle
+  <DRAW-PLUS>
+  draw-mode
+
+  # schedule the renderer
+  (render <render-time>)
+  
+  # start the worms
+  (worms-start)
+  
+  # start the palette color sequencer
+  (hsl-sequencer-start)
+
+# start up all worms
+[worms-start]
+  # expand wornm start meta-templates
+  (((worm-start <num-worms>)))
+
+# expand meta-templates for worms, computing the various values
+(((worm <num-worms> `<time1>-(X*<num-worms>)` `<time2>-(X*<num-worms>)` X `X+1` X `X+<num-worms>`)))
+
+# template for starting worms
+# X - worm number
+[[worm-start X
+  (worm-start-X)
+]]
+
+# template for all worm processing
+# X - worm number
+# TIME1 - fast advance time
+# TIME2 - slow advance time
+# COLOR - palette color index
+# STEP - advance step for the slow advancing sequencer
+# SEQ1 - fast advancing sequencer number
+# SEQ2 - slow advancing sequencer number
+[[worm X TIME1 TIME2 COLOR STEP SEQ1 SEQ2
+  # start up a worm
+  [worm-start-X]
+    # allocate a sequencer 1/6 the display width for the small/fast sequence
+    {seq-SEQ1},<width0>
+    <seq-type>
+
+    # allocate a sequencer for the remaining 5/6 display width to swing the sequence
+    {seq-SEQ2},<width2>
+    <seq-type>
+
+    # schedule the draw macro
+    (worm-draw-X TIME1)
+    
+    # schedule the advance macro
+    (worm-advance-X TIME2)
+
+  # draw the next animation frame
+  [worm-draw-X]
+    # advance the 1/6 sequencer
+    <seq-SEQ1>
+    sequence
+
+    # add the two sequencers
+    # get and set the offset,window to fill in for this frame
+    <seq-SEQ1>,<ADD-SEQ>,<seq-SEQ2>
+    sequence-next-window
+
+    # set drawing window
+    position
+
+    # place the palette color
+    COLOR
+    palette-color
+
+    # set the fade type
+    <fade-type>
+
+    # fill the whole space
+    flood
+    
+    # restore the viewport
+    reset
+
+  # macro to sequence the 5/6 sequencer at a variable rate
+  [worm-advance-X]
+    # advance the sequencer
+    <seq-SEQ2>,0,STEP
+    sequence
+]]
+
