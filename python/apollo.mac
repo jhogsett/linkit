@@ -15,10 +15,10 @@ $rotate-time 30000
 [mellow 11]
   (swinger-app)
 
-[lamp 12]
+[lamp 13]
   (colors-app)
 
-[demo 13]
+[demo 12]
   (hslswing-app)
 
 %run-macro demo
