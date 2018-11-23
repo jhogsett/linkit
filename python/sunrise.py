@@ -106,7 +106,6 @@ def loop():
                 command_sent = True
 		if dryrun_mode:
                      set_dryrun_time()
-
 	if target_time == None or target_time < event_time:
 	    print "target time not set or in the past"
             if event_time <= current_time:
@@ -115,9 +114,12 @@ def loop():
 	        target_time = event_time
                 print "new target time: " + wx.format_unix_timestamp(target_time)
                 command_sent = False
+        print
 
+    except KeyError as e:
+        if verbose_mode:
+            print("ignoring error: ", str(e))
     finally:
-	print
         time.sleep(update_freq)
 
 if __name__ == '__main__':
