@@ -61,7 +61,9 @@ def setup():
     wx.begin(api_key, zipcode, timezone_offset)
 
 def do_command():
-      call(command_line, shell=True)
+    if verbose_mode:
+        print command_line
+    call(command_line, shell=True)
 
 
 #at each check:
