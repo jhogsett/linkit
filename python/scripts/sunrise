@@ -1,0 +1,21 @@
+#!/bin/sh /etc/rc.common
+
+SCRIPT_NAME="LED Sunrise Handler"
+SCRIPT_PGM="sunrise.py"
+#SCRIPT_PATH="/root/sunrise.py -k d59a165785d20ad2a84f6a4a85f9a4a2 -z 94605 -f 5 -t 7 -r /root/dev/linkit/python/udp_send.py 0:-3:lev:rnd:flo:flu"
+SCRIPT_PATH="/root/sunrise.py -k d59a165785d20ad2a84f6a4a85f9a4a2 -z 94565 -f 5 -t 7 /root/dev/linkit/python/udp_send.py 0:-3:lev:tun:flo:flu"
+LOG_FILE="/root/dev/linkit/python/sunrise.log"
+#LOG_FILE="/dev/null"
+
+START=98
+STOP=50
+
+start() {
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}
+
+stop() {
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PGM`
+}
