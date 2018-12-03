@@ -116,6 +116,10 @@ def loop():
                 command_sent = False
         print
 
+    except requests.exceptions.ConnectionError as e:
+        if verbose_mode:
+            print("ignoring error: ", str(e))
+
     except KeyError as e:
         if verbose_mode:
             print("ignoring error: ", str(e))
