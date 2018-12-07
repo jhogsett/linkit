@@ -5,6 +5,7 @@ import sys
 import time
 from subprocess import call
 import argparse
+from requests.exceptions import ConnectionError
 
 global app_description, verbose_mode, api_key, zipcode, update_freq, timezone_offset, sleep_time, last_command_time, dryrun_mode, command_line, dryrun_time, command_sent, target_time, dryrun_time
 app_description = None
@@ -116,7 +117,7 @@ def loop():
                 command_sent = False
         print
 
-    except requests.exceptions.ConnectionError as e:
+    except ConnectionError as e:
         if verbose_mode:
             print("ignoring error: ", str(e))
 
