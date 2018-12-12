@@ -5,6 +5,7 @@ import sys
 import time
 from subprocess import call
 import argparse
+from requests.exceptions import ConnectionError
 
 global app_description, verbose_mode, api_key, zipcode, update_freq, timezone_offset, sleep_time, last_command_time, dryrun_mode, command_line, dryrun_time, command_sent, target_time, dryrun_time
 app_description = None
@@ -61,7 +62,9 @@ def setup():
     wx.begin(api_key, zipcode, timezone_offset)
 
 def do_command():
-      call(command_line, shell=True)
+    if verbose_mode:
+        print command_line
+    call(command_line, shell=True)
 
 
 #at each check:
@@ -104,7 +107,6 @@ def loop():
                 command_sent = True
 		if dryrun_mode:
                      set_dryrun_time()
-
 	if target_time == None or target_time < event_time:
 	    print "target time not set or in the past"
             if event_time <= current_time:
@@ -113,9 +115,16 @@ def loop():
 	        target_time = event_time
                 print "new target time: " + wx.format_unix_timestamp(target_time)
                 command_sent = False
+        print
 
+    except ConnectionError as e:
+        if verbose_mode:
+            print("ignoring error: ", str(e))
+
+    except KeyError as e:
+        if verbose_mode:
+            print("ignoring error: ", str(e))
     finally:
-	print
         time.sleep(update_freq)
 
 if __name__ == '__main__':
