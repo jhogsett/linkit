@@ -363,7 +363,11 @@ def translate_macro_bytes(macro_bytes):
     return ":".join(macro)
 
 def lookup_command(byte):
-  return commands()[byte]
+  try:
+    command = commands()[byte]
+  except KeyError:
+    command = "???"
+  return command
 
 def commands():
     return {
