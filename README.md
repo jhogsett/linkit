@@ -334,6 +334,10 @@ Connect to the device
     * connect to it
     * load http://mylinkit.local in the browser to confirm connectivity
 
+Update the firmware
+
+    https://docs.labs.mediatek.com/resource/linkit-smart-7688/en/downloads
+
 SSH into the device
 
     ssh root@mylinkit.local
