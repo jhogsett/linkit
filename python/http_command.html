@@ -527,6 +527,10 @@
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.208:8080/command">Monument</a></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.119:8080/command">Decoration</a></div>    
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.130:8080/command">Projector2</a></div>    
+        </div>                                                                                                                                                                                                  
+        <div class="row row-margin">                                                                                                                                                                                       
           <div class="col-xs-12"><h4>Devices by 192.168.x.x</h4></div>    
         </div>                                                                                                                                                                                                  
         <div class="row row-margin">                                                                                                                                                                                       
@@ -563,7 +567,6 @@
         </div>                                                                                                                                                                                                  
       </div>
 
-      
       <div id="admin" class="tab-pane fade in">
         <h3>Admin</h3>
         <div class="row row-margin">
@@ -581,6 +584,10 @@
         <div class="row row-margin">
           <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?runonce=progmac.py+%2froot%2fdev%2flinkit%2fpython%2fglass-light#admin">Specs Lights</a></div>
           <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?runonce=led_specs.py#admin">Run Test Suite</a></div>
+        </div>
+        <div class="row row-margin">
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?sys=/etc/init.d/http_command+restart#apps">Http_Command Restart</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?sys=/etc/init.d/udp_command+restart#apps">Udp_Command Restart</a></div>
         </div>
       </div>
       
