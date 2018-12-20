@@ -100,7 +100,7 @@
         * echo "dbclient -y -i ~/.ssh/id_rsa \$\*" >> ~/.gitssh.sh
         * chmod +x ~/.gitssh.sh
         * echo "export GIT_SSH=\$HOME/.gitssh.sh" >> /etc/profile
-    
+
     Log out and back in
     
         * ^D
@@ -159,6 +159,17 @@
 
     _Note: I'm not sure how to make it use `less` like on a Mac_
 
+1. Apply other git fixes
+
+    git config --global core.excludesfile ~/.gitignore
+    git config --global push.default simple
+
+1. Set up global Git ignore
+
+    vim ~/.gitignore
+    logs/
+    *.log
+    
 1. Customize the 'ls' command
 
     Edit your profile and add an alias to customize the _ls_ command.
@@ -379,6 +390,7 @@ _NOTE: if this doesn't work, check your copying and pasting (check that \$\* is 
     ln -s $(which git) /usr/lib/git-core/git
     git config --global core.pager cat
     git config --global core.excludesfile ~/.gitignore
+    git config --global push.default simple
 
 Set up global Git ignore
 
