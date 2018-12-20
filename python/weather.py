@@ -58,9 +58,6 @@ def get_options():
     min_api_delay = args.min_api_delay
     suppress_spew = args.suppress_spew
 
-def setup_palette():
-    lc.command("era:wht:pur:blu:grn:org:red:6,-1:cpy:era")
-
 def initialize():
     global app_description, num_leds, default_lightness, minimum_lightness, double_size
     app_description = "LED Weather Forecaster v.0.0 12-21-2017"
@@ -69,15 +66,13 @@ def initialize():
         sys.exit("\nExiting...\n")
     wx.begin(api_key, zip_code, timezone_offset)
     lc.begin(verbose_mode)
-    lc.command("::pau")
-    lc.command("::pau:era:flu")
+    lc.command(":::")
+    lc.command("pau:era:flu")
     num_leds = lc.get_num_leds()
     if num_leds > 72:
         double_size = True
     default_lightness = lc.get_default_lightness()
     minimum_lightness = lc.get_minimum_lightness()
-    setup_palette()
-    lc.command("cnt")
 
 def report_error(message):
     print tc.red(message)
@@ -447,6 +442,19 @@ def send_forecast_cloudiness():
     render_forecast_cloudiness()
     send_week_slots(6)
 
+def reset_display():
+    lc.command("pau:-1:sch:0:drw")
+
+def setup_palette():
+    lc.command("era:wht:pur:blu:grn:org:red:6,-1:cpy:era")
+
+def continue_effects():
+    lc.command("1:cnt")
+
+def setup_display():
+    reset_display()
+    setup_palette()
+    continue_effects()
 
 ############################################################################
 
@@ -472,6 +480,8 @@ def loop():
     reset_forecast_data()
     analyze_forecast(forecast_data)    
 
+    setup_display()
+
     if current_display_type == 0:
         send_forecast_conditions()
     if current_display_type == 1:
@@ -484,6 +494,9 @@ def loop():
         send_forecast_cloudiness()
 
     current_display_type = (current_display_type + 1) % num_displays
+
+############################################################################
+############################################################################
 
 if __name__ == '__main__':
     setup()
