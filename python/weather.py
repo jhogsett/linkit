@@ -454,7 +454,6 @@ def continue_effects():
 def setup_display():
     reset_display()
     setup_palette()
-    continue_effects()
 
 ############################################################################
 
@@ -492,6 +491,8 @@ def loop():
         send_forecast_wind_speed()
     if current_display_type == 4:
         send_forecast_cloudiness()
+
+    continue_effects()
 
     current_display_type = (current_display_type + 1) % num_displays
 
