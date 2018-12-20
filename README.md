@@ -378,7 +378,14 @@ _NOTE: if this doesn't work, check your copying and pasting (check that \$\* is 
     git config --global user.name "{YOUR FULL NAME}"
     ln -s $(which git) /usr/lib/git-core/git
     git config --global core.pager cat
-    
+    git config --global core.excludesfile ~/.gitignore
+
+Set up global Git ignore
+
+    vim ~/.gitignore
+    logs/
+    *.log
+
 Set up global and user profiles
 
 _for all users:_
