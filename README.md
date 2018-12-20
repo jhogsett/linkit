@@ -161,14 +161,14 @@
 
 1. Apply other git fixes
 
-    * git config --global core.excludesfile ~/.gitignore
-    * git config --global push.default simple
+        * git config --global core.excludesfile ~/.gitignore
+        * git config --global push.default simple
 
 1. Set up global Git ignore
 
-    * vim ~/.gitignore
-    * logs/
-    * *.log
+        * vim ~/.gitignore
+        * logs/
+        * *.log
     
 1. Customize the 'ls' command
 
