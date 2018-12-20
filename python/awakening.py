@@ -40,8 +40,8 @@ def get_options():
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-n", "--num-steps", type=int, dest="num_steps", default=30, help="number of steps (30)")
     parser.add_argument("-t", "--step_time", type=int, dest="step_time", default=60, help="seconds for each step (60)")
-    parser.add_argument("-ks", "--kelvin-start", type=int, dest="kelvin_start", default=1000, help="starting color temperature K (500)")
-    parser.add_argument("-ke", "--kelvin-end", type=int, dest="kelvin_end", default=5600, help="ending color temperature K (5000)")
+    parser.add_argument("-ks", "--kelvin-start", type=int, dest="kelvin_start", default=1000, help="starting color temperature K (1000)")
+    parser.add_argument("-ke", "--kelvin-end", type=int, dest="kelvin_end", default=5000, help="ending color temperature K (5000)")
     parser.add_argument("-bs", "--brightness-start", type=int, dest="brightness_start", default=1, help="starting brightness %% (1)")
     parser.add_argument("-be", "--brightness-end", type=int, dest="brightness_end", default=30, help="ending brightness %% (30)")
     parser.add_argument("-r", "--dry-run", dest="dry_run", action="store_true", help="process the awakening values but don't send the results (False)")
@@ -112,15 +112,15 @@ def on_complete():
     broadcast(final_command)
 
 def send_to_led_device(command_str):
+    ui.report_verbose("sending to LED device: " + command_str)
     if send_to_led:
-        ui.report_verbose("sending to LED device: " + command_str)
         if not dry_run:
             lc.command(command_str)
 
 def broadcast(command_str):
+    command_line = "/root/dev/linkit/python/udp_send.py " + command_str + " &"
+    ui.report_verbose("broadcasting: " + command_line)
     if send_to_udp:
-        command_line = "/root/dev/linkit/python/udp_send.py " + command_str + " &"
-        ui.report_verbose("broadcasting: " + command_line)
         if not dry_run:
             call(command_line, shell=True)
 
