@@ -517,7 +517,7 @@ Add the weather start-up
 
 SCRIPT_NAME="LED Weather Forecaster"
 SCRIPT_PGM="weather.py"
-SCRIPT_PATH="/root/weather.py -k d59a165785d20ad2a84f6a4a85f9a4a2 -z 94605 -f 12 -s"
+SCRIPT_PATH="/root/weather.py -k d59a165785d20ad2a84f6a4a85f9a4a2 -z 94565 -f 12 -s"
 #LOG_FILE="/root/dev/linkit/python/weather.log"
 LOG_FILE="/dev/null"
 
@@ -535,10 +535,74 @@ stop() {
 }
 ```
 
-
     chmod +x weather
     ./weather enable
     ./weather start
+
+Add the sunrise start-up
+
+    cd /etc/init.d
+    vim sunrise
+
+```bash
+#!/bin/sh /etc/rc.common
+
+SCRIPT_NAME="LED Sunrise Handler"
+SCRIPT_PGM="sunrise.py"
+SCRIPT_PATH="/root/sunrise.py -k d59a165785d20ad2a84f6a4a85f9a4a2 -z 94565 -f 60 -t 8 -o -15 /root/dev/linkit/python/awakening.py -b"
+LOG_FILE="/root/dev/linkit/python/logs/sunrise.log"
+#LOG_FILE="/dev/null"
+
+START=98
+STOP=50
+
+start() {
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}
+
+stop() {
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PGM`
+}
+```
+
+    chmod +x sunrise
+    ./sunrise enable
+    ./sunrise start
+
+Add the sunset start-up
+
+    cd /etc/init.d
+    vim sunset
+
+```bash
+#!/bin/sh /etc/rc.common
+
+SCRIPT_NAME="LED Sunset Handler"
+SCRIPT_PGM="sunrise.py"
+SCRIPT_PATH="/root/sunrise.py -e sunset -k d59a165785d20ad2a84f6a4a85f9a4a2 -z 94565 -f 60 -t 8 -o -20 /root/dev/linkit/python/udp_send.py 10:run"
+LOG_FILE="/root/dev/linkit/python/logs/sunrise.log"
+#LOG_FILE="/dev/null"
+
+START=98
+STOP=50
+
+start() {
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}
+
+stop() {
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PGM`
+}
+
+```
+
+    chmod +x sunset
+    ./sunset enable
+    ./sunset start
 
 Install the Screen utility
 
