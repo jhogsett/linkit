@@ -110,12 +110,6 @@ def resolve_unresolved(name, value=None):
   ui.report_verbose("resolve_unresolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
   unresolved[name] = value
 
-def get_resolved():
-  return resolved
-
-def get_unresolved():
-  return unresolved
-
 # removed an resolved values that now have values
 # and are therefore resolved
 def remove_resolved():
@@ -127,10 +121,6 @@ def remove_resolved():
     else:
       ui.report_verbose("removing resolved unresolved name: {} value: {}".format(name, unresolved[name]))
   unresolved = new_dict
-
-# True if there are any unresolved values
-def unresolved_exist():
-  return len(unresolved) > 0
 
 ## global state management
 
@@ -184,20 +174,26 @@ def process_set_macro(line):
   # arg #2 is the forced macro number
   # no processing occurs if there are no arguments
   args = extract_args(line, "[", "]")
+
   if len(args) > 0:
     macro_name = args[0]
+
     if len(args) > 1:
       macro_number = args[1]
+
     if macro_number == None:
       # there was no forced macro number, so this macro
       # will need an assigned number
       # record it as unresolved variable
       set_unresolved(macro_name)
       ui.report_verbose("new unresolved macro: " + macro_name)
+
       # convert the line to a simple variable reference
       return "<" + macro_name + ">:set"
+
     else:
       # there is a forced macro number
+
       if macro_number == "!":
         # the magic macro number ! means assign the
         # final macro number, which commonly has fewer
@@ -205,9 +201,9 @@ def process_set_macro(line):
         # used for simple rendering macro
         ui.report_verbose("- forced final macro: " + macro_name)
         macro_number = ending_macro_number
+
       macro_number = int(macro_number)
       set_final_macro_number(macro_number, macro_number)
-
       ui.report_verbose("new forced macro: {} {}".format(macro_name, macro_number))
 
       set_resolved(macro_name, macro_number)
@@ -218,14 +214,15 @@ def process_set_macro(line):
       # needs to be reset. 
       # if a macro number is passed, assume it's an app
       # and do the resetting (unless it's the last)
-
-      #needed????????
-      if int(macro_number) != ending_macro_number:
-        reset_next_available_sequence_number()
+      #needed????????@@@
+#      if int(macro_number) != ending_macro_number:
+#        reset_next_available_sequence_number()
 
       # replace with a proxy macro number marker
       # marked by being < 0
-      return "'" + str(int(macro_number) * -1) + "':set"
+      proxy_macro_number = str(macro_number * -1)
+      ui.report_verbose("new proxy macro number marker: " + proxy_macro_number)
+      return "'" + proxy_macro_number + "':set"
   return line
 
 # process macro call if in line
