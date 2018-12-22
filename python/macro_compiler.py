@@ -47,42 +47,22 @@ def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, n
   ui.begin(verbose_mode)
   ui.report_verbose("Beginning compilation engine")
 
+# handles key=value presents passed on command line
+# pre-assigns those values to variables
 def resolve_presets(presets):
   for key in presets.keys():
     ui.report_verbose("setting preset resolved value " + tc.yellow(key + "=" + str(presets[key])))
     set_resolved(key, presets[key])
 
+## general table management
+
 def set_macro(name, value):
   global macros
   macros[name] = value
 
-def set_resolved(name, value):
-  global resolved
-  resolved[name] = value
-
-def set_unresolved(name, value=None):
-  global unresolved
-  unresolved[name] = value
-
-def resolve_unresolved(name, value=None):
-  set_unresolved(name, value)
-
-def get_unresolved():
-  return unresolved
-
-def get_resolved():
-  return resolved
-
-def remove_resolved():
-  global unresolved
-  new_dict = {}
-  for name in unresolved:
-    if unresolved[name] == None:
-      new_dict[name] = None
-  unresolved = new_dict
-
-def unresolved_exist():
-  return len(unresolved) > 0
+def set_final_macro_number(proxy_macro_number, final_macro_number):
+  ui.report_verbose("set_final_macro_number proxy_macro_number: {} ({}) final_macro_number: {} ({})".format(proxy_macro_number, type(proxy_macro_number), final_macro_number, type(final_macro_number)))
+  final_macro_numbers[proxy_macro_number] = final_macro_number
 
 def get_final_macro_numbers():
   return final_macro_numbers
@@ -99,6 +79,43 @@ def get_macros():
 def get_includes():
   return includes
 
+## management of resolved and unresolved values
+
+def set_resolved(name, value):
+  global resolved
+  resolved[name] = value
+
+def set_unresolved(name, value=None):
+  global unresolved
+  unresolved[name] = value
+
+# sets a value for an unresolved value, resolving it
+# proxy for set_unresolved()
+def resolve_unresolved(name, value=None):
+  set_unresolved(name, value)
+
+def get_resolved():
+  return resolved
+
+def get_unresolved():
+  return unresolved
+
+# removed an resolved values that now have values
+# and are therefore resolved
+def remove_resolved():
+  global unresolved
+  new_dict = {}
+  for name in unresolved:
+    if unresolved[name] == None:
+      new_dict[name] = None
+  unresolved = new_dict
+
+# True if there are any unresolved values
+def unresolved_exist():
+  return len(unresolved) > 0
+
+## global state management
+
 def reset():
   global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, final_macro_numbers, includes
   macros = {}
@@ -113,11 +130,13 @@ def reset():
   next_available_sequencer_number = 0
   resolve_presets(presets)
 
+
 def reset_next_available_sequence_number():
   next_available_sequencer_number = 0
 
-# ----------------------------------------------------
+## ----------------------------------------------------
 
+# strip comment from line
 def process_comment(line):
   line = line.strip()
   if len(line) > 0 and line[0] == "#":
@@ -126,39 +145,57 @@ def process_comment(line):
     return line.split("#")[0]
   return line
 
+# remove excess whitespace on blank lines
 def process_blank_line(line):
   line = line.strip()
   if len(line) == 0:
     return ''
   return line
 
+# process macro setting if present in line
 def process_set_macro(line):
 
+  # can't process the macro setting if there are unresolved values
   if line_has_unresolved_variables(line):
     return line
 
   macro_name = None
   macro_number = None
   line = line.strip()
+
+  # get arguments inside brackets
+  # arg #1 is name of macro
+  # arg #2 is the forced macro number
+  # no processing occurs if there are no arguments
   args = extract_args(line, "[", "]")
   if len(args) > 0:
     macro_name = args[0]
     if len(args) > 1:
       macro_number = args[1]
     if macro_number == None:
+      # there was no forced macro number, so this macro
+      # will need an assigned number
+      # record it as unresolved variable
       set_unresolved(macro_name)
       ui.report_verbose("new unresolved macro: " + macro_name)
+      # convert the line to a simple variable reference
       return "<" + macro_name + ">:set"
     else:
+      # there is a forced macro number
       if macro_number == "!":
+        # the magic macro number ! means assign the
+        # final macro number, which commonly has fewer
+        # available bytes
+        # used for simple rendering macro
         ui.report_verbose("- forced final macro: " + macro_name)
         macro_number = ending_macro_number
-#@@@      proxy_macro_number = "'" + ("0" + str(macro_number))[-2:] + "'"
       proxy_macro_number = str(macro_number)
 
-      final_macro_numbers[macro_number] = int(macro_number)
+      #final_macro_numbers[macro_number] = int(macro_number)
+      set_final_macro_number(macro_number, int(macro_number))
 
       ui.report_verbose("new forced macro: " + macro_name)
+
       set_resolved(macro_name, proxy_macro_number)
       set_macro(macro_name, proxy_macro_number)
 
@@ -407,7 +444,7 @@ def proxy_macro_numbers():
   remove_resolved()
 
 def assign_final_macro_number(line):
-  global final_macro_numbers, saved_bad_script
+  global saved_bad_script
   start, end = locate_delimiters(line, "'", "'")
   # only process lines starting with proxy macro numbers
   if start != 0:
@@ -445,7 +482,7 @@ def assign_final_macro_number(line):
     proxy_macro_number *= -1
     for x in range(1, macro_slots_required):
       try_macro_number = proxy_macro_number + x
-      if try_macro_number in final_macro_numbers.values():
+      if try_macro_number in get_final_macro_numbers().values():
         saved_bad_script = [line]
         raise ValueError("No block of macros for fixed macro during final number assignment")
     final_macro_number = proxy_macro_number
@@ -457,7 +494,7 @@ def assign_final_macro_number(line):
       #ui.report_verbose("trying macro number: " + str(potential_macro_number))
       for x in range(0, macro_slots_required):
         try_macro_number = potential_macro_number + x
-        if try_macro_number in final_macro_numbers.values():
+        if try_macro_number in get_final_macro_numbers().values():
           #ui.report_verbose("macro #%d already in use" % try_macro_number)
           retry = True
           break
@@ -475,7 +512,8 @@ def assign_final_macro_number(line):
   if verbose_mode:
     ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
   report_progress()
-  final_macro_numbers[proxy_macro_number] = final_macro_number
+  #final_macro_numbers[proxy_macro_number] = final_macro_number
+  set_final_macro_number(proxy_macro_number, final_macro_number)
 
   # FIX
   if final_macro_number == ending_macro_number and bytes_used > last_macro_bytes:
@@ -488,11 +526,12 @@ def assign_final_macro_number(line):
     consumed_macro_number += 1
     remaining_bytes -= (bytes_per_macro-1)
     # create a unique key to hold the additional consumed macro number value
-    if consumed_macro_number in final_macro_numbers.values():
+    if consumed_macro_number in get_final_macro_numbers().values():
       saved_bad_script = [line]
       raise ValueError("Macro %d is needed as a carry-over macro but is already assigned" % consumed_macro_number)
     ui.report_verbose("-allocating macro #" + str(consumed_macro_number) + " to macro #" + str(proxy_macro_number)) 
-    final_macro_numbers[str(proxy_macro_number) + "-" + str(consumed_macro_number)] = consumed_macro_number
+    #final_macro_numbers[str(proxy_macro_number) + "-" + str(consumed_macro_number)] = consumed_macro_number
+    set_final_macro_number(str(proxy_macro_number) + "-" + str(consumed_macro_number), consumed_macro_number)
   # return the line with the proxy macro number replaced so it's not processed a second time
   return replace_args(line, "'", "'", str(final_macro_number)) 
 
@@ -502,8 +541,8 @@ def process_finalized_macro_numbers_pass(script_lines):
     args = extract_args(line, "'", "'")
     if len(args) == 1:
       proxy_macro_number = int(args[0])
-      if proxy_macro_number in final_macro_numbers:
-        final_macro_number = final_macro_numbers[proxy_macro_number]
+      if proxy_macro_number in get_final_macro_numbers():
+        final_macro_number = get_final_macro_numbers()[proxy_macro_number]
         new_line = replace_args(line, "'", "'", final_macro_number)
         new_lines.append(new_line)
       else:
