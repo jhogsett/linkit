@@ -61,8 +61,23 @@ def set_macro(name, value):
   macros[name] = value
 
 def set_final_macro_number(proxy_macro_number, final_macro_number):
-  ui.report_verbose("set_final_macro_number proxy_macro_number: {} ({}) final_macro_number: {} ({})".format(proxy_macro_number, type(proxy_macro_number), final_macro_number, type(final_macro_number)))
+  if not type(proxy_macro_number) is int:
+    raise TypeError("proxy_macro_number must be a 'int'")
+  if not type(final_macro_number) is int:
+    raise TypeError("final_macro_number must be a 'int'")
+  ui.report_verbose("set_final_macro_number proxy_macro_number: {} final_macro_number: {}".format(proxy_macro_number, final_macro_number))
+
   final_macro_numbers[proxy_macro_number] = final_macro_number
+
+def set_overflow_macro_number(proxy_macro_number, consumed_macro_number):
+  if not type(proxy_macro_number) is int:
+    raise TypeError("proxy_macro_number must be a 'int'")
+  if not type(consumed_macro_number) is int:
+    raise TypeError("consumed_macro_number must be a 'int'")
+  ui.report_verbose("set_overflow_macro_number proxy_macro_number: {} consumed_macro_number: {}".format(proxy_macro_number, consumed_macro_number))
+
+  key = str(proxy_macro_number) + "-" + str(consumed_macro_number)
+  final_macro_numbers[key] = consumed_macro_number
 
 def get_final_macro_numbers():
   return final_macro_numbers
@@ -82,17 +97,18 @@ def get_includes():
 ## management of resolved and unresolved values
 
 def set_resolved(name, value):
-  global resolved
+  ui.report_verbose("set_resolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
   resolved[name] = value
 
 def set_unresolved(name, value=None):
-  global unresolved
+  ui.report_verbose("set_unresolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
   unresolved[name] = value
 
 # sets a value for an unresolved value, resolving it
 # proxy for set_unresolved()
 def resolve_unresolved(name, value=None):
-  set_unresolved(name, value)
+  ui.report_verbose("resolve_unresolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
+  unresolved[name] = value
 
 def get_resolved():
   return resolved
@@ -108,6 +124,8 @@ def remove_resolved():
   for name in unresolved:
     if unresolved[name] == None:
       new_dict[name] = None
+    else:
+      ui.report_verbose("removing resolved unresolved name: {} value: {}".format(name, unresolved[name]))
   unresolved = new_dict
 
 # True if there are any unresolved values
@@ -129,7 +147,6 @@ def reset():
   next_available_macro_number = starting_macro_number
   next_available_sequencer_number = 0
   resolve_presets(presets)
-
 
 def reset_next_available_sequence_number():
   next_available_sequencer_number = 0
@@ -154,7 +171,6 @@ def process_blank_line(line):
 
 # process macro setting if present in line
 def process_set_macro(line):
-
   # can't process the macro setting if there are unresolved values
   if line_has_unresolved_variables(line):
     return line
@@ -189,15 +205,13 @@ def process_set_macro(line):
         # used for simple rendering macro
         ui.report_verbose("- forced final macro: " + macro_name)
         macro_number = ending_macro_number
-      proxy_macro_number = str(macro_number)
+      macro_number = int(macro_number)
+      set_final_macro_number(macro_number, macro_number)
 
-      #final_macro_numbers[macro_number] = int(macro_number)
-      set_final_macro_number(macro_number, int(macro_number))
+      ui.report_verbose("new forced macro: {} {}".format(macro_name, macro_number))
 
-      ui.report_verbose("new forced macro: " + macro_name)
-
-      set_resolved(macro_name, proxy_macro_number)
-      set_macro(macro_name, proxy_macro_number)
+      set_resolved(macro_name, macro_number)
+      set_macro(macro_name, macro_number)
 
       # setting a specific macro number is done for apps
       # to combine apps, the next available sequence number
@@ -206,13 +220,15 @@ def process_set_macro(line):
       # and do the resetting (unless it's the last)
 
       #needed????????
-      if macro_number != ending_macro_number:
+      if int(macro_number) != ending_macro_number:
         reset_next_available_sequence_number()
 
-      #return str(proxy_macro_number) + ":set"
+      # replace with a proxy macro number marker
+      # marked by being < 0
       return "'" + str(int(macro_number) * -1) + "':set"
   return line
 
+# process macro call if in line
 def process_macro_call(line):
   macro_name = None
   line = line.strip()
@@ -512,7 +528,6 @@ def assign_final_macro_number(line):
   if verbose_mode:
     ui.report_verbose("-assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
   report_progress()
-  #final_macro_numbers[proxy_macro_number] = final_macro_number
   set_final_macro_number(proxy_macro_number, final_macro_number)
 
   # FIX
@@ -530,8 +545,7 @@ def assign_final_macro_number(line):
       saved_bad_script = [line]
       raise ValueError("Macro %d is needed as a carry-over macro but is already assigned" % consumed_macro_number)
     ui.report_verbose("-allocating macro #" + str(consumed_macro_number) + " to macro #" + str(proxy_macro_number)) 
-    #final_macro_numbers[str(proxy_macro_number) + "-" + str(consumed_macro_number)] = consumed_macro_number
-    set_final_macro_number(str(proxy_macro_number) + "-" + str(consumed_macro_number), consumed_macro_number)
+    set_overflow_macro_number(proxy_macro_number, consumed_macro_number)
   # return the line with the proxy macro number replaced so it's not processed a second time
   return replace_args(line, "'", "'", str(final_macro_number)) 
 
