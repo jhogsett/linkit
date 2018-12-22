@@ -85,6 +85,12 @@ def get_final_macro_numbers():
 def get_saved_bad_script():
   return saved_bad_script
 
+def get_resolved():
+  return resolved
+
+def get_unresolved():
+  return unresolved()
+
 def get_presets():
   return presets
 
@@ -214,7 +220,7 @@ def process_set_macro(line):
       # needs to be reset. 
       # if a macro number is passed, assume it's an app
       # and do the resetting (unless it's the last)
-      #needed????????@@@
+      #needed????????
 #      if int(macro_number) != ending_macro_number:
 #        reset_next_available_sequence_number()
 
@@ -230,22 +236,30 @@ def process_macro_call(line):
   macro_name = None
   line = line.strip()
   args = extract_args(line, "(", ")")
+
   if len(args) > 0:
     macro_name = args[0]
+
+    # can only process if macro name is recognized
     if macro_name in resolved:
+
+      # the second argument is the schedule
       if len(args) > 1:
+        # the macro will be scheduled
         macro_schedule = args[1]
+
+        # can only schedule macro if the schedule is resolved
         if not line_has_unresolved(macro_schedule):
+          ui.report_verbose("new macro schedule {} {}".format(macro_name, macro_schedule))
           return str(macro_schedule) + "," + str(resolved[macro_name]) + ":sch"
-
-#also try without conditional
-
       else:
+        # the macro will be run
+        ui.report_verbose("new macro call " + macro_name)
         return str(resolved[macro_name]) + ":run"
   return line
 
-# return true if value is immutable and is a preset being overridden
-# raise ValueError if value is immutable and is not a preset
+# return true if resolved value is a mutable preset and can be changed
+# raise ValueError if resolved value is immutable value being changed
 def immutable_resolved_value(variable_name, variable_value):
   if variable_name in resolved:
     if resolved[variable_name] != variable_value:
@@ -257,26 +271,53 @@ def immutable_resolved_value(variable_name, variable_value):
 
 def process_set_variable(line):
   line = line.strip()
-  if len(line) > 0 and not line_has_unresolved(line):
+  if len(line) < 1:
+    return ''
+
+  # can only process if there are no unresolved values
+  # ? does this leave out variable unresolves?
+  if not line_has_unresolved(line):
+
+    # see if line has a variable setting
     args = get_key_args(line, "$")
     if len(args) >= 2:
+
       variable_name = args[0]
+
       # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
       variable_value = line[len(variable_name) + 1:].strip()
+
+      # can only set if not already set, or a preset that allows overwriting
       if not immutable_resolved_value(variable_name, variable_value):
+        ui.report_verbose("process_set_variable settings {}={}".format(variable_name, variable_value))
         set_resolved(variable_name, variable_value)
+
+      # return a blank line now that this one is consumed
       return ''
+
+  # return the unprocessed line
+  ui.report_verbose("process_set_variable returning unprocessed line '{}'".format(line))
   return line
 
 def process_get_variable(line):
+  line = line.strip()
   if len(line) < 1:
-    return line
+    return ''
+
+  # see if line has a variable reference
   args = extract_args(line, "<", ">")
   if len(args) > 0:
+
     variable_name = args[0]
+
     if variable_name in resolved:
+      # replace the variable reference with the resolved value
       resolved_value = resolved[variable_name]
+      ui.report_verbose("process_get_variable replacing variable reference '{}' with '{}'".format(variable_name, resolved_value))
       return replace_args(line, "<", ">", resolved_value)
+
+  # return the unprocessed line
+  ui.report_verbose("process_get_variable returning unprocessed line '{}'".format(line))
   return line
 
 def process_allocate_sequencer(line):
