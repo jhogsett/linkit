@@ -28,102 +28,39 @@ saved_bad_script = []
 includes = {}
 last_macro_bytes = None
 
-
 ########################################################################
-## general table management
-########################################################################
-
-def set_macro(name, value):
-  global macros
-  macros[name] = value
-
-def set_final_macro_number(proxy_macro_number, final_macro_number):
-  if not type(proxy_macro_number) is int:
-    raise TypeError("proxy_macro_number must be a 'int'")
-  if not type(final_macro_number) is int:
-    raise TypeError("final_macro_number must be a 'int'")
-  #ui.report_verbose("set_final_macro_number proxy_macro_number: {} final_macro_number: {}".format(proxy_macro_number, final_macro_number))
-  final_macro_numbers[proxy_macro_number] = final_macro_number
-
-def set_overflow_macro_number(proxy_macro_number, consumed_macro_number):
-  if not type(proxy_macro_number) is int:
-    raise TypeError("proxy_macro_number must be a 'int'")
-  if not type(consumed_macro_number) is int:
-    raise TypeError("consumed_macro_number must be a 'int'")
-  #ui.report_verbose("set_overflow_macro_number proxy_macro_number: {} consumed_macro_number: {}".format(proxy_macro_number, consumed_macro_number))
-  key = str(proxy_macro_number) + "-" + str(consumed_macro_number)
-  final_macro_numbers[key] = consumed_macro_number
-
-def get_final_macro_numbers():
-  return final_macro_numbers
-
-def get_saved_bad_script():
-  return saved_bad_script
-
-def get_resolved():
-  return resolved
-
-def get_unresolved():
-  return unresolved
-
-def get_presets():
-  return presets
-
-def get_macros():
-  return macros
-
-def get_includes():
-  return includes
-
-
-########################################################################
-## management of resolved and unresolved values
+## API methods
 ########################################################################
 
-def set_resolved(name, value):
-  #ui.report_verbose("set_resolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
-  resolved[name] = value
+def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_):
+  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes
+  led_command = led_command_
+  verbose_mode = verbose_mode_
+  starting_macro_number = starting_macro
+  ending_macro_number = ending_macro
+  number_of_sequencers = number_of_sequencers_
+  bytes_per_macro = bytes_per_macro_
+  max_string_length = max_string_length_
+  number_of_macros = (ending_macro_number - starting_macro_number) + 1
+  next_available_macro_number = starting_macro_number
+  last_macro_bytes = last_macro_bytes_
+  presets = presets_
+  resolve_presets(presets)
+  ui.begin(verbose_mode)
+  ui.report_verbose("Beginning compilation engine")
 
-def set_unresolved(name, value=None):
-  #ui.report_verbose("set_unresolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
-  unresolved[name] = value
+def compile_file(filename):
+  script = load_file(filename)
+  return compile_script(script)
 
-# sets a value for an unresolved value, resolving it
-# proxy for set_unresolved()
-def resolve_unresolved(name, value=None):
-  #ui.report_verbose("resolve_unresolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
-  unresolved[name] = value
+def compilation_valid(script):
+  for line in script:
+    if line_has_unresolved(line):
+      return False
+  return True
 
-# removed an resolved values that now have values
-# and are therefore resolved
-def remove_resolved():
-  global unresolved
-  new_dict = {}
-  for name in unresolved:
-    if unresolved[name] == None:
-      new_dict[name] = None
-    else:
-      #ui.report_verbose("removing resolved unresolved name: {} value: {}".format(name, unresolved[name]))
-      pass
-  unresolved = new_dict
-
-# return true if resolved value is a mutable preset and can be changed
-# raise ValueError if resolved value is immutable value being changed
-def immutable_resolved_value(variable_name, variable_value):
-  if variable_name in resolved:
-    if resolved[variable_name] != variable_value:
-      if variable_name in presets:
-        return True
-      else:
-        raise ValueError("The immutable resolved value '%s' is being changed to '%s'" % (variable_name, str(variable_value)))
-  return False
-
-# handles key=value presents passed on command line
-# pre-assigns those values to variables
-def resolve_presets(presets):
-  for key in presets.keys():
-    #ui.report_verbose("setting preset resolved value " + tc.yellow(key + "=" + str(presets[key])))
-    set_resolved(key, presets[key])
+def remaining_sequencers():
+  return number_of_sequencers - next_available_sequencer_number
 
 
 ########################################################################
@@ -149,398 +86,149 @@ def reset_next_available_sequence_number():
 
 
 ########################################################################
-## line processing routines
+## compilation main entry point
 ########################################################################
 
-# strip comment from line
-def process_comment(line):
-  line = line.strip()
-  if len(line) == 0:
-    return ''
-
-  if line[0] == "#":
-    return ''
-
-  if "#" in line:
-    return line.split("#")[0]
-
-  return line
-
-## ----------------------------------------------------
-
-# remove excess whitespace on blank lines
-def process_blank_line(line):
-  line = line.strip()
-  if len(line) == 0:
-    return ''
-
-  return line
-
-## ----------------------------------------------------
-
-# process macro setting if present in line
-def process_set_macro(line):
-  line = line.strip()
-  if len(line) == 0:
-    return ''
-
-  # can't process the macro setting if there are unresolved values
-  if line_has_unresolved_variables(line):
-    return line
-
-  macro_name = None
-  macro_number = None
-
-  # get arguments inside brackets
-  # arg #1 is name of macro
-  # arg #2 is the forced macro number
-  # no processing occurs if there are no arguments
-  args = extract_args(line, "[", "]")
-
-  if len(args) > 0:
-    macro_name = args[0]
-
-    if len(args) > 1:
-      macro_number = args[1]
-
-    if macro_number == None:
-      # there was no forced macro number, so this macro
-      # will need an assigned number
-      # record it as unresolved variable
-      set_unresolved(macro_name)
-      ui.report_verbose("process_set_macro new unresolved macro: " + macro_name)
-
-      # convert the line to a simple variable reference
-      return "<" + macro_name + ">:set"
-
-    else:
-      # there is a forced macro number
-
-      if macro_number == "!":
-        # the magic macro number ! means assign the
-        # final macro number, which commonly has fewer
-        # available bytes
-        # used for simple rendering macro
-        #ui.report_verbose("- forced final macro: " + macro_name)
-        macro_number = ending_macro_number
-
-      macro_number = int(macro_number)
-      set_final_macro_number(macro_number, macro_number)
-      ui.report_verbose("process_set_macro new forced macro: {} {}".format(macro_name, macro_number))
-
-      set_resolved(macro_name, macro_number)
-      set_macro(macro_name, macro_number)
-
-      # setting a specific macro number is done for apps
-      # to combine apps, the next available sequence number
-      # needs to be reset. 
-      # if a macro number is passed, assume it's an app
-      # and do the resetting (unless it's the last)
-      #needed????????
-#      if int(macro_number) != ending_macro_number:
-#        reset_next_available_sequence_number()
-
-      # replace with a proxy macro number marker
-      # marked by being < 0
-      proxy_macro_number = str(macro_number * -1)
-      ui.report_verbose("process_set_macron new proxy macro number marker: " + proxy_macro_number)
-      return "'" + proxy_macro_number + "':set"
-
-  # return the unprocessed line
-  # ui.report_verbose("process_set_macro returning unprocessed line '{}'".format(line))
-  return line
-
-## ----------------------------------------------------
-
-# process macro call if in line
-def process_macro_call(line):
-  macro_name = None
-  line = line.strip()
-  args = extract_args(line, "(", ")")
-
-  if len(args) > 0:
-    macro_name = args[0]
-
-    # can only process if macro name is recognized
-    if macro_name in resolved:
-
-      # the second argument is the schedule
-      if len(args) > 1:
-        # the macro will be scheduled
-        macro_schedule = args[1]
-
-        # can only schedule macro if the schedule is resolved
-        if not line_has_unresolved(macro_schedule):
-          #ui.report_verbose("new macro schedule {} {}".format(macro_name, macro_schedule))
-          return str(macro_schedule) + "," + str(resolved[macro_name]) + ":sch"
-      else:
-        # the macro will be run
-        #ui.report_verbose("new macro call " + macro_name)
-        return str(resolved[macro_name]) + ":run"
-
-  # return the unprocessed line
-  # ui.report_verbose("process_macro_call returning unprocessed line '{}'".format(line))
-  return line
-
-## ----------------------------------------------------
-
-def process_set_variable(line):
-  line = line.strip()
-  if len(line) < 1:
-    return ''
-
-  # can only process if there are no unresolved values
-  # ? does this leave out variable unresolves?
-  if not line_has_unresolved(line):
-
-    # see if line has a variable setting
-    args = get_key_args(line, "$")
-    if len(args) >= 2:
-
-      variable_name = args[0]
-
-      # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
-      variable_value = line[len(variable_name) + 1:].strip()
-
-      # can only set if not already set, or a preset that allows overwriting
-      if not immutable_resolved_value(variable_name, variable_value):
-        #ui.report_verbose("process_set_variable settings {}={}".format(variable_name, variable_value))
-        set_resolved(variable_name, variable_value)
-
-      # return a blank line now that this one is consumed
-      return ''
-
-  # return the unprocessed line
-  # ui.report_verbose("process_set_variable returning unprocessed line '{}'".format(line))
-  return line
-
-## ----------------------------------------------------
-
-def process_get_variable(line):
-  line = line.strip()
-  if len(line) < 1:
-    return ''
-
-  # see if line has a variable reference
-  args = extract_args(line, "<", ">")
-  if len(args) > 0:
-    variable_name = args[0]
-
-    if variable_name in resolved:
-      # replace the variable reference with the resolved value
-      resolved_value = resolved[variable_name]
-      #ui.report_verbose("process_get_variable replacing variable reference '{}' with '{}'".format(variable_name, resolved_value))
-      return replace_args(line, "<", ">", resolved_value)
-
-  # return the unprocessed line
-  # ui.report_verbose("process_get_variable returning unprocessed line '{}'".format(line))
-  return line
-
-## ----------------------------------------------------
-
-def process_allocate_sequencer(line):
-  global next_available_sequencer_number
-
-  line = line.strip()
-  if len(line) < 1:
-    return ''
-
-  # see if line has a sequencer allocation
-  args = extract_args(line, "{", "}")
-  if len(args) > 0:
-
-    sequencer_name = args[0]
-    resolved_value = None
-
-    if sequencer_name in resolved:
-      # this sequencer has already been allocated
-      # reuse this sequencer
-      resolved_value = resolved[sequencer_name]
-
-    else:
-      # allocate a new sequencer
-      if next_available_sequencer_number > (number_of_sequencers - 1):
-        raise ValueError("No available sequence numbers available")
-
-      resolved_value = next_available_sequencer_number
-      ui.report_verbose("process_allocate_sequencer allocating sequencer: " + str(resolved_value))
-
-      # save new allocated sequencer as resolved value
-      set_resolved(sequencer_name, resolved_value)
-      next_available_sequencer_number += 1
-
-    #ui.report_verbose("process_allocate_sequencer replacing sequencer allocation {} with {}".format(sequencer_name, resolved_value))
-    return replace_args(line, "{", "}", str(resolved_value))
-
-  # return the unprocessed line
-  # ui.report_verbose("process_allocate_sequencer returning unprocessed line '{}'".format(line))
-  return line
-
-## ----------------------------------------------------
-
-def process_evaluate_python(line):
-  line = line.strip()
-  if len(line) < 1:
-    return ''
-
-  # see if line has a python expression
-  expression = extract_contents(line, "`", "`")
-  if len(expression) > 0:
-
-    # can only process python expression if there are no unresolves values
-    if not line_has_unresolved_variables(expression):
-      #ui.report_verbose_alt("-evaluating Python: " + expression)
-      result = eval(expression)
-#todo-catch error
-      #ui.report_verbose_alt("=evaluated result: " + str(result))
-      ui.report_verbose("process_evaluate_python replacing python expression '{}' with '{}'".format(expression, result))
-      return replace_args(line, "`", "`", str(result))      
-
-  # return the unprocessed line
-  # ui.report_verbose("process_evaluate_python returning unprocessed line '{}'".format(line))
-  return line
-
-## ----------------------------------------------------
-
-def process_place_template(line):
-  line = line.strip()
-  if len(line) < 1:
-    return ''
-
-  # see if line has a template expqnsion
-  args = extract_args(line, "((", "))")
-  if len(args) > 0:
-
-    template_name = args[0]
-
-    # can only expand if there are no unresolved values
-    if template_name in resolved:
-      template_script = resolved[template_name]
-      #ui.report_verbose("-placing template: " + template_name)
-      ui.report_verbose("process_place_template expanding template " + template_name)
-      return replace_args(line, "((", "))", template_script)
-
-  # return the unprocessed line
-  # ui.report_verbose("process_place_template returning unprocessed line '{}'".format(line))
-  return line  
-
-## ----------------------------------------------------
-
-def process_line(line):
-  #ui.report_verbose("--------------------- process_line() ---------------------")
-  line = process_blank_line(line)
-  line = process_comment(line)
-  line = process_evaluate_python(line)
-  line = process_set_variable(line)
-  line = process_set_macro(line)
-  line = process_macro_call(line)
-  line = process_get_variable(line)
-  line = process_allocate_sequencer(line)
-  line = process_place_template(line)
-  return line
+def compile_script(script):
+  global saved_bad_script
+  ui.report_verbose("--------------- compilation stating ---------------")
+
+  new_script = resolve_script(script)
+  new_lines = consolidate_macros(new_script)
+  sort_script(new_lines)
+
+  ui.report_verbose_alt("consolidated script with proxied macro numbers")
+  if verbose_mode:
+    print_script(new_lines)
+
+  if not compilation_valid(new_lines):
+    saved_bad_script = new_lines
+    raise ValueError("The script did not compile successfully due to unresolved values.")
+
+  ui.report_verbose("--------------- post compilation processing ---------------")
+  new_lines = post_processing(new_lines)
+  ui.report_verbose_alt("script after final macro number assignment")
+  if verbose_mode:
+    print_script(new_lines)
+
+  ui.report_verbose("--------------- post compilation clean up ---------------")
+  new_lines = post_clean_up(new_lines)
+  ui.report_verbose_alt("script after cleanup:")
+  if verbose_mode:
+    print_script(new_lines)
+
+  ui.report_verbose("--------------- comnpilation complete ---------------")
+  return new_lines
 
 
 ########################################################################
-## line processing helpers
+## file inclusion routines
 ########################################################################
 
-def line_has_unresolved_variables(line):
-  return len(line) > 0 and "<" in line and ">" in line
-
-def line_has_python_expression(line):
-  return len(line) > 0 and "`" in line
-
-def line_has_macro_marker(line):
-  return len(line) > 0 and ("(" in line or ")" in line or "[" in line or "]" in line)
-
-def line_has_template_marker(line):
-  return len(line) > 0 and ("[[" in line or "]]" in line or "((" in line or "))" in line)
-
-def line_has_sequence_marker(line):
-  return len(line) > 0 and ("{" in line or "}" in line)
-
-def line_has_unresolved(line):
-  return line_has_unresolved_variables(line) or line_has_python_expression(line) or line_has_template_marker(line) or line_has_macro_marker(line) or line_has_sequence_marker(line)
-
-
-########################################################################
-## line maniupation routines
-########################################################################
-
-# locate the start and end positions of a delimited portion of a string
-# returns start, end
-def locate_delimiters(line, start_delimiter, end_delimiter):
-  start = -1
-  end = -1
-  if start_delimiter in line:
-    start = line.find(start_delimiter)
-    if end_delimiter in line[start + len(start_delimiter):]:
-      end = line.find(end_delimiter, start + 1)
-  return start, end
+def load_file(filename, default_ext=".mac"):
+  file_lines = []
+  if not filename.endswith(default_ext):
+    filename = filename + default_ext
+  file_path = os.path.dirname(filename)
+  file = open(filename, "r")
+  for line in file:
+    line = line.strip()
+    if len(line) == 0:
+      continue
+    if line.startswith("%include"):
+      args = line.split()
+      include_filename = args[1]
+      if len(include_filename) > 0 and include_filename not in includes.keys():
+        full_filename = os.path.join(file_path, include_filename)
+        include_lines = load_file(full_filename)
+        include_lines = rewrite_included_script_lines(include_lines)
+        file_lines = file_lines + include_lines
+        includes[include_filename] = full_filename
+        continue
+    file_lines.append(line)
+  return file_lines
 
 ## ----------------------------------------------------
 
-def cut_contents(line, start_delimiter, end_delimiter, start, end):
-  return line[start + len(start_delimiter):end].strip()
-
-## ----------------------------------------------------
-
-# pass in line and two delimiters, get back contents within
-# delimiters specified as one or two characters
-def extract_contents(line, start_delimiter, end_delimiter):
-  line = line.strip()
-  if len(line) == 0:
-    return ''
-  start, end = locate_delimiters(line, start_delimiter, end_delimiter)
+def remove_fixed_macro_numbers(line):
+  start, end = locate_delimiters(line, "[", "]")
   if start != -1 and end != -1:
-    return cut_contents(line, start_delimiter, end_delimiter, start, end)
-  return ''
-
-## ----------------------------------------------------
-  
-# pass in line and two delimiters, get back list of arguments within
-# delimiters specified as one or two characters
-def extract_args(line, start_delimiter, end_delimiter):
-  return extract_contents(line, start_delimiter, end_delimiter).split()
-
-## ----------------------------------------------------
-
-def get_key_contents(line, key):
-  line = line.strip()
-  if len(line) > 0 and line.startswith(key):
-    return line[len(key):].strip()
-  return ''
-
-## ----------------------------------------------------
-
-def get_key_args(line, key):
-  return get_key_contents(line, key).split()
-
-## ----------------------------------------------------
-
-def replace_args(line, start_delimiter, end_delimiter, replacement):
-  start, end = locate_delimiters(line, start_delimiter, end_delimiter)
-  if start != -1 and end != -1:
-    return line[0:start] + str(replacement) + line[end + 1:]
+    args = extract_args(line, "[", "]")
+    if len(args) == 2 and is_number(args[1]):
+      # leave only the name
+      return "[" + args[0] + "]"
   return line
 
+## ----------------------------------------------------
 
-########################################################################
-## script processing routines
-########################################################################
+def rewrite_included_script_line(script_line):
+  new_line = remove_fixed_macro_numbers(script_line)
+  return new_line
 
-def resolution_pass(script_lines):
-  global passes
+## ----------------------------------------------------
+
+def rewrite_included_script_lines(script_lines):
   new_lines = []
   for line in script_lines:
-    new_line = process_line(line)
-    if new_line != None and new_line != '': #@@@@@:
-      new_lines.append(new_line)
-  passes += 1
+    line = line.strip()
+    new_lines.append(rewrite_included_script_line(line))
+  return new_lines
+
+
+########################################################################
+# Main compilation engine
+########################################################################
+
+def resolve_script(script_lines):
   if verbose_mode:
-    ui.report_verbose("Resolution pass #" + str(passes))
-  report_progress()
-  new_lines = filter(None, new_lines)
+    ui.report_verbose("script before pre-processing:")
+    print_script(script_lines)
+    ui.report_verbose()
+
+  ui.report_verbose("--------------- Pre-processing ---------------")
+  new_lines = pre_process_script(script_lines)
+
+  if verbose_mode:
+    ui.report_verbose("pre-processed script:")
+    print_script(new_lines)
+    ui.report_verbose()
+
+  ui.report_verbose("--------------- Initial processing ---------------")
+  new_lines = resolution_pass(new_lines)
+
+  ui.report_verbose("script after initial resolution pass:")
+  if verbose_mode:
+    print_script(new_lines)
+
+  proxy_macro_numbers()
+
+  ui.report_verbose("script after proxy macro number assignment:")
+  if verbose_mode:
+    print_script(new_lines)
+
+  ui.report_verbose("--------------- Main processing ---------------")
+  while True:
+    prev_lines = new_lines
+    new_lines = resolution_pass(new_lines)
+    if new_lines == prev_lines:
+      # no more resolving needed/possible
+      break
+  return new_lines
+
+
+########################################################################
+## pre-processing routines
+########################################################################
+
+def pre_process_script(script_lines):
+  new_lines = remove_blank_lines(script_lines)
+  new_lines = remove_comments(new_lines)
+  new_lines = pre_rewrite(new_lines)
+  new_lines = translate_commands(new_lines)
+  new_lines = process_directives(new_lines)
+  new_lines = capture_templates(new_lines)
+  new_lines = expand_meta_templates(new_lines)
+  new_lines = expand_templates(new_lines)
   return new_lines
 
 ## ----------------------------------------------------
@@ -695,7 +383,28 @@ def expand_templates(script_lines):
       new_lines.append(line)
   return new_lines
 
-## ----------------------------------------------------
+
+########################################################################
+## pre-processing helpers
+########################################################################
+
+def template_replacements(template_lines, keys, replacements):
+  lines = template_lines
+  while(True):
+    orig_lines = lines
+    new_lines = []
+    for line in lines:
+      for index, key in enumerate(keys):
+        line = line.replace(key, replacements[index])
+      new_lines.append(line)
+    if new_lines == orig_lines:
+      return new_lines
+    lines = new_lines
+
+
+########################################################################
+## main processing routines
+########################################################################
 
 def resolution_pass(script_lines):
   global passes
@@ -711,29 +420,344 @@ def resolution_pass(script_lines):
   new_lines = filter(None, new_lines)
   return new_lines
 
+## ----------------------------------------------------
 
-########################################################################
-## script processing helpers
-########################################################################
-
-def report_progress():
-    if not verbose_mode:
-        ui.write(tc.green("."))
+def process_line(line):
+  #ui.report_verbose("--------------------- process_line() ---------------------")
+  line = process_blank_line(line)
+  line = process_comment(line)
+  line = process_evaluate_python(line)
+  line = process_set_variable(line)
+  line = process_set_macro(line)
+  line = process_macro_call(line)
+  line = process_get_variable(line)
+  line = process_allocate_sequencer(line)
+  line = process_place_template(line)
+  return line
 
 ## ----------------------------------------------------
 
-def template_replacements(template_lines, keys, replacements):
-  lines = template_lines
-  while(True):
-    orig_lines = lines
+# remove excess whitespace on blank lines
+def process_blank_line(line):
+  line = line.strip()
+  if len(line) == 0:
+    return ''
+
+  return line
+
+## ----------------------------------------------------
+
+# strip comment from line
+def process_comment(line):
+  line = line.strip()
+  if len(line) == 0:
+    return ''
+
+  if line[0] == "#":
+    return ''
+
+  if "#" in line:
+    return line.split("#")[0]
+
+  return line
+
+## ----------------------------------------------------
+
+def process_evaluate_python(line):
+  line = line.strip()
+  if len(line) < 1:
+    return ''
+
+  # see if line has a python expression
+  expression = extract_contents(line, "`", "`")
+  if len(expression) > 0:
+
+    # can only process python expression if there are no unresolves values
+    if not line_has_unresolved_variables(expression):
+      #ui.report_verbose_alt("-evaluating Python: " + expression)
+      result = eval(expression)
+#todo-catch error
+      #ui.report_verbose_alt("=evaluated result: " + str(result))
+      ui.report_verbose_alt("process_evaluate_python replacing python expression '{}' with '{}'".format(expression, result))
+      return replace_args(line, "`", "`", str(result))
+
+  # return the unprocessed line
+  # ui.report_verbose("process_evaluate_python returning unprocessed line '{}'".format(line))
+  return line
+
+## ----------------------------------------------------
+
+def process_set_variable(line):
+  line = line.strip()
+  if len(line) < 1:
+    return ''
+
+  # can only process if there are no unresolved values
+  # ? does this leave out variable unresolves?
+  if not line_has_unresolved(line):
+
+    # see if line has a variable setting
+    args = get_key_args(line, "$")
+    if len(args) >= 2:
+
+      variable_name = args[0]
+
+      # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
+      variable_value = line[len(variable_name) + 1:].strip()
+
+      # can only set if not already set, or a preset that allows overwriting
+      if not immutable_resolved_value(variable_name, variable_value):
+        #ui.report_verbose("process_set_variable settings {}={}".format(variable_name, variable_value))
+        set_resolved(variable_name, variable_value)
+
+      # return a blank line now that this one is consumed
+      return ''
+
+  # return the unprocessed line
+  # ui.report_verbose("process_set_variable returning unprocessed line '{}'".format(line))
+  return line
+
+## ----------------------------------------------------
+
+# process macro setting if present in line
+def process_set_macro(line):
+  line = line.strip()
+  if len(line) == 0:
+    return ''
+
+  # can't process the macro setting if there are unresolved values
+  if line_has_unresolved_variables(line):
+    return line
+
+  macro_name = None
+  macro_number = None
+
+  # get arguments inside brackets
+  # arg #1 is name of macro
+  # arg #2 is the forced macro number
+  # no processing occurs if there are no arguments
+  args = extract_args(line, "[", "]")
+
+  if len(args) > 0:
+    macro_name = args[0]
+
+    if len(args) > 1:
+      macro_number = args[1]
+
+    if macro_number == None:
+      # there was no forced macro number, so this macro
+      # will need an assigned number
+      # record it as unresolved variable
+      set_unresolved(macro_name)
+      ui.report_verbose("process_set_macro new unresolved macro: " + macro_name)
+
+      # convert the line to a simple variable reference
+      return "<" + macro_name + ">:set"
+
+    else:
+      # there is a forced macro number
+
+      if macro_number == "!":
+        # the magic macro number ! means assign the
+        # final macro number, which commonly has fewer
+        # available bytes
+        # used for simple rendering macro
+        #ui.report_verbose("- forced final macro: " + macro_name)
+        macro_number = ending_macro_number
+
+      macro_number = int(macro_number)
+      set_final_macro_number(macro_number, macro_number)
+      ui.report_verbose("process_set_macro new forced macro: {} {}".format(macro_name, macro_number))
+
+      set_resolved(macro_name, macro_number)
+      set_macro(macro_name, macro_number)
+
+      # setting a specific macro number is done for apps
+      # to combine apps, the next available sequence number
+      # needs to be reset. 
+      # if a macro number is passed, assume it's an app
+      # and do the resetting (unless it's the last)
+      #needed????????
+#      if int(macro_number) != ending_macro_number:
+#        reset_next_available_sequence_number()
+
+      # replace with a proxy macro number marker
+      # marked by being < 0
+      proxy_macro_number = str(macro_number * -1)
+      ui.report_verbose("process_set_macron new proxy macro number marker: " + proxy_macro_number)
+      return "'" + proxy_macro_number + "':set"
+
+  # return the unprocessed line
+  # ui.report_verbose("process_set_macro returning unprocessed line '{}'".format(line))
+  return line
+
+## ----------------------------------------------------
+
+# process macro call if in line
+def process_macro_call(line):
+  macro_name = None
+  line = line.strip()
+  args = extract_args(line, "(", ")")
+
+  if len(args) > 0:
+    macro_name = args[0]
+
+    # can only process if macro name is recognized
+    if macro_name in resolved:
+
+      # the second argument is the schedule
+      if len(args) > 1:
+        # the macro will be scheduled
+        macro_schedule = args[1]
+
+        # can only schedule macro if the schedule is resolved
+        if not line_has_unresolved(macro_schedule):
+          #ui.report_verbose("new macro schedule {} {}".format(macro_name, macro_schedule))
+          return str(macro_schedule) + "," + str(resolved[macro_name]) + ":sch"
+      else:
+        # the macro will be run
+        #ui.report_verbose("new macro call " + macro_name)
+        return str(resolved[macro_name]) + ":run"
+
+  # return the unprocessed line
+  # ui.report_verbose("process_macro_call returning unprocessed line '{}'".format(line))
+  return line
+
+## ----------------------------------------------------
+
+def process_get_variable(line):
+  line = line.strip()
+  if len(line) < 1:
+    return ''
+
+  # see if line has a variable reference
+  args = extract_args(line, "<", ">")
+  if len(args) > 0:
+    variable_name = args[0]
+
+    if variable_name in resolved:
+      # replace the variable reference with the resolved value
+      resolved_value = resolved[variable_name]
+      #ui.report_verbose("process_get_variable replacing variable reference '{}' with '{}'".format(variable_name, resolved_value))
+      return replace_args(line, "<", ">", resolved_value)
+
+  # return the unprocessed line
+  # ui.report_verbose("process_get_variable returning unprocessed line '{}'".format(line))
+  return line
+
+## ----------------------------------------------------
+
+def process_allocate_sequencer(line):
+  global next_available_sequencer_number
+
+  line = line.strip()
+  if len(line) < 1:
+    return ''
+
+  # see if line has a sequencer allocation
+  args = extract_args(line, "{", "}")
+  if len(args) > 0:
+
+    sequencer_name = args[0]
+    resolved_value = None
+
+    if sequencer_name in resolved:
+      # this sequencer has already been allocated
+      # reuse this sequencer
+      resolved_value = resolved[sequencer_name]
+
+    else:
+      # allocate a new sequencer
+      if next_available_sequencer_number > (number_of_sequencers - 1):
+        raise ValueError("No available sequence numbers available")
+
+      resolved_value = next_available_sequencer_number
+      ui.report_verbose("process_allocate_sequencer allocating sequencer: " + str(resolved_value))
+
+      # save new allocated sequencer as resolved value
+      set_resolved(sequencer_name, resolved_value)
+      next_available_sequencer_number += 1
+
+    #ui.report_verbose("process_allocate_sequencer replacing sequencer allocation {} with {}".format(sequencer_name, resolved_value))
+    return replace_args(line, "{", "}", str(resolved_value))
+
+  # return the unprocessed line
+  # ui.report_verbose("process_allocate_sequencer returning unprocessed line '{}'".format(line))
+  return line
+
+## ----------------------------------------------------
+
+def process_place_template(line):
+  line = line.strip()
+  if len(line) < 1:
+    return ''
+
+  # see if line has a template expqnsion
+  args = extract_args(line, "((", "))")
+  if len(args) > 0:
+
+    template_name = args[0]
+
+    # can only expand if there are no unresolved values
+    if template_name in resolved:
+      template_script = resolved[template_name]
+      #ui.report_verbose("-placing template: " + template_name)
+      ui.report_verbose("process_place_template expanding template " + template_name)
+      return replace_args(line, "((", "))", template_script)
+
+  # return the unprocessed line
+  # ui.report_verbose("process_place_template returning unprocessed line '{}'".format(line))
+  return line  
+
+
+########################################################################
+## main processing helpers
+########################################################################
+
+# join macros that span multiple lines
+# into a single line
+def consolidate_macros(script_lines):
+  new_lines = []
+  building_commands = ""
+  for line in script_lines:
+    if line.endswith(":set"):
+      if len(building_commands) > 0:
+        new_lines.append(building_commands[:-1])
+        building_commands = ""
+    building_commands += line + ":"
+  if len(building_commands) > 0:
+    new_lines.append(building_commands[:-1])
+  return new_lines
+
+
+########################################################################
+## post processing routines
+########################################################################
+
+def post_processing(script_lines):
+  script_lines.sort()
+  return assign_final_macro_numbers(script_lines)
+
+## ----------------------------------------------------
+
+def do_clean_ups(script_lines, clean_ups):
     new_lines = []
-    for line in lines:
-      for index, key in enumerate(keys):
-        line = line.replace(key, replacements[index])
-      new_lines.append(line)
-    if new_lines == orig_lines:
-      return new_lines
-    lines = new_lines
+    for line in script_lines:
+        for clean_up in clean_ups:
+            line = line.replace(clean_up, clean_ups[clean_up])
+        new_lines.append(line)
+    return new_lines
+
+## ----------------------------------------------------
+
+def post_clean_up(script_lines):
+    clean_ups = {
+        # remove unnecessary (zero) arguments
+        ",0:" : ":",
+        ",0,0:" : ":",
+        ":0,0,0:" : ":"
+    }
+    return do_clean_ups(script_lines, clean_ups)
 
 
 ########################################################################
@@ -766,14 +790,11 @@ def get_next_macro_number():
 # assign tentative macro numbers so everything else can resolve
 # these will be resolved to real macro numbers later
 def proxy_macro_numbers():
-  ui.report_verbose("unresolved macro numbers:")
-  if verbose_mode:
-    print_list(unresolved)
   for name in unresolved:
     if unresolved[name] == None:
       new_macro_number = get_next_macro_number()
       # proxy numbers will be in the form '10' 
-      ui.report_verbose("-assigning proxy macro #" + str(new_macro_number) + " for macro: " + name)
+      ui.report_verbose("proxy_macro_numbers assigning proxy macro #" + str(new_macro_number) + " for macro: " + name)
       proxy_macro_value = "'" + ("0" + str(new_macro_number))[-2:] + "'"
       resolve_unresolved(name, new_macro_number)
       set_resolved(name, proxy_macro_value)
@@ -900,7 +921,7 @@ def assign_final_macro_number(line):
       saved_bad_script = [line]
       raise ValueError("Macro {} is needed as a carry-over macro but is already assigned".format(consumed_macro_number))
 
-    ui.report_verbose("assign_final_macro_number allocating macro #" + str(consumed_macro_number) + " to macro #" + str(proxy_macro_number)) 
+    ui.report_verbose("assign_final_macro_number allocating macro #" + str(consumed_macro_number) + " to macro #" + str(proxy_macro_number) + " overflow") 
     set_overflow_macro_number(proxy_macro_number, consumed_macro_number)
   
   # return the line with the proxy macro number replaced so it's not processed a second time
@@ -977,199 +998,185 @@ def assign_final_macro_numbers(script_lines):
 
 
 ########################################################################
-# Main compilation engine
+## line processing helpers
 ########################################################################
 
-def resolve_script(script_lines):
+def line_has_unresolved_variables(line):
+  return len(line) > 0 and "<" in line and ">" in line
 
-  ## pre-processing - template capturing, template expansion
+def line_has_python_expression(line):
+  return len(line) > 0 and "`" in line
 
-  ui.report_verbose("--------------- Pre-processing ---------------")
+def line_has_macro_marker(line):
+  return len(line) > 0 and ("(" in line or ")" in line or "[" in line or "]" in line)
 
-  new_lines = remove_blank_lines(script_lines)
-  new_lines = remove_comments(new_lines)
-  new_lines = pre_rewrite(new_lines)
-  new_lines = translate_commands(new_lines)
-  new_lines = process_directives(new_lines)
-  new_lines = capture_templates(new_lines)
-  new_lines = expand_meta_templates(new_lines)
-  new_lines = expand_templates(new_lines)
+def line_has_template_marker(line):
+  return len(line) > 0 and ("[[" in line or "]]" in line or "((" in line or "))" in line)
 
-  if verbose_mode:
-    ui.report_verbose("Expanded script:")
-    print_script(new_lines)
-    ui.report_verbose()
+def line_has_sequence_marker(line):
+  return len(line) > 0 and ("{" in line or "}" in line)
 
-  ## initial processing - assign tentative macro numbers 
-
-  ui.report_verbose("--------------- Initial processing ---------------")
-  new_lines = resolution_pass(new_lines)
-
-  ui.report_verbose("script after initial resolution pass:")
-  if verbose_mode:
-    print_script(new_lines)
-
-  proxy_macro_numbers()
-
-  ui.report_verbose("script after proxy macro number assignment:")
-  if verbose_mode:
-    print_script(new_lines)
-
-  ## main processing - processing passes until no more can be resolved
-
-  ui.report_verbose("--------------- Main processing ---------------")
-  while True:
-    prev_lines = new_lines
-    new_lines = resolution_pass(new_lines)
-    if new_lines == prev_lines:
-      # no more resolving needed/possible
-      break
-  return new_lines
+def line_has_unresolved(line):
+  return line_has_unresolved_variables(line) or line_has_python_expression(line) or line_has_template_marker(line) or line_has_macro_marker(line) or line_has_sequence_marker(line)
 
 
 ########################################################################
-## post processing routines
+## line maniupation routines
 ########################################################################
 
-def post_processing(script_lines):
-  script_lines.sort()
-  return assign_final_macro_numbers(script_lines)
+# locate the start and end positions of a delimited portion of a string
+# returns start, end
+def locate_delimiters(line, start_delimiter, end_delimiter):
+  start = -1
+  end = -1
+  if start_delimiter in line:
+    start = line.find(start_delimiter)
+    if end_delimiter in line[start + len(start_delimiter):]:
+      end = line.find(end_delimiter, start + 1)
+  return start, end
 
 ## ----------------------------------------------------
 
-def do_clean_ups(script_lines, clean_ups):
-    new_lines = []
-    for line in script_lines:
-        for clean_up in clean_ups:
-            line = line.replace(clean_up, clean_ups[clean_up])
-        new_lines.append(line)
-    return new_lines
+def cut_contents(line, start_delimiter, end_delimiter, start, end):
+  return line[start + len(start_delimiter):end].strip()
 
 ## ----------------------------------------------------
 
-def post_clean_up(script_lines):
-    clean_ups = {
-        # remove unnecessary (zero) arguments
-        ",0:" : ":",
-        ",0,0:" : ":",
-        ":0,0,0:" : ":"
-    }
-    return do_clean_ups(script_lines, clean_ups)
-
-## ----------------------------------------------------
-
-# join macros that span multiple lines
-# into a single line
-def consolidate_macros(script_lines):
-  new_lines = []
-  building_commands = ""
-  for line in script_lines:
-    if line.endswith(":set"):
-      if len(building_commands) > 0:
-        new_lines.append(building_commands[:-1])
-        building_commands = ""
-    building_commands += line + ":"
-  if len(building_commands) > 0:
-    new_lines.append(building_commands[:-1])
-  return new_lines
-
-
-########################################################################
-## file inclusion routines
-########################################################################
-
-def load_file(filename, default_ext=".mac"):
-  file_lines = []
-  if not filename.endswith(default_ext):
-    filename = filename + default_ext
-  file_path = os.path.dirname(filename)
-  file = open(filename, "r")
-  for line in file:
-    line = line.strip()
-    if len(line) == 0:
-      continue
-    if line.startswith("%include"):
-      args = line.split()
-      include_filename = args[1]
-      if len(include_filename) > 0 and include_filename not in includes.keys():
-        full_filename = os.path.join(file_path, include_filename)
-        include_lines = load_file(full_filename)
-        include_lines = rewrite_included_script_lines(include_lines)
-        file_lines = file_lines + include_lines
-        includes[include_filename] = full_filename
-        continue
-    file_lines.append(line)
-  return file_lines
-
-## ----------------------------------------------------
-
-def remove_fixed_macro_numbers(line):
-  start, end = locate_delimiters(line, "[", "]")
+# pass in line and two delimiters, get back contents within
+# delimiters specified as one or two characters
+def extract_contents(line, start_delimiter, end_delimiter):
+  line = line.strip()
+  if len(line) == 0:
+    return ''
+  start, end = locate_delimiters(line, start_delimiter, end_delimiter)
   if start != -1 and end != -1:
-    args = extract_args(line, "[", "]")
-    if len(args) == 2 and is_number(args[1]):
-      # leave only the name
-      return "[" + args[0] + "]"
+    return cut_contents(line, start_delimiter, end_delimiter, start, end)
+  return ''
+
+## ----------------------------------------------------
+
+# pass in line and two delimiters, get back list of arguments within
+# delimiters specified as one or two characters
+def extract_args(line, start_delimiter, end_delimiter):
+  return extract_contents(line, start_delimiter, end_delimiter).split()
+
+## ----------------------------------------------------
+
+def get_key_contents(line, key):
+  line = line.strip()
+  if len(line) > 0 and line.startswith(key):
+    return line[len(key):].strip()
+  return ''
+
+## ----------------------------------------------------
+
+def get_key_args(line, key):
+  return get_key_contents(line, key).split()
+
+## ----------------------------------------------------
+
+def replace_args(line, start_delimiter, end_delimiter, replacement):
+  start, end = locate_delimiters(line, start_delimiter, end_delimiter)
+  if start != -1 and end != -1:
+    return line[0:start] + str(replacement) + line[end + 1:]
   return line
 
-## ----------------------------------------------------
 
-def rewrite_included_script_line(script_line):
-  new_line = remove_fixed_macro_numbers(script_line)
-  return new_line
+########################################################################
+## management of resolved and unresolved values
+########################################################################
 
-## ----------------------------------------------------
+def set_resolved(name, value):
+  #ui.report_verbose("set_resolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
+  resolved[name] = value
 
-def rewrite_included_script_lines(script_lines):
-  new_lines = []
-  for line in script_lines:
-    line = line.strip()
-    new_lines.append(rewrite_included_script_line(line))
-  return new_lines
+def set_unresolved(name, value=None):
+  #ui.report_verbose("set_unresolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
+  unresolved[name] = value
+
+# sets a value for an unresolved value, resolving it
+# proxy for set_unresolved()
+def resolve_unresolved(name, value=None):
+  #ui.report_verbose("resolve_unresolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
+  unresolved[name] = value
+
+# removed an resolved values that now have values
+# and are therefore resolved
+def remove_resolved():
+  global unresolved
+  new_dict = {}
+  for name in unresolved:
+    if unresolved[name] == None:
+      new_dict[name] = None
+    else:
+      #ui.report_verbose("removing resolved unresolved name: {} value: {}".format(name, unresolved[name]))
+      pass
+  unresolved = new_dict
+
+# return true if resolved value is a mutable preset and can be changed
+# raise ValueError if resolved value is immutable value being changed
+def immutable_resolved_value(variable_name, variable_value):
+  if variable_name in resolved:
+    if resolved[variable_name] != variable_value:
+      if variable_name in presets:
+        return True
+      else:
+        raise ValueError("The immutable resolved value '%s' is being changed to '%s'" % (variable_name, str(variable_value)))
+  return False
+
+# handles key=value presents passed on command line
+# pre-assigns those values to variables
+def resolve_presets(presets):
+  for key in presets.keys():
+    #ui.report_verbose("setting preset resolved value " + tc.yellow(key + "=" + str(presets[key])))
+    set_resolved(key, presets[key])
 
 
 ########################################################################
-## compilation main entry point 
+## general table management
 ########################################################################
 
-def compile_script(script):
-  global saved_bad_script
-  ui.report_verbose("--------------- compilation stating ---------------")
+def set_macro(name, value):
+  global macros
+  macros[name] = value
 
-  new_script = resolve_script(script)
-  new_lines = consolidate_macros(new_script)
+def set_final_macro_number(proxy_macro_number, final_macro_number):
+  if not type(proxy_macro_number) is int:
+    raise TypeError("proxy_macro_number must be a 'int'")
+  if not type(final_macro_number) is int:
+    raise TypeError("final_macro_number must be a 'int'")
+  #ui.report_verbose("set_final_macro_number proxy_macro_number: {} final_macro_number: {}".format(proxy_macro_number, final_macro_number))
+  final_macro_numbers[proxy_macro_number] = final_macro_number
 
-  ui.report_verbose_alt("consolidated script with proxied macro numbers")
-  if verbose_mode:
-    print_script(new_lines)
+def set_overflow_macro_number(proxy_macro_number, consumed_macro_number):
+  if not type(proxy_macro_number) is int:
+    raise TypeError("proxy_macro_number must be a 'int'")
+  if not type(consumed_macro_number) is int:
+    raise TypeError("consumed_macro_number must be a 'int'")
+  #ui.report_verbose("set_overflow_macro_number proxy_macro_number: {} consumed_macro_number: {}".format(proxy_macro_number, consumed_macro_number))
+  key = str(proxy_macro_number) + "-" + str(consumed_macro_number)
+  final_macro_numbers[key] = consumed_macro_number
 
-  sort_script(new_lines)
+def get_final_macro_numbers():
+  return final_macro_numbers
 
-  ui.report_verbose_alt("script after sorting")
-  if verbose_mode:
-    print_script(new_lines)
+def get_saved_bad_script():
+  return saved_bad_script
 
-  #ui.report_verbose()
-  if not compilation_valid(new_lines):
-    saved_bad_script = new_lines
-    raise ValueError("The script did not compile successfully due to unresolved values.")
-  #ui.report_verbose("Packing")
-  #print_script(new_lines)
+def get_resolved():
+  return resolved
 
-  ui.report_verbose("--------------- post compilation processing ---------------")
-  new_lines = post_processing(new_lines)
-  ui.report_verbose_alt("script after final macro number assignment")
-  if verbose_mode:
-    print_script(new_lines)
+def get_unresolved():
+  return unresolved
 
-  ui.report_verbose("--------------- post compilation clean up ---------------")
-  new_lines = post_clean_up(new_lines)
-  ui.report_verbose_alt("script after cleanup:")
-  if verbose_mode:
-    print_script(new_lines)
+def get_presets():
+  return presets
 
-  ui.report_verbose("--------------- comnpilation complete ---------------")
-  return new_lines
+def get_macros():
+  return macros
+
+def get_includes():
+  return includes
 
 
 ########################################################################
@@ -1188,47 +1195,10 @@ def print_script(script):
     ui.report_error(line)
   print
 
-def print_list(list):
-  for key in list.keys():
-    print str(key) + "='" + str(list[key]) + "'"
-
 def sort_script(script_lines):
   script_lines.sort(reverse=False)
 
-########################################################################
-########################################################################
-## API methods
-########################################################################
-########################################################################
-
-def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_):
-  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes
-  led_command = led_command_
-  verbose_mode = verbose_mode_
-  starting_macro_number = starting_macro
-  ending_macro_number = ending_macro
-  number_of_sequencers = number_of_sequencers_
-  bytes_per_macro = bytes_per_macro_
-  max_string_length = max_string_length_
-  number_of_macros = (ending_macro_number - starting_macro_number) + 1
-  next_available_macro_number = starting_macro_number
-  last_macro_bytes = last_macro_bytes_
-  presets = presets_
-  resolve_presets(presets)
-  ui.begin(verbose_mode)
-  ui.report_verbose("Beginning compilation engine")
-
-def compile_file(filename):
-  script = load_file(filename)
-  return compile_script(script)
-
-def compilation_valid(script):
-  for line in script:
-    if line_has_unresolved(line):
-      return False
-  return True
-
-def remaining_sequencers():
-  return number_of_sequencers - next_available_sequencer_number 
-
+def report_progress():
+    if not verbose_mode:
+        ui.write(tc.green("."))
 
