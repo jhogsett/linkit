@@ -6,8 +6,9 @@ import terminal_colors as tc
 import long_commands as lc
 import code
 
-global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
-global number_of_macros, led_command, final_macro_numbers, saved_bad_script, includes, last_macro_bytes
+global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
+global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
+global led_command, final_macro_numbers, saved_bad_script, includes, last_macro_bytes
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -33,7 +34,8 @@ last_macro_bytes = None
 ########################################################################
 
 def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_):
-  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes
+  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
+  global led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes
   led_command = led_command_
   verbose_mode = verbose_mode_
   starting_macro_number = starting_macro
@@ -68,7 +70,8 @@ def remaining_sequencers():
 ########################################################################
 
 def reset():
-  global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, final_macro_numbers, includes
+  global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
+  global final_macro_numbers, includes
   macros = {}
   macro_commands = {}
   resolved = {}
