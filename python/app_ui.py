@@ -4,9 +4,10 @@ import terminal_colors as tc
 global verbose_mode
 verbose_mode = False
 
-def begin(verbose):
+def begin(verbose, no_colors=False):
     global verbose_mode
     verbose_mode = verbose
+    tc.begin(no_colors);
 
 def report_error(message):
     print tc.red(message)

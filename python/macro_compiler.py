@@ -33,7 +33,7 @@ last_macro_bytes = None
 ## API methods
 ########################################################################
 
-def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_):
+def begin(led_command_, verbose_mode_, quiet_mode, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_):
     global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
     global led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes
     led_command = led_command_
@@ -48,7 +48,8 @@ def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, n
     last_macro_bytes = last_macro_bytes_
     presets = presets_
     resolve_presets(presets)
-    ui.begin(verbose_mode)
+    tc.begin(quiet_mode)
+    ui.begin(verbose_mode, quiet_mode)
     ui.report_verbose("Beginning compilation engine")
 
 def compile_file(filename):
@@ -793,7 +794,13 @@ def get_next_macro_number():
 # assign tentative macro numbers so everything else can resolve
 # these will be resolved to real macro numbers later
 def proxy_macro_numbers():
-    for name in unresolved:
+    #ui.report_verbose("proxy_macro_numbers unresolved:")
+    #if verbose_mode:
+    #    print_script(unresolved)
+
+    names = unresolved.keys()
+    names.sort()
+    for name in names:
         if unresolved[name] == None:
             new_macro_number = get_next_macro_number()
             # proxy numbers will be in the form '10' 
