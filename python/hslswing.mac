@@ -6,7 +6,7 @@
 %version 0					# version zero of the Apollo language (RPN)
 %include symbols				# standard device and common use numeric value symbols
 %include hsl-sequencer				# script to color-sequence the palette with a changing start angle
-%run-macro hslswing-app		 		# run this script's main app when done programming
+%play-macro hslswing-app		 	# run this script's main app when done programming
 
 $max-width-half `<NUM-LEDS> * 1/2`		# set constant for half of the device's total LEDs
 $cycle-time 100					# cycle each swinger to the next state every 100 ticks

@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------
 
 %include symbols
-%run-macro hsl-sequencer-start
+%play-macro hsl-sequencer-start
 
 $hsl-angle 60
 $hsl-step 2

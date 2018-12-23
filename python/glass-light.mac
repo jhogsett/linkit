@@ -1,6 +1,6 @@
 %include symbols
 
-%run-macro glass-light-white
+%play-macro glass-light-white
 
 $brightness 33
 

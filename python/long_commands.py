@@ -1,11 +1,23 @@
+import re
 
+def translate(line):
+    regex = "(\s|[^a-z0-9-])"
+    words = re.compile(regex).split(line)
 
-def translate(long_command):
-    stripped_long_command = long_command.strip()
-    if stripped_long_command in long_commands.keys():
-        return long_commands[stripped_long_command]
-    else:
-        return long_command
+    new_words = []
+    for word in words:
+        if word in long_commands.keys():
+            new_words.append(long_commands[word])
+        else:
+            new_words.append(word)
+
+    return "".join(new_words)
+
+    #stripped_long_command = long_command.strip()
+    #if stripped_long_command in long_commands.keys():
+    #    return long_commands[stripped_long_command]
+    #else:
+    #    return long_command
 
 long_commands = {
  "flush" : "flu",

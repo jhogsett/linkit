@@ -1,6 +1,6 @@
 
 %include symbols
-%run-macro rgbswing-app
+%play-macro rgbswing-app
 
 $max-width <NUM-LEDS>
 $max-width-half `<max-width> / 2`
