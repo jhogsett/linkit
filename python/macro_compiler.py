@@ -6,8 +6,6 @@ import terminal_colors as tc
 import long_commands as lc
 import code
 
-# ----------------------------------------------------
-
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers
 global number_of_macros, led_command, final_macro_numbers, saved_bad_script, includes, last_macro_bytes
 macros = {}
@@ -30,35 +28,6 @@ saved_bad_script = []
 includes = {}
 last_macro_bytes = None
 
-# ----------------------------------------------------
-
-########################################################################
-
-def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_):
-  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes
-  led_command = led_command_
-  verbose_mode = verbose_mode_
-  starting_macro_number = starting_macro
-  ending_macro_number = ending_macro
-  number_of_sequencers = number_of_sequencers_
-  bytes_per_macro = bytes_per_macro_
-  max_string_length = max_string_length_
-  number_of_macros = (ending_macro_number - starting_macro_number) + 1
-  next_available_macro_number = starting_macro_number
-  last_macro_bytes = last_macro_bytes_
-  presets = presets_
-  resolve_presets(presets)
-  ui.begin(verbose_mode)
-  ui.report_verbose("Beginning compilation engine")
-
-########################################################################
-
-# handles key=value presents passed on command line
-# pre-assigns those values to variables
-def resolve_presets(presets):
-  for key in presets.keys():
-    ui.report_verbose("setting preset resolved value " + tc.yellow(key + "=" + str(presets[key])))
-    set_resolved(key, presets[key])
 
 ########################################################################
 ## general table management
@@ -74,7 +43,6 @@ def set_final_macro_number(proxy_macro_number, final_macro_number):
   if not type(final_macro_number) is int:
     raise TypeError("final_macro_number must be a 'int'")
   ui.report_verbose("set_final_macro_number proxy_macro_number: {} final_macro_number: {}".format(proxy_macro_number, final_macro_number))
-
   final_macro_numbers[proxy_macro_number] = final_macro_number
 
 def set_overflow_macro_number(proxy_macro_number, consumed_macro_number):
@@ -83,7 +51,6 @@ def set_overflow_macro_number(proxy_macro_number, consumed_macro_number):
   if not type(consumed_macro_number) is int:
     raise TypeError("consumed_macro_number must be a 'int'")
   ui.report_verbose("set_overflow_macro_number proxy_macro_number: {} consumed_macro_number: {}".format(proxy_macro_number, consumed_macro_number))
-
   key = str(proxy_macro_number) + "-" + str(consumed_macro_number)
   final_macro_numbers[key] = consumed_macro_number
 
@@ -108,7 +75,10 @@ def get_macros():
 def get_includes():
   return includes
 
+
+########################################################################
 ## management of resolved and unresolved values
+########################################################################
 
 def set_resolved(name, value):
   ui.report_verbose("set_resolved name: {} ({}) value: {} ({})".format(name, type(name), value, type(value)))
@@ -147,6 +117,13 @@ def immutable_resolved_value(variable_name, variable_value):
         raise ValueError("The immutable resolved value '%s' is being changed to '%s'" % (variable_name, str(variable_value)))
   return False
 
+# handles key=value presents passed on command line
+# pre-assigns those values to variables
+def resolve_presets(presets):
+  for key in presets.keys():
+    ui.report_verbose("setting preset resolved value " + tc.yellow(key + "=" + str(presets[key])))
+    set_resolved(key, presets[key])
+
 
 ########################################################################
 ## global state management
@@ -177,10 +154,15 @@ def reset_next_available_sequence_number():
 # strip comment from line
 def process_comment(line):
   line = line.strip()
-  if len(line) > 0 and line[0] == "#":
+  if len(line) == 0:
     return ''
+
+  if line[0] == "#":
+    return ''
+
   if "#" in line:
     return line.split("#")[0]
+
   return line
 
 ## ----------------------------------------------------
@@ -190,6 +172,7 @@ def process_blank_line(line):
   line = line.strip()
   if len(line) == 0:
     return ''
+
   return line
 
 ## ----------------------------------------------------
@@ -494,8 +477,12 @@ def locate_delimiters(line, start_delimiter, end_delimiter):
       end = line.find(end_delimiter, start + 1)
   return start, end
 
+## ----------------------------------------------------
+
 def cut_contents(line, start_delimiter, end_delimiter, start, end):
   return line[start + len(start_delimiter):end].strip()
+
+## ----------------------------------------------------
 
 # pass in line and two delimiters, get back contents within
 # delimiters specified as one or two characters
@@ -507,11 +494,15 @@ def extract_contents(line, start_delimiter, end_delimiter):
   if start != -1 and end != -1:
     return cut_contents(line, start_delimiter, end_delimiter, start, end)
   return ''
+
+## ----------------------------------------------------
   
 # pass in line and two delimiters, get back list of arguments within
 # delimiters specified as one or two characters
 def extract_args(line, start_delimiter, end_delimiter):
   return extract_contents(line, start_delimiter, end_delimiter).split()
+
+## ----------------------------------------------------
 
 def get_key_contents(line, key):
   line = line.strip()
@@ -519,8 +510,12 @@ def get_key_contents(line, key):
     return line[len(key):].strip()
   return ''
 
+## ----------------------------------------------------
+
 def get_key_args(line, key):
   return get_key_contents(line, key).split()
+
+## ----------------------------------------------------
 
 def replace_args(line, start_delimiter, end_delimiter, replacement):
   start, end = locate_delimiters(line, start_delimiter, end_delimiter)
@@ -547,9 +542,211 @@ def resolution_pass(script_lines):
   new_lines = filter(None, new_lines)
   return new_lines
 
+## ----------------------------------------------------
+
+# this assumes all commands are on individual lines
+def translate_commands(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = line.strip()
+    line = lc.translate(line)
+    new_lines.append(line)
+  ui.report_verbose("script after command translation:")
+  if verbose_mode:
+      print_script(new_lines)
+  return new_lines
+
+## ----------------------------------------------------
+
+def remove_blank_lines(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = process_blank_line(line)
+    if len(line) > 0:
+      new_lines.append(line)
+  return new_lines
+
+## ----------------------------------------------------
+
+def remove_comments(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = process_comment(line)
+    if len(line) > 0:
+      new_lines.append(line)
+  return new_lines
+
+## ----------------------------------------------------
+
+# rewrite the script in the new style without the colons
+# this simplifies automatic modifying of the script
+def pre_rewrite(script_lines):
+    new_lines = []
+    for line in script_lines:
+        segments = line.split(":")
+        for segment in segments:
+            new_lines.append(segment)
+    ui.report_verbose("script after pre-rewrite:")
+    if verbose_mode:
+        print_script(new_lines)
+    return new_lines
+
+## ----------------------------------------------------
+
+# this assumes all commands are on individual lines
+def translate_commands(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = line.strip()
+    line = lc.translate(line)
+    new_lines.append(line)
+  ui.report_verbose("script after command translation:")
+  if verbose_mode:
+      print_script(new_lines)
+  return new_lines
+
+## ----------------------------------------------------
+
+def process_directives(script_lines):
+  new_lines = []
+  for line in script_lines:
+    args = get_key_args(line, "%")
+    if len(args) >= 2:
+      directive_name = "%" + args[0]
+      if len(args) == 2:
+        directive_value = args[1]
+      elif len(args) == 3:
+        directive_value = { args[2] : args[3] }
+      else:
+        directive_value = args[1:].split()
+      set_resolved(directive_name, directive_value)
+    else:
+      new_lines.append(line)
+  return new_lines
+
+## ----------------------------------------------------
+
+def capture_templates(script_lines):
+  new_lines = []
+  template_builder = []
+  capture_mode = False
+  template_name = None
+  for line in script_lines:
+    line = line.strip()
+    if capture_mode:
+      if line.startswith("]]"):
+        capture_mode = False
+        set_resolved(template_name, template_builder)
+        template_builder = []
+      else:
+        template_builder.append(line)
+    else:
+      if "[[" in line:
+        args = get_key_args(line, "[[")
+        template_name = args[0]
+        combined_args = " ".join(args[1:])
+        # store the search strings that will be replaced with passed arguments later
+        template_builder.append(combined_args)
+        capture_mode = True
+      else:
+        new_lines.append(line)
+  return new_lines
+
+## ----------------------------------------------------
+
+def expand_meta_templates(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = line.strip()
+    args = extract_args(line, "(((", ")))")
+    if len(args) >= 2:
+      template_name = args[0]
+      index_arg = args[1]
+      index_max = None
+      start, end = locate_delimiters(index_arg, "`", "`")
+      if start != -1 and end != -1:
+        expression = extract_contents(index_arg, "`", "`")
+        # replace any preset arguments to allow use in computing macro index max
+        for key in presets:
+          expression = expression.replace(key, str(presets[key]))
+        index_max = eval(expression)
+      else:
+        try:
+          index_max = int(index_arg)
+        except:
+          raise ValueError("Meta template cannot be expanded due to non-integer argument: " + str(args[1]));
+      # remaining arguments, if any, are the search replacements
+      replacements = " ".join(args[2:])
+      for index in range(0, index_max):
+        new_line = "((" + template_name + " " + str(index) + " " + replacements + "))"
+        new_lines.append(new_line)
+    else:
+      new_lines.append(line)
+  return new_lines
+
+## ----------------------------------------------------
+
+def expand_templates(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = line.strip()
+    if "((" in line and "(((" not in line:
+      args = extract_args(line, "((", "))")
+      if len(args) > 0:
+        template_name = args[0]
+        # remaining arguments, if any, are the search replacements
+        replacements = args[1:]
+        if template_name in resolved:
+          template_script = resolved[template_name]
+          # first line is the search keys
+          keys = template_script[0].split()
+          # remaining lines are the template contents
+          template_script = template_script[1:]
+          template_script = template_replacements(template_script, keys, replacements)
+          new_lines = new_lines + template_script
+    else:
+      new_lines.append(line)
+  return new_lines
+
+## ----------------------------------------------------
+
+def resolution_pass(script_lines):
+  global passes
+  new_lines = []
+  for line in script_lines:
+    new_line = process_line(line)
+    if new_line != None and new_line != '': #@@@@@:
+      new_lines.append(new_line)
+  passes += 1
+  if verbose_mode:
+    ui.report_verbose("Resolution pass #" + str(passes))
+  report_progress()
+  new_lines = filter(None, new_lines)
+  return new_lines
+
+
+########################################################################
+## script processing helpers
+########################################################################
+
 def report_progress():
     if not verbose_mode:
         ui.write(tc.green("."))
+
+## ----------------------------------------------------
+
+def template_replacements(template_lines, keys, replacements):
+  lines = template_lines
+  while(True):
+    orig_lines = lines
+    new_lines = []
+    for line in lines:
+      for index, key in enumerate(keys):
+        line = line.replace(key, replacements[index])
+      new_lines.append(line)
+    if new_lines == orig_lines:
+      return new_lines
+    lines = new_lines
 
 
 ########################################################################
@@ -751,18 +948,14 @@ def assign_final_macro_numbers(script_lines):
 
 
 ########################################################################
-########################################################################
 # Main compilation engine
-########################################################################
 ########################################################################
 
 def resolve_script(script_lines):
 
-  ########################################################################
-  # pre-processing - template capturing, template expansion
-  ########################################################################
+  ## pre-processing - template capturing, template expansion
 
-  ui.report_verbose("Pre-processing")
+  ui.report_verbose("--------------- Pre-processing ---------------")
 
   new_lines = remove_blank_lines(script_lines)
   new_lines = remove_comments(new_lines)
@@ -778,11 +971,9 @@ def resolve_script(script_lines):
     print_script(new_lines)
     ui.report_verbose()
 
-  ########################################################################
-  # initial processing - assign tentative macro numbers 
-  ########################################################################
+  ## initial processing - assign tentative macro numbers 
 
-  ui.report_verbose("Initial processing")
+  ui.report_verbose("--------------- Initial processing ---------------")
   new_lines = resolution_pass(new_lines)
 
   ui.report_verbose("script after initial resolution pass:")
@@ -795,11 +986,9 @@ def resolve_script(script_lines):
   if verbose_mode:
     print_script(new_lines)
 
-  ########################################################################
-  # main processing - processing passes until no more can be resolved
-  ########################################################################
+  ## main processing - processing passes until no more can be resolved
 
-  ui.report_verbose("Main processing")
+  ui.report_verbose("--------------- Main processing ---------------")
   while True:
     prev_lines = new_lines
     new_lines = resolution_pass(new_lines)
@@ -808,21 +997,16 @@ def resolve_script(script_lines):
       break
   return new_lines
 
-# this assumes all commands are on individual lines
-def translate_commands(script_lines):
-  new_lines = []
-  for line in script_lines:
-    line = line.strip()
-    line = lc.translate(line)
-    new_lines.append(line)
-  ui.report_verbose("script after command translation:")
-  if verbose_mode:
-      print_script(new_lines)
-  return new_lines
+
+########################################################################
+## post processing routines
+########################################################################
 
 def post_processing(script_lines):
   script_lines.sort()
   return assign_final_macro_numbers(script_lines)
+
+## ----------------------------------------------------
 
 def do_clean_ups(script_lines, clean_ups):
     new_lines = []
@@ -832,18 +1016,7 @@ def do_clean_ups(script_lines, clean_ups):
         new_lines.append(line)
     return new_lines
 
-# rewrite the script in the new style without the colons
-# this simplifies automatic modifying of the script
-def pre_rewrite(script_lines):
-    new_lines = []
-    for line in script_lines:
-        segments = line.split(":")
-        for segment in segments:
-            new_lines.append(segment)
-    ui.report_verbose("script after pre-rewrite:")
-    if verbose_mode:
-        print_script(new_lines)
-    return new_lines
+## ----------------------------------------------------
 
 def post_clean_up(script_lines):
     clean_ups = {
@@ -854,38 +1027,7 @@ def post_clean_up(script_lines):
     }
     return do_clean_ups(script_lines, clean_ups)
 
-def process_directives(script_lines):
-  new_lines = []
-  for line in script_lines:
-    args = get_key_args(line, "%")
-    if len(args) >= 2:
-      directive_name = "%" + args[0]
-      if len(args) == 2:
-        directive_value = args[1]
-      elif len(args) == 3:
-        directive_value = { args[2] : args[3] }
-      else:
-        directive_value = args[1:].split()
-      set_resolved(directive_name, directive_value)
-    else:
-      new_lines.append(line)
-  return new_lines
-
-def remove_blank_lines(script_lines):
-  new_lines = []
-  for line in script_lines:
-    line = process_blank_line(line)
-    if len(line) > 0:
-      new_lines.append(line)
-  return new_lines
-
-def remove_comments(script_lines):
-  new_lines = []
-  for line in script_lines:
-    line = process_comment(line)
-    if len(line) > 0:
-      new_lines.append(line)
-  return new_lines
+## ----------------------------------------------------
 
 def consolidate_macros(script_lines):
   new_lines = []
@@ -900,128 +1042,15 @@ def consolidate_macros(script_lines):
     new_lines.append(building_commands[:-1])
   return new_lines
 
+## ----------------------------------------------------
+
 def sort_script(script_lines):
   script_lines.sort(reverse=False)
 
-def capture_templates(script_lines):
-  new_lines = []
-  template_builder = []
-  capture_mode = False
-  template_name = None
-  for line in script_lines:
-    line = line.strip()
-    if capture_mode:
-      if line.startswith("]]"):
-        capture_mode = False
-        set_resolved(template_name, template_builder)
-        template_builder = []
-      else:
-        template_builder.append(line)
-    else:
-      if "[[" in line:
-        args = get_key_args(line, "[[")
-        template_name = args[0]
-        combined_args = " ".join(args[1:])
-        # store the search strings that will be replaced with passed arguments later
-        template_builder.append(combined_args)
-        capture_mode = True
-      else:
-        new_lines.append(line)
-  return new_lines
 
-def template_replacements(template_lines, keys, replacements):
-  lines = template_lines
-  while(True):
-    orig_lines = lines
-    new_lines = []
-    for line in lines:
-      for index, key in enumerate(keys):
-        line = line.replace(key, replacements[index])
-      new_lines.append(line)
-    if new_lines == orig_lines:
-      return new_lines
-    lines = new_lines
-
-def expand_templates(script_lines):
-  new_lines = []
-  for line in script_lines:
-    line = line.strip()
-    if "((" in line and "(((" not in line:
-      args = extract_args(line, "((", "))")
-      if len(args) > 0:
-        template_name = args[0]
-        # remaining arguments, if any, are the search replacements
-        replacements = args[1:]
-        if template_name in resolved:
-          template_script = resolved[template_name]
-          # first line is the search keys
-          keys = template_script[0].split()
-          # remaining lines are the template contents
-          template_script = template_script[1:]
-          template_script = template_replacements(template_script, keys, replacements)
-          new_lines = new_lines + template_script
-    else:
-      new_lines.append(line)
-  return new_lines
-
-def expand_meta_templates(script_lines):
-  new_lines = []
-  for line in script_lines:
-    line = line.strip()
-    args = extract_args(line, "(((", ")))")
-    if len(args) >= 2:
-      template_name = args[0]
-      index_arg = args[1]
-      index_max = None
-      start, end = locate_delimiters(index_arg, "`", "`")
-      if start != -1 and end != -1:
-        expression = extract_contents(index_arg, "`", "`")
-        # replace any preset arguments to allow use in computing macro index max
-        for key in presets:
-          expression = expression.replace(key, str(presets[key]))
-        index_max = eval(expression) 
-      else:
-        try:
-          index_max = int(index_arg)
-        except:
-          raise ValueError("Meta template cannot be expanded due to non-integer argument: " + str(args[1]));
-      # remaining arguments, if any, are the search replacements
-      replacements = " ".join(args[2:])
-      for index in range(0, index_max):
-        new_line = "((" + template_name + " " + str(index) + " " + replacements + "))"
-        new_lines.append(new_line)
-    else:
-      new_lines.append(line)
-  return new_lines
-
-# ----------------------------------------------------
-
-def remove_fixed_macro_numbers(line):
-  start, end = locate_delimiters(line, "[", "]")
-  if start != -1 and end != -1:
-    args = extract_args(line, "[", "]")
-    if len(args) == 2 and is_number(args[1]):
-      # leave only the name
-      return "[" + args[0] + "]"
-  return line
-
-def is_number(str):
-  try:
-    int(str)
-    return True
-  except ValueError:
-    return False
-
-def rewrite_included_script_line(script_line):
-  new_line = remove_fixed_macro_numbers(script_line)
-  return new_line
-
-def rewrite_included_script_lines(script_lines):
-  new_lines = []
-  for line in script_lines:
-    line = line.strip()
-    new_lines.append(rewrite_included_script_line(line))
-  return new_lines
+########################################################################
+## file inclusion routines
+########################################################################
 
 def load_file(filename, default_ext=".mac"):
   file_lines = []
@@ -1046,21 +1075,51 @@ def load_file(filename, default_ext=".mac"):
     file_lines.append(line)
   return file_lines
 
-# ----------------------------------------------------
+## ----------------------------------------------------
+
+def remove_fixed_macro_numbers(line):
+  start, end = locate_delimiters(line, "[", "]")
+  if start != -1 and end != -1:
+    args = extract_args(line, "[", "]")
+    if len(args) == 2 and is_number(args[1]):
+      # leave only the name
+      return "[" + args[0] + "]"
+  return line
+
+## ----------------------------------------------------
+
+def rewrite_included_script_line(script_line):
+  new_line = remove_fixed_macro_numbers(script_line)
+  return new_line
+
+## ----------------------------------------------------
+
+def rewrite_included_script_lines(script_lines):
+  new_lines = []
+  for line in script_lines:
+    line = line.strip()
+    new_lines.append(rewrite_included_script_line(line))
+  return new_lines
+
+
+########################################################################
+## compilation main entry point 
+########################################################################
 
 def compile_script(script):
   global saved_bad_script
-  ui.report_verbose("Compiling")
+  ui.report_verbose("--------------- compilation stating ---------------")
+
   new_script = resolve_script(script)
   new_lines = consolidate_macros(new_script)
 
-  ui.report_verbose("consolidated script with proxied macro numbers")
+  ui.report_verbose_alt("consolidated script with proxied macro numbers")
   if verbose_mode:
     print_script(new_lines)
 
   sort_script(new_lines)
 
-  ui.report_verbose("script after sorting")
+  ui.report_verbose_alt("script after sorting")
   if verbose_mode:
     print_script(new_lines)
 
@@ -1068,20 +1127,69 @@ def compile_script(script):
   if not compilation_valid(new_lines):
     saved_bad_script = new_lines
     raise ValueError("The script did not compile successfully due to unresolved values.")
-  ui.report_verbose("Packing")
+  #ui.report_verbose("Packing")
   #print_script(new_lines)
 
+  ui.report_verbose("--------------- post compilation processing ---------------")
   new_lines = post_processing(new_lines)
-  ui.report_verbose("script after final macro number assignment")
+  ui.report_verbose_alt("script after final macro number assignment")
   if verbose_mode:
     print_script(new_lines)
 
+  ui.report_verbose("--------------- post compilation clean up ---------------")
   new_lines = post_clean_up(new_lines)
-  ui.report_verbose("script after cleanup:")
+  ui.report_verbose_alt("script after cleanup:")
   if verbose_mode:
     print_script(new_lines)
 
+  ui.report_verbose("--------------- comnpilation complete ---------------")
   return new_lines
+
+
+########################################################################
+## general helpers
+########################################################################
+
+def is_number(str):
+  try:
+    int(str)
+    return True
+  except ValueError:
+    return False
+
+def print_script(script):
+  for line in script:
+    ui.report_error(line)
+  print
+
+def print_list(list):
+  for key in list.keys():
+    print str(key) + "='" + str(list[key]) + "'"
+
+
+
+########################################################################
+########################################################################
+## API methods
+########################################################################
+########################################################################
+
+def begin(led_command_, verbose_mode_, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_):
+  global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros, led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes
+  led_command = led_command_
+  verbose_mode = verbose_mode_
+  starting_macro_number = starting_macro
+  ending_macro_number = ending_macro
+  number_of_sequencers = number_of_sequencers_
+  bytes_per_macro = bytes_per_macro_
+  max_string_length = max_string_length_
+  number_of_macros = (ending_macro_number - starting_macro_number) + 1
+  next_available_macro_number = starting_macro_number
+  last_macro_bytes = last_macro_bytes_
+  presets = presets_
+  resolve_presets(presets)
+  ui.begin(verbose_mode)
+  ui.report_verbose("Beginning compilation engine")
 
 def compile_file(filename):
   script = load_file(filename)
@@ -1096,12 +1204,4 @@ def compilation_valid(script):
 def remaining_sequencers():
   return number_of_sequencers - next_available_sequencer_number 
 
-def print_script(script):
-  for line in script:
-    ui.report_error(line)
-  print
-
-def print_list(list):
-  for key in list.keys():
-    print str(key) + "='" + str(list[key]) + "'"
 
