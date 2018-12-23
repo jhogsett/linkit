@@ -372,8 +372,8 @@ def run_default_macro():
     else:
         resolved = mc.get_resolved()
         final_macro_numbers = mc.get_final_macro_numbers()
-        if "%run-macro" in resolved:
-          run_macro_name = resolved["%run-macro"]
+        if "%play-macro" in resolved:
+          run_macro_name = resolved["%play-macro"]
           if run_macro_name in resolved:
             orig_macro_number = resolved[run_macro_name]
             if "'" in str(orig_macro_number):
