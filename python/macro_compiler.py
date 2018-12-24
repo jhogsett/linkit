@@ -217,7 +217,7 @@ def resolve_script(script_lines):
         if new_lines == prev_lines:
             # no more resolving needed/possible
             break
-        proxy_macro_numbers() #@@@
+        proxy_macro_numbers()
     return new_lines
 
 
@@ -228,10 +228,14 @@ def resolve_script(script_lines):
 def pre_process_script(script_lines):
     new_lines = remove_blank_lines(script_lines)
     new_lines = remove_comments(new_lines)
+#    new_lines = process_get_variables(new_lines)
+#    new_lines = process_set_variables(new_lines)
     new_lines = pre_rewrite(new_lines)
     new_lines = translate_commands(new_lines)
     new_lines = process_directives(new_lines)
     new_lines = capture_templates(new_lines)
+    new_lines = process_get_variables(new_lines)
+    new_lines = process_set_variables(new_lines)
     new_lines = expand_meta_templates(new_lines)
     new_lines = expand_templates(new_lines)
     return new_lines
@@ -272,6 +276,22 @@ def pre_rewrite(script_lines):
     return new_lines
 
 ## ----------------------------------------------------
+
+def process_set_variables(script_lines):
+    new_lines = []
+    for line in script_lines:
+        line = process_set_variable(line)
+        if len(line) > 0:
+            new_lines.append(line)
+    return new_lines
+
+def process_get_variables(script_lines):
+    new_lines = []
+    for line in script_lines:
+        line = process_get_variable(line)
+        if len(line) > 0:
+            new_lines.append(line)
+    return new_lines
 
 # this assumes all commands are on individual lines
 def translate_commands(script_lines):
@@ -340,6 +360,9 @@ def expand_meta_templates(script_lines):
         line = line.strip()
         args = extract_args(line, "(((", ")))")
         if len(args) >= 2:
+            # do any variable replacements that can be done
+            line = replace_all_variables(line)
+            args = extract_args(line, "(((", ")))")
             template_name = args[0]
             index_arg = args[1]
             index_max = None
@@ -353,8 +376,24 @@ def expand_meta_templates(script_lines):
             else:
                 try:
                     index_max = int(index_arg)
+                except ValueError:
+                    # argument may be a variable reference
+                    value = extract_contents(index_arg, "<", ">")
+                    if len(value) > 0:
+                        if value in resolved:
+                            index_max = int(resolved[value])
+                        else:
+                            raise ValueError("Meta template cannot be expanded due to unresolved variable reference: " + value);
+                    else:
+                        raise ValueError("Meta template cannot be expanded due to unresolved non-integer argument: " + index_arg);
                 except:
-                    raise ValueError("Meta template cannot be expanded due to non-integer argument: " + str(args[1]));
+                    raise ValueError("Meta template cannot be expanded due to unprocessable argument: " + index_arg);
+
+#                try:
+#                    index_max = int(index_arg)
+#                except:
+#                    raise ValueError("Meta template cannot be expanded due to non-integer argument: " + str(args[1]));
+
             # remaining arguments, if any, are the search replacements
             replacements = " ".join(args[2:])
             for index in range(0, index_max):
@@ -614,7 +653,7 @@ def process_set_macro(line):
             # replace with a proxy macro number marker
             # marked by being < 0
             proxy_macro_number = str(macro_number * -1)
-            ui.report_verbose("process_set_macron new proxy macro number marker: " + proxy_macro_number)
+            ui.report_verbose_alt("process_set_macron new proxy macro number marker: " + proxy_macro_number)
             return "'" + proxy_macro_number + "':set"
 
     # return the unprocessed line
@@ -668,7 +707,7 @@ def process_get_variable(line):
         if variable_name in resolved:
             # replace the variable reference with the resolved value
             resolved_value = resolved[variable_name]
-            ui.report_verbose("process_get_variable replacing variable reference '{}' with '{}'".format(variable_name, resolved_value))
+            #ui.report_verbose("process_get_variable replacing variable reference '{}' with '{}'".format(variable_name, resolved_value))
             return replace_args(line, "<", ">", resolved_value)
         else:
             #ui.report_verbose_alt2("variable not found: " + variable_name)
@@ -874,7 +913,7 @@ def assign_final_macro_number(line):
     while bytes_used == 0 and tries > 0:
         ui.report_verbose("assign_final_macro_number measuring proxy macro #" + str(proxy_macro_number) + " on device")
         bytes_used = led_command.command_int(test_macro)
-        ui.report_verbose("assign_final_macro_number reported size: " + str(bytes_used) + " bytes")
+        ui.report_verbose_alt("assign_final_macro_number reported size: " + str(bytes_used) + " bytes")
         tries -= 1
 
     if bytes_used == 0:
@@ -940,7 +979,7 @@ def assign_final_macro_number(line):
 
         final_macro_number = potential_macro_number
 
-    ui.report_verbose("assign_final_macro_number assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
+    ui.report_verbose_alt("assign_final_macro_number assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
     report_progress()
     set_final_macro_number(proxy_macro_number, final_macro_number)
 
@@ -1083,8 +1122,6 @@ def locate_delimiters(line, start_delimiter, end_delimiter, outer=False):
 
     return start, end
 
-
-
 ## ----------------------------------------------------
 
 def cut_contents(line, start_delimiter, end_delimiter, start, end):
@@ -1129,6 +1166,15 @@ def replace_args(line, start_delimiter, end_delimiter, replacement, outer=False)
     start, end = locate_delimiters(line, start_delimiter, end_delimiter, outer)
     if start != -1 and end != -1:
         return line[0:start] + str(replacement) + line[end + 1:]
+    return line
+
+def replace_all_variables(line):
+    while True:
+        prev_line = line
+        line = process_get_variable(line)
+        if line != prev_line:
+            continue
+        break
     return line
 
 
