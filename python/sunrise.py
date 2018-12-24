@@ -114,6 +114,11 @@ def loop():
             event_time = int(wx.daily_sunrise(data))
         else:
             event_time = int(wx.daily_sunset(data))
+
+	# quantize the event time to the minute
+        event_time = int(event_time / 60) * 60
+
+	# add/subtract the offset in minutes
         event_time += trigger_offset * 60
 
         if dryrun_mode:
