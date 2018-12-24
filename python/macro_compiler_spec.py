@@ -38,7 +38,7 @@ def get_options():
 def initialize():
     global app_description
     global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
-    app_description = "Apollo Lighting System - Macro Compiler Specs v.0.0 6-0-2018"
+    app_description = "Apollo Lighting System - Macro Compiler Specs v.2.0 12-0-2018"
     get_options()
     ui.begin(verbose_mode, quiet_mode)
     lc.begin(verbose_mode)
