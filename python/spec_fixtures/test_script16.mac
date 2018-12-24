@@ -21,9 +21,6 @@ $render-time <base-timing>
   <CONFIG-FADE-RATE>,<fade-rate>:cfg
   <render-time>,<render>:sch
 
-[render !]
-  flu
-
 [setup-components]
   (setup-swingers)
   (setup-hsl-sequencer)

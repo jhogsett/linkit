@@ -21,9 +21,6 @@ $step 2
   <render-time>,<render>:sch
   (start)
 
-[render !]
-  flu
-
 [start]
   (((worm-start 3)))
 

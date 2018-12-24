@@ -23,9 +23,6 @@ $color-step 1
   <render-time>,<render>:sch
   (start)
 
-[render !]
-  flu
-
 [start]
   (((worm-start 3)))
   (colorseq-start)

@@ -1,4 +1,5 @@
 10:set:app:100,5:sch:1000,4:sch:7:run:1000,6:sch
+72:set:flu
 4:set:0:pal:flo
 5:set:flu
 6:set:0,0,2:seq:sto:60:rcl:csh

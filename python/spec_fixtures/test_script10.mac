@@ -26,9 +26,6 @@ $brightness 20
 [setup-rendering]
     <render-time>,<render>:sch
 
-[render !]
-    flu
-
 [start-components]
     (start-RED)
     (start-ORANGE)
