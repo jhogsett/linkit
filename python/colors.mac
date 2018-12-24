@@ -4,7 +4,7 @@
 %include symbols
 %include hsl-sequencer
 
-%run-macro colors-app
+%play-macro colors-app
 
 $render-time 100
 $draw-time 1000

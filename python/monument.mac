@@ -3,7 +3,7 @@
 %include hsl-sequencer
 %include colors
 
-%run-macro monument-app
+%play-macro monument-app
 
 [monument-app 10]
   application

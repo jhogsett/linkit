@@ -2,11 +2,12 @@
 $value 3
 
 [macro 10]
-  ((test <value> `<value>*3`))
+  app
+  ((testing <value> `2*<value>/3`))
 
-[[test X Y
+[[testing X Y
   [macro-X]
-    `Y*2`
+    `Y+2`
      palette-color
      flush
 ]]

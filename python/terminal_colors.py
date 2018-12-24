@@ -1,54 +1,68 @@
+
+global no_colors_mode
+no_colors_mode = None
+
+def begin(no_colors=False):
+  global no_colors_mode
+  no_colors_mode = no_colors
+
+def color_code(code):
+  if no_colors_mode:
+    return ''
+  else:
+    return "\x1b[" + str(code) + "m"
+
 def black(text):                                                                                                                                                        
-  return "\x1b[30m" + text + normal()                                                                                                        
+  return color_code(30) + text + normal()                                                                                                        
                                                                                                                                                                                                            
 def red(text):                                                                                                                                                                                             
-  return "\x1b[31m" + text + normal()                                                                                                                                   
+  return color_code(31) + text + normal()                                                                                                                                   
                                                                                                                                                                                                            
 def green(text):                                                                                                                                                                                           
-  return "\x1b[32m" + text + normal()                                                                                                                                                                      
+  return color_code(32) + text + normal()                                                                                                                                                                      
                                                                                                                                                     
 def yellow(text):                                                                                                                                                                                          
-  return "\x1b[33m" + text + normal()                                                                                                                                                                      
+  return color_code(33) + text + normal()                                                                                                                                                                      
                                                                                                                                                                                                            
 def blue(text):                                                                                                                                                                                            
-  return "\x1b[34m" + text + normal()                                                                                                                                                                      
+  return color_code(34) + text + normal()                                                                                                                                                                      
                                                                                                                                                                                                            
 def magenta(text):                                                                                                                                                                                         
-  return "\x1b[35m" + text + normal()                                                                                                                                                                      
+  return color_code(35) + text + normal()                                                                                                                                                                      
                                                                                                                                                                                                            
 def cyan(text):                                                                                                                                                                                            
-  return "\x1b[36m" + text + normal()                                                                                                                                                                      
+  return color_code(36) + text + normal()                                                                                                                                                                      
                                                                                                                                                                                                            
 def white(text):                                                                                                                                                                                           
-  return "\x1b[37m" + text + normal()                                                                                                                                                                      
+  return color_code(37) + text + normal()                                                                                                                                                                      
                                                                                                                                                                                                            
 def normal():                                                                                                                                                                                              
-  return "\x1b[39m"                                                                                                                                                                                        
+  return color_code(39)                                                                                                                                                                                        
                                                                                                                                                                                                            
-def black(text):                                                                                                                                                        
-  return "\x1b[40m" + text + normal()                                                                                                                                                                      
+def blackbg(text):                                                                                                                                                        
+  return color_code(40) + text + normal()                                                                                                                                                                      
                                                                                                                                                                                                            
 def redbg(text):                                                                                                                                                        
-  return "\x1b[41m" + text + normalbg()                                                                                                                                 
+  return color_code(41) + text + normalbg()                                                                                                                                 
                                                                                                                                                                         
 def greenbg(text):                                                                                                                                                      
-  return "\x1b[42m" + text + normalbg()                                                                                                                                 
+  return color_code(42) + text + normalbg()                                                                                                                                 
                                                                                                                                                                                                            
 def yellowbg(text):                                                                                                                                                                                        
-  return "\x1b[43m" + text + normalbg()                                                                                                                                 
+  return color_code(43) + text + normalbg()                                                                                                                                 
                                                                                                                                                                         
 def bluebg(text):                                                                                              
-  return "\x1b[44m" + text + normalbg()                                                                                                      
+  return color_code(44) + text + normalbg()                                                                                                      
                                                                                                                                              
 def magentabg(text):                                                                                                                                                                                       
-  return "\x1b[45m" + text + normalbg()                                                                                                             
+  return color_code(45) + text + normalbg()                                                                                                             
                                                                                                                                                                         
 def cyanbg(text):                                                                                                                                                                                          
-  return "\x1b[46m" + text + normalbg()                                                                                                             
+  return color_code(46) + text + normalbg()                                                                                                             
                                                                                                                                              
 def whitebg(text):                                                                                             
-  return "\x1b[47m" + text + normalbg()                                                                                                                                                                    
+  return color_code(47) + text + normalbg()                                                                                                                                                                    
                                                                                                                                                     
 def normalbg():                                                                                                                                                                                            
-  return "\x1b[49m"   
+  return color_code(49)   
 

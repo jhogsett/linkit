@@ -21,5 +21,5 @@ $rotate-time 30000
 #[demo 13]
 #  (wanderer-app)
 
-%run-macro mellow
+%play-macro mellow
 

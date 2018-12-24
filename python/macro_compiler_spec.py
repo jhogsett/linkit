@@ -13,7 +13,7 @@ global app_description, verbose_mode
 app_description = None 
 verbose_mode = None
 
-global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
+global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers, quiet_mode
 device_profile = None
 num_leds = None
 starting_macro = None
@@ -24,20 +24,23 @@ char_buffer_size = None
 number_of_fine_zones = None
 number_of_colors = None
 number_of_sequencers = None
+quiet_mode = None
 
 def get_options():
-  global verbose_mode
+  global verbose_mode, quiet_mode
   parser = argparse.ArgumentParser(description=app_description)
   parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
+  parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
   args = parser.parse_args()
   verbose_mode = args.verbose
+  quiet_mode = args.quiet
 
 def initialize():
     global app_description
     global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
-    app_description = "Apollo Lighting System - Macro Compiler Specs v.0.0 6-0-2018"
+    app_description = "Apollo Lighting System - Macro Compiler Specs v.2.0 12-0-2018"
     get_options()
-    ui.begin(verbose_mode)
+    ui.begin(verbose_mode, quiet_mode)
     lc.begin(verbose_mode)
     lc.stop_all()
 
@@ -54,7 +57,7 @@ def initialize():
     total_macro_bytes = device_profile["TOTAL-MACRO-BYTES"]
     last_macro_bytes = device_profile["LAST-MACRO-BYTES"]
 
-    mc.begin(lc, verbose_mode, presets(), starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
+    mc.begin(lc, verbose_mode, quiet_mode, presets(), starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
 
     ui.app_description(app_description)
     ui.report_info(ui.intro_entry("Number of LEDs", num_leds))
@@ -211,7 +214,7 @@ def specs():
       try:
         compiled_script = mc.compile_file(fixture_file)
       except ValueError, e:
-        ui.report_error("Compilation error: " + str(e))
+        ui.report_error("Compilation error in " + fixture_file + ": " + str(e))
         break
       if verbose_mode:
         print_script(compiled_script)
@@ -238,7 +241,7 @@ def specs():
         expect("Invalid compilation of: " + fixture_file, mc.compilation_valid(compiled_script), False)
         mc.reset()
       except ValueError, e:
-        ui.report_error("Compilation error: " + str(e))
+        ui.report_error("Compilation error in " + fixture_file + ": " + str(e))
         print_script(mc.get_saved_bad_script())
         expect("Exception caught", True, False)
     else:

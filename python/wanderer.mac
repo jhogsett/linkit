@@ -20,7 +20,7 @@ $wanderer-max-half <wanderer-max>
 # using mixed draw mode so the colors intermingle
 # use a fast fade to avoid clutter
 
-%run-macro wanderer-app
+%play-macro wanderer-app
 
 # set up the application on macro #10
 [wanderer-app 10]

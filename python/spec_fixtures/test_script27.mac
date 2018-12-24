@@ -1,0 +1,8 @@
+%include symbols
+$fade-rate 100
+$blink-period 200
+
+[doit]
+    <CONFIG-FADE-RATE>=<fade-rate>
+    <CONFIG-BLINK-PERIOD>=<blink-period>
+

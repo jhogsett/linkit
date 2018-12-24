@@ -6,7 +6,7 @@
 %include symbols
 %include hsl-sequencer
 
-%run-macro inchworm-app
+%play-macro inchworm-app
 
 $render-time 100
 $width0 `<NUM-LEDS> * 1 / 6`

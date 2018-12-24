@@ -4,7 +4,7 @@
 # ----------------------------------------------------------------
 
 %include symbols
-%include hsl-sequencer
+%include test_script26_include
 
 %run-macro inchworm-app
 

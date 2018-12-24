@@ -6,7 +6,7 @@
 %include symbols
 %include hsl-sequencer
 
-%run-macro swinger-app
+%play-macro swinger-app
 
 $swinger-fade-rate 8000
 $swinger-fade-type sfd
@@ -21,8 +21,7 @@ $swinger-max-half <swinger-max>
     application
     <DRAW-WRITE>
     draw-mode
-    <CONFIG-FADE-RATE>,<swinger-fade-rate>
-    configure
+    <CONFIG-FADE-RATE>=<swinger-fade-rate>
     (render <swinger-render-time>)
     (hsl-sequencer-start)
     (swingers-start)
