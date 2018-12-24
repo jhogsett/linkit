@@ -31,8 +31,7 @@ $timing-offset 5
     <draw-mode>
     draw-mode
 
-    <CONFIG-FADE-RATE>,<fade-rate>
-    configure
+    <CONFIG-FADE-RATE>=<fade-rate>
 
     # set the preset brightness level
     <brightness>

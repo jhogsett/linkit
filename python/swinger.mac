@@ -21,8 +21,7 @@ $swinger-max-half <swinger-max>
     application
     <DRAW-WRITE>
     draw-mode
-    <CONFIG-FADE-RATE>,<swinger-fade-rate>
-    configure
+    <CONFIG-FADE-RATE>=<swinger-fade-rate>
     (render <swinger-render-time>)
     (hsl-sequencer-start)
     (swingers-start)

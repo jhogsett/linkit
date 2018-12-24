@@ -228,8 +228,6 @@ def resolve_script(script_lines):
 def pre_process_script(script_lines):
     new_lines = remove_blank_lines(script_lines)
     new_lines = remove_comments(new_lines)
-#    new_lines = process_get_variables(new_lines)
-#    new_lines = process_set_variables(new_lines)
     new_lines = pre_rewrite(new_lines)
     new_lines = translate_commands(new_lines)
     new_lines = process_directives(new_lines)
@@ -389,11 +387,6 @@ def expand_meta_templates(script_lines):
                 except:
                     raise ValueError("Meta template cannot be expanded due to unprocessable argument: " + index_arg);
 
-#                try:
-#                    index_max = int(index_arg)
-#                except:
-#                    raise ValueError("Meta template cannot be expanded due to non-integer argument: " + str(args[1]));
-
             # remaining arguments, if any, are the search replacements
             replacements = " ".join(args[2:])
             for index in range(0, index_max):
@@ -477,6 +470,7 @@ def process_line(line):
     line = process_get_variable(line)
     line = process_allocate_sequencer(line)
     line = process_place_template(line)
+    line = process_configure(line)
     return line
 
 ## ----------------------------------------------------
@@ -781,6 +775,23 @@ def process_place_template(line):
     # return the unprocessed line
     # ui.report_verbose("process_place_template returning unprocessed line '{}'".format(line))
     return line    
+
+## ----------------------------------------------------
+
+def process_configure(line):
+    line = line.strip()
+    if len(line) < 1:
+        return ''
+
+    # see if line has a configuration shortcut
+    if "=" in line:
+        halves = line.split("=")
+        if len(halves) == 2:
+            halves[0].strip()
+            halves[1].strip()
+            if len(halves[0]) > 0 and len(halves[1]) > 0:
+                return halves[0] + "," + halves[1] + ":cfg"
+    return line
 
 
 ########################################################################
