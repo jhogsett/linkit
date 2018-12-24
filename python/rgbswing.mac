@@ -12,13 +12,13 @@ $fade-type ffd
 	application
 	<DRAW-WRITE>
 	draw-mode
-	(render <render-time>)
+	(this-render <render-time>)
 	(init)
 
 [init]
 	(((start 3)))
 
-[render !]
+[this-render !]
 	mirror
 	flush
 
