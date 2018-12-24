@@ -5,28 +5,28 @@
 $brightness 33
 
 [glass-light-white 10]
-  (light-set-white)
+  (light-set-WHITE)
 
 [glass-light-red 11]
-  (light-set-red)
+  (light-set-RED)
 
 [glass-light-tungsten 12]
-  (light-set-tungsten)
+  (light-set-TUNGSTEN)
 
 [glass-light-neon 13]
-  (light-set-neon)
+  (light-set-NEON)
 
-((light-setting white red))
-((light-setting red red))
-((light-setting tungsten sodium))
-((light-setting neon neon))
+((light-setting WHITE white red))
+((light-setting RED red red))
+((light-setting TUNGSTEN tungsten sodium))
+((light-setting NEON neon neon))
 
-[[light-setting FRONT-COLOR SIDE-COLOR
-  [light-set-FRONT-COLOR]
-    (light-side-FRONT-COLOR)
-    (light-front-FRONT-COLOR)
+[[light-setting NAME FRONT-COLOR SIDE-COLOR
+  [light-set-NAME]
+    (light-side-NAME)
+    (light-front-NAME)
 
-  [light-side-FRONT-COLOR]
+  [light-side-NAME]
     SIDE-COLOR
     dim
     dim
@@ -34,7 +34,7 @@ $brightness 33
     7
     repeat
 
-  [light-front-FRONT-COLOR]
+  [light-front-NAME]
     FRONT-COLOR
     47
     repeat

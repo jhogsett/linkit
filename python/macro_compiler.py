@@ -217,6 +217,7 @@ def resolve_script(script_lines):
         if new_lines == prev_lines:
             # no more resolving needed/possible
             break
+        proxy_macro_numbers() #@@@
     return new_lines
 
 
@@ -260,15 +261,15 @@ def remove_comments(script_lines):
 # rewrite the script in the new style without the colons
 # this simplifies automatic modifying of the script
 def pre_rewrite(script_lines):
-        new_lines = []
-        for line in script_lines:
-                segments = line.split(":")
-                for segment in segments:
-                        new_lines.append(segment)
-        ui.report_verbose("pre_rewrite script after pre-rewrite:")
-        if verbose_mode:
-                print_script(new_lines)
-        return new_lines
+    new_lines = []
+    for line in script_lines:
+        segments = line.split(":")
+        for segment in segments:
+            new_lines.append(segment)
+    ui.report_verbose("pre_rewrite script after pre-rewrite:")
+    if verbose_mode:
+        print_script(new_lines)
+    return new_lines
 
 ## ----------------------------------------------------
 
@@ -281,7 +282,7 @@ def translate_commands(script_lines):
         new_lines.append(line)
     ui.report_verbose("translate_commands script after command translation:")
     if verbose_mode:
-            print_script(new_lines)
+        print_script(new_lines)
     return new_lines
 
 ## ----------------------------------------------------
@@ -419,7 +420,7 @@ def resolution_pass(script_lines):
             new_lines.append(new_line)
     passes += 1
     if verbose_mode:
-        ui.report_verbose("resolution_pass pass #" + str(passes))
+        ui.report_verbose("--------------------- resolution_pass pass #" + str(passes))
     report_progress()
     new_lines = filter(None, new_lines)
     return new_lines
@@ -467,23 +468,47 @@ def process_comment(line):
 
 ## ----------------------------------------------------
 
+# how to process a line like:
+# ``3*3`*2`
+
 def process_evaluate_python(line):
     line = line.strip()
     if len(line) < 1:
         return ''
 
     # see if line has a python expression
-    expression = extract_contents(line, "`", "`")
+    expression = extract_contents(line, "`", "`", True)
     if len(expression) > 0:
 
-        # can only process python expression if there are no unresolves values
-        if not line_has_unresolved_variables(expression):
-            #ui.report_verbose_alt("-evaluating Python: " + expression)
-            result = eval(expression)
+        # the line may have multiple expressions as arguments
+        segments = line.split(',')
+
+        new_line = []
+        for segment in segments:
+            expression = extract_contents(segment, "`", "`", True)
+
+            # clean up the expression, removing excess backticks
+            expression = "".join(expression.split('`'))
+
+            if len(expression) > 0:
+                # can only process python expression if there are no unresolves values
+                #iif not line_has_unresolved_variables(expression):
+                #if not line_has_unresolved(expression):
+		if not line_has_unresolved_for_python_evaluation(expression):
+                    #ui.report_verbose_alt("-evaluating Python: " + expression)
+                    result = eval(expression)
 #todo-catch error
-            #ui.report_verbose_alt("=evaluated result: " + str(result))
-            ui.report_verbose_alt("process_evaluate_python replacing python expression '{}' with '{}'".format(expression, result))
-            return replace_args(line, "`", "`", str(result))
+                    #ui.report_verbose_alt("=evaluated result: " + str(result))
+                    #ui.report_verbose_alt("process_evaluate_python replacing python expression '{}' with '{}'".format(expression, result))
+                    new_line.append(replace_args(segment, "`", "`", str(result), True))
+                else:
+                    #ui.report_verbose_alt2("skipping segment with unresolved: " + expression)
+                    new_line.append(segment)
+            else:
+                new_line.append(segment)
+        result = ",".join(new_line)
+        #ui.report_verbose_alt2("line returned by process_evaluate_python: " + result)
+        return result
 
     # return the unprocessed line
     # ui.report_verbose("process_evaluate_python returning unprocessed line '{}'".format(line))
@@ -531,6 +556,7 @@ def process_set_macro(line):
 
     # can't process the macro setting if there are unresolved values
     if line_has_unresolved_variables(line):
+        #ui.report_verbose_alt2("skipping processing macro on line: " + line)
         return line
 
     macro_name = None
@@ -642,8 +668,11 @@ def process_get_variable(line):
         if variable_name in resolved:
             # replace the variable reference with the resolved value
             resolved_value = resolved[variable_name]
-            #ui.report_verbose("process_get_variable replacing variable reference '{}' with '{}'".format(variable_name, resolved_value))
+            ui.report_verbose("process_get_variable replacing variable reference '{}' with '{}'".format(variable_name, resolved_value))
             return replace_args(line, "<", ">", resolved_value)
+        else:
+            #ui.report_verbose_alt2("variable not found: " + variable_name)
+            pass
 
     # return the unprocessed line
     # ui.report_verbose("process_get_variable returning unprocessed line '{}'".format(line))
@@ -659,6 +688,7 @@ def process_allocate_sequencer(line):
         return ''
 
     # see if line has a sequencer allocation
+    #ui.report_verbose_alt2("process_allocate_sequencer " + line)
     args = extract_args(line, "{", "}")
     if len(args) > 0:
 
@@ -1029,6 +1059,8 @@ def line_has_sequence_marker(line):
 def line_has_unresolved(line):
     return line_has_unresolved_variables(line) or line_has_python_expression(line) or line_has_template_marker(line) or line_has_macro_marker(line) or line_has_sequence_marker(line)
 
+def line_has_unresolved_for_python_evaluation(line):
+    return line_has_unresolved_variables(line) or line_has_python_expression(line) or line_has_template_marker(line) or line_has_sequence_marker(line)
 
 ########################################################################
 ## line maniupation routines
@@ -1036,14 +1068,22 @@ def line_has_unresolved(line):
 
 # locate the start and end positions of a delimited portion of a string
 # returns start, end
-def locate_delimiters(line, start_delimiter, end_delimiter):
+def locate_delimiters(line, start_delimiter, end_delimiter, outer=False):
     start = -1
     end = -1
+
     if start_delimiter in line:
         start = line.find(start_delimiter)
+
         if end_delimiter in line[start + len(start_delimiter):]:
-            end = line.find(end_delimiter, start + 1)
+            if outer == False:
+                end = line.find(end_delimiter, start + 1)
+            else:
+                end = line.rfind(end_delimiter, start + 1)
+
     return start, end
+
+
 
 ## ----------------------------------------------------
 
@@ -1054,11 +1094,11 @@ def cut_contents(line, start_delimiter, end_delimiter, start, end):
 
 # pass in line and two delimiters, get back contents within
 # delimiters specified as one or two characters
-def extract_contents(line, start_delimiter, end_delimiter):
+def extract_contents(line, start_delimiter, end_delimiter, outer=False):
     line = line.strip()
     if len(line) == 0:
         return ''
-    start, end = locate_delimiters(line, start_delimiter, end_delimiter)
+    start, end = locate_delimiters(line, start_delimiter, end_delimiter, outer)
     if start != -1 and end != -1:
         return cut_contents(line, start_delimiter, end_delimiter, start, end)
     return ''
@@ -1085,8 +1125,8 @@ def get_key_args(line, key):
 
 ## ----------------------------------------------------
 
-def replace_args(line, start_delimiter, end_delimiter, replacement):
-    start, end = locate_delimiters(line, start_delimiter, end_delimiter)
+def replace_args(line, start_delimiter, end_delimiter, replacement, outer=False):
+    start, end = locate_delimiters(line, start_delimiter, end_delimiter, outer)
     if start != -1 and end != -1:
         return line[0:start] + str(replacement) + line[end + 1:]
     return line

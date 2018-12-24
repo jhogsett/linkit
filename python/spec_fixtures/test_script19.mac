@@ -1,8 +1,8 @@
 
-:(((test 5 `X+1` `X+2`)))
+(((testing 5 `X+1` `X+2`)))
 
-[[test X Y Z
-  [testX]
+[[testing X Y Z
+  [testingX]
     X:red
     Y:grn
     Z:blu

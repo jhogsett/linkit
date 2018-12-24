@@ -214,7 +214,7 @@ def specs():
       try:
         compiled_script = mc.compile_file(fixture_file)
       except ValueError, e:
-        ui.report_error("Compilation error: " + str(e))
+        ui.report_error("Compilation error in " + fixture_file + ": " + str(e))
         break
       if verbose_mode:
         print_script(compiled_script)
@@ -241,7 +241,7 @@ def specs():
         expect("Invalid compilation of: " + fixture_file, mc.compilation_valid(compiled_script), False)
         mc.reset()
       except ValueError, e:
-        ui.report_error("Compilation error: " + str(e))
+        ui.report_error("Compilation error in " + fixture_file + ": " + str(e))
         print_script(mc.get_saved_bad_script())
         expect("Exception caught", True, False)
     else:
