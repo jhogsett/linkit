@@ -129,8 +129,9 @@ def broadcast(command_str):
 def loop():
     do_broadcast()
     next_step()
-    exit_if_done()
+    #exit_if_done()
     wait_step()
+    exit_if_done()
 
 def do_broadcast():
     r, g, b = convert_K_to_RGB(kelvin_current)
