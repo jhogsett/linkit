@@ -787,8 +787,8 @@ def process_configure(line):
     if "=" in line:
         halves = line.split("=")
         if len(halves) == 2:
-            halves[0].strip()
-            halves[1].strip()
+            halves[0] = halves[0].strip()
+            halves[1] = halves[1].strip()
             if len(halves[0]) > 0 and len(halves[1]) > 0:
                 return halves[0] + "," + halves[1] + ":cfg"
     return line

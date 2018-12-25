@@ -4,5 +4,5 @@ $blink-period 200
 
 [doit]
     <CONFIG-FADE-RATE>=<fade-rate>
-    <CONFIG-BLINK-PERIOD>=<blink-period>
+    <CONFIG-BLINK-PERIOD> = <blink-period>
 

@@ -1,0 +1,10 @@
+
+$asdf  1
+
+[ testing ]
+  ( test2 )
+  ( test2 < asdf > )
+
+[ test2 ]
+  stp
+
