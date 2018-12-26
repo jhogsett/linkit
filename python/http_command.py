@@ -18,6 +18,7 @@ import app_ui as ui
 import struct
 import threading
 import fcntl
+from subprocess import Popen, PIPE
 
 # ---------------------------------------------------------
 
@@ -156,6 +157,14 @@ class Handler(BaseHTTPRequestHandler):
       last_run_full = ''
       last_run = ''
   
+  def run_app_capture(self, app):
+    run = base_path + app
+    self.log('running with capture: ' + run)
+    process = Popen(run.split(" "), stdout=PIPE)
+    (output, err) = process.communicate()
+    exit_code = process.wait()
+    return output
+
   def kill_last_app(self):
     global last_run, last_run_full                       
     if last_run != '':                          
@@ -196,6 +205,8 @@ class Handler(BaseHTTPRequestHandler):
     content_type = "application/octet-stream"
     if file_ext == '.html':
       content_type = "text/html"
+    elif file_ext == '.txt':
+      content_type = "text/plain"
     elif file_ext == '.css':
       content_type = "text/css"
     elif file_ext == '.js':
@@ -217,6 +228,16 @@ class Handler(BaseHTTPRequestHandler):
           if modified_since.lower() == filetime_str.lower():
             is_cached = True
     return is_cached
+
+  def serve_text(self, text):
+    content_type = self.content_type("*.txt")
+    self.send_response(200)
+    self.send_header("Content-type", content_type)
+    self.send_header("Content-Length", len(text))
+    self.send_header("Cache-Control", "no-cache")
+    self.end_headers()
+    self.wfile.write(text)
+    self.wfile.close()
 
   def serve_page(self, page, headers={}):
     global last_run, last_run_full, host_name, host_ip
@@ -290,6 +311,10 @@ class Handler(BaseHTTPRequestHandler):
   def do_runonce(self, args):
     self.run_app(args['runonce'][0], False)
 
+  def do_runout(self, args):
+    result = self.run_app_capture(args['runout'][0])
+    self.serve_text(result)
+
   def do_sys(self, args):
     for sys in args['sys']:
       self.log('shell command: ' + sys)
@@ -309,6 +334,9 @@ class Handler(BaseHTTPRequestHandler):
     # until command actions are handled asynchronously, need to
     # serve the page each time non-cached
     self.serve_page(webpage)
+
+  def do_textpage(self, text):
+    self.serve_text(test)
 
   def do_file(self, url):
     headers = self.get_headers()
@@ -340,6 +368,9 @@ class Handler(BaseHTTPRequestHandler):
       self.do_run(args)
     if 'runonce' in args:
       self.do_runonce(args)
+    if 'runout' in args:
+      self.do_runout(args)
+      return
     if 'sys' in args:
       self.do_sys(args)
     if 'cast' in args:
