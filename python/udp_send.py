@@ -14,14 +14,16 @@ import threading
 app_description = "LED Multicast Sender v.0.0 10-1-2017"
 
 parser = argparse.ArgumentParser(description=app_description)
-parser.add_argument("command",                      nargs='?',      default=None,          help='command to send & exit (optional)')
-parser.add_argument("-v", "--verbose",              dest="verbose", action='store_true',   help='display verbose info (False)')
-parser.add_argument("-i", "--ipaddr",               dest="ipaddr",  default='224.3.29.71', help='multicast group IP address (224.3.29.71)')
-parser.add_argument("-p", "--port",     type=int,   dest="port",    default=10000,         help='multicast port (10000)')
-parser.add_argument("-t", "--timeout",  type=float, dest="timeout", default=0.1,           help='timeout time waiting for responses (seconds) (0.1)')
-parser.add_argument("-n", "--numtimes", type=int,   dest="times",   default=15,            help='number of times to issue command (9)')
-parser.add_argument("-k", "--nokeys",               dest="nokeys",  action='store_true',   help='disables keys sent for dupe detection (False)')
-parser.add_argument("-d", "--delay",    type=float, dest="delay",   default=0.001,         help='delay exponent between duplicate messages (seconds) (0.01)')
+parser.add_argument("command",                      nargs='?',       default=None,          help='command to send & exit (optional)')
+parser.add_argument("-v", "--verbose",              dest="verbose",  action='store_true',   help='display verbose info (False)')
+parser.add_argument("-i", "--ipaddr",               dest="ipaddr",   default='224.3.29.71', help='multicast group IP address (224.3.29.71)')
+parser.add_argument("-p", "--port",     type=int,   dest="port",     default=10000,         help='multicast port (10000)')
+parser.add_argument("-t", "--timeout",  type=float, dest="timeout",  default=0.1,           help='timeout time waiting for responses (seconds) (0.1)')
+parser.add_argument("-n", "--numtimes", type=int,   dest="times",    default=15,            help='number of times to issue command (9)')
+parser.add_argument("-k", "--nokeys",               dest="nokeys",   action='store_true',   help='disables keys sent for dupe detection (False)')
+parser.add_argument("-d", "--delay",    type=float, dest="delay",    default=0.001,         help='delay exponent between duplicate messages (seconds) (0.01)')
+parser.add_argument("-q", "--quiet",                dest="quiet",    action="store_true",   help="don't use terminal colors (False)")
+parser.add_argument("-r", "--rollcall",             dest="rollcall", action="store_true",   help="send a command and report responding devices (False)")
 
 args = parser.parse_args()
 command = args.command
@@ -33,8 +35,11 @@ multicast_group = (multicast_group_ip, multicast_port)
 num_times = args.times
 no_keys = args.nokeys
 msg_delay = args.delay
+quiet_mode = args.quiet
+rollcall = args.rollcall
 
-ui.begin(verbose_mode)
+tc.begin(quiet_mode)
+ui.begin(verbose_mode, quiet_mode)
 
 def get_ip_address(ifname):
   s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -88,29 +93,39 @@ def cast_socket():
 def add_key(command):
   return host_name + "/" + str(time.time()) + ";" + command
 
+global responses
+responses = []
+
 def send_socket_message(sock, message, times):
+  global responses
+  responses = []
   if no_keys != True:
     message = add_key(message)
   for n in range(0, times):
     # Send data to the multicast group
     ui.report_verbose('sending "%s"' % message)
     sent = sock.sendto(message, multicast_group)
-    if verbose_mode:
-      while True:
-        try:
-          data, server = sock.recvfrom(256)
-        #except KeyboardInterrupt:
-        #  break
-        except socket.timeout:
-          break
-        else:
-          ui.report_verbose('received "%s" from %s' % (data, server))
+
+    while True:
+      try:
+        data, server = sock.recvfrom(256)
+      #except KeyboardInterrupt:
+      #  break
+      except socket.timeout:
+        break
+      else:
+        response = "received {} from {}".format(data, server)
+        responses.append(response)
+        ui.report_verbose(response)
+
     if n < (times - 1):
       time.sleep(msg_delay * (2 ** n))
 
-def send_message(message):
+def send_message(message, num_times_=None):
+  if num_times_ == None:
+    num_times_ = num_times
   sock = cast_socket()
-  send_socket_message(sock, message, num_times)
+  send_socket_message(sock, message, num_times_)
   sock.close()
 
 background_threads = []
@@ -136,6 +151,12 @@ def wait_for_active_threads():
 if command != None:
   send_background_message(command)
   sys.exit();
+
+if rollcall == True:
+  send_message("::", 1)
+  for response in responses:
+    ui.report_info(response)
+  sys.exit()
 
 ui.app_description(app_description)
 ui.report_verbose("verbose mode")
