@@ -353,7 +353,7 @@ def render_forecast_temperature():
 def render_forecast_humidity():
     filler_data = "0,0," + str(minimum_lightness) + ":hsl"
     sat = 255
-    hue_min = 0
+    hue_min = 120
     hue_max = 240
     map_to_weekdays(humidity_slots)
     for x in xrange(7 -1, -1, -1):
@@ -383,16 +383,28 @@ def render_forecast_wind_speed():
                 week_slots[x][y] = filler_data
             else:
                 wind_speed = int(wind_speed)
-                if wind_speed >= 5:
+                if 0 <= wind_speed <= 1:
+                    week_slots[x][y] = "grn"
+                elif 0 <= wind_speed <= 2:
+                    week_slots[x][y] = "lgr"
+                elif 0 <= wind_speed <= 3:
+                    week_slots[x][y] = "olv"
+                elif 0 <= wind_speed <= 5:
                     week_slots[x][y] = "yel"
-                elif wind_speed >= 10:
+                elif 0 <= wind_speed <= 7:
+                    week_slots[x][y] = "amb"
+                elif 0 <= wind_speed <= 10:
                     week_slots[x][y] = "org"
-                elif wind_speed >= 15:
+                elif 0 <= wind_speed <= 12:
+                    week_slots[x][y] = "neo"
+                elif 0 <= wind_speed <= 15:
                     week_slots[x][y] = "red"
-                elif wind_speed >= 20:
-                    week_slots[x][y] = "pur"
-                elif wind_speed >= 25:
-                    week_slots[x][y] = "pur:bla"
+                elif 0 <= wind_speed <= 17:
+                    week_slots[x][y] = "red:brt"
+                elif 0 <= wind_speed <= 20:
+                    week_slots[x][y] = "red:brt:bli"
+                elif 0 <= wind_speed <= 99:
+                    week_slots[x][y] = "red:brt:brt:bla"
                 else:
                     week_slots[x][y] = filler_data
 

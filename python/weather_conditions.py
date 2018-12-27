@@ -3,11 +3,11 @@ weather_conditions = {
 None: "blk",        # segment filler
 0: "",		    # segment spacer
 1: "blk",           # segment filler
-2: "red",   # conditions day spacer
-3: "org",   # temperature day spacer
-4: "grn",   # humidity day spacer
-5: "blu",   # wind speed day spacer
-6: "pur",   # cloudiness
+2: "gry",           # conditions marker
+3: "red",           # temperature marker
+4: "grn",           # humidity marker
+5: "lbl",           # wind speed marker
+6: "yel",           # cloudiness/sunniness marker
 
 # storm
 200: "pur",     # thunderstorm with light rain
