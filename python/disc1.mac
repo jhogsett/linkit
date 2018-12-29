@@ -64,10 +64,28 @@ $num-instances 5
         ZONE
         zone
 
+#        0
+#        dynamic-color
+
+#        `SIZE-1`
+#        repeat
+
+#        SIZE
+#        black
+
+#        2
+#        dynamic-color
+
+#        `SIZE-1`
+#        repeat
+
+#        SIZE
+#        black
+
         COLOR
         dynamic-color
 
-        SIZE
+        `SIZE-1`
         repeat
 
         SIZE
