@@ -1,0 +1,89 @@
+# ----------------------------------------------------------------
+# 
+# 
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+
+$draw-mode <DRAW-WRITE>
+$brightness <BRIGHTNESS-AUTO>
+$base-time 36
+$render-time <base-time>
+$fade-rate 9000
+$num-instances 5
+
+%play-macro app
+
+[app 10]
+    application
+ 
+    # set the preset draw mode
+    <draw-mode>
+    draw-mode
+
+    <CONFIG-FADE-RATE> = <fade-rate>
+
+    # set the preset brightness level
+    <brightness>
+    level
+
+    (start-rings)
+
+    # start up the palette color sequencer
+    (hsl-sequencer-start)
+
+    # schedule the display rendering
+    (render <render-time>)
+
+    (center-dot)
+
+[start-rings]
+    (((ring-start <num-instances>)))
+
+[center-dot]
+    1
+    zone
+
+    0
+    dynamic-color
+
+((ring 0 2 5 `int(<base-time>*4.0000000)` 2))
+((ring 1 3 4 `int(<base-time>*2.6666667)` 3))
+((ring 2 4 3 `int(<base-time>*2.0000000)` 4))
+((ring 3 5 2 `int(<base-time>*1.3333334)` 6))
+((ring 4 6 1 `int(<base-time>*1.0000000)` 8))
+
+[[ring-start INSTANCE
+    (ring-INSTANCE-setup)
+]]
+
+[[ring INSTANCE ZONE COLOR SCHEDULE SIZE
+
+    [ring-INSTANCE-setup]
+        ZONE
+        zone
+
+        COLOR
+        dynamic-color
+
+        `SIZE-1`
+        black
+
+        SIZE,4
+        copy
+
+        (ring-INSTANCE-loop SCHEDULE)
+
+    [ring-INSTANCE-loop]
+        ZONE
+        zone
+
+        <TRUE>
+        reverse
+
+        rotate
+
+        reset
+]]
+

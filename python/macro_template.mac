@@ -1,0 +1,55 @@
+# ----------------------------------------------------------------
+# 
+# 
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+
+$draw-mode <DRAW-WRITE>
+$brightness <BRIGHTNESS-AUTO>
+$render-time 120
+$fade-rate 9000
+$num-instances 12
+
+%play-macro app
+
+[app 10]
+    application
+ 
+    # set the preset draw mode
+    <draw-mode>
+    draw-mode
+
+    <CONFIG-FADE-RATE> = <fade-rate>
+
+    # set the preset brightness level
+    <brightness>
+    level
+
+    # start the macro instances
+    (((init <num-instances>)))
+
+    # start up the palette color sequencer
+    (hsl-sequencer-start)
+
+    # schedule the display rendering
+    (render <render-time>)
+
+(((macro <num-instances> `INSTANCE*2`)))
+
+[[init INSTANCE
+    (init-INSTANCE)
+]]
+
+[[macro INSTANCE PALETTE
+
+    [init-INSTANCE]
+        # set up the sequencers
+        (setup-INSTANCE)
+
+    [setup-INSTANCE]
+        PALETTE
+        palette-color 
+]]
+

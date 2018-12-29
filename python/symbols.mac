@@ -1,4 +1,7 @@
 
+$TRUE 1
+$FALSE 0
+
 # configuration
 $CONFIG-BLINK-PERIOD 0
 $CONFIG-BREATHE-TIME 1
