@@ -8,7 +8,7 @@
 
 $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
-$base-time 36
+$base-time 144
 $render-time <base-time>
 $fade-rate 9000
 $num-instances 5
@@ -67,11 +67,20 @@ $num-instances 5
         COLOR
         dynamic-color
 
-        `SIZE-1`
+        SIZE
+        repeat
+
+        SIZE
         black
 
-        SIZE,4
+        `SIZE*2`,2
         copy
+
+#        `SIZE-1`
+#        black
+
+#        SIZE,4
+#        copy
 
         (ring-INSTANCE-loop SCHEDULE)
 
