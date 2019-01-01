@@ -136,12 +136,12 @@ def loop():
         ui.report_info("Current time: " + wx.format_unix_timestamp(current_time))
 
         for target_time in target_times:
-            ui.report_info(event_type.capitalize() + " time: " + wx.format_unix_timestamp(target_time))
+            ui.report_info(event_type.capitalize() + " event time: " + wx.format_unix_timestamp(target_time))
 
         new_target_times = []
         command_sent = False
         send_trigger_time = 0
-        margin_time = 60
+        margin_time = 120
         for target_time in target_times:
             if current_time >= target_time:
                 # target time has been reached
