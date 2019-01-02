@@ -4,8 +4,6 @@ import time
 import math
 import struct
 
-#response_wait = 0.01
-
 slow_response_wait = 0.15
 fast_response_wait = 0.01
 
@@ -100,6 +98,9 @@ def write(text):
 
 def get_device_config(config):
     return command_int("0," + str(config) + ":tst")
+
+def set_device_config(config, value):
+    command(str(config) + "," + str(value) + ":cfg")
 
 def is_enabled(config):
     return get_device_config(config) == 1
@@ -330,11 +331,20 @@ def get_effect(start, count, slow=False):
 def get_palette(start, count, slow=False):
   return command_str("5," + str(start) + "," + str(count) + ":tst", slow)
 
-def do_test_process(process):
-    command_str("6," + str(process) + ":tst")
+def do_test_process(process, data):
+  command_str("6," + str(process) + "," + str(data) + ":tst")
+
+def set_random_seed(seed):
+  do_test_process(3, seed)
 
 def get_accumulator():
   return command_str("7:tst")
+
+def randomize_palette():
+  command("shf")    
+
+def reset_palette():
+  command("1:shf")
 
 def stop_all():
     attention()

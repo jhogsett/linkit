@@ -111,25 +111,6 @@ def introduction():
 # -----------------------------------------------------------------------------
 # --- device handling ---
 
-def reset_device():
-  return ":::stp:stp:20:lev:2,0:cfg"
-
-# @@@
-def reset_standard_seed():
-  return "6,3," + str(standard_seed) + ":tst"
-
-def reset_alternate_seed():
-  return "6,3," + str(alternate_seed) + ":tst"
-
-def reset_standard_fade_rate():
-  return "2,9995:cfg"
-
-def reset_standard_palette():
-  return "1:shf"
-
-def reset_default_effect():
-  return "3,0:cfg"
-
 def is_test_framework_enabled():
   return lc.get_test_framework_enabled() == 1
 
@@ -186,6 +167,12 @@ def reset_standard_palette():
 
 def reset_default_effect():
   return "3,0:cfg"
+
+def reset_standard_seed():
+  return "6,3," + str(standard_seed) + ":tst"
+
+def reset_alternate_seed():
+  return "6,3," + str(alternate_seed) + ":tst"
 
 def pre_test_reset():
   command = ""
@@ -403,7 +390,6 @@ def expect_buffer(command_, start, count, expected, flush = True, slow = False, 
   if flush:
     command_ += ":flu"
   lc.command(command_)
-  #str_ = lc.command_str("2," + str(start) + "," + str(count) + ":tst", slow)                                 
   str_ = lc.get_buffer(start, count, slow)
   if positive:
     expect_equal(str_[:-1], expected)
@@ -414,7 +400,6 @@ def expect_render(command_, start, count, expected, flush = True, slow = False, 
   if flush:
     command_ += ":flu"               
   lc.command(command_)                                                
-  #str_ = lc.command_str("3," + str(start) + "," + str(count) + ":tst", slow)
   str_ = lc.get_render(start, count, slow)
   if positive:
     expect_equal(str_[:-1], expected)                                
@@ -425,7 +410,6 @@ def expect_effect(command_, start, count, expected, flush = True, slow = False, 
   if flush:
     command_ += ":flu"
   lc.command(command_)
-  #str_ = lc.command_str("4," + str(start) + "," + str(count) + ":tst", slow)
   str_ = lc.get_effect(start, count, slow)
   if positive:
     expect_equal(str_[:-1], expected)                                
@@ -436,7 +420,6 @@ def expect_palette(command_, start, count, expected, positive=True):
   display_width = num_leds / palette_size                                                                                                                         
   display_command = ":" + str(palette_size) + ",-2," + str(display_width) + ":cpy:flu"  
   lc.command(command_ + display_command)                                                
-  #str_ = lc.command_str("5," + str(start) + "," + str(count) + ":tst", True)
   str_ = lc.get_palette(start, count, True)
   if positive:
     expect_equal(str_[:-1], expected)                                
@@ -478,7 +461,6 @@ def expect_empty_buffer(command_, start, count):
   for i in range(count):
     expected += "0,0,0,"
   lc.command(command_)
-  #str_ = lc.command_str("2," + str(start) + "," + str(count) + ":tst", True)
   str_ = lc.get_buffer(start, count, True)
   expect_equal(str_[:-1], expected[:-1])
 
@@ -487,7 +469,6 @@ def expect_empty_render(command_, start, count):
   for i in range(count):
     expected += "0,0,0,"
   lc.command(command_)
-  #str_ = lc.command_str("3," + str(start) + "," + str(count) + ":tst", True)
   str_ = lc.get_render(start, count, True)
   expect_equal(str_[:-1], expected[:-1])
 
@@ -495,7 +476,6 @@ def expect_accumulators(command_, expected, flush = True, positive = True):
   if flush:
     command_ += ":flu"
   lc.command(command_)
-  #str_ = lc.command_str("7:tst")
   str_ = lc.get_accumulator()
   if positive:
     expect_equal(str_[:-1], expected)
