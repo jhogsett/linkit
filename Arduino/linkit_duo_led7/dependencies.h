@@ -316,7 +316,7 @@ void Dependencies::begin()
   buffer.erase(true);
   Colors::reset_palette();
   commands.reset();
-  commands.set_brightness_level();
+  commands.set_brightness_level(0);
   commands.scheduler.reset_all_schedules();
   
   commands.do_run_macro(DEFAULT_MACRO);
