@@ -55,65 +55,6 @@ test_number_only = 0
 skip_led_report = None
 quiet_mode = None
 
-# -----------------------------------------------------------------------------
-# --- Serial I/O ---
-
-#def flush_input():                        
-#  s.flushInput()
-                                        
-#def wait_for_ack():                       
-#  while s.inWaiting() <= 0:               
-#    pass
-#  time.sleep(response_wait);
-#  while s.inWaiting() > 0:
-#    s.read(s.inWaiting()),
-
-#def wait_for_int():
-#  while s.inWaiting() <= 0:
-#    pass
-#  time.sleep(response_wait);
-#  intstr = ""
-#  while s.inWaiting() > 0:
-#    intstr = intstr + s.read(s.inWaiting())
-#  try:
-#    return int(intstr[:-1])
-#  except ValueError:
-#    print "whoops " + intstr
-#    return 0
-
-#def wait_for_str():
-#  while s.inWaiting() <= 0:
-#    pass
-#  time.sleep(response_wait);
-#  str = ""
-#  while s.inWaiting() > 0:
-#    str = str + s.read(s.inWaiting())
-#  return str[:-1]
-
-
-# -----------------------------------------------------------------------------
-# --- Sending Commands ---
-
-#def command(cmd_text):
-#  global test_command
-#  test_command = cmd_text
-#  s.write((cmd_text + ':\0:').encode())
-#  wait_for_ack()
-
-#def command_int(cmd_text):
-#  global test_command
-#  test_command = cmd_text
-#  s.write((cmd_text + ':').encode())
-#  return wait_for_int()
-
-#def command_str(cmd_text, slow = False):       
-#  global response_wait
-#  if slow:
-#    response_wait = slow_response_wait
-#  else:
-#    response_wait = fast_response_wait
-#  s.write((cmd_text + ':').encode()) 
-#  return wait_for_str()                     
 
 # -----------------------------------------------------------------------------
 # --- device handling ---
@@ -135,15 +76,6 @@ def reset_standard_palette():
 
 def reset_default_effect():
   return "3,0:cfg"
-
-#def inquiry(feature):
-#  return "0," + str(feature) + ":tst"
-
-#def int_inquiry(feature):
-#  return command_int(inquiry(feature))
-
-#def is_enabled(feature):
-#  return int_inquiry(feature) == 1
 
 def is_test_framework_enabled():
   return lc.get_test_framework_enabled() == 1
@@ -229,12 +161,6 @@ def introduction():
   if group_number_only != 0:
     ui.report_info_alt("group " + str(group_number_only) + " only")
 
-#  print (
-#          tc.cyan("Device: ") +
-#          tc.green(str(num_leds) +
-#          " LEDs, default brightness: " +
-#          str(default_brightness) + "%")
-#       )
 
 def initialize(): 
   global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report, quiet_mode
@@ -259,15 +185,13 @@ def initialize():
   ui.begin(verbose_mode, quiet_mode)
   lc.begin(verbose_mode)
 
-  introduction()
-
-#  s = serial.Serial("/dev/ttyS0", 115200) 
-
   do_reset_device()
   num_leds = get_num_leds()                                                                                                                                                       
-
   palette_size = lc.get_palette_size()
   default_brightness = lc.get_default_brightness()                                                                                            
+
+  introduction()
+
   default_brightness_percent = default_brightness / 100.0                                                                                                               
 
   for i in range(0, palette_size):
@@ -277,20 +201,6 @@ def initialize():
   if not is_test_framework_enabled():
     ui.report_error("Test framework is not enabled for this device.")
     sys.exit()
-
-
-#  print (
-#          tc.cyan("Device: ") + 
-#          tc.green(str(num_leds) + 
-#          " LEDs, default brightness: " + 
-#          str(default_brightness) + "%")
-#	)                                                                                                                                                  
-
-  introduction()
-
-#def write(text):
-#  sys.stdout.write(text)
-#  sys.stdout.flush()                                                
 
 def get_line_number(back):
   callerframerecord = inspect.stack()[back]    # 0 represents this line, 1 represents line at caller
