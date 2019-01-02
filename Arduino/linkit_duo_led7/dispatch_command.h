@@ -176,7 +176,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_LEVEL: 
-      set_brightness_level(arg0); 
+      set_brightness_level(arg0, arg1); 
       break;
     
     case CMD_FADE: 

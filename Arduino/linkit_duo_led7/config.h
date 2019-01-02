@@ -36,7 +36,7 @@
 // #define WEATHER_72
 
 // 36-LED annunciator
-// #define ANNUNCIATOR
+//  #define ANNUNCIATOR
 
 // 54-LED annunciator #2
 // #define ANNUNCIATOR2
