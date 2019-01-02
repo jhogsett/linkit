@@ -56,12 +56,65 @@ skip_led_report = None
 quiet_mode = None
 
 
+def initialize():
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report, quiet_mode
+
+  parser = argparse.ArgumentParser(description=app_description)
+  parser.add_argument("-g", "--group",     type=int, dest="group",      default=0, help="group number to test")
+  parser.add_argument("-n", "--groupname",           dest="groupname",  default="", help="group name matching text to test")
+  parser.add_argument("-t", "--test",      type=int, dest="test",       default=0, help="test number to test")
+  parser.add_argument("-s", "--skip-report",         dest="skip_report",action='store_true', help="skip showing results on LED display")
+  parser.add_argument("-v", "--verbose",             dest="verbose",    action='store_true', help="enable verbose mode")
+  parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
+
+  args = parser.parse_args()
+  group_number_only = args.group
+  group_name_only = args.groupname
+  test_number_only = args.test
+  verbose_mode = args.verbose
+  skip_led_report = args.skip_report
+  quiet_mode = args.quiet
+
+  tc.begin(quiet_mode)
+  ui.begin(verbose_mode, quiet_mode)
+  lc.begin(verbose_mode)
+
+  do_reset_device()
+  num_leds = get_num_leds()
+  palette_size = lc.get_palette_size()
+  default_brightness = lc.get_default_brightness()
+
+  introduction()
+
+  default_brightness_percent = default_brightness / 100.0
+
+  for i in range(0, palette_size):
+    standard_palette += test_colors.colors[i][1] + ","
+  standard_palette = standard_palette[:-1]
+
+  if not is_test_framework_enabled():
+    ui.report_error("Test framework is not enabled for this device.")
+    sys.exit()
+
+def introduction():
+  ui.app_description(app_description)
+  ui.report_info("Device:")
+  ui.info_entry("Number of LEDs", num_leds)
+  ui.info_entry("Default Brightness", default_brightness)
+
+  ui.report_verbose("verbose mode")
+
+  if group_number_only != 0:
+    ui.report_info_alt("group " + str(group_number_only) + " only")
+
+
 # -----------------------------------------------------------------------------
 # --- device handling ---
 
 def reset_device():
   return ":::stp:stp:20:lev:2,0:cfg"
 
+# @@@
 def reset_standard_seed():
   return "6,3," + str(standard_seed) + ":tst"
 
@@ -146,61 +199,8 @@ def pre_test_reset():
 def do_reset_device():
   lc.command_str(reset_device())
 
-
 # -----------------------------------------------------------------------------
-# --- Setup ---
-
-def introduction():
-  ui.app_description(app_description)
-  ui.report_info("Device:")
-  ui.info_entry("Number of LEDs", num_leds)
-  ui.info_entry("Default Brightness", default_brightness)
-
-  ui.report_verbose("verbose mode")
-
-  if group_number_only != 0:
-    ui.report_info_alt("group " + str(group_number_only) + " only")
-
-
-def initialize(): 
-  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report, quiet_mode
-
-  parser = argparse.ArgumentParser(description=app_description)
-  parser.add_argument("-g", "--group",     type=int, dest="group",      default=0, help="group number to test")
-  parser.add_argument("-n", "--groupname",           dest="groupname",  default="", help="group name matching text to test")
-  parser.add_argument("-t", "--test",      type=int, dest="test",       default=0, help="test number to test")
-  parser.add_argument("-s", "--skip-report",         dest="skip_report",action='store_true', help="skip showing results on LED display")
-  parser.add_argument("-v", "--verbose",             dest="verbose",    action='store_true', help="enable verbose mode")
-  parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
-
-  args = parser.parse_args()
-  group_number_only = args.group
-  group_name_only = args.groupname
-  test_number_only = args.test
-  verbose_mode = args.verbose
-  skip_led_report = args.skip_report
-  quiet_mode = args.quiet
-
-  tc.begin(quiet_mode)
-  ui.begin(verbose_mode, quiet_mode)
-  lc.begin(verbose_mode)
-
-  do_reset_device()
-  num_leds = get_num_leds()                                                                                                                                                       
-  palette_size = lc.get_palette_size()
-  default_brightness = lc.get_default_brightness()                                                                                            
-
-  introduction()
-
-  default_brightness_percent = default_brightness / 100.0                                                                                                               
-
-  for i in range(0, palette_size):
-    standard_palette += test_colors.colors[i][1] + ","
-  standard_palette = standard_palette[:-1]
-  
-  if not is_test_framework_enabled():
-    ui.report_error("Test framework is not enabled for this device.")
-    sys.exit()
+# --- line number reporting ---
 
 def get_line_number(back):
   callerframerecord = inspect.stack()[back]    # 0 represents this line, 1 represents line at caller
@@ -395,7 +395,7 @@ def expect_not_equal(got, expected):
 
 def expect_macro(command_, macro, expected):
   lc.command(command_)
-  str_ = lc.command_str("1," + str(macro) + ":tst")
+  str_ = lc.get_macro_raw(macro)
   count = len(expected)
   expect_equal(str_[:count], expected)
 
@@ -403,7 +403,8 @@ def expect_buffer(command_, start, count, expected, flush = True, slow = False, 
   if flush:
     command_ += ":flu"
   lc.command(command_)
-  str_ = lc.command_str("2," + str(start) + "," + str(count) + ":tst", slow)                                 
+  #str_ = lc.command_str("2," + str(start) + "," + str(count) + ":tst", slow)                                 
+  str_ = lc.get_buffer(start, count, slow)
   if positive:
     expect_equal(str_[:-1], expected)
   else:
@@ -413,7 +414,8 @@ def expect_render(command_, start, count, expected, flush = True, slow = False, 
   if flush:
     command_ += ":flu"               
   lc.command(command_)                                                
-  str_ = lc.command_str("3," + str(start) + "," + str(count) + ":tst", slow)
+  #str_ = lc.command_str("3," + str(start) + "," + str(count) + ":tst", slow)
+  str_ = lc.get_render(start, count, slow)
   if positive:
     expect_equal(str_[:-1], expected)                                
   else:
@@ -423,7 +425,8 @@ def expect_effect(command_, start, count, expected, flush = True, slow = False, 
   if flush:
     command_ += ":flu"
   lc.command(command_)
-  str_ = lc.command_str("4," + str(start) + "," + str(count) + ":tst", slow)
+  #str_ = lc.command_str("4," + str(start) + "," + str(count) + ":tst", slow)
+  str_ = lc.get_effect(start, count, slow)
   if positive:
     expect_equal(str_[:-1], expected)                                
   else:
@@ -433,7 +436,8 @@ def expect_palette(command_, start, count, expected, positive=True):
   display_width = num_leds / palette_size                                                                                                                         
   display_command = ":" + str(palette_size) + ",-2," + str(display_width) + ":cpy:flu"  
   lc.command(command_ + display_command)                                                
-  str_ = lc.command_str("5," + str(start) + "," + str(count) + ":tst", True)
+  #str_ = lc.command_str("5," + str(start) + "," + str(count) + ":tst", True)
+  str_ = lc.get_palette(start, count, True)
   if positive:
     expect_equal(str_[:-1], expected)                                
   else:
@@ -474,7 +478,8 @@ def expect_empty_buffer(command_, start, count):
   for i in range(count):
     expected += "0,0,0,"
   lc.command(command_)
-  str_ = lc.command_str("2," + str(start) + "," + str(count) + ":tst", True)
+  #str_ = lc.command_str("2," + str(start) + "," + str(count) + ":tst", True)
+  str_ = lc.get_buffer(start, count, True)
   expect_equal(str_[:-1], expected[:-1])
 
 def expect_empty_render(command_, start, count):
@@ -482,14 +487,16 @@ def expect_empty_render(command_, start, count):
   for i in range(count):
     expected += "0,0,0,"
   lc.command(command_)
-  str_ = lc.command_str("3," + str(start) + "," + str(count) + ":tst", True)
+  #str_ = lc.command_str("3," + str(start) + "," + str(count) + ":tst", True)
+  str_ = lc.get_render(start, count, True)
   expect_equal(str_[:-1], expected[:-1])
 
 def expect_accumulators(command_, expected, flush = True, positive = True):
   if flush:
     command_ += ":flu"
   lc.command(command_)
-  str_ = lc.command_str("7:tst")
+  #str_ = lc.command_str("7:tst")
+  str_ = lc.get_accumulator()
   if positive:
     expect_equal(str_[:-1], expected)
   else:

@@ -246,6 +246,9 @@ def set_macro(macro, macro_text, expected_bytes, debug_mode):
 def run_macro(macro):
     command("1:pau:2:cnt:%s:run" % macro)
 
+def get_macro_raw(macro):
+    return command_str("1," + str(macro) + ":tst")
+
 def get_macro(macro):
     macro_bytes = get_full_macro_bytes(macro)
     return str(macro) + ":set:" + translate_macro_bytes(macro_bytes)
@@ -314,6 +317,24 @@ def get_full_macro_bytes(macro):
       break;
     current_macro += 1
   return result
+
+def get_buffer(start, count, slow=False):
+  return command_str("2," + str(start) + "," + str(count) + ":tst", slow)
+
+def get_render(start, count, slow=False):
+  return command_str("3," + str(start) + "," + str(count) + ":tst", slow)
+
+def get_effect(start, count, slow=False):
+  return command_str("4," + str(start) + "," + str(count) + ":tst", slow)
+
+def get_palette(start, count, slow=False):
+  return command_str("5," + str(start) + "," + str(count) + ":tst", slow)
+
+def do_test_process(process):
+    command_str("6," + str(process) + ":tst")
+
+def get_accumulator():
+  return command_str("7:tst")
 
 def stop_all():
     attention()
