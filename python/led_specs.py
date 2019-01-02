@@ -12,12 +12,8 @@ import inspect
 import terminal_colors as tc
 import test_colors
 import argparse
-
-def get_line_number(back):
-  callerframerecord = inspect.stack()[back]    # 0 represents this line, 1 represents line at caller                                                                                                                       
-  frame = callerframerecord[0]                                                                                                                                                                  
-  info = inspect.getframeinfo(frame)                                                                                                                                                            
-  return info.lineno  
+import led_command as lc
+import app_ui as ui
 
 app_description = "Apollo Lighting System - Test Framework v0.0 - Aug 10, 2017"
 slow_response_wait = 0.15
@@ -57,111 +53,78 @@ verbose_test_outcome = ""
 group_name_only = ""
 test_number_only = 0
 skip_led_report = None
-
-# -----------------------------------------------------------------------------
-# --- Serial I/O ---
-
-def flush_input():                        
-  s.flushInput()
-                                        
-def wait_for_ack():                       
-  while s.inWaiting() <= 0:               
-    pass
-  time.sleep(response_wait);
-  while s.inWaiting() > 0:
-    s.read(s.inWaiting()),
-
-def wait_for_int():
-  while s.inWaiting() <= 0:
-    pass
-  time.sleep(response_wait);
-  intstr = ""
-  while s.inWaiting() > 0:
-    intstr = intstr + s.read(s.inWaiting())
-  try:
-    return int(intstr[:-1])
-  except ValueError:
-    print "whoops " + intstr
-    return 0
-
-def wait_for_str():
-  while s.inWaiting() <= 0:
-    pass
-  time.sleep(response_wait);
-  str = ""
-  while s.inWaiting() > 0:
-    str = str + s.read(s.inWaiting())
-  return str[:-1]
+quiet_mode = None
 
 
-# -----------------------------------------------------------------------------
-# --- Sending Commands ---
+def initialize():
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report, quiet_mode
 
-def command(cmd_text):
-  global test_command
-  test_command = cmd_text
-  s.write((cmd_text + ':\0:').encode())
-  wait_for_ack()
+  parser = argparse.ArgumentParser(description=app_description)
+  parser.add_argument("-g", "--group",     type=int, dest="group",      default=0, help="group number to test")
+  parser.add_argument("-n", "--groupname",           dest="groupname",  default="", help="group name matching text to test")
+  parser.add_argument("-t", "--test",      type=int, dest="test",       default=0, help="test number to test")
+  parser.add_argument("-s", "--skip-report",         dest="skip_report",action='store_true', help="skip showing results on LED display")
+  parser.add_argument("-v", "--verbose",             dest="verbose",    action='store_true', help="enable verbose mode")
+  parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
 
-def command_int(cmd_text):
-  global test_command
-  test_command = cmd_text
-  s.write((cmd_text + ':').encode())
-  return wait_for_int()
+  args = parser.parse_args()
+  group_number_only = args.group
+  group_name_only = args.groupname
+  test_number_only = args.test
+  verbose_mode = args.verbose
+  skip_led_report = args.skip_report
+  quiet_mode = args.quiet
 
-def command_str(cmd_text, slow = False):       
-  global response_wait
-  if slow:
-    response_wait = slow_response_wait
-  else:
-    response_wait = fast_response_wait
-  s.write((cmd_text + ':').encode()) 
-  return wait_for_str()                     
+  tc.begin(quiet_mode)
+  ui.begin(verbose_mode, quiet_mode)
+  lc.begin(verbose_mode)
+
+  do_reset_device()
+  num_leds = get_num_leds()
+  palette_size = lc.get_palette_size()
+  default_brightness = lc.get_default_brightness()
+
+  introduction()
+
+  default_brightness_percent = default_brightness / 100.0
+
+  for i in range(0, palette_size):
+    standard_palette += test_colors.colors[i][1] + ","
+  standard_palette = standard_palette[:-1]
+
+  if not is_test_framework_enabled():
+    ui.report_error("Test framework is not enabled for this device.")
+    sys.exit()
+
+def introduction():
+  ui.app_description(app_description)
+  ui.report_info("Device:")
+  ui.info_entry("Number of LEDs", num_leds)
+  ui.info_entry("Default Brightness", default_brightness)
+
+  ui.report_verbose("verbose mode")
+
+  if group_number_only != 0:
+    ui.report_info_alt("group " + str(group_number_only) + " only")
+
 
 # -----------------------------------------------------------------------------
 # --- device handling ---
 
-def reset_device():
-  return ":::stp:stp:20:lev:2,0:cfg"
-
-def reset_standard_seed():
-  return "6,3," + str(standard_seed) + ":tst"
-
-def reset_alternate_seed():
-  return "6,3," + str(alternate_seed) + ":tst"
-
-def reset_standard_fade_rate():
-  return "2,9995:cfg"
-
-def reset_standard_palette():
-  return "1:shf"
-
-def reset_default_effect():
-  return "3,0:cfg"
-
-def inquiry(feature):
-  return "0," + str(feature) + ":tst"
-
-def int_inquiry(feature):
-  return command_int(inquiry(feature))
-
-def is_enabled(feature):
-  return int_inquiry(feature) == 1
-
 def is_test_framework_enabled():
-  return is_enabled(13)
+  return lc.get_test_framework_enabled() == 1
 
 def is_mapping_enabled():
-  return is_enabled(9)
+  return lc.get_mapping_enabled() == 1
 
 def is_extra_shuffles_enabled():
-  return is_enabled(14)
+  return lc.get_extra_shuffles_enabled() == 1
 
 def is_blend_enabled():
-  return is_enabled(15)
+  return lc.get_blend_enabled() == 1
 
 def get_num_leds():
-  return int_inquiry(0)
+  return lc.get_num_leds()
 
 def get_palette_size():
   return int_inquiry(1)
@@ -193,6 +156,24 @@ def get_offset():
 def get_max_string_length():
   return int_inquiry(12)
 
+def reset_device():
+  return ":::stp:stp:20:lev:2,0:cfg"
+
+def reset_standard_fade_rate():
+  return "2,9995:cfg"
+
+def reset_standard_palette():
+  return "1:shf"
+
+def reset_default_effect():
+  return "3,0:cfg"
+
+def reset_standard_seed():
+  return "6,3," + str(standard_seed) + ":tst"
+
+def reset_alternate_seed():
+  return "6,3," + str(alternate_seed) + ":tst"
+
 def pre_test_reset():
   command = ""
   command += reset_device() + ":"
@@ -200,57 +181,19 @@ def pre_test_reset():
   command += reset_standard_fade_rate() + ":"
   command += reset_standard_palette() + ":"
   command += reset_default_effect()
-  command_str(command)
+  lc.command_str(command)
 
 def do_reset_device():
-  command_str(reset_device())
-
+  lc.command_str(reset_device())
 
 # -----------------------------------------------------------------------------
-# --- Setup ---
+# --- line number reporting ---
 
-def setup(): 
-  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report 
-
-  parser = argparse.ArgumentParser(description=app_description)
-  parser.add_argument("-g", "--group",     type=int, dest="group",      default=0, help="group number to test")
-  parser.add_argument("-n", "--groupname",           dest="groupname",  default="", help="group name matching text to test")
-  parser.add_argument("-t", "--test",      type=int, dest="test",       default=0, help="test number to test")
-  parser.add_argument("-s", "--skip-report",         dest="skip_report",action='store_true', help="skip showing results on LED display")
-  parser.add_argument("-v", "--verbose",             dest="verbose",    action='store_true', help="enable verbose mode")
-  args = parser.parse_args()
-  group_number_only = args.group
-  group_name_only = args.groupname
-  test_number_only = args.test
-  verbose_mode = args.verbose
-  skip_led_report = args.skip_report
-
-  s = serial.Serial("/dev/ttyS0", 115200) 
-  do_reset_device()
-  num_leds = get_num_leds()                                                                                                                                                       
-  palette_size = command_int("0,1:tst")
-  default_brightness = command_int("0,4:tst")                                                                                                
-  default_brightness_percent = default_brightness / 100.0                                                                                                               
-  for i in range(0, palette_size):
-    standard_palette += test_colors.colors[i][1] + ","
-  standard_palette = standard_palette[:-1]
-  
-  if not is_test_framework_enabled():
-    print tc.red("Test framework is not enabled for this device.")
-    sys.exit()
-
-
-  print (
-          tc.cyan("Device: ") + 
-          tc.green(str(num_leds) + 
-          " LEDs, default brightness: " + 
-          str(default_brightness) + "%")
-	)                                                                                                                                                  
-
-def write(text):
-  sys.stdout.write(text)
-  sys.stdout.flush()                                                
-
+def get_line_number(back):
+  callerframerecord = inspect.stack()[back]    # 0 represents this line, 1 represents line at caller
+  frame = callerframerecord[0]
+  info = inspect.getframeinfo(frame)
+  return info.lineno
 
 # -----------------------------------------------------------------------------
 # --- test definition ---
@@ -309,10 +252,9 @@ def pending_test(description):
   num_pending += 1                                                                                                                                                                                         
   if test_number_only == 0 or test_number == test_number_only:
     report_pending()
-    if verbose_mode:
-      print tc.yellow(pending_message())
-    else:
-      write(tc.yellow("*"))
+    ui.report_verbose(pending_message())
+    if not verbose_mode:
+      ui.write(tc.yellow("*"))
                                                                                                                                                                                                            
 def skip_test(command, description, num_to_skip=1):                                                                                                                                                                       
   global test_number, test_description, test_line_number, num_skipped                                                                                                                                      
@@ -323,11 +265,9 @@ def skip_test(command, description, num_to_skip=1):
   if test_number_only == 0 or test_number == test_number_only:
     report_skipped(command)
     num_skipped += num_to_skip
-    if verbose_mode:
-      print tc.yellow(skipped_message(command))
-    else:
-      write(tc.red("*"))
-
+    ui.report_verbose(skipped_message(command))
+    if not verbose_mode:
+      ui.write(tc.yellow("."))
 
 # -----------------------------------------------------------------------------
 # --- reporting results ---
@@ -385,6 +325,7 @@ def report_failure(got, expected):
     tc.red(" -" + expected) + 
     tc.green(" +" + got) + 
     "\n") 
+
   if verbose_mode:
     print group_message(),    
     print test_message(),
@@ -408,17 +349,15 @@ def fail(got, expected):
   failure_count += 1
   last_group_number = group_number
   last_test_number = test_number
-  if verbose_mode:
-    print tc.red(verbose_test_outcome),
-  else:
-    write(tc.red("F"))
+  report_verbose(verbose_test_outcome)
+  if not verbose_mode:
+    ui.write(tc.red("F"))
 
 def succeed():
   global success_count
-  if verbose_mode:
-    print tc.green(verbose_test_outcome),
-  else:
-    write(tc.green("."))
+  ui.report_verbose(verbose_test_outcome)
+  if not verbose_mode:
+    ui.write(tc.green("."))
   success_count += 1
 
 
@@ -442,16 +381,16 @@ def expect_not_equal(got, expected):
     succeed()
 
 def expect_macro(command_, macro, expected):
-  command(command_)
-  str_ = command_str("1," + str(macro) + ":tst")
+  lc.command(command_)
+  str_ = lc.get_macro_raw(macro)
   count = len(expected)
   expect_equal(str_[:count], expected)
 
 def expect_buffer(command_, start, count, expected, flush = True, slow = False, positive = True):
   if flush:
     command_ += ":flu"
-  command(command_)
-  str_ = command_str("2," + str(start) + "," + str(count) + ":tst", slow)                                 
+  lc.command(command_)
+  str_ = lc.get_buffer(start, count, slow)
   if positive:
     expect_equal(str_[:-1], expected)
   else:
@@ -460,8 +399,8 @@ def expect_buffer(command_, start, count, expected, flush = True, slow = False, 
 def expect_render(command_, start, count, expected, flush = True, slow = False, positive = True):
   if flush:
     command_ += ":flu"               
-  command(command_)                                                
-  str_ = command_str("3," + str(start) + "," + str(count) + ":tst", slow)
+  lc.command(command_)                                                
+  str_ = lc.get_render(start, count, slow)
   if positive:
     expect_equal(str_[:-1], expected)                                
   else:
@@ -470,8 +409,8 @@ def expect_render(command_, start, count, expected, flush = True, slow = False, 
 def expect_effect(command_, start, count, expected, flush = True, slow = False, positive = True):               
   if flush:
     command_ += ":flu"
-  command(command_)
-  str_ = command_str("4," + str(start) + "," + str(count) + ":tst", slow)
+  lc.command(command_)
+  str_ = lc.get_effect(start, count, slow)
   if positive:
     expect_equal(str_[:-1], expected)                                
   else:
@@ -480,20 +419,20 @@ def expect_effect(command_, start, count, expected, flush = True, slow = False, 
 def expect_palette(command_, start, count, expected, positive=True):               
   display_width = num_leds / palette_size                                                                                                                         
   display_command = ":" + str(palette_size) + ",-2," + str(display_width) + ":cpy:flu"  
-  command(command_ + display_command)                                                
-  str_ = command_str("5," + str(start) + "," + str(count) + ":tst", True)
+  lc.command(command_ + display_command)                                                
+  str_ = lc.get_palette(start, count, True)
   if positive:
     expect_equal(str_[:-1], expected)                                
   else:
     expect_not_equal(str_[:-1], expected)
 
 def expect_int(command_, expected):
-  got = command_int(command_)
+  got = lc.command_int(command_)
   expect_equal(str(got), str(expected))                                                                  
 
 def expect_offset(command_, expected, positive=True):
   global test_command
-  command_str(command_)
+  lc.command_str(command_)
   got = get_offset()
   test_command = command_
   if positive:
@@ -503,7 +442,7 @@ def expect_offset(command_, expected, positive=True):
 
 def expect_window(command_, expected, positive=True):
   global test_command
-  command_str(command_)
+  lc.command_str(command_)
   got = get_window()
   test_command = command_
   if positive:
@@ -512,32 +451,32 @@ def expect_window(command_, expected, positive=True):
     expect_not_equal(str(got), str(expected))
 
 def get_offset():
-  return command_int("0,2:tst")
+  return lc.get_offset()
 
 def get_window():
-  return command_int("0,3:tst")
+  return lc.get_window()
 
 def expect_empty_buffer(command_, start, count):
   expected = ""
   for i in range(count):
     expected += "0,0,0,"
-  command(command_)
-  str_ = command_str("2," + str(start) + "," + str(count) + ":tst", True)
+  lc.command(command_)
+  str_ = lc.get_buffer(start, count, True)
   expect_equal(str_[:-1], expected[:-1])
 
 def expect_empty_render(command_, start, count):
   expected = ""
   for i in range(count):
     expected += "0,0,0,"
-  command(command_)
-  str_ = command_str("3," + str(start) + "," + str(count) + ":tst", True)
+  lc.command(command_)
+  str_ = lc.get_render(start, count, True)
   expect_equal(str_[:-1], expected[:-1])
 
 def expect_accumulators(command_, expected, flush = True, positive = True):
   if flush:
     command_ += ":flu"
-  command(command_)
-  str_ = command_str("7:tst")
+  lc.command(command_)
+  str_ = lc.get_accumulator()
   if positive:
     expect_equal(str_[:-1], expected)
   else:
@@ -1144,14 +1083,14 @@ def specs():
     if test("main blink effect"):
 
       # set the blink period to the minimum possible value 
-      command_str("0,6:cfg")
+      lc.command_str("0,6:cfg")
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:flu")
 
       # place a blinking red
-      command_str("red:bli")
+      lc.command_str("red:bli")
 
       # simulate a half blink period
       # this will leave the render buffer in the dim/unblinked state
@@ -1162,11 +1101,11 @@ def specs():
       expect_render("0,12:run", 0, 1, "51,0,0", False)
 
     if test("a/b blink effects"):
-      command_str("0,6:cfg")
-      command_str("0:set:6:tst:flu")
+      lc.command_str("0,6:cfg")
+      lc.command_str("0:set:6:tst:flu")
 
       # set one of each effect
-      command_str("grn:bla:blu:blb")
+      lc.command_str("grn:bla:blu:blb")
 
       # simulate a half blink period
       expect_render("0,3:run", 0, 2, "0,0,51,0,2,0", False)
@@ -1175,11 +1114,11 @@ def specs():
       expect_render("0,6:run", 0, 2, "0,0,2,0,51,0", False)
 
     if test("1/2/3/4/5/6 blink effects"):
-      command_str("0,6:cfg")
-      command_str("0:set:6:tst:flu")
+      lc.command_str("0,6:cfg")
+      lc.command_str("0:set:6:tst:flu")
 
       # set one of each effect
-      command_str("red:bl1:org:bl2:yel:bl3:grn:bl4:blu:bl5:pur:bl6")
+      lc.command_str("red:bl1:org:bl2:yel:bl3:grn:bl4:blu:bl5:pur:bl6")
 
       # simulate 1/6 blink period
       expect_render("0,1:run", 0, 6, "1,0,2,0,0,2,0,2,0,2,2,0,51,25,0,2,0,0", False)
@@ -1208,14 +1147,14 @@ def specs():
     if test("the breathe effect renders properly"):
 
       # set the breate period to the minimum possible value
-      command_str("1,1:cfg")
+      lc.command_str("1,1:cfg")
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:flu")
 
       # place a breathing greenn
-      command_str("grn:bre")
+      lc.command_str("grn:bre")
 
       # these are the expected values if using the floats for breathe ratio
       # expected_render_values = [ 0,  0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 47, 49, 50, 50, 
@@ -1246,13 +1185,13 @@ def specs():
       expect_render("flu", 0, 1, "43,0,0", False)
 
     if test("a custom slow fade rate modifies the display buffer properly"):
-      command_str("2,7500:cfg")
+      lc.command_str("2,7500:cfg")
       expect_buffer("red:sfd:flu", 0, 1, "15,0,0", False)
       expect_buffer("flu", 0, 1, "11,0,0", False)
       expect_buffer("flu", 0, 1, "8,0,0", False)
 
     if test("a custom slow fade rate renders properly"):
-      command_str("2,7500:cfg")
+      lc.command_str("2,7500:cfg")
       expect_render("red:sfd:flu", 0, 1, "38,0,0", False)
       expect_render("flu", 0, 1, "28,0,0", False)
       expect_render("flu", 0, 1, "20,0,0", False)
@@ -1366,13 +1305,13 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:flu")
 
       # place a blinking orange
-      command_str("org:bli")
+      lc.command_str("org:bli")
 
       # set the blink period to the minimum possible value
-      command_str("0,6:cfg")
+      lc.command_str("0,6:cfg")
 
       # the main blink is on for the first half of the cycle
       # this will start the second half and leave the render buffer in the dim/unblinked state
@@ -1394,13 +1333,13 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:flu")
 
       # place a blinking rose
-      command_str("ros:bli")
+      lc.command_str("ros:bli")
 
       # set the blink period to the twice the previous value
-      command_str("0,12:cfg")
+      lc.command_str("0,12:cfg")
 
       # the main blink is on for the first half of the cycle
       # simulate a quarter blink period
@@ -1437,14 +1376,14 @@ def specs():
     if test("setting a custom breathe time"):                                                                                                                                                                                                           
 
       # set the breate period to the minimum possible value
-      command_str("1,1:cfg")
+      lc.command_str("1,1:cfg")
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:flu")
 
       # place a breathing blue
-      command_str("blu:bre")
+      lc.command_str("blu:bre")
 
       # these are the expected values if using the floats for breathe ratio
       # expected_render_values = [ 0,  0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 47, 49, 50, 50,
@@ -1466,14 +1405,14 @@ def specs():
       test("setting an alternate custom breathe time")
 
       # set the breathe time to twice the previous value
-      command_str("1,2:cfg")
+      lc.command_str("1,2:cfg")
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:flu")
 
       # place a breathing blue
-      command_str("blu:bre")
+      lc.command_str("blu:bre")
 
       expect_render("0,10:run", 0, 1, "0,0,8", False)
       expect_render("0,11:run", 0, 1, "0,0,8", False)
@@ -1497,15 +1436,15 @@ def specs():
   if group("setting and running macros"):                                                                                                            
 
     if test("a macro can be set"):
-      command_str("0:set:red:wht:blu")
+      lc.command_str("0:set:red:wht:blu")
       expect_buffer("0:run", 0, 3, "0,0,20,20,20,20,20,0,0")
 
     if test("a macro can be set from within another macro"):
-      command_str("0:set:1:set:olv:amb:lav")
+      lc.command_str("0:set:1:set:olv:amb:lav")
       expect_buffer("0:run:1:run", 0, 3, "15,0,20,20,15,0,15,20,0")
 
     if test("a macro can be set from within another macro that was set from within another macro"):
-      command_str("0:set:1:set:2:set:cyn:yel:mag")
+      lc.command_str("0:set:1:set:2:set:cyn:yel:mag")
       expect_buffer("0:run:1:run:2:run", 0, 3, "20,0,20,20,20,0,0,20,20")
 
     pending_test("more general macro tests")
@@ -1543,7 +1482,7 @@ def specs():
     if test("it sets a random position within the current width"):                                                                                                                                                                                                         
 
       # use a macro to process the ramndom postion and place a color
-      command_str("0:set:5:win:rps:rnd:flu:rst")    
+      lc.command_str("0:set:5:win:rps:rnd:flu:rst")    
 
       expect_buffer("0,20:run", 0, 10, "10,20,0,20,0,20,20,10,0,20,10,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
 
@@ -1551,14 +1490,14 @@ def specs():
 
     if test("it sets a random position only where empty"):
       # use a macro to process the ramndom postion and place a color
-      command_str("0:set:4:win:-1:rps:wht:flu:rst")
+      lc.command_str("0:set:4:win:-1:rps:wht:flu:rst")
 
       expect_buffer("2:dgr:2:blk:0,2:run", 0, 5, "20,20,20,20,20,20,5,5,5,5,5,5,0,0,0")
 
     if test("it sets a random position only where not empty"):
 
       # use a macro to process the ramndom postion and place a color
-      command_str("0:set:4:win:-2:rps:wht:flu:rst")
+      lc.command_str("0:set:4:win:-2:rps:wht:flu:rst")
 
       expect_buffer("2:blk:2:dgr:0,10:run", 0, 5, "20,20,20,20,20,20,0,0,0,0,0,0,0,0,0")
 
@@ -1863,11 +1802,11 @@ def specs():
 
     if test("the fade rate can be reset to the default"):
       expect_int("2,1000:cfg:0,8:tst", 1000)
-      default = command_int("0,7:tst")
+      default = lc.command_int("0,7:tst")
       expect_int("2,0:cfg:0,8:tst", default)
 
     if test("the effect can be set to a default value"):
-      command_str("3,20:cfg")
+      lc.command_str("3,20:cfg")
       expect_effect("red:flu", 0, 1, "20")
 
 
@@ -1914,13 +1853,13 @@ def specs():
     if test("dynamic blink"):
 
       # set blink period to minimum value
-      command_str("0,6:cfg")
+      lc.command_str("0,6:cfg")
 
       # set a macro to advance the blink period
-      command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:flu")
 
       # place alternating dynamic colors
-      command_str("0,4:dyn:bld")
+      lc.command_str("0,4:dyn:bld")
 
       # simulate a half blink period
       expect_render("0,3:run", 0, 1, "0,0,51", False)
@@ -2085,7 +2024,7 @@ def specs():
 ########################################################################                     
 ########################################################################                     
  
-def loop():                                  
+def run():                                  
   print
   specs()
   print 
@@ -2112,33 +2051,26 @@ def loop():
 
   pre_test_reset()
   if skip_led_report == True:
-    command_str("stp");
+    lc.command_str("stp");
   else:
     total = success_count + failure_count + num_pending + num_skipped
     if total > 0:
       show_success = 0.5 + (success_count * num_leds / total)
       show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
       show_pending = 0.5 + (num_pending * num_leds / total)
-      command_str("rst:era:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
-      command_str(str(int(show_success)) + ":grn") 
+      lc.command_str("rst:era:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
+      lc.command_str(str(int(show_success)) + ":grn") 
       if show_failure >= 1.0:  
-        command_str(str(int(show_failure)) + ":red")                                                                                                                                                                  
+        lc.command_str(str(int(show_failure)) + ":red")                                                                                                                                                                  
       if show_success >= 1.0:
-        command_str(str(int(show_pending)) + ":yel")                                                                                                                                                                  
-      command_str("flu:cnt")
+        lc.command_str(str(int(show_pending)) + ":yel")                                                                                                                                                                  
+      lc.command_str("flu:cnt")
 
 if __name__ == '__main__': 
-  print tc.magenta("\n" + app_description + "\n")
-  setup() 
-
-  if group_number_only != 0:
-    print tc.yellow("group " + str(group_number_only) + " only")
-
-  if verbose_mode:
-    print tc.yellow("verbose mode")
-
-  loop()
+  initialize() 
+  run()
   print
+
 
 #def print_frame():
 #  callerframerecord = inspect.stack()[1]    # 0 represents this line

@@ -53,7 +53,7 @@ class Commands
   void process_events();
   void do_run_macro(byte macro, int times = 1, int delay_ = 0);
   void reset();
-  void set_brightness_level(int level = 0);
+  void set_brightness_level(int arg0, int arg1 = 0);
   bool dispatch_command(int cmd, byte *dispatch_data = NULL);
   void flush_all(bool force_display = false);
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
@@ -335,14 +335,28 @@ void Commands::set_pin(byte pin, byte mode)
   digitalWrite(pin, mode == 0 ? LOW : HIGH);  
 }
 
+// arg0  > 0 thru 100 -> set percent brightness
+// arg0 <= 0:
+//  0 - set device's default brightness level
+// -1 - set device's max brightness level
+// -2 - set device's high brightness level
+// -3 - set device's low brightness level
+// -4 - set device's min brightness level
+// -5 - arg1 specifies brightness 0-100% mapped to device's 0% thru max brightness level
+#define MAPPED_LEVEL -5
 #define MIN_LEVEL  -4
 #define LOW_LEVEL  -3
 #define HIGH_LEVEL -2
 #define MAX_LEVEL  -1
 #define DEF_LEVEL   0
-void Commands::set_brightness_level(int level)
+void Commands::set_brightness_level(int arg0, int arg1)
 {
-  switch(level){
+  int level = arg0;
+  switch(arg0){
+    case MAPPED_LEVEL:
+      level = (int)((arg1 / 100.0) * MAX_BRIGHTNESS_PERCENT);
+      break; 
+ 
     case MIN_LEVEL:
       level = MIN_BRIGHTNESS_PERCENT;
       break;
@@ -938,7 +952,7 @@ void Commands::reset(){
 
   // the brightness shouldn't be set on reset, because the device could be set
   // to an appropriate brightness level already
-  //set_brightness_level(default_brightness);
+  ///(default_brightness);
 
   // TODO maybe clear command processor arguments here too, to help with passing args into macros
 }

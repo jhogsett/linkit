@@ -4,7 +4,9 @@ import time
 import math
 import struct
 
-response_wait = 0.01
+slow_response_wait = 0.15
+fast_response_wait = 0.01
+
 global s, verbose_mode, cmd, max_command_chars
 s = None
 verbose_mode = False
@@ -30,18 +32,26 @@ def flush_input():
 def flush_output():
     s.flushOutput()
 
-def wait_for_ack():
+def wait_for_ack(slow=False):
     while s.inWaiting() <= 0:
         pass
+    if slow:
+        response_wait = slow_response_wait
+    else:
+        response_wait = fast_response_wait
     time.sleep(response_wait);
     while s.inWaiting() > 0:
         s.read(s.inWaiting())
 #        print s.read(s.inWaiting()),
 #    print
 
-def wait_for_int():
+def wait_for_int(slow=False):
     while s.inWaiting() <= 0:
         pass
+    if slow:
+        response_wait = slow_response_wait
+    else:
+        response_wait = fast_response_wait
     time.sleep(response_wait);
     intstr = ""
     while s.inWaiting() > 0:
@@ -52,9 +62,13 @@ def wait_for_int():
         print "whoops " + intstr
         return 0
 
-def wait_for_str():
+def wait_for_str(slow=False):
     while s.inWaiting() <= 0:
         pass
+    if slow:
+        response_wait = slow_response_wait
+    else:
+        response_wait = fast_response_wait
     time.sleep(response_wait);
     str = ""
     while s.inWaiting() > 0:
@@ -66,17 +80,17 @@ def send_command(cmd_text):
         print "sending: " + cmd_text
     s.write((cmd_text + ':\0:').encode())
 
-def command(cmd_text):
+def command(cmd_text, slow=False):
     send_command(cmd_text)
-    wait_for_ack()
+    wait_for_ack(slow)
 
-def command_int(cmd_text):
+def command_int(cmd_text, slow=False):
     send_command(cmd_text)
-    return wait_for_int()
+    return wait_for_int(slow)
 
-def command_str(cmd_text):
+def command_str(cmd_text, slow=False):
     send_command(cmd_text)
-    return wait_for_str()
+    return wait_for_str(slow)
 
 def write(text):
     sys.stdout.write(text)
@@ -84,6 +98,12 @@ def write(text):
 
 def get_device_config(config):
     return command_int("0," + str(config) + ":tst")
+
+def set_device_config(config, value):
+    command(str(config) + "," + str(value) + ":cfg")
+
+def is_enabled(config):
+    return get_device_config(config) == 1
 
 def get_num_leds():
     return get_device_config(0)
@@ -227,6 +247,9 @@ def set_macro(macro, macro_text, expected_bytes, debug_mode):
 def run_macro(macro):
     command("1:pau:2:cnt:%s:run" % macro)
 
+def get_macro_raw(macro):
+    return command_str("1," + str(macro) + ":tst")
+
 def get_macro(macro):
     macro_bytes = get_full_macro_bytes(macro)
     return str(macro) + ":set:" + translate_macro_bytes(macro_bytes)
@@ -295,6 +318,33 @@ def get_full_macro_bytes(macro):
       break;
     current_macro += 1
   return result
+
+def get_buffer(start, count, slow=False):
+  return command_str("2," + str(start) + "," + str(count) + ":tst", slow)
+
+def get_render(start, count, slow=False):
+  return command_str("3," + str(start) + "," + str(count) + ":tst", slow)
+
+def get_effect(start, count, slow=False):
+  return command_str("4," + str(start) + "," + str(count) + ":tst", slow)
+
+def get_palette(start, count, slow=False):
+  return command_str("5," + str(start) + "," + str(count) + ":tst", slow)
+
+def do_test_process(process, data):
+  command_str("6," + str(process) + "," + str(data) + ":tst")
+
+def set_random_seed(seed):
+  do_test_process(3, seed)
+
+def get_accumulator():
+  return command_str("7:tst")
+
+def randomize_palette():
+  command("shf")    
+
+def reset_palette():
+  command("1:shf")
 
 def stop_all():
     attention()

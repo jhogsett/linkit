@@ -1,3 +1,106 @@
+// add ability to get different brightness levels for testing
+
+// would be helpful to have some conditionals during template expansion
+// ex: template for disc, each ring has a particular set up
+// could use same technique for conditional compilation instead of lots of numbered files
+
+// add macro compiler spec: should be able to use spaces in python expressions
+
+// sta could use palette colors
+
+// constrained animation, itself moving
+
+// add final command to sunrise
+
+// simple script run check: run be able to run, stop, and regain control over the device. (start/stop each app macro)
+
+// idea: for an included module, have a way to specify an "init" macro that must be run when any app starts up
+//   could be a directive
+// . adds (calls it) along with each "app" command
+// %init-macro hsl-sequencer-start
+//
+// when seen, add to a list of init macro names
+
+// a simple way to invoke a sequencer that uses a macro for math
+
+// ununused brackets || <<>> [[[]]] <<<>>> '' "" // \\ 
+// unused operators = - _ ~
+
+//
+//[[[<fast-mode> 1 (args equal)
+//...
+//]]]
+//
+//[[[<slow-mode> (arg non-zero)
+//    [drawit]
+//        red
+//        slow-fade
+//]]]
+//
+//[[[`ZONE==1`
+//
+//]]]
+
+// conditionals would need to be held onto and handled for each macro expansion
+
+// reusable components: 
+// -- need to share, or namespace, render routines
+// -- need to share sequencers
+
+// report line number of error (would require not adding/subtracting lines, or saving an original line identity per new lines
+
+// must document language
+
+// -1 is common so maybe it should have it's own number encoding with zero data bytes
+// negative numbers are generally small; they could be encoded as 8-bits and expanded back to 16 (if needed).
+
+// need command to quit macro early under certain conditions
+  // something like: default: exit if zero, exit if non-zero, exit if (conditions of various kinds)
+
+// idea: if acc0 == acc1 exit macro
+//       
+
+// specs
+  // math, mirroring
+
+// start experimenting with using an arduino to tend batteries:
+    // disconnect when above or below a preset voltage
+
+// memory macro space could be used for:
+    // dampening
+    // storing variables for use in macros (even just as-is "1:set:19:1:run")    
+
+// weather data shows rain as main forecast even when rain amount section is missing
+// in these cases consider the conditions clear
+
+// idea: dampening generator, for instance, averaging, lamp burning out, side-gravity
+
+// may not need arg command given psh command
+
+// figure out a scheme for spec randomization
+
+// name match should apply to to group and/or test description
+
+
+
+
+
+
+
+
+
+
+// handle -127 to -1 with a single byte instead of two
+
+// -5:lev could increase brightness per difference between high and low levels, assuming some number of increments like 30, or that's passed as arg1
+
+// idea: like standard brightnesses, have a stanard increment, to go from minimum level to high level, with a fixed/common number of steps 
+
+// sunset problem was: it will start giving the following day's sunset prior to the event triggering, so it gets clobbered.
+//    also: their servers aren't time-synced so times can be slightly off between API calls
+
+// maybe return # of cmd chars processed, at least when the command must be retryable 
+
 // integers need to be passed in to meta-templates, but there ought to be a way to pre-process variables and python expressions so those can be resolved prior to expansion
 //   what if part of pre-processing is trying to resolve all variables and python expressions?
 //   problem: python expressions within metatemplates using passed in values can't be evaluated, 
@@ -136,6 +239,7 @@ could always assume the argument is a python expression (`3` is OK) but it needs
 // directives in macros are not immutable (this may be good)
 
 // constants with evaluated python caused problems if they themselves are used in calculations, probably due to ` mismatch
+
 // idea: color command accepts long commands
 
 // to ease multi sequencing, could have sequencers that have base parent
@@ -251,9 +355,6 @@ could always assume the argument is a python expression (`3` is OK) but it needs
 
 // specs
   // math, mirroring
-
-// could have this directive to tell it what macro to run on completion:
-// %run-macro 12
 
 // may need to pass arguments to the macro call
 
