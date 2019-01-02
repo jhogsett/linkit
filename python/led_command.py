@@ -4,7 +4,11 @@ import time
 import math
 import struct
 
-response_wait = 0.01
+#response_wait = 0.01
+
+slow_response_wait = 0.15
+fast_response_wait = 0.01
+
 global s, verbose_mode, cmd, max_command_chars
 s = None
 verbose_mode = False
@@ -30,18 +34,26 @@ def flush_input():
 def flush_output():
     s.flushOutput()
 
-def wait_for_ack():
+def wait_for_ack(slow=False):
     while s.inWaiting() <= 0:
         pass
+    if slow:
+        response_wait = slow_response_wait
+    else:
+        response_wait = fast_response_wait
     time.sleep(response_wait);
     while s.inWaiting() > 0:
         s.read(s.inWaiting())
 #        print s.read(s.inWaiting()),
 #    print
 
-def wait_for_int():
+def wait_for_int(slow=False):
     while s.inWaiting() <= 0:
         pass
+    if slow:
+        response_wait = slow_response_wait
+    else:
+        response_wait = fast_response_wait
     time.sleep(response_wait);
     intstr = ""
     while s.inWaiting() > 0:
@@ -52,9 +64,13 @@ def wait_for_int():
         print "whoops " + intstr
         return 0
 
-def wait_for_str():
+def wait_for_str(slow=False):
     while s.inWaiting() <= 0:
         pass
+    if slow:
+        response_wait = slow_response_wait
+    else:
+        response_wait = fast_response_wait
     time.sleep(response_wait);
     str = ""
     while s.inWaiting() > 0:
@@ -66,17 +82,17 @@ def send_command(cmd_text):
         print "sending: " + cmd_text
     s.write((cmd_text + ':\0:').encode())
 
-def command(cmd_text):
+def command(cmd_text, slow=False):
     send_command(cmd_text)
-    wait_for_ack()
+    wait_for_ack(slow)
 
-def command_int(cmd_text):
+def command_int(cmd_text, slow=False):
     send_command(cmd_text)
-    return wait_for_int()
+    return wait_for_int(slow)
 
-def command_str(cmd_text):
+def command_str(cmd_text, slow=False):
     send_command(cmd_text)
-    return wait_for_str()
+    return wait_for_str(slow)
 
 def write(text):
     sys.stdout.write(text)
@@ -84,6 +100,9 @@ def write(text):
 
 def get_device_config(config):
     return command_int("0," + str(config) + ":tst")
+
+def is_enabled(config):
+    return get_device_config(config) == 1
 
 def get_num_leds():
     return get_device_config(0)
