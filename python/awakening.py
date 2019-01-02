@@ -43,12 +43,12 @@ def get_options():
     parser.add_argument("-ks", "--kelvin-start", type=int, dest="kelvin_start", default=1000, help="starting color temperature K (1000)")
     parser.add_argument("-ke", "--kelvin-end", type=int, dest="kelvin_end", default=5000, help="ending color temperature K (5000)")
     parser.add_argument("-bs", "--brightness-start", type=int, dest="brightness_start", default=1, help="starting brightness %% (1)")
-    parser.add_argument("-be", "--brightness-end", type=int, dest="brightness_end", default=30, help="ending brightness %% (30)")
+    parser.add_argument("-be", "--brightness-end", type=int, dest="brightness_end", default=100, help="ending brightness %% (100)")
     parser.add_argument("-r", "--dry-run", dest="dry_run", action="store_true", help="process the awakening values but don't send the results (False)")
     parser.add_argument("-f", "--rgb-factor", type=int, dest="factor", default=10, help="rgb value divisor (10)")
     parser.add_argument("-l", "--send-to-led", dest="send_to_led", action="store_true", help="send the awakening values to the LED device (False)")
     parser.add_argument("-b", "--broadcast", dest="send_to_udp", action="store_true", help="send the awakening values to the network via UDP (False)")
-    parser.add_argument("-c", "--final-command", dest="final_command", default="app:10:run", help="LED command string to send when done (app:10:run)")
+    parser.add_argument("-c", "--final-command", dest="final_command", default="0:lev:10:run", help="LED command string to send when done (0:lev:10:run)")
 
     args = parser.parse_args()
     verbose_mode = args.verbose
@@ -139,7 +139,8 @@ def do_broadcast():
     g = g / factor
     b = b / factor
 
-    command_str = str(int(brightness_current)) + ":lev:" + str(int(r)) + "," + str(int(g)) + "," + str(int(b)) + ":rgb:flo:flu"
+#    command_str = str(int(brightness_current)) + ":lev:" + str(int(r)) + "," + str(int(g)) + "," + str(int(b)) + ":rgb:flo:flu"
+    command_str = "0:-5," + str(int(brightness_current)) + ":lev:" + str(int(r)) + "," + str(int(g)) + "," + str(int(b)) + ":rgb:flo:flu"
 
     if step_number == 0:
         ui.report_info("Initial Step")
