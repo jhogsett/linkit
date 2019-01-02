@@ -319,6 +319,9 @@ def report_test():
 def report_failure(got, expected):
   report_test()
   test_failures.append(failure_message(got, expected))
+
+  a = tc.cyan(test_command) + "\n"
+
   test_failure_summaries.append(
     tc.yellow("\t@ " + str(test_line_number) + " ") + 
     tc.cyan(test_command) + 
@@ -349,7 +352,7 @@ def fail(got, expected):
   failure_count += 1
   last_group_number = group_number
   last_test_number = test_number
-  report_verbose(verbose_test_outcome)
+  ui.report_verbose(verbose_test_outcome)
   if not verbose_mode:
     ui.write(tc.red("F"))
 
@@ -381,12 +384,16 @@ def expect_not_equal(got, expected):
     succeed()
 
 def expect_macro(command_, macro, expected):
+  global test_command
+  test_command = command_
   lc.command(command_)
   str_ = lc.get_macro_raw(macro)
   count = len(expected)
   expect_equal(str_[:count], expected)
 
 def expect_buffer(command_, start, count, expected, flush = True, slow = False, positive = True):
+  global test_command
+  test_command = command_
   if flush:
     command_ += ":flu"
   lc.command(command_)
@@ -397,6 +404,8 @@ def expect_buffer(command_, start, count, expected, flush = True, slow = False, 
     expect_not_equal(str_[:-1], expected)
 
 def expect_render(command_, start, count, expected, flush = True, slow = False, positive = True):
+  global test_command
+  test_command = command_
   if flush:
     command_ += ":flu"               
   lc.command(command_)                                                
@@ -407,6 +416,8 @@ def expect_render(command_, start, count, expected, flush = True, slow = False, 
     expect_not_equal(str_[:-1], expected)
                                                                  
 def expect_effect(command_, start, count, expected, flush = True, slow = False, positive = True):               
+  global test_command
+  test_command = command_
   if flush:
     command_ += ":flu"
   lc.command(command_)
@@ -417,6 +428,8 @@ def expect_effect(command_, start, count, expected, flush = True, slow = False, 
     expect_not_equal(str_[:-1], expected)
                                                                  
 def expect_palette(command_, start, count, expected, positive=True):               
+  global test_command
+  test_command = command_
   display_width = num_leds / palette_size                                                                                                                         
   display_command = ":" + str(palette_size) + ",-2," + str(display_width) + ":cpy:flu"  
   lc.command(command_ + display_command)                                                
@@ -427,14 +440,16 @@ def expect_palette(command_, start, count, expected, positive=True):
     expect_not_equal(str_[:-1], expected)
 
 def expect_int(command_, expected):
+  global test_command
+  test_command = command_
   got = lc.command_int(command_)
   expect_equal(str(got), str(expected))                                                                  
 
 def expect_offset(command_, expected, positive=True):
   global test_command
+  test_command = command_
   lc.command_str(command_)
   got = get_offset()
-  test_command = command_
   if positive:
     expect_equal(str(got), str(expected))
   else:
@@ -442,9 +457,9 @@ def expect_offset(command_, expected, positive=True):
 
 def expect_window(command_, expected, positive=True):
   global test_command
+  test_command = command_
   lc.command_str(command_)
   got = get_window()
-  test_command = command_
   if positive:
     expect_equal(str(got), str(expected))
   else:
@@ -457,6 +472,8 @@ def get_window():
   return lc.get_window()
 
 def expect_empty_buffer(command_, start, count):
+  global test_command
+  test_command = command_
   expected = ""
   for i in range(count):
     expected += "0,0,0,"
@@ -465,6 +482,8 @@ def expect_empty_buffer(command_, start, count):
   expect_equal(str_[:-1], expected[:-1])
 
 def expect_empty_render(command_, start, count):
+  global test_command
+  test_command = command_
   expected = ""
   for i in range(count):
     expected += "0,0,0,"
@@ -473,6 +492,8 @@ def expect_empty_render(command_, start, count):
   expect_equal(str_[:-1], expected[:-1])
 
 def expect_accumulators(command_, expected, flush = True, positive = True):
+  global test_command
+  test_command = command_
   if flush:
     command_ += ":flu"
   lc.command(command_)
@@ -1239,6 +1260,12 @@ def specs():
 
     if test("it renders at a min brightness level"):
       expect_render("-4:lev:sea:flu", 0, 1, "0,5,2")
+
+    if test("it renders at a 0 percent mapped brightness level"):
+      expect_render("-5,0:lev:sea:flu", 0, 1, "0,0,0")
+
+    if test("it renders at a 100 percent mapped brightness level"):
+      expect_render("-5,100:lev:sea:flu", 0, 1, "0,153,76")
 
 
 # FADE ANIMATION
