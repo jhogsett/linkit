@@ -114,9 +114,12 @@ def send_socket_message(sock, message, times):
       except socket.timeout:
         break
       else:
-        response = "received {} from {}".format(data, server)
+        #response = "received {} from {}".format(data, server)
+        name = data.split('/')[0]
+        ip = server[0].strip("'")
+        response = name + " " + ip
         responses.append(response)
-        ui.report_verbose(response)
+        ui.report_verbose("received {} from {}".format(data, server))
 
     if n < (times - 1):
       time.sleep(msg_delay * (2 ** n))
@@ -154,8 +157,10 @@ if command != None:
 
 if rollcall == True:
   send_message("::", 1)
+  responses.sort()
   for response in responses:
     ui.report_info(response)
+  ui.report_info_alt(str(len(responses)) + " devices responded")
   sys.exit()
 
 ui.app_description(app_description)
