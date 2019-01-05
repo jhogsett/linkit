@@ -402,7 +402,7 @@ def render_forecast_wind_speed():
                 elif 0 <= wind_speed <= 17:
                     week_slots[x][y] = "red:brt"
                 elif 0 <= wind_speed <= 20:
-                    week_slots[x][y] = "red:brt:bli"
+                    week_slots[x][y] = "red:brt:bla"
                 elif 0 <= wind_speed <= 99:
                     week_slots[x][y] = "red:brt:brt:bla"
                 else:
