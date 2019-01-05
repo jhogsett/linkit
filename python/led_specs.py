@@ -349,7 +349,7 @@ def fail(got, expected):
   failure_count += 1
   last_group_number = group_number
   last_test_number = test_number
-  report_verbose(verbose_test_outcome)
+  ui.report_verbose(verbose_test_outcome)
   if not verbose_mode:
     ui.write(tc.red("F"))
 
