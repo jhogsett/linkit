@@ -141,7 +141,7 @@ def loop():
         new_target_times = []
         command_sent = False
         send_trigger_time = 0
-        margin_time = 120
+        margin_time = 300
         for target_time in target_times:
             if current_time >= target_time:
                 # target time has been reached
