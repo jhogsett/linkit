@@ -14,6 +14,18 @@ $color3 <YELLOW>
 
 [colors-app 10]
   application
+  (color-setup)
+
+[mellow 11]
+  (colors-app)
+
+[demo 12]
+  (colors-app)
+
+[lamp 13]
+  (colors-app)
+
+[color-setup]
   (render <render-time>)
   (color-draw <draw-time>)
   (hsl-sequencer-start)
