@@ -2,9 +2,6 @@
 
 # in verbose, don't show dots, instead show text of test in color
 
-# ideas:
-#        arg to run a single test
-
 import serial 
 import time
 import sys
@@ -80,7 +77,7 @@ def initialize():
   lc.begin(verbose_mode)
 
   do_reset_device()
-  num_leds = get_num_leds()
+  num_leds = lc.get_num_leds()
   palette_size = lc.get_palette_size()
   default_brightness = lc.get_default_brightness()
 
@@ -92,7 +89,7 @@ def initialize():
     standard_palette += test_colors.colors[i][1] + ","
   standard_palette = standard_palette[:-1]
 
-  if not is_test_framework_enabled():
+  if not lc.get_test_framework_enabled():
     ui.report_error("Test framework is not enabled for this device.")
     sys.exit()
 
@@ -110,51 +107,6 @@ def introduction():
 
 # -----------------------------------------------------------------------------
 # --- device handling ---
-
-def is_test_framework_enabled():
-  return lc.get_test_framework_enabled() == 1
-
-def is_mapping_enabled():
-  return lc.get_mapping_enabled() == 1
-
-def is_extra_shuffles_enabled():
-  return lc.get_extra_shuffles_enabled() == 1
-
-def is_blend_enabled():
-  return lc.get_blend_enabled() == 1
-
-def get_num_leds():
-  return lc.get_num_leds()
-
-def get_palette_size():
-  return int_inquiry(1)
-
-def get_default_brightness():
-  return int_inquiry(4)  
-
-def get_offset():
-  return int_inquiry(2)
-
-def get_window():
-  return int_inquiry(3)
-
-def get_minimum_brightness():
-  return int_inquiry(5)
-
-def get_reverse():
-  return int_inquiry(6)
-
-def get_default_fade_rate():
-  return int_inquiry(7)
-
-def get_fade_rate():
-  return int_inquiry(8)
-
-def get_offset():
-  return int_inquiry(2)
-
-def get_max_string_length():
-  return int_inquiry(12)
 
 def reset_device():
   return ":::stp:stp:20:lev:2,0:cfg"
@@ -449,7 +401,7 @@ def expect_offset(command_, expected, positive=True):
   global test_command
   test_command = command_
   lc.command_str(command_)
-  got = get_offset()
+  got = lc.get_offset()
   if positive:
     expect_equal(str(got), str(expected))
   else:
@@ -459,17 +411,11 @@ def expect_window(command_, expected, positive=True):
   global test_command
   test_command = command_
   lc.command_str(command_)
-  got = get_window()
+  got = lc.get_window()
   if positive:
     expect_equal(str(got), str(expected))
   else:
     expect_not_equal(str(got), str(expected))
-
-def get_offset():
-  return lc.get_offset()
-
-def get_window():
-  return lc.get_window()
 
 def expect_empty_buffer(command_, start, count):
   global test_command
@@ -797,7 +743,7 @@ def specs():
     if test("the palette resets to the right fixed set of colors"):
       expect_palette("shf:flu:1:shf", 0, palette_size, standard_palette)
 
-    if is_extra_shuffles_enabled():
+    if lc.get_extra_shuffles_enabled():
       if test("the shuffler sets every odd-numbered palette color to the previous one's compliment"):
         expect_palette("2:shf", 0, palette_size, standard_palette, False)
         expected_colors = "0,20,20,20,0,0,0,0,20,20,20,0,0,10,20,20,10,0,5,20,0,15,0,20,20,10,0,0,10,20,0,20,10,20,0,10,20,15,0,0,5,20,0,15,20,20,5,0,15,0,20,5,20,0"
@@ -856,12 +802,12 @@ def specs():
       expect_window("0:zon:olv:flo", num_leds)
 
     if test("zone one is the first 'fine' zone and not equal to the whole display"):
-      window = get_window()
+      window = lc.get_window()
       expect_window("1:zon:lav:flo", window, False)
                                                                                                                                                                                                             
     if test("there are always at least two fine zones, and the second doesn't start at zero"):
-      offset = get_offset()
-      window = get_window()
+      offset = lc.get_offset()
+      window = lc.get_window()
       expect_offset("2:zon:amb:flo", offset, False)
       expect_offset("2:zon:ros:flo", window, False)
 
@@ -1061,7 +1007,7 @@ def specs():
 ########################################################################
   if group("blending colors"):                                                                          
 
-    if is_blend_enabled():
+    if lc.get_blend_enabled():
       # the color not in position 0 dominates the color blending
 
       if test("it blends two colors @ 50%"):

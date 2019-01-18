@@ -34,6 +34,7 @@ $BRIGHTNESS-MAX -1
 $BRIGHTNESS-HIGH -2
 $BRIGHTNESS-LOW -3
 $BRIGHTNESS-MIN -4
+$BRIGHTNESS-MAPPED -5
 
 # pause/continue control
 $EFFECTS-PROCESSING 1
@@ -67,6 +68,12 @@ $ROSE 17
 #$NEON 22
 #$SODIUM 23
 #$BLACK 24
+
+# random position type
+$RANDOM-POSITION-ANY 0
+$RANDOM-POSITION-EMPTY -1
+$RANDOM-POSITION-FILLED -2
+
 
 # standard render function, consumes partial final macro
 [render !]
