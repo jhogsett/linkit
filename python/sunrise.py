@@ -128,8 +128,16 @@ def loop():
 
         if event_time not in target_times:
             if event_time > current_time:
-                target_times.append(event_time)
-                ui.report_info_alt("New target time added to list: " + wx.format_unix_timestamp(event_time))
+                margin_time = 120
+                valid_event_time = True
+                for target_time in target_times:
+                    if event_time < target_time + margin_time:
+                        valid_event_time = False
+                if valid_event_time:
+                    target_times.append(event_time)
+                    ui.report_info_alt("New target time added to list: " + wx.format_unix_timestamp(event_time))
+                else:
+                    ui.report_info("skipping near duplicate event: " + wx.format_unix_timestamp(event_time))
             else:
                 ui.report_error("New target time is in the past: " + wx.format_unix_timestamp(event_time))
 
@@ -138,35 +146,53 @@ def loop():
         for target_time in target_times:
             ui.report_info(event_type.capitalize() + " event time: " + wx.format_unix_timestamp(target_time))
 
+        send_command = False
         new_target_times = []
-        command_sent = False
-        send_trigger_time = 0
-        margin_time = 300
         for target_time in target_times:
             if current_time >= target_time:
                 # target time has been reached
-
-                # see if this event is close to a triggering event this round
-                if send_trigger_time != 0:
-
-                    # this target time must exceed the triggering time 
-                    # by margin seconds to not be skipped
-                    if target_time < send_trigger_time + margin_time:
-                        # this target time is within the margin seconds 
-                        # of the triggering event so skip it
-                        ui.report_info("skipping near duplicate event")
-                        continue
-                if command_sent == False:
-                    ui.report_info("sending command")
-                    do_command()
-                    command_sent = True
-                    send_trigger_time = target_time
-                    if dryrun_mode:
-                        set_dryrun_time()
+                send_command = True
             else:
                 new_target_times.append(target_time)
         target_times = new_target_times
+
+        if send_command:
+            ui.report_info("sending command")
+            do_command()
+            if dryrun_mode:
+                set_dryrun_time()
+
         print
+
+#        new_target_times = []
+#        command_sent = False
+#        send_trigger_time = 0
+#        margin_time = 300
+#        for target_time in target_times:
+#            if current_time >= target_time:
+#                # target time has been reached
+#
+#                # see if this event is close to a triggering event this round
+#                if send_trigger_time != 0:
+#
+#                    # this target time must exceed the triggering time 
+#                    # by margin seconds to not be skipped
+#                    if target_time < send_trigger_time + margin_time:
+#                        # this target time is within the margin seconds 
+#                        # of the triggering event so skip it
+#                        ui.report_info("skipping near duplicate event")
+#                        continue
+#                if command_sent == False:
+#                    ui.report_info("sending command")
+#                    do_command()
+#                    command_sent = True
+#                    send_trigger_time = target_time
+#                    if dryrun_mode:
+#                        set_dryrun_time()
+#            else:
+#                new_target_times.append(target_time)
+#        target_times = new_target_times
+#        print
 
     except ConnectionError as e:
         ui.report_verbose("ignoring error: " + str(e))
