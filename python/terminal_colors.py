@@ -66,3 +66,11 @@ def whitebg(text):
 def normalbg():                                                                                                                                                                                            
   return color_code(49)   
 
+#bold SGR1             Turn bold mode on                      ^[[1m
+#lowint SGR2           Turn low intensity mode on             ^[[2m
+#underline SGR4        Turn underline mode on                 ^[[4m
+#blink SGR5            Turn blinking mode on                  ^[[5m
+#reverse SGR7          Turn reverse video on                  ^[[7m
+#invisible SGR8        Turn invisible text mode on            ^[[8m
+#clearscreen ED2       Clear entire screen                    ^[[2J
+
