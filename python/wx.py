@@ -10,6 +10,7 @@ import os
 import argparse
 import datetime
 import weather_conditions as wc
+import app_ui as ui
 
 #script_path = os.getcwd()
 #log_path = script_path + "/circleci.log"
@@ -18,41 +19,75 @@ import weather_conditions as wc
 #logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 #logging.info("Circleci7.py started")
 
-global verbose_mode, api_key, zip_code, timezone_offset, min_api_delay
+global verbose_mode, api_key, zip_code, timezone_offset, min_api_delay, quiet_mode
 verbose_mode = None
+quiet_mode = None
 api_key = None
 zip_code = None
 timezone_offset = None
 min_api_delay = 2
 
-def begin(api_key_, zip_code_, timezone_offset_):
-    global api_key, zip_code, timezone_offset
+## --------------------------------------------------------------------------
+## Public API
+## --------------------------------------------------------------------------
+
+## general
+
+def begin(api_key_, zip_code_, timezone_offset_, verbose_mode_, quiet_mode_):
+    global api_key, zip_code, timezone_offset, verbose_mode, quiet_mode
     api_key = api_key_
     zip_code = zip_code_
     timezone_offset = timezone_offset_
+    verbose_mode = verbose_mode_
+    quiet_mode = quiet_mode_
+    ui.begin(verbose_mode, quiet_mode)
 
-def get_daily_url():
-    return "http://api.openweathermap.org/data/2.5/weather?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
+def current_time():
+    dt = datetime.datetime.now()
+    return int(time.mktime(dt.timetuple()))
 
-def get_forecast_url():
-    return "http://api.openweathermap.org/data/2.5/forecast?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
+def get_datetime(ts):
+    ts = timezone_timestamp(ts)
+    return datetime.datetime.fromtimestamp(ts)
 
-def retrieve_data(url):
-    request = requests.get(url)
-    request = request.text.encode('utf-8')
-    json_data = json.loads(request)
-    #report_verbose("api delay...")
-    time.sleep(min_api_delay)
-    return json_data
+def current_weekday():
+    dt = get_datetime(current_time())
+    return dt.weekday()
 
-def daily_main(data):
-    return data["main"]
 
-def daily_sys(data):
-    return data["sys"]
+## formatting
 
-def daily_wind(data):
-    return data["wind"]
+def format_unix_timestamp(ts):
+    return format_datetime(get_datetime(ts))
+
+def format_datetime(dt):
+    return dt.strftime('%A %Y-%m-%d %I:%M:%S %p')
+
+
+## daily
+
+def get_daily_data():
+    url = get_daily_url()
+    ui.report_verbose("requesting: %s" % url)
+    data = retrieve_data(url)
+    ui.report_verbose("received data:")
+    ui.report_verbose_alt(str(data))
+    return data
+
+def daily_sunrise(data):
+    return daily_sys(data)["sunrise"]
+
+def daily_sunset(data):
+    return daily_sys(data)["sunset"]
+
+def daily_city(data):
+    return data["name"]
+
+def daily_lat(data):
+    return daily_coord(data)["lat"]
+
+def daily_lon(data):
+    return daily_coord(data)["lon"]
 
 def daily_timestamp(data):
     return data["dt"]
@@ -62,15 +97,6 @@ def daily_visibility(data):
         return data["visibility"]
     except:
         return 5280 * 10
-
-def daily_weather(data):
-    return data["weather"][0]
-
-def daily_sunrise(data):
-    return daily_sys(data)["sunrise"]
-
-def daily_sunset(data):
-    return daily_sys(data)["sunset"]
 
 def daily_wind_speed(data):
     return daily_wind(data)["speed"]
@@ -93,18 +119,6 @@ def daily_temp_max(data):
 def daily_temp(data):
     return daily_main(data)["temp"]
 
-def daily_city(data):
-    return data["name"]
-
-def daily_coord(data):
-    return data["coord"]
-
-def daily_lat(data):
-    return daily_coord(data)["lat"]
-
-def daily_lon(data):
-    return daily_coord(data)["lon"] 
-
 def daily_description(data):
     return daily_weather(data)["description"]
 
@@ -114,71 +128,22 @@ def daily_conditions(data):
 def daily_id(data):
     return daily_weather(data)["id"]
 
-def timezone_timestamp(ts):
-    return int(ts) - (timezone_offset * 60 * 60)
 
-def get_datetime(ts):
-    ts = timezone_timestamp(ts)
-    return datetime.datetime.fromtimestamp(ts)
-
-def format_unix_timestamp(ts):
-    return format_datetime(get_datetime(ts))
-
-def format_datetime(dt):
-    return dt.strftime('%A %Y-%m-%d %I:%M:%S %p')
-
-def weather_entry(key, value):
-    return tc.green(key) + ": " + tc.cyan(str(value))
-
-def current_time():
-    dt = datetime.datetime.now()
-    return int(time.mktime(dt.timetuple()))
-
-def current_weekday():
-    dt = get_datetime(current_time())
-    return dt.weekday()
-
-def get_daily_data():
-    url = get_daily_url()
-    #report_verbose("requesting: %s" % url)
-    data = retrieve_data(url)
-    #report_verbose("received data:")
-    #if verbose_mode:
-    #    report_json(data)    
-    return data
+## forecast
 
 def get_forecast_data():
     url = get_forecast_url()
-    #report_verbose("requesting: %s" % url)
+    ui.report_verbose("requesting: %s" % url)
     data = retrieve_data(url)
-    #report_verbose("received data:")
-    #if verbose_mode:
-    #    report_json(data)
+    ui.report_verbose("received data:")
+    ui.report_verbose_alt(str(data))
     return data
-
-def forecast_list(data):
-    return data["list"]
 
 def forecast_count(data):
     return len(forecast_list(data))
 
-def forecast_entry(data, entry):
-    return forecast_list(data)[int(entry)]
-
 def forecast_timestamp(data, entry):
     return forecast_entry(data, entry)["dt"]
-
-def forecast_main(data, entry):
-    return forecast_entry(data, entry)["main"]
-
-def forecast_wind(data, entry):
-    return forecast_entry(data, entry)["wind"]
-
-def forecast_clouds(data, entry):
-    return forecast_entry(data, entry)["clouds"]
-
-def forecast_weather(data, entry):
-    return forecast_entry(data, entry)["weather"][0]
 
 def forecast_pressure(data, entry):
     return forecast_main(data, entry)["pressure"]
@@ -204,12 +169,87 @@ def forecast_wind_direction(data, entry):
 def forecast_cloudiness(data, entry):
     return forecast_clouds(data, entry)["all"]
 
-def forecast_description(data, entry):
-    return forecast_weather(data, entry)["description"]
+def forecast_cond_id(data, entry):
+    return forecast_weather(data, entry)["id"]
 
 def forecast_conditions(data, entry):
     return forecast_weather(data, entry)["main"]
 
-def forecast_cond_id(data, entry):
-    return forecast_weather(data, entry)["id"]
+def forecast_description(data, entry):
+    return forecast_weather(data, entry)["description"]
+
+def current_weekday():
+    dt = get_datetime(current_time())
+    return dt.weekday()
+
+
+## --------------------------------------------------------------------------
+## Private
+## --------------------------------------------------------------------------
+
+## general
+
+def retrieve_data(url):
+    # returns None if there's a json loading error
+    request = requests.get(url)
+    request = request.text.encode('utf-8')
+    json_data = None
+    try:
+        json_data = json.loads(request)
+    except ValueError as e:
+        ui.report_error("Exception caught loading JSON data: " + str(e))
+    ui.report_verbose("api delay...")
+    time.sleep(min_api_delay)        
+    return json_data
+
+def timezone_timestamp(ts):
+    return int(ts) - (timezone_offset * 60 * 60)
+
+def weather_entry(key, value):
+    return tc.green(key) + ": " + tc.cyan(str(value))
+
+
+## daily
+
+def get_daily_url():
+    return "http://api.openweathermap.org/data/2.5/weather?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
+
+def daily_main(data):
+    return data["main"]
+
+def daily_sys(data):
+    return data["sys"]
+
+def daily_wind(data):
+    return data["wind"]
+
+def daily_weather(data):
+    return data["weather"][0]
+
+def daily_coord(data):
+    return data["coord"]
+
+def get_forecast_url():
+    return "http://api.openweathermap.org/data/2.5/forecast?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
+
+
+## forecast
+
+def forecast_list(data):
+    return data["list"]
+
+def forecast_entry(data, entry):
+    return forecast_list(data)[int(entry)]
+
+def forecast_main(data, entry):
+    return forecast_entry(data, entry)["main"]
+
+def forecast_wind(data, entry):
+    return forecast_entry(data, entry)["wind"]
+
+def forecast_clouds(data, entry):
+    return forecast_entry(data, entry)["clouds"]
+
+def forecast_weather(data, entry):
+    return forecast_entry(data, entry)["weather"][0]
 
