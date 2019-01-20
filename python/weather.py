@@ -14,6 +14,7 @@ import datetime
 import weather_conditions as wc
 import led_command as lc
 import wx
+import app_ui as ui
 
 #script_path = os.getcwd()
 #log_path = script_path + "/circleci.log"
@@ -22,9 +23,10 @@ import wx
 #logging.basicConfig(filename=log_path, level=logging.INFO, format='%(asctime)s %(message)s')
 #logging.info("Circleci7.py started")
 
-global app_description, verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds, suppress_spew, default_lightnes, minimum_lightness, double_size
+global app_description, verbose_mode, quiet_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, num_leds, suppress_spew, default_lightnes, minimum_lightness, double_size, dump_mode
 app_description = None
 verbose_mode = None
+quiet_mode = None
 api_key = None
 zip_code = None
 update_freq = None
@@ -36,9 +38,10 @@ suppress_spew = None
 default_lightness = None
 minimum_lightness = None
 double_size = False
+dump_mode = None
 
 def get_options():
-    global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, suppress_spew
+    global verbose_mode, api_key, zip_code, update_freq, retry_delay, timezone_offset, min_api_delay, suppress_spew, quiet_mode, dump_mode
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-k", "--apikey", dest="apikey", help="openweathermap.org api key")
@@ -48,6 +51,8 @@ def get_options():
     parser.add_argument("-t", "--timezone_offset", type=int, dest="timezone_offset", default=8, help="timezone offset from UTC (hours) (8)")
     parser.add_argument("-m", "--min_api_delay", type=int, dest="min_api_delay", default=1, help="minimum api call delay (seconds) (1)")
     parser.add_argument("-s", "--suppress_spew", dest="suppress_spew", action="store_true", help="supress period data display (False)")
+    parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
+    parser.add_argument("-w", "--write_json", dest="dump", action="store_true", help="write json data to disk (False)")
     args = parser.parse_args()
     verbose_mode = args.verbose
     api_key = args.apikey
@@ -57,6 +62,8 @@ def get_options():
     timezone_offset = args.timezone_offset
     min_api_delay = args.min_api_delay
     suppress_spew = args.suppress_spew
+    quiet_mode = args.quiet
+    dump_mode = args.dump
 
 def initialize():
     global app_description, num_leds, default_lightness, minimum_lightness, double_size
@@ -64,7 +71,9 @@ def initialize():
     get_options()
     if not validate_options():
         sys.exit("\nExiting...\n")
-    wx.begin(api_key, zip_code, timezone_offset)
+    tc.begin(quiet_mode)
+    ui.begin(verbose_mode, quiet_mode)
+    wx.begin(api_key, zip_code, timezone_offset, verbose_mode, quiet_mode)
     lc.begin(verbose_mode)
     lc.command(":::")
     lc.command("pau:era:flu")
@@ -74,54 +83,41 @@ def initialize():
     default_lightness = lc.get_default_lightness()
     minimum_lightness = lc.get_minimum_lightness()
 
-def report_error(message):
-    print tc.red(message)
-
-def report_info(message):
-    print tc.white(message)
-
-def report_verbose(message=""):
-    if verbose_mode:
-        print tc.yellow(message)
-
-def report_json(json):
-    print tc.green(str(json))
-
 # returns True if they're valid
 def validate_options():
     errors = False
     if api_key == None:
         errors = True
-        report_error("api_key must be provided")
+        ui.report_error("api_key must be provided")
     if zip_code == None:
         errors = True
-        report_error("zip_code must be provided")
+        ui.report_error("zip_code must be provided")
     if update_freq < 1:
         errors = True
-        report_error("update frequency must be positive")
+        ui.report_error("update frequency must be positive")
     return not errors
 
 def intro_entry(key, value):
     return tc.white(key) + ": " + tc.green(str(value))
 
 def introduction():
-    print tc.magenta("\n" + app_description + "\n")
+    ui.app_description(app_description)
 
-    report_verbose("verbose mode")
-    report_verbose(intro_entry("API Key", api_key))
-    report_verbose(intro_entry("Retry Delay", retry_delay))
-    report_verbose(intro_entry("Timezone Offset", timezone_offset))
-    report_verbose(intro_entry("Minimum API Delay", min_api_delay))
-    report_verbose(intro_entry("Default Lightness", default_lightness))
-    report_verbose()
+    ui.report_verbose("verbose mode")
+    ui.report_verbose(intro_entry("API Key", api_key))
+    ui.report_verbose(intro_entry("Retry Delay", retry_delay))
+    ui.report_verbose(intro_entry("Timezone Offset", timezone_offset))
+    ui.report_verbose(intro_entry("Minimum API Delay", min_api_delay))
+    ui.report_verbose(intro_entry("Default Lightness", default_lightness))
+    ui.report_verbose()
 
     data = wx.get_daily_data()
-    report_info(intro_entry("City", wx.daily_city(data)))
-    report_info(intro_entry("Latitude", wx.daily_lat(data)))
-    report_info(intro_entry("Longitude", wx.daily_lon(data)))
-    report_info(intro_entry("Zip Code", zip_code))
-    report_info(intro_entry("Update Frequency", update_freq))
-    report_info(intro_entry("Number of LEDs", num_leds))
+    ui.report_info(intro_entry("City", wx.daily_city(data)))
+    ui.report_info(intro_entry("Latitude", wx.daily_lat(data)))
+    ui.report_info(intro_entry("Longitude", wx.daily_lon(data)))
+    ui.report_info(intro_entry("Zip Code", zip_code))
+    ui.report_info(intro_entry("Update Frequency", update_freq))
+    ui.report_info(intro_entry("Number of LEDs", num_leds))
 
 def report_header():
     print "\n----------------------------------------------------"
@@ -462,6 +458,29 @@ def setup_display():
     reset_display()
     setup_palette()
 
+## diagnostics
+
+def write_json_str(filename, json_str):
+    script_path = os.getcwd()
+    filename = os.path.join(script_path, filename)
+    ui.report_verbose_alt("Writing data to file: " + filename)
+    with open(filename, "w") as text_file:
+        text_file.write(json_str)
+
+def prettify_json(json_data):
+    return json.dumps(json_data, indent=4, sort_keys=True)
+
+def write_daily_data(json_data):
+    filename = "daily-" + str(wx.current_time()) + ".json"
+    json_str = prettify_json(json_data)
+    write_json_str(filename, json_str)
+
+def write_forecast_data(json_data):
+    filename = "forecast-" + str(wx.current_time()) + ".json"
+    json_str = prettify_json(json_data)
+    write_json_str(filename, json_str)
+
+
 ############################################################################
 
 def setup():
@@ -472,16 +491,27 @@ num_displays = 5
 global current_display_type
 current_display_type = 0
 
+def get_latest_data():
+    global daily_data, forecast_data
+    daily_data = wx.get_daily_data()
+    forecast_data = wx.get_forecast_data()
+
+    if dump_mode:
+        write_daily_data(daily_data)
+        write_forecast_data(forecast_data)
+
+def time_to_get_data():
+    return current_display_type == 0
+
 def loop():
-    global current_display_type,daily_data,forecast_data
+    global current_display_type
 
-    if current_display_type == 0:
-        daily_data = wx.get_daily_data()
-        forecast_data = wx.get_forecast_data()
+    if time_to_get_data():
+        get_latest_data()
 
-    if not suppress_spew:
-        report_weather(daily_data)
-        report_forecast(forecast_data)
+        if not suppress_spew:
+            report_weather(daily_data)
+            report_forecast(forecast_data)
 
     reset_forecast_data()
     analyze_forecast(forecast_data)    
@@ -511,10 +541,10 @@ if __name__ == '__main__':
     while True:
         try:
             loop()
-            report_verbose("pausing until next update")
+            ui.report_verbose("pausing until next update")
             time.sleep(update_freq)
         except requests.exceptions.ConnectionError:
-            report_error("connection error - retrying")
+            ui.report_error("connection error - retrying")
             time.sleep(retry_delay)
         except KeyboardInterrupt:
             sys.exit("\nExiting...\n")
