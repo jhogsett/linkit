@@ -1,7 +1,13 @@
 %include symbols
-
 %include hsl-sequencer
 %include colors
+
+$inner-rotate-time 1600
+$outer-rotate-time 800
+$color-sequence-time 1000
+$color1 <RED>
+$color2 <YELLOW>
+$color3 <BLUE>
 
 %play-macro monument-app
 
@@ -9,62 +15,61 @@
   application
   <DEFAULT-BRIGHTNESS>
   level
-  (sixteen)
-  (eleven)
-  (twelve)
   (hsl-sequencer-start)
+  (setup)
 
-#[demo11 11]
-#  (colors-app)
+[demo11 11]
+  (monument-app)
 
-#[demo12 12]
-#  (colors-app)
+[demo12 12]
+  (monument-app)
 
 [demo13 13]
   (colors-app)
 
-[sixteen]
-  (fourteen 800)
-  (fifteen 1600)
-  (thirteen 30000)
+[setup]
+  (set-schedules)
+  (setup-rings)
+  (hsl-sequencer <color-sequence-time>)
 
-[eleven]
-  3
-  zone
-  0,3
-  palette-color
-  3,0,4
-  copy
-  reset
+[set-schedules]
+  (rotate-outer <outer-rotate-time>)
+  (rotate-inner <inner-rotate-time>)
 
-[twelve]
-  2
-  zone
-  0,3
-  palette-color
-  3,0,2
-  copy
-  reset
+[setup-rings]
+  ((setup-ring-call inner))
+  ((setup-ring-call outer))
 
-[fourteen]
-  3
-  zone
-  animated-rotate
-  flush
-  reset
+((setup-ring outer 3 4))
+((setup-ring inner 2 2))
+((rotate-ring inner 2))
+((rotate-ring outer 3))
 
-[fifteen]
-  2
-  zone
-  animated-rotate
-  flush
-  reset
+[[setup-ring-call NAME
+  (setup-ring-NAME)
+]]
 
-[thirteen]
-#  3:shf
-  (eleven)
-  (twelve)
-  crossfade
-  flush
-  reset
+[[setup-ring NAME ZONE ZOOM
+  [setup-ring-NAME]
+    ZONE
+    zone
+    <color1>
+    dynamic-color
+    <color2>
+    dynamic-color
+    <color3>
+    dynamic-color
+    3,0,ZOOM
+    copy
+    reset
+]]
+
+[[rotate-ring NAME ZONE
+  [rotate-NAME]
+    ZONE
+    zone
+    animated-rotate
+    flush
+    reset
+]]
 
