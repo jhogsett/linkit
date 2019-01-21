@@ -1,20 +1,22 @@
 %include symbols
-
 %include hsl-sequencer
 %include colors
 
-%play-macro monument-app
-
 $inner-rotate-time 1600
 $outer-rotate-time 800
-$next-round-time 30000
+$color-sequence-time 1000
+$color1 <RED>
+$color2 <YELLOW>
+$color3 <BLUE>
+
+%play-macro monument-app
 
 [monument-app 10]
   application
   <DEFAULT-BRIGHTNESS>
   level
-  (setup)
   (hsl-sequencer-start)
+  (setup)
 
 [demo11 11]
   (monument-app)
@@ -28,21 +30,15 @@ $next-round-time 30000
 [setup]
   (set-schedules)
   (setup-rings)
+  (hsl-sequencer <color-sequence-time>)
 
 [set-schedules]
   (rotate-outer <outer-rotate-time>)
   (rotate-inner <inner-rotate-time>)
-  (next-round <next-round-time>)
 
 [setup-rings]
   ((setup-ring-call inner))
   ((setup-ring-call outer))
-
-[next-round]
-  (setup-rings)
-  crossfade
-  flush
-  reset
 
 ((setup-ring outer 3 4))
 ((setup-ring inner 2 2))
@@ -57,8 +53,12 @@ $next-round-time 30000
   [setup-ring-NAME]
     ZONE
     zone
-    0,3
-    palette-color
+    <color1>
+    dynamic-color
+    <color2>
+    dynamic-color
+    <color3>
+    dynamic-color
     3,0,ZOOM
     copy
     reset
