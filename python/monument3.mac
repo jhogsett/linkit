@@ -1,0 +1,92 @@
+%include symbols
+%include hsl-sequencer
+%include colors
+
+$inner-rotate-time 1600
+$outer-rotate-time 800
+$color-sequence-time 250
+$color1 <RED>
+$color2 <YELLOW>
+$color3 <BLUE>
+
+%play-macro monument-app
+
+[monument-app 10]
+  application
+  <DEFAULT-BRIGHTNESS>
+  level
+  (hsl-sequencer-start)
+  (setup)
+
+[demo11 11]
+  (monument-app)
+
+[demo12 12]
+  (monument-app)
+
+[demo13 13]
+  (colors-app)
+
+[setup]
+  (set-schedules)
+  (setup-rings)
+  (hsl-sequencer <color-sequence-time>)
+
+[set-schedules]
+  (rotate-outerl <outer-rotate-time>)
+  (rotate-innerl <inner-rotate-time>)
+  (rotate-outerm <outer-rotate-time>)
+  (rotate-innerm <inner-rotate-time>)
+  (rotate-outerr <outer-rotate-time>)
+  (rotate-innerr <inner-rotate-time>)
+
+[setup-rings]
+  ((setup-ring-call innerl))
+  ((setup-ring-call outerl))
+  ((setup-ring-call innerm))
+  ((setup-ring-call outerm))
+  ((setup-ring-call innerr))
+  ((setup-ring-call outerr))
+
+((setup-ring outerl 5 4))
+((setup-ring innerl 6 2))
+((setup-ring outerm 8 4))
+((setup-ring innerm 9 2))
+((setup-ring outerr 11 4))
+((setup-ring innerr 12 2))
+
+((rotate-ring innerl 5))
+((rotate-ring outerl 6))
+((rotate-ring innerm 8))
+((rotate-ring outerm 9))
+((rotate-ring innerr 11))
+((rotate-ring outerr 12))
+
+[[setup-ring-call NAME
+  (setup-ring-NAME)
+]]
+
+[[setup-ring NAME ZONE ZOOM
+  [setup-ring-NAME]
+    ZONE
+    zone
+    <color1>
+    dynamic-color
+    <color2>
+    dynamic-color
+    <color3>
+    dynamic-color
+    3,0,ZOOM
+    copy
+    reset
+]]
+
+[[rotate-ring NAME ZONE
+  [rotate-NAME]
+    ZONE
+    zone
+    animated-rotate
+    flush
+    reset
+]]
+
