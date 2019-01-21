@@ -5,66 +5,71 @@
 
 %play-macro monument-app
 
+$inner-rotate-time 1600
+$outer-rotate-time 800
+$next-round-time 30000
+
 [monument-app 10]
   application
   <DEFAULT-BRIGHTNESS>
   level
-  (sixteen)
-  (eleven)
-  (twelve)
+  (setup)
   (hsl-sequencer-start)
 
-#[demo11 11]
-#  (colors-app)
+[demo11 11]
+  (monument-app)
 
-#[demo12 12]
-#  (colors-app)
+[demo12 12]
+  (monument-app)
 
 [demo13 13]
   (colors-app)
 
-[sixteen]
-  (fourteen 800)
-  (fifteen 1600)
-  (thirteen 30000)
+[setup]
+  (set-schedules)
+  (setup-rings)
 
-[eleven]
-  3
-  zone
-  0,3
-  palette-color
-  3,0,4
-  copy
-  reset
+[set-schedules]
+  (rotate-outer <outer-rotate-time>)
+  (rotate-inner <inner-rotate-time>)
+  (next-round <next-round-time>)
 
-[twelve]
-  2
-  zone
-  0,3
-  palette-color
-  3,0,2
-  copy
-  reset
+[setup-rings]
+  ((setup-ring-call inner))
+  ((setup-ring-call outer))
 
-[fourteen]
-  3
-  zone
-  animated-rotate
-  flush
-  reset
-
-[fifteen]
-  2
-  zone
-  animated-rotate
-  flush
-  reset
-
-[thirteen]
-#  3:shf
-  (eleven)
-  (twelve)
+[next-round]
+  (setup-rings)
   crossfade
   flush
   reset
+
+((setup-ring outer 3 4))
+((setup-ring inner 2 2))
+((rotate-ring inner 2))
+((rotate-ring outer 3))
+
+[[setup-ring-call NAME
+  (setup-ring-NAME)
+]]
+
+[[setup-ring NAME ZONE ZOOM
+  [setup-ring-NAME]
+    ZONE
+    zone
+    0,3
+    palette-color
+    3,0,ZOOM
+    copy
+    reset
+]]
+
+[[rotate-ring NAME ZONE
+  [rotate-NAME]
+    ZONE
+    zone
+    animated-rotate
+    flush
+    reset
+]]
 
