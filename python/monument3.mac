@@ -48,12 +48,12 @@ $color3 <BLUE>
   ((setup-ring-call innerr))
   ((setup-ring-call outerr))
 
-((setup-ring outerl 5 4))
-((setup-ring innerl 6 2))
-((setup-ring outerm 8 4))
-((setup-ring innerm 9 2))
-((setup-ring outerr 11 4))
-((setup-ring innerr 12 2))
+((setup-ring outerl 5 4 <RED> <ORANGE> <YELLOW>))
+((setup-ring innerl 6 2 <RED> <ORANGE> <YELLOW>))
+((setup-ring outerm 8 4 <YELLOW> <GREEN> <BLUE>))
+((setup-ring innerm 9 2 <YELLOW> <GREEN> <BLUE>))
+((setup-ring outerr 11 4 <GREEN> <BLUE> <PURPLE>))
+((setup-ring innerr 12 2 <GREEN> <BLUE> <PURPLE>))
 
 ((rotate-ring innerl 5))
 ((rotate-ring outerl 6))
@@ -66,15 +66,15 @@ $color3 <BLUE>
   (setup-ring-NAME)
 ]]
 
-[[setup-ring NAME ZONE ZOOM
+[[setup-ring NAME ZONE ZOOM COLOR1 COLOR2 COLOR3
   [setup-ring-NAME]
     ZONE
     zone
-    <color1>
+    COLOR1
     dynamic-color
-    <color2>
+    COLOR2
     dynamic-color
-    <color3>
+    COLOR3
     dynamic-color
     3,0,ZOOM
     copy
