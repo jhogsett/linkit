@@ -1,0 +1,51 @@
+{
+    "base": "stations", 
+    "clouds": {
+        "all": 90
+    }, 
+    "cod": 200, 
+    "coord": {
+        "lat": 38.020000000000006, 
+        "lon": -121.89
+    }, 
+    "dt": 1548007800, 
+    "id": 420002864, 
+    "main": {
+        "humidity": 93, 
+        "pressure": 1018, 
+        "temp": 57.63, 
+        "temp_max": 60.8, 
+        "temp_min": 55.04
+    }, 
+    "name": "Antioch", 
+    "rain": {
+        "1h": 0.4
+    }, 
+    "sys": {
+        "country": "US", 
+        "id": 5939, 
+        "message": 0.0041000000000000006, 
+        "sunrise": 1547997595, 
+        "sunset": 1548033483, 
+        "type": 1
+    }, 
+    "visibility": 16093, 
+    "weather": [
+        {
+            "description": "light rain", 
+            "icon": "10d", 
+            "id": 500, 
+            "main": "Rain"
+        }, 
+        {
+            "description": "mist", 
+            "icon": "50d", 
+            "id": 701, 
+            "main": "Mist"
+        }
+    ], 
+    "wind": {
+        "deg": 190, 
+        "speed": 14.99
+    }
+}

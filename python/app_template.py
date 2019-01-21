@@ -5,18 +5,25 @@ import argparse
 import terminal_colors as tc
 import app_ui as ui
 
-global app_description, verbose_mode
+#import time
+#import os
+#import datetime
+
+global app_description, verbose_mode, quiet_mode
 app_description = None
 verbose_mode = None
+quiet_mode = None
 
 def get_options():
     global app_description, verbose_mode
-    app_description = "(application template) - Apollo Lighting System v.0.0 12-0-18"
+    app_description = "(application template) - Apollo Lighting System v.0.1 1-0-2019"
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
+    parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
     args = parser.parse_args()
     verbose_mode = args.verbose
+    quiet_mode = args.quiet
 
 def validate_options():
     pass
@@ -30,7 +37,8 @@ def introduction():
 def initialize():
     get_options()
     validate_options()
-    ui.begin(verbose_mode)
+    tc.begin(quiet_mode)
+    ui.begin(verbose_mode, quiet_mode)
     introduction()
 
 def loop():
