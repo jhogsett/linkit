@@ -75,10 +75,18 @@ def get_daily_data():
     return data
 
 def daily_sunrise(data):
-    return daily_sys(data)["sunrise"]
+    sys = daily_sys(data)
+    if "sunrise" in sys:
+        return sys["sunrise"]
+    else:
+        return 0
 
 def daily_sunset(data):
-    return daily_sys(data)["sunset"]
+    sys = daily_sys(data)
+    if "sunset" in sys:
+        return sys["sunset"]
+    else:
+        return 0
 
 def daily_city(data):
     return data["name"]
@@ -90,43 +98,87 @@ def daily_lon(data):
     return daily_coord(data)["lon"]
 
 def daily_timestamp(data):
-    return data["dt"]
+    if "dt" in data:
+        return data["dt"]
+    else:
+        return 0
 
 def daily_visibility(data):
-    try:
+    if "visibility" in data:
         return data["visibility"]
-    except:
-        return 5280 * 10
+    else:
+#        return 5280 * 10
+        return 0
 
 def daily_wind_speed(data):
-    return daily_wind(data)["speed"]
+    wind = daily_wind(data)
+    if "speed" in wind:
+        return wind["speed"]
+    else:
+        return 0.0
 
 def daily_wind_deg(data):
-    return daily_wind(data)["deg"]
+    wind = daily_wind(data)
+    if "deg" in wind:
+        return wind["deg"]
+    else:
+        return 0
 
 def daily_pressure(data):
-    return daily_main(data)["pressure"]
+    main = daily_main(data)
+    if "pressure" in main:
+        return main["pressure"]
+    else:
+        return 0
 
 def daily_humidity(data):
-    return daily_main(data)["humidity"]
+    main = daily_main(data)
+    if "humidity" in main:
+        return main["humidity"]
+    else:
+        return 0
 
 def daily_temp_min(data):
-    return daily_main(data)["temp_min"]
+    main = daily_main(data)
+    if "temp_min" in main:
+        return main["temp_min"]
+    else:
+        return 0.0
 
 def daily_temp_max(data):
-    return daily_main(data)["temp_max"]
+    main = daily_main(data)
+    if "temp_max" in main:
+        return main["temp_max"]
+    else:
+        return 0.0
 
 def daily_temp(data):
-    return daily_main(data)["temp"]
+    main = daily_main(data)
+    if "temp" in main:
+        return main["temp"]
+    else:
+        return 0.0
 
 def daily_description(data):
-    return daily_weather(data)["description"]
+    weather = daily_weather(data)
+    if "description" in weather:
+        return weather["description"]
+    else:
+        return ""
 
 def daily_conditions(data):
-    return daily_weather(data)["main"]
+    weather = daily_weather(data)
+    if "main" in weather:
+        return weather["main"]
+    else:
+        return ""
 
 def daily_id(data):
-    return daily_weather(data)["id"]
+    weather = daily_weather(data)
+    if "id" in weather:
+        return weather["id"]
+    else:
+        return 0
 
 
 ## forecast
@@ -215,16 +267,28 @@ def get_daily_url():
     return "http://api.openweathermap.org/data/2.5/weather?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
 
 def daily_main(data):
-    return data["main"]
+    if "main" in data:
+        return data["main"]
+    else:
+        return {}
 
 def daily_sys(data):
-    return data["sys"]
-
+    if "sys" in data:
+        return data["sys"]
+    else:
+        return {}
+ 
 def daily_wind(data):
-    return data["wind"]
+    if "wind" in data:
+        return data["wind"]
+    else:
+        return {}
 
 def daily_weather(data):
-    return data["weather"][0]
+    if "weather" in data:
+        return data["weather"][0]
+    else:
+        return {}
 
 def daily_coord(data):
     return data["coord"]
