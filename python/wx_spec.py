@@ -73,7 +73,7 @@ def report_failed_expectation(description, message):
     ui.report_error("failed expectation: " + description);
     ui.report_info_alt(message)
 
-def expect_equal(description, expected_, got_):
+def expect_equal(description, got_, expected_):
     if expected_ == got_:
         return True
     else:
@@ -84,23 +84,29 @@ def loop():
 
     ui.report_info("known good daily data")
     json_data = load_fixture_json("weather_daily_known_good.json")
+    expect_equal("daily city", wx.daily_city(json_data), "Antioch")
+    expect_equal("daily latitude", wx.daily_lat(json_data), 38.02)
+    expect_equal("daily longitude", wx.daily_lon(json_data), -121.89)
     expect_equal("daily timestamp", wx.daily_timestamp(json_data), 1548007800)
     expect_equal("daily visibility", wx.daily_visibility(json_data), 16093)
     expect_equal("daily sunrise", wx.daily_sunrise(json_data), 1547997595)
     expect_equal("daily sunset", wx.daily_sunset(json_data), 1548033483)
-    expect_equal("daily wind speed", str(wx.daily_wind_speed(json_data)), "14.99")
+    expect_equal("daily wind speed", wx.daily_wind_speed(json_data), 14.99)
     expect_equal("daily wind direction", wx.daily_wind_deg(json_data), 190)
     expect_equal("daily pressure", wx.daily_pressure(json_data), 1018)
     expect_equal("daily humidity", wx.daily_humidity(json_data), 93)
-    expect_equal("daily temp min", str(wx.daily_temp_min(json_data)), "55.04")
-    expect_equal("daily temp max", str(wx.daily_temp_max(json_data)), "60.8")
-    expect_equal("daily temp", str(wx.daily_temp(json_data)), "57.63")
-    expect_equal("daily description", str(wx.daily_description(json_data)), "light rain")
-    expect_equal("daily conditions", str(wx.daily_conditions(json_data)), "Rain")
+    expect_equal("daily temp min", wx.daily_temp_min(json_data), 55.04)
+    expect_equal("daily temp max", wx.daily_temp_max(json_data), 60.8)
+    expect_equal("daily temp", wx.daily_temp(json_data), 57.63)
+    expect_equal("daily description", wx.daily_description(json_data), "light rain")
+    expect_equal("daily conditions", wx.daily_conditions(json_data), "Rain")
     expect_equal("daily conditions id", wx.daily_id(json_data), 500)
 
     ui.report_info("empty daily data")
     json_data = load_fixture_json("weather_daily_empty.json")
+    expect_equal("daily city", wx.daily_city(json_data), "")
+    expect_equal("daily latitide", wx.daily_lat(json_data), 0.0)
+    expect_equal("daily longitude", wx.daily_lon(json_data), 0.0)
     expect_equal("daily timestamp", wx.daily_timestamp(json_data), 0)
     expect_equal("daily visibility", wx.daily_visibility(json_data), 0)
     expect_equal("daily sunrise", wx.daily_sunrise(json_data), 0)
@@ -112,8 +118,8 @@ def loop():
     expect_equal("daily temp min", wx.daily_temp_min(json_data), 0.0)
     expect_equal("daily temp max", wx.daily_temp_max(json_data), 0.0)
     expect_equal("daily temp", wx.daily_temp(json_data), 0.0)
-    expect_equal("daily description", str(wx.daily_description(json_data)), "")
-    expect_equal("daily conditions", str(wx.daily_conditions(json_data)), "")
+    expect_equal("daily description", wx.daily_description(json_data), "")
+    expect_equal("daily conditions", wx.daily_conditions(json_data), "")
     expect_equal("daily conditions id", wx.daily_id(json_data), 0)
 
 
