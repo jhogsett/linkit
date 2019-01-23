@@ -55,6 +55,31 @@ def current_weekday():
     return dt.weekday()
 
 
+## utils
+
+# data[key]
+def get_value(data, key, default=None):
+    if key in data:
+        return data[key]
+    else:
+        return default
+
+# data[outer][key]
+def get_value2(data, outer, key, default=None):
+    if outer in data:
+        outer = data[outer]
+        return get_value(outer, key, default)
+    else:
+        return default
+
+# data[outer][item][key]
+def get_value3(data, outer, item, key, default=None):
+    if outer in data:
+        outer = data[outer]
+        return get_value(outer[item], key, default)
+    else:
+        return default
+
 ## formatting
 
 def format_unix_timestamp(ts):
@@ -75,110 +100,55 @@ def get_daily_data():
     return data
 
 def daily_sunrise(data):
-    sys = daily_sys(data)
-    if "sunrise" in sys:
-        return sys["sunrise"]
-    else:
-        return 0
+    return get_value2(data, "sys", "sunrise", 0)
 
 def daily_sunset(data):
-    sys = daily_sys(data)
-    if "sunset" in sys:
-        return sys["sunset"]
-    else:
-        return 0
+    return get_value2(data, "sys", "sunset", 0)
 
 def daily_city(data):
-    return data["name"]
+    return get_value(data, "name", "")
 
 def daily_lat(data):
-    return daily_coord(data)["lat"]
+    return round(get_value2(data, "coord", "lat", 0.0), 2)
 
 def daily_lon(data):
-    return daily_coord(data)["lon"]
+    return round(get_value2(data, "coord", "lon", 0.0), 2)
 
 def daily_timestamp(data):
-    if "dt" in data:
-        return data["dt"]
-    else:
-        return 0
+    return get_value(data, "dt", 0)
 
 def daily_visibility(data):
-    if "visibility" in data:
-        return data["visibility"]
-    else:
-#        return 5280 * 10
-        return 0
+    return get_value(data, "visibility", 0)
 
 def daily_wind_speed(data):
-    wind = daily_wind(data)
-    if "speed" in wind:
-        return wind["speed"]
-    else:
-        return 0.0
+    return get_value2(data, "wind", "speed", 0.0)
 
 def daily_wind_deg(data):
-    wind = daily_wind(data)
-    if "deg" in wind:
-        return wind["deg"]
-    else:
-        return 0
+    return get_value2(data, "wind", "deg", 0)
 
 def daily_pressure(data):
-    main = daily_main(data)
-    if "pressure" in main:
-        return main["pressure"]
-    else:
-        return 0
+    return get_value2(data, "main", "pressure", 0)
 
 def daily_humidity(data):
-    main = daily_main(data)
-    if "humidity" in main:
-        return main["humidity"]
-    else:
-        return 0
+    return get_value2(data, "main", "humidity", 0)
 
 def daily_temp_min(data):
-    main = daily_main(data)
-    if "temp_min" in main:
-        return main["temp_min"]
-    else:
-        return 0.0
+    return get_value2(data, "main", "temp_min", 0.0)
 
 def daily_temp_max(data):
-    main = daily_main(data)
-    if "temp_max" in main:
-        return main["temp_max"]
-    else:
-        return 0.0
+    return get_value2(data, "main", "temp_max", 0.0)
 
 def daily_temp(data):
-    main = daily_main(data)
-    if "temp" in main:
-        return main["temp"]
-    else:
-        return 0.0
+    return get_value2(data, "main", "temp", 0.0)
 
 def daily_description(data):
-    weather = daily_weather(data)
-    if "description" in weather:
-        return weather["description"]
-    else:
-        return ""
+    return get_value3(data, "weather", 0, "description", "")
 
 def daily_conditions(data):
-    weather = daily_weather(data)
-    if "main" in weather:
-        return weather["main"]
-    else:
-        return ""
+    return get_value3(data, "weather", 0, "main", "")
 
 def daily_id(data):
-    weather = daily_weather(data)
-    if "id" in weather:
-        return weather["id"]
-    else:
-        return 0
+    return get_value3(data, "weather", 0, "id", 0)
 
 
 ## forecast
@@ -234,6 +204,27 @@ def current_weekday():
     dt = get_datetime(current_time())
     return dt.weekday()
 
+def forecast_list(data):
+    return get_value(data, "list", {})
+#    return data["list"]
+
+def forecast_entry(data, entry):
+    return forecast_list(data)[int(entry)]
+
+def forecast_main(data, entry):
+    return forecast_entry(data, entry)["main"]
+
+def forecast_wind(data, entry):
+    return forecast_entry(data, entry)["wind"]
+
+def forecast_clouds(data, entry):
+    return forecast_entry(data, entry)["clouds"]
+
+def forecast_weather(data, entry):
+    return forecast_entry(data, entry)["weather"][0]
+
+
+
 
 ## --------------------------------------------------------------------------
 ## Private
@@ -266,54 +257,9 @@ def weather_entry(key, value):
 def get_daily_url():
     return "http://api.openweathermap.org/data/2.5/weather?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
 
-def daily_main(data):
-    if "main" in data:
-        return data["main"]
-    else:
-        return {}
-
-def daily_sys(data):
-    if "sys" in data:
-        return data["sys"]
-    else:
-        return {}
- 
-def daily_wind(data):
-    if "wind" in data:
-        return data["wind"]
-    else:
-        return {}
-
-def daily_weather(data):
-    if "weather" in data:
-        return data["weather"][0]
-    else:
-        return {}
-
-def daily_coord(data):
-    return data["coord"]
-
-def get_forecast_url():
-    return "http://api.openweathermap.org/data/2.5/forecast?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
-
 
 ## forecast
 
-def forecast_list(data):
-    return data["list"]
-
-def forecast_entry(data, entry):
-    return forecast_list(data)[int(entry)]
-
-def forecast_main(data, entry):
-    return forecast_entry(data, entry)["main"]
-
-def forecast_wind(data, entry):
-    return forecast_entry(data, entry)["wind"]
-
-def forecast_clouds(data, entry):
-    return forecast_entry(data, entry)["clouds"]
-
-def forecast_weather(data, entry):
-    return forecast_entry(data, entry)["weather"][0]
+def get_forecast_url():
+    return "http://api.openweathermap.org/data/2.5/forecast?zip=%s&APPID=%s&units=imperial" % (zip_code, api_key)
 
