@@ -1,3 +1,36 @@
+// needed specs
+// reset, clear, stop
+// carry
+// crossfade
+// "more general macro tests"
+// delay
+// random number
+// sequencing: steps, negative step, next window, using macro math
+// testing test framework features
+// configuring
+// static effect?
+// pause, continue,m scheduling
+// pin
+// mapping, xy position
+// custom black level, other modes where it applies
+// fan
+// app command
+// draw modes
+
+
+
+// dynamic rendering hints
+
+// don't need 'blr' and 'efr'
+
+// use namespacing ike python
+// %import module
+// (module.init)
+// always do (filename.init) in any macro that uses "app"
+
+
+// setting window, have a way to make it relative, like -10 means offset+10
+
 // add ability to get different brightness levels for testing
 
 // would be helpful to have some conditionals during template expansion
@@ -91,13 +124,6 @@
 
 
 // handle -127 to -1 with a single byte instead of two
-
-// -5:lev could increase brightness per difference between high and low levels, assuming some number of increments like 30, or that's passed as arg1
-
-// idea: like standard brightnesses, have a stanard increment, to go from minimum level to high level, with a fixed/common number of steps 
-
-// sunset problem was: it will start giving the following day's sunset prior to the event triggering, so it gets clobbered.
-//    also: their servers aren't time-synced so times can be slightly off between API calls
 
 // maybe return # of cmd chars processed, at least when the command must be retryable 
 
