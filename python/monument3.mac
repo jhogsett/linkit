@@ -14,7 +14,7 @@ $HSL-TIME 1250
 $inner-rotate-time 1600
 $outer-rotate-time 800
 $color-sequence-time 250
-$time-factor 1
+$time-factor 4
 
 %play-macro monument-app
 
