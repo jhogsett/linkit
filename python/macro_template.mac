@@ -10,7 +10,7 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time 120
 $fade-rate 9000
-$num-instances 12
+$num-instances 6
 
 %play-macro app
 
@@ -27,6 +27,9 @@ $num-instances 12
     <brightness>
     level
 
+    (start-up)
+
+[start-up]
     # start the macro instances
     (((init <num-instances>)))
 
@@ -36,7 +39,7 @@ $num-instances 12
     # schedule the display rendering
     (render <render-time>)
 
-(((macro <num-instances> `INSTANCE*2`)))
+(((macro <num-instances> INSTANCE)))
 
 [[init INSTANCE
     (init-INSTANCE)
@@ -50,6 +53,6 @@ $num-instances 12
 
     [setup-INSTANCE]
         PALETTE
-        palette-color 
+        dynamic-color 
 ]]
 
