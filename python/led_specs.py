@@ -841,6 +841,20 @@ def specs():
     if test("on setting window override, it doesn't adjust the offset override if not set"):
       expect_offset("4:win:dgr", 0)
 
+    if test("on setting offset less than zero, it should be set to zero"):
+      expect_offset("-1:off", 0)
+
+    if test("on setting offset = num_leds, it should be set to num leds - 1"):
+      expect_offset(str(num_leds) + ":off", num_leds-1)
+
+    if test("on setting offset > num_leds, it should be set to num leds - 1"):
+      expect_offset(str(num_leds + 10) + ":off", num_leds-1)
+
+    if test("on setting window = num leds, it should be set to num leds"):
+      expect_window(str(num_leds) + ":win", num_leds)
+
+    if test("on setting window > num leds, it should be set to num leds"):
+      expect_window(str(num_leds + 10) + ":win", num_leds)
 
 ########################################################################
 # REVERSE AND FORWARD
