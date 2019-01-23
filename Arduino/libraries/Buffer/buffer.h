@@ -40,8 +40,8 @@ class Buffer
   byte * get_effects_buffer();
   byte get_current_display();
   rgb_color * get_render_buffer();
-  void set_offset_override(byte offset, bool fixup);
-  void set_window_override(byte window, bool fixup);
+  void set_offset_override(int offset, bool fixup);
+  void set_window_override(int window, bool fixup);
   byte get_offset();
   byte get_width();
   void set_zone(byte zone);
@@ -346,13 +346,13 @@ void Buffer::push_carry_color()
 
 // when setting override, should it fix the override to be normal?
 // 2:win:4:off leaves window override at 2
-void Buffer::set_window_override(byte window, bool fixup = false)
+void Buffer::set_window_override(int window, bool fixup = false)
 {
   if(window < 0)
     this->window_override = OVERRIDE_OFF;
   else
   {
-    this->window_override = max(1, min(visible_led_count + 1, window));
+    this->window_override = max(1, min(visible_led_count, window));
 
     // fix up offset override if necessary
     if(fixup && this->offset_override != OVERRIDE_OFF){
@@ -369,13 +369,13 @@ byte Buffer::get_window()
     return this->zones->zone_window(this->current_zone);
 }
 
-void Buffer::set_offset_override(byte offset, bool fixup = false)
+void Buffer::set_offset_override(int offset, bool fixup = false)
 {
   if(offset < 0)
     this->offset_override = OVERRIDE_OFF;
   else
   {
-    this->offset_override = max(0, min(visible_led_count, offset));
+    this->offset_override = max(0, min(visible_led_count-1, offset));
 
     // fix up window override if necessary
     if(fixup && this->window_override != OVERRIDE_OFF)

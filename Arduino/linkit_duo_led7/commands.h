@@ -1031,9 +1031,9 @@ void Commands::set_position(int position, int width)
 //  buffer->set_window_override(position); 
 }
 
-#define RANDOM_NUM_WIDTH_NOT_EMPTY -2
-#define RANDOM_NUM_WIDTH_EMPTY     -1
-#define RANDOM_NUM_WIDTH            0
+#define RANDOM_NUM_WIDTH_FILLED -2
+#define RANDOM_NUM_WIDTH_EMPTY  -1
+#define RANDOM_NUM_WIDTH         0
 
 // todo: position should be in relation to the current zone
 // todo: a position of zero here when a zone is selected means zero in zone #0
@@ -1041,8 +1041,8 @@ void Commands::random_position(int type)
 {
   byte position;
   switch(type){
-    case RANDOM_NUM_WIDTH_NOT_EMPTY:
-      position = random_num(RANDOM_NUM_WIDTH_NOT_EMPTY);
+    case RANDOM_NUM_WIDTH_FILLED:
+      position = random_num(RANDOM_NUM_WIDTH_FILLED);
       break;
     
     case RANDOM_NUM_WIDTH_EMPTY:
@@ -1098,7 +1098,7 @@ int Commands::random_num(int max, int min)
       max = FINE_ZONES + 1; 
       break;
     
-    case RANDOM_NUM_WIDTH_NOT_EMPTY: 
+    case RANDOM_NUM_WIDTH_FILLED: 
       non_empty_only = true;
       max = new_max; 
       break;

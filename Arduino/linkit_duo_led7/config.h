@@ -58,6 +58,8 @@
 // 200-LED overhead
 // #define RADIUS8
 
+// 44-LED Hard Hat
+// #define HARDHAT
 // 44-LED Wearable and Hard Hat
 // #define WEARABLE_AND_HARDHAT
 
@@ -75,6 +77,9 @@
 
 // 93-led proector on original wearable
 // #define WEARABLE_AND_PROJECTOR
+
+// 57-LED three part monument 2
+// #define MONUMENT2
 
 //////////////////////////////
 // devices profile definitions
@@ -158,8 +163,8 @@
 #define ANIM_LED_COUNT 100
 #define ZONES_SPHERE
 #define DEFAULT_BRIGHTNESS_PERCENT 25
-#define BLINK_PERIOD 1500
-#define BREATHE_PERIOD 100
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
 #define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
 #define HIGH_BRIGHTNESS_PERCENT    33
 #define LOW_BRIGHTNESS_PERCENT     15
@@ -235,13 +240,10 @@
 #define FADE_RATE 0.925
 #define FADE_PERIOD 400
 #define ZONES_MINI_DISC
-#define BLINK_PERIOD 12000
-#define BREATHE_PERIOD 1000
 #define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
 #define HIGH_BRIGHTNESS_PERCENT    33
 #define LOW_BRIGHTNESS_PERCENT     10
 #define MIN_BRIGHTNESS_PERCENT     5
-
 #endif
 
 #ifdef WEARABLE_AND_HARDHAT
@@ -249,6 +251,19 @@
 #define WEARABLE
 #define ANIM_LED_COUNT 44
 #define ZONES_HARDHAT
+#define DEFAULT_BRIGHTNESS_PERCENT 15
+#define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    25
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
+#endif
+
+#ifdef HARDHAT
+#define SWAP_REDGREEN
+#define ANIM_LED_COUNT 44
+#define ZONES_HARDHAT
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
 #define HIGH_BRIGHTNESS_PERCENT    25
@@ -371,6 +386,18 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #endif
 
+#ifdef MONUMENT2
+#define ANIM_LED_COUNT 57
+#define ZONES_3_X_19_LEDS
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
+#define DEFAULT_BRIGHTNESS_PERCENT 33
+#define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    40
+#define LOW_BRIGHTNESS_PERCENT     15
+#define MIN_BRIGHTNESS_PERCENT     5
+#endif
+
 // first wearable: internal is pin 12
 #ifdef WEARABLE
 #define USE_2_DISPLAYS
@@ -443,4 +470,3 @@ class Config
 };
 
 #endif
-
