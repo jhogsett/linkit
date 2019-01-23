@@ -9,7 +9,7 @@ from requests.exceptions import ConnectionError
 import terminal_colors as tc
 import app_ui as ui
 
-global app_description, verbose_mode, api_key, zipcode, update_freq, timezone_offset, sleep_time, last_command_time, dryrun_mode, command_line, dryrun_time, command_sent, target_time, dryrun_time, target_times
+global app_description, verbose_mode, api_key, zipcode, update_freq, timezone_offset, sleep_time, last_command_time, dryrun_mode, command_line, dryrun_time, command_sent, target_time, dryrun_time, target_times, quiet_mode
 app_description = None
 verbose_mode = None
 api_key = None
@@ -24,9 +24,10 @@ command_sent = True
 target_time = None
 dryrun_time = None
 target_times = []
+quiet_mode = None
 
 def get_options():
-    global app_description, verbose_mode, api_key, zipcode, update_freq, timezone_offset, dryrun_mode, command_line, event_type, trigger_offset
+    global app_description, verbose_mode, api_key, zipcode, update_freq, timezone_offset, dryrun_mode, command_line, event_type, trigger_offset, quiet_mode
     app_description = "Sunrise/Sunset Commander - Apollo Lighting System v.1.0 12-19-18"
 
     parser = argparse.ArgumentParser(description=app_description)
@@ -38,6 +39,7 @@ def get_options():
     parser.add_argument("-r", "--dryrun", dest="dryrun", action="store_true", help="use a fake event time (False)")
     parser.add_argument("-e", "--event_type", dest="event_type", default="sunrise", help="triggering event 'sunset' or 'sunrise' (sunrise)")
     parser.add_argument("-o", "--trigger_offset", type=int, dest="trigger_offset", default=0, help="+/- minutes offset for triggering (0)")
+    parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
     parser.add_argument("command_line", nargs=argparse.REMAINDER, help="command line to run at sunrise (None)")
     args = parser.parse_args()
     verbose_mode = args.verbose
@@ -49,6 +51,7 @@ def get_options():
     event_type = args.event_type
     trigger_offset = args.trigger_offset
     command_line = args.command_line
+    quiet_mode = args.quiet
 
 def validate_options():
     global command_line
@@ -78,7 +81,7 @@ def introduction():
 def initialize():
     get_options()
     validate_options()
-    wx.begin(api_key, zipcode, timezone_offset)
+    wx.begin(api_key, zipcode, timezone_offset, verbose_mode, quiet_mode)
     ui.begin(verbose_mode)
     introduction()
 
