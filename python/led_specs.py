@@ -449,6 +449,32 @@ def expect_accumulators(command_, expected, flush = True, positive = True):
   else:
     expect_not_equal(str_[:-1], expected)
 
+def get_accum0():
+  str_ = lc.get_accumulator()
+  return str_.split(",")[0]
+
+def expect_sequence(setup_command, advance_command, expected_values, flush = True, positive = True):
+  global test_command
+  test_command = setup_command + "/" + advance_command
+  got_values = []
+
+  if flush:
+    setup_command += ":flu"
+    advance_command += ":flu"
+
+  lc.command(setup_command)
+  got_values.append(int(get_accum0()))
+
+  times = len(expected_values) - 1
+  for i in range(0, times):
+    lc.command(advance_command)
+    got_values.append(int(get_accum0()))
+
+  if positive:
+    expect_equal(str(got_values), str(expected_values))
+  else:
+    expect_not_equal(str(expected_values), str(expected_values))
+
 
 # -----------------------------------------------------------------------------
 # --- helper functions ---
@@ -490,6 +516,8 @@ def specs():
       for i in range(0, len(test_colors.colors)):
         expect_buffer(test_colors.colors[i][0] + ":flu", 0, 1, test_colors.colors[i][1])
 
+    if test("if number of times < 1 it is set to 1"):
+      expect_buffer("-5:red", 0, 2, "20,0,0,0,0,0")
 
 ########################################################################
 # SETTING EFFECTS
@@ -1502,22 +1530,17 @@ def specs():
     if test("setting a sequence leaves arg0 set to the low value"):
       expect_buffer("0,5,4:seq:olv", 0, 5, "15,20,0,15,20,0,15,20,0,15,20,0,0,0,0")
                                                                                                                                                                                                          
-    if test("it does a wheel sequence"):
-      expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+    if test("it does a wheel sequence with only an upper limit"):
+      expect_sequence("0,5:seq:sto:red", "0:seq:sto:red", [0,1,2,3,4,0,1,2,3,4])
 
-    if test("it does a swing sequence"):
-      expect_buffer("0,4,1:sqs:wht", 0, 2, "20,20,20,0,0,0", True, True)
-      expect_buffer("seq:gry", 0, 4,       "10,10,10,10,10,10,20,20,20,0,0,0", True, True)
-      expect_buffer("seq:dgr", 0, 7,       "5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0", True, True)
-      expect_buffer("seq:gry", 0, 9,       "10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0", True, True)
-      expect_buffer("seq:wht", 0, 10,      "20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0", True, True)
-      expect_buffer("seq:gry", 0, 12,      "10,10,10,10,10,10,20,20,20,10,10,10,10,10,10,5,5,5,5,5,5,5,5,5,10,10,10,10,10,10,20,20,20,0,0,0", True, True)
+    if test("it does a wheel sequence with an upper and lower limit"):
+      expect_sequence("0,5,1:seq:sto:red", "0:seq:sto:red", [1,2,3,4,1,2,3,4])
+
+    if test("it does a swing sequence with only an upper limit"):
+      expect_sequence("0,5:sqs:sto:org", "0:seq:sto:org", [0, 1, 2, 3, 4, 3, 2, 1, 0, 1])
+
+    if test("it does a swing sequence with an upper and lower limit"):
+      expect_sequence("0,5,1:sqs:sto:org", "0:seq:sto:org", [1,2,3,4,3,2,1,2])
 
     if test("it does a wheel cosine sequence"):
       expect_buffer("0,7,1:swc:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
@@ -1628,7 +1651,11 @@ def specs():
     if test("two sequencers can be subtracted"):
       expect_buffer("0,5,3:seq:1,3,1:seq:0,-6,1:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
 
+    if test("wheel sequence handles negative low limit"):
+      expect_sequence("0,5,-5:seq:sto:red", "0:seq:sto:red", [-5,-4,-3,-2,-1,0,1,2,3,4,-5,-4])
 
+    if test("swing sequence handles negative low limit"):
+      expect_sequence("0,5,-5:sqs:sto:blu", "0:seq:sto:blu", [-5,-4,-3,-2,-1,0,1,2,3,4,3,2,1,0,-1,-2,-3,-4,-5,-4])
 
 
 
