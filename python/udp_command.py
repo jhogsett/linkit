@@ -25,16 +25,19 @@ parser.add_argument("-v", "--verbose",           dest="verbose", action='store_t
 parser.add_argument("-i", "--ipaddr",            dest="ipaddr",  default='224.3.29.71', help='multicast group IP address (224.3.29.71)')
 parser.add_argument("-p", "--port",    type=int, dest="port",    default=10000,         help='multicast port (10000)')
 parser.add_argument("-t", "--timeout", type=int, dest="timeout", default=10,            help='receiving period in seconds (10)')
+parser.add_argument("-q", "--quiet",             dest="quiet",   action="store_true",   help="don't use terminal colors (False)")
 
 args = parser.parse_args()
 verbose_mode = args.verbose
 multicast_group_ip = args.ipaddr
 server_port = args.port
 timeout_in_seconds = args.timeout
+quiet_mode = args.quiet
+
 server_address = ('', server_port)
 
 lc.begin(verbose_mode)
-ui.begin(verbose_mode)
+ui.begin(verbose_mode, quiet_mode)
 #lc.attention()
 #lc.stop_all()
 #lc.command("cnt")
