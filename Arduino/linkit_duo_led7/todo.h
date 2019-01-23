@@ -1,3 +1,7 @@
+// sequencer not handling negative values well
+
+// create expect_sequence()
+
 // needed specs
 // reset, clear, stop
 // carry
@@ -1032,11 +1036,3 @@ kitt kar like back and forth
 //0,19,0,0,20,0,k
 //command: era:grn:120,255,39:hsl:2,0,2:tst
 //0,20,0,0,20,0,k
-
-
-
-
-
-
-
-
