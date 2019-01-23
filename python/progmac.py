@@ -10,7 +10,7 @@ import app_ui as ui
 import macro_compiler as mc
 import math
 
-global app_description, verbose_mode, debug_mode, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, show_tables, quiet_mode
+global app_description, verbose_mode, debug_mode, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, show_tables, quiet_mode, allow_mutability
 app_description = None
 verbose_mode = None
 debug_mode = None
@@ -23,6 +23,7 @@ bytes_programmed = None
 show_output = None
 show_tables = None
 quiet_mode = None
+allow_mutability = None
 
 global device_profile, num_leds, starting_macro, num_macro_bytes, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
 device_profile = None
@@ -38,7 +39,7 @@ number_of_sequencers = None
 print_macros = None
 
 def get_options():
-    global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, show_tables, num_macro_bytes_override, starting_macro_override, ending_macro_override, char_buffer_override, quiet_mode
+    global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, show_tables, num_macro_bytes_override, starting_macro_override, ending_macro_override, char_buffer_override, quiet_mode, allow_mutability
     global print_macros
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
@@ -53,6 +54,7 @@ def get_options():
     parser.add_argument("-c", "--char-buffer", type=int, dest="char_buffer", default=0, help="char buffer size override (none)")
     parser.add_argument("-p", "--print-macros", dest="print_macros", action="store_true", help="print current macros on device (False)")
     parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
+    parser.add_argument("-a", "--allow-mutability", dest="mutability", action="store_true", help="allow variable values to be changed (False)")
     parser.add_argument("program", nargs="?", help="program to transmit")
     parser.add_argument("presets", nargs=argparse.REMAINDER, help="resolved=value presets (None)")
 
@@ -62,7 +64,6 @@ def get_options():
     verbose_mode = args.verbose
     debug_mode = args.debug
     quiet_mode = args.quiet
-
     num_macro_bytes_override = args.bytes_per_macro
     starting_macro_override = args.starting_macro
     ending_macro_override = args.ending_macro
@@ -72,6 +73,7 @@ def get_options():
     show_output = args.show_output
     show_tables = args.show_tables
     print_macros = args.print_macros
+    allow_mutability = args.mutability
 
 def initialize():
     global app_description, bytes_programmed
@@ -116,7 +118,7 @@ def initialize():
       char_buffer_size = char_buffer_override
 
     all_presets = merge_two_dicts(device_profile, get_command_line_presets())
-    mc.begin(lc, verbose_mode, quiet_mode, all_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_bytes, char_buffer_size, last_macro_bytes)
+    mc.begin(lc, verbose_mode, quiet_mode, all_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_bytes, char_buffer_size, last_macro_bytes, allow_mutability)
     if dryrun:
       lc.resume()
 
