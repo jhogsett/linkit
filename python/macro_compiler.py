@@ -8,7 +8,7 @@ import code
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
 global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
-global led_command, final_macro_numbers, saved_bad_script, includes, last_macro_bytes
+global led_command, final_macro_numbers, saved_bad_script, includes, last_macro_bytes, allow_mutability
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -28,14 +28,15 @@ led_command = None
 saved_bad_script = []
 includes = {}
 last_macro_bytes = None
+allow_mutability = None
 
 ########################################################################
 ## API methods
 ########################################################################
 
-def begin(led_command_, verbose_mode_, quiet_mode, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_):
+def begin(led_command_, verbose_mode_, quiet_mode, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_, allow_mutability_=False):
     global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
-    global led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes
+    global led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes, allow_mutability
     led_command = led_command_
     verbose_mode = verbose_mode_
     starting_macro_number = starting_macro
@@ -46,6 +47,7 @@ def begin(led_command_, verbose_mode_, quiet_mode, presets_, starting_macro, end
     number_of_macros = (ending_macro_number - starting_macro_number) + 1
     next_available_macro_number = starting_macro_number
     last_macro_bytes = last_macro_bytes_
+    allow_mutability = allow_mutability_
     presets = presets_
     resolve_presets(presets)
     tc.begin(quiet_mode)
@@ -1223,6 +1225,8 @@ def remove_resolved():
 # return true if resolved value is a mutable preset and can be changed
 # raise ValueError if resolved value is immutable value being changed
 def immutable_resolved_value(variable_name, variable_value):
+    if allow_mutability:
+        return False
     if variable_name in resolved:
         if resolved[variable_name] != variable_value:
             if variable_name in presets:
