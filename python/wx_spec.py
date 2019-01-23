@@ -19,7 +19,7 @@ quiet_mode = None
 
 def get_options():
     global app_description, verbose_mode
-    app_description = "(application template) - Apollo Lighting System v.0.1 1-0-2019"
+    app_description = "WX Library Specs - Apollo Lighting System v.0.1 1-0-2019"
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
@@ -122,6 +122,25 @@ def loop():
     expect_equal("daily conditions", wx.daily_conditions(json_data), "")
     expect_equal("daily conditions id", wx.daily_id(json_data), 0)
 
+    ui.report_info("corrupt daily data")
+    json_data = load_fixture_json("weather_daily_corrupt.json")
+    expect_equal("daily city", wx.daily_city(json_data), "")
+    expect_equal("daily latitide", wx.daily_lat(json_data), 0.0)
+    expect_equal("daily longitude", wx.daily_lon(json_data), 0.0)
+    expect_equal("daily timestamp", wx.daily_timestamp(json_data), 0)
+    expect_equal("daily visibility", wx.daily_visibility(json_data), 0)
+    expect_equal("daily sunrise", wx.daily_sunrise(json_data), 0)
+    expect_equal("daily sunset", wx.daily_sunset(json_data), 0)
+    expect_equal("daily wind speed", wx.daily_wind_speed(json_data), 0.0)
+    expect_equal("daily wind direction", wx.daily_wind_deg(json_data), 0)
+    expect_equal("daily pressure", wx.daily_pressure(json_data), 0)
+    expect_equal("daily humidity", wx.daily_humidity(json_data), 0)
+    expect_equal("daily temp min", wx.daily_temp_min(json_data), 0.0)
+    expect_equal("daily temp max", wx.daily_temp_max(json_data), 0.0)
+    expect_equal("daily temp", wx.daily_temp(json_data), 0.0)
+    expect_equal("daily description", wx.daily_description(json_data), "")
+    expect_equal("daily conditions", wx.daily_conditions(json_data), "")
+    expect_equal("daily conditions id", wx.daily_id(json_data), 0)
 
     sys.exit()
 
