@@ -1531,10 +1531,27 @@ def specs():
       expect_buffer("0,5,4:seq:olv", 0, 5, "15,20,0,15,20,0,15,20,0,15,20,0,0,0,0")
                                                                                                                                                                                                          
     if test("it does a wheel sequence with only an upper limit"):
-      expect_sequence("0,5:seq:sto:red", "0:seq:sto:red", [0,1,2,3,4,0,1,2,3,4])
+      expect_sequence("0,5:seq:sto:red", "0:seq:sto:red", [0,1,2,3,4,0,1,2,3,4,0])
 
     if test("it does a wheel sequence with an upper and lower limit"):
-      expect_sequence("0,5,1:seq:sto:red", "0:seq:sto:red", [1,2,3,4,1,2,3,4])
+      expect_sequence("0,5,1:seq:sto:red", "0:seq:sto:red", [1,2,3,4,1,2,3,4,1])
+
+    if test("wheel sequence handles negative low limit"):
+      expect_sequence("0,5,-5:seq:sto:red", "0:seq:sto:red", [-5,-4,-3,-2,-1,0,1,2,3,4,-5,-4])
+
+    if test("wheel sequence handles > 8-bit values"):
+      expect_sequence("0,1000:seq:sto", "0,0,100:seq:sto", [0,100,200,300,400,500,600,700,800,900,0,100,200,300,400,500,600,700,800,900,0])
+
+    if test("wheel sequence handles > 8-bit values #2"):
+      expect_sequence("0,10000:seq:sto", "0,0,1000:seq:sto", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+
+    if test("wheel sequence handles > 8-bit values #3"):
+      expect_sequence("0,65535:seq:sto", "0,0,4096:seq:sto", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+
+
+    if test("swing sequence handles negative low limit"):
+      expect_sequence("0,5,-5:sqs:sto:blu", "0:seq:sto:blu", [-5,-4,-3,-2,-1,0,1,2,3,4,3,2,1,0,-1,-2,-3,-4,-5,-4])
+
 
     if test("it does a swing sequence with only an upper limit"):
       expect_sequence("0,5:sqs:sto:org", "0:seq:sto:org", [0, 1, 2, 3, 4, 3, 2, 1, 0, 1])
@@ -1651,11 +1668,6 @@ def specs():
     if test("two sequencers can be subtracted"):
       expect_buffer("0,5,3:seq:1,3,1:seq:0,-6,1:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
 
-    if test("wheel sequence handles negative low limit"):
-      expect_sequence("0,5,-5:seq:sto:red", "0:seq:sto:red", [-5,-4,-3,-2,-1,0,1,2,3,4,-5,-4])
-
-    if test("swing sequence handles negative low limit"):
-      expect_sequence("0,5,-5:sqs:sto:blu", "0:seq:sto:blu", [-5,-4,-3,-2,-1,0,1,2,3,4,3,2,1,0,-1,-2,-3,-4,-5,-4])
 
 
 
@@ -2065,20 +2077,33 @@ def run():
 
   pre_test_reset()
   if skip_led_report == True:
-    lc.command_str("stp");
+    lc.command_str("stp")
   else:
     total = success_count + failure_count + num_pending + num_skipped
     if total > 0:
-      show_success = 0.5 + (success_count * num_leds / total)
-      show_failure = 0.5 + ((failure_count + num_skipped) * num_leds / total)
-      show_pending = 0.5 + (num_pending * num_leds / total)
-      lc.command_str("rst:era:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
-      lc.command_str(str(int(show_success)) + ":grn") 
-      if show_failure >= 1.0:  
-        lc.command_str(str(int(show_failure)) + ":red")                                                                                                                                                                  
-      if show_success >= 1.0:
-        lc.command_str(str(int(show_pending)) + ":yel")                                                                                                                                                                  
-      lc.command_str("flu:cnt")
+      show_success = int(0.5 + (success_count * num_leds / total))
+      show_failure = int(0.5 + ((failure_count + num_skipped) * num_leds / total))
+      show_pending = int(0.5 + (num_pending * num_leds / total))
+
+      print "show success: " + str(show_success)
+      print "show failure: " + str(show_failure)
+      print "show pending: " + str(show_pending)
+
+      lc.command("stp:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
+
+      if show_success + show_failure + show_pending > num_leds:
+        print "show success: " + str(show_success)
+        print "show failure: " + str(show_failure)
+        print "show pending: " + str(show_pending)
+      else:
+        if show_success > 0:
+          lc.command(str(show_success) + ":grn") 
+        if show_failure > 0:  
+          lc.command(str(show_failure) + ":red")                                                                                                                                                                  
+        if show_success > 0:
+          lc.command(str(show_pending) + ":yel")                                                                                                                                                                  
+
+      lc.command("flu:cnt")
 
 if __name__ == '__main__': 
   initialize() 
