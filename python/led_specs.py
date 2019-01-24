@@ -1529,6 +1529,7 @@ def specs():
   if group("sequencing"):                                                                                                            
     if test("setting a sequence leaves arg0 set to the low value"):
       expect_buffer("0,5,4:seq:olv", 0, 5, "15,20,0,15,20,0,15,20,0,15,20,0,0,0,0")
+
                                                                                                                                                                                                          
     if test("it does a wheel sequence with only an upper limit"):
       expect_sequence("0,5:seq:sto:red", "0:seq:sto:red", [0,1,2,3,4,0,1,2,3,4,0])
@@ -1542,15 +1543,11 @@ def specs():
     if test("wheel sequence handles > 8-bit values"):
       expect_sequence("0,1000:seq:sto", "0,0,100:seq:sto", [0,100,200,300,400,500,600,700,800,900,0,100,200,300,400,500,600,700,800,900,0])
 
-    if test("wheel sequence handles > 8-bit values #2"):
+    if test("wheel sequence handles large > 8-bit values #2"):
       expect_sequence("0,10000:seq:sto", "0,0,1000:seq:sto", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
 
-    if test("wheel sequence handles > 8-bit values #3"):
+    if test("wheel sequence handles maximum > 8-bit values #3"):
       expect_sequence("0,65535:seq:sto", "0,0,4096:seq:sto", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
-
-
-    if test("swing sequence handles negative low limit"):
-      expect_sequence("0,5,-5:sqs:sto:blu", "0:seq:sto:blu", [-5,-4,-3,-2,-1,0,1,2,3,4,3,2,1,0,-1,-2,-3,-4,-5,-4])
 
 
     if test("it does a swing sequence with only an upper limit"):
@@ -1558,6 +1555,28 @@ def specs():
 
     if test("it does a swing sequence with an upper and lower limit"):
       expect_sequence("0,5,1:sqs:sto:org", "0:seq:sto:org", [1,2,3,4,3,2,1,2])
+
+    if test("swing sequence handles negative low limit"):
+      expect_sequence("0,5,-5:sqs:sto:org", "0:seq:sto:org", [-5,-4,-3,-2,-1,0,1,2,3,4,3,2,1,0,-1,-2,-3,-4,-5,-4])
+
+    if test("swing sequence handles > 8-bit values"):
+      expect_sequence("0,1000:sqs:sto", "0,0,100:seq:sto", [0,100,200,300,400,500,600,700,800,900,800,700,600,500,400,300,200,100,0,100])
+
+    if test("swing sequence handles large > 8-bit values #2"):
+      expect_sequence("0,10000:sqs:sto", "0,0,1000:seq:sto", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,8000,7000,6000,5000,4000,3000,2000,1000,0,1000])
+
+    if test("swing sequence handles maximum > 8-bit values #3"):
+      expect_sequence("0,65535:sqs:sto", "0,0,4096:seq:sto", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+
+
+
+
+
+
+
+
+
+
 
     if test("it does a wheel cosine sequence"):
       expect_buffer("0,7,1:swc:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
@@ -2103,7 +2122,7 @@ def run():
         if show_success > 0:
           lc.command(str(show_pending) + ":yel")                                                                                                                                                                  
 
-      lc.command("flu:cnt")
+      lc.command("flu:1:cnt")
 
 if __name__ == '__main__': 
   initialize() 
