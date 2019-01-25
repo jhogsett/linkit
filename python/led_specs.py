@@ -1529,6 +1529,7 @@ def specs():
   if group("sequencing"):                                                                                                            
     if test("setting a sequence leaves arg0 set to the low value"):
       expect_buffer("0,5,4:seq:olv", 0, 5, "15,20,0,15,20,0,15,20,0,15,20,0,0,0,0")
+
                                                                                                                                                                                                          
     if test("it does a wheel sequence with only an upper limit"):
       expect_sequence("0,5:seq:sto:red", "0:seq:sto:red", [0,1,2,3,4,0,1,2,3,4,0])
@@ -1537,63 +1538,169 @@ def specs():
       expect_sequence("0,5,1:seq:sto:red", "0:seq:sto:red", [1,2,3,4,1,2,3,4,1])
 
     if test("wheel sequence handles negative low limit"):
-      expect_sequence("0,5,-5:seq:sto:red", "0:seq:sto:red", [-5,-4,-3,-2,-1,0,1,2,3,4,-5,-4])
+      expect_sequence("0,5,-5:seq:sto:1:red", "0:seq:sto:1:red", [-5,-4,-3,-2,-1,0,1,2,3,4,-5,-4])
 
     if test("wheel sequence handles > 8-bit values"):
-      expect_sequence("0,1000:seq:sto", "0,0,100:seq:sto", [0,100,200,300,400,500,600,700,800,900,0,100,200,300,400,500,600,700,800,900,0])
+      expect_sequence("0,1000:seq:sto:1:red", "0,0,100:seq:sto:1:red", [0,100,200,300,400,500,600,700,800,900,0,100,200,300,400,500,600,700,800,900,0])
 
-    if test("wheel sequence handles > 8-bit values #2"):
-      expect_sequence("0,10000:seq:sto", "0,0,1000:seq:sto", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+    if test("wheel sequence handles large > 8-bit values #2"):
+      expect_sequence("0,10000:seq:sto:1:red", "0,0,1000:seq:sto:1:red", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
 
-    if test("wheel sequence handles > 8-bit values #3"):
-      expect_sequence("0,65535:seq:sto", "0,0,4096:seq:sto", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+    if test("wheel sequence handles maximum > 8-bit values #3"):
+      expect_sequence("0,30000:seq:sto:1:red", "0,0,2000:seq:sto:1:red", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+
+    if test("it does a wheel sequence with a step of -1"):
+      expect_sequence("0,10:seq:sto:red", "0,0,-1:seq:sto:red", [0,9,8,7,6,5,4,3,2,1,0,9,8])
+
+    if test("it does a wheel sequence with a step of 2"):
+      expect_sequence("0,10:seq:sto:red", "0,0,2:seq:sto:red", [0,2,4,6,8,0,2,4,6,8,0,2])
+
+    if test("it does a wheel sequence with a step of -2"):
+      expect_sequence("0,10:seq:sto:red", "0,0,-2:seq:sto:red", [0,8,6,4,2,0,8,6,4,2,0,8,6])
+
+    if test("it does a wheel sequence and gets the opposite value"):
+      expect_sequence("0,5:seq:sto:red", "0,-3:seq:sto:red", [0,4,3,2,1,0,4,3,2,1,0,4,3])
+
+    if test("it handles the case of the limits being the same"):
+      expect_sequence("0,3,3:seq:sto:red", "0:seq:sto:red", [3,3,3,3])
+
+    if test("it handles the case of the limits being reversed/invalid"):
+      expect_sequence("0,1,5:seq:sto:red", "0:seq:sto:red", [1,1,1,1])
+
+    # when setting a new high/low value, the sequencer does not advance
+
+    # it's possible to set a new high/low value
+
+    # it handles the fixup if the current index value is outside then new high/low range
 
 
-    if test("swing sequence handles negative low limit"):
-      expect_sequence("0,5,-5:sqs:sto:blu", "0:seq:sto:blu", [-5,-4,-3,-2,-1,0,1,2,3,4,3,2,1,0,-1,-2,-3,-4,-5,-4])
+# -1 gets the current index value without advancing
+# -2 gets the current computed value without advancing
+# -3 advances and gets the opposite value
+# -4 arg2 is a macro to run to advance with the next value returned in arg0
+# -5 arg2 is another sequencer to add the value this one without advancing
+# -6 arg2 is another sequencer to subtract its value from this one without advancing
+# -7 sets a new high value without advancing
+# -8 sets a new low value without advancing
+# -9 resets to the starting value without advancing
 
 
     if test("it does a swing sequence with only an upper limit"):
-      expect_sequence("0,5:sqs:sto:org", "0:seq:sto:org", [0, 1, 2, 3, 4, 3, 2, 1, 0, 1])
+      expect_sequence("0,5:sqs:sto:org", "0:seq:sto:org", [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0])
 
     if test("it does a swing sequence with an upper and lower limit"):
-      expect_sequence("0,5,1:sqs:sto:org", "0:seq:sto:org", [1,2,3,4,3,2,1,2])
+      expect_sequence("0,5,1:sqs:sto:org", "0:seq:sto:org", [1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 3, 2, 1, 2])
 
-    if test("it does a wheel cosine sequence"):
-      expect_buffer("0,7,1:swc:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 5,       "20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 11,      "20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 17,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 20,      "0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 21,      "10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 22,      "20,0,0,10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+    if test("swing sequence handles negative low limit"):
+      expect_sequence("0,5,-5:sqs:sto:org", "0:seq:sto:org", [-5,-4,-3,-2,-1,0,1,2,3,4,3,2,1,0,-1,-2,-3,-4,-5,-4])
 
-    if test("it does a wheel sine sequence"):
-      expect_buffer("0,7,1:sws:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 3,       "20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 5,       "20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 10,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 19,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 22,      "20,0,0,20,0,0,20,0,0,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+    if test("swing sequence handles > 8-bit values"):
+      expect_sequence("0,1000:sqs:sto:1:org", "0,0,100:seq:sto:1:org", [0,100,200,300,400,500,600,700,800,900,800,700,600,500,400,300,200,100,0,100])
 
-    if test("it does an opposite sequence"):
-      expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:org", 0, 7,       "20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:yel", 0, 11,      "20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:grn", 0, 14,      "0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:blu", 0, 16,      "0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:pur", 0, 17,      "10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:red", 0, 23,      "20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+    if test("swing sequence handles large > 8-bit values #2"):
+      expect_sequence("0,10000:sqs:sto:1:org", "0,0,1000:seq:sto:1:org", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,8000,7000,6000,5000,4000,3000,2000,1000,0,1000])
 
-    if test("it does an opposite swing sequence"):
-      expect_buffer("0,7,1:sqs:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:org", 0, 7,       "20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:yel", 0, 11,      "20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:grn", 0, 14,      "0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:blu", 0, 16,      "0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:pur", 0, 17,      "10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-3:seq:red", 0, 19,      "20,0,0,20,0,0,10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+    if test("swing sequence handles maximum > 8-bit values #3"):
+      expect_sequence("0,30000:sqs:sto:1:org", "0,0,4000:seq:sto:1:org", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+
+    if test("it does a swing sequence with a step of -1"):
+      expect_sequence("0,10:sqs:sto:org", "0,0,-1:seq:sto:org", [0,1,2,3,4,5,6,7,8,9,0,1])
+
+    if test("it does a swing sequence with a step of 2"):
+      expect_sequence("0,10:sqs:sto:org", "0,0,2:seq:sto:org", [0,2,4,6,8,6,4,2,0,2,4,6,8,6,4,2,0,2])
+
+    if test("it does a swing sequence with a step of -2"):
+      expect_sequence("0,10:sqs:sto:org", "0,0,-2:seq:sto:org", [0,2,4,6,8,6,4,2,0,2])
+
+    if test("it does a swing sequence and gets the opposite value"):
+      expect_sequence("0,5:sqs:sto:org", "0,-3:seq:sto:org", [0, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2])
+
+    if test("it handles the case of the limits being the same"):
+      expect_sequence("0,3,3:sqs:sto:org", "0:seq:sto:org", [3,3,3,3])
+
+    if test("it handles the case of the limits being reversed/invalid"):
+      expect_sequence("0,1,5:sqs:sto:org", "0:seq:sto:org", [1,1,1,1])
+
+
+
+    if test("it does a wheel cosine sequence with only an upper limit"):
+      expect_sequence("0,15:swc:sto:grn", "0:seq:sto:grn", [0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0])
+
+    if test("it does a wheel cosine sequence with an upper and lower limit"):
+      expect_sequence("0,15,1:swc:sto:grn", "0:seq:sto:grn", [1,2,3,4,1,2,3,4,1,1,2,3,4,0,1,2,3,4,0])
+
+    if test("wheel cosine sequence handles negative low limit"):
+      expect_sequence("0,15,-5:swc:sto:1:grn", "0:seq:sto:1:grn", [-5,-4,-3,-2,-1,0,1,2,3,4,-5,-4,1,2,3,4,0,1,2,3,4,0])
+
+    if test("wheel cosine sequence handles > 8-bit values"):
+      expect_sequence("0,1000:swc:sto:1:grn", "0,0,100:seq:sto:1:grn", [0,100,200,300,400,500,600,700,800,900,0,100,200,300,400,500,600,700,800,900,0])
+
+    if test("wheel cosine sequence handles large > 8-bit values #2"):
+      expect_sequence("0,10000:swc:sto:1:grn", "0,0,1000:seq:sto:1:grn", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+
+    if test("wheel cosine sequence handles maximum > 8-bit values #3"):
+      expect_sequence("0,65535:swc:sto:1:grn", "0,0,4096:seq:sto:1:grn", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+
+    if test("it does a wheel cosine sequence with a step of -1"):
+      expect_sequence("0,10:swc:sto:grn", "0,0,-1:seq:sto:grn", [0,9,8,7,6,5,4,3,2,1,0,9,8])
+
+    if test("it does a wheel cosine sequence with a step of 2"):
+      expect_sequence("0,10:swc:sto:grn", "0,0,2:seq:sto:grn", [0,2,4,6,8,0,2,4,6,8,0,2])
+
+    if test("it does a wheel cosine sequence with a step of -2"):
+      expect_sequence("0,10:swc:sto:grn", "0,0,-2:seq:sto:grn", [0,8,6,4,2,0,8,6,4,2,0,8,6])
+
+    if test("it does a wheel cosine sequence and gets the opposite value"):
+      expect_sequence("0,15:swc:sto:grn", "0,-3:seq:sto:grn", [4,3,2,1,0,4,3,2,1,0,4,3])
+
+    if test("it handles the case of the limits being the same"):
+      expect_sequence("0,3,3:swc:sto:grn", "0:seq:sto:grn", [3,3,3,3])
+
+    if test("it handles the case of the limits being reversed/invalid"):
+      expect_sequence("0,1,5:swc:sto:grn", "0:seq:sto:grn", [1,1,1,1])
+
+
+
+
+
+
+
+
+#    if test("it does a wheel cosine sequence"):
+#      expect_buffer("0,7,1:swc:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:org", 0, 5,       "20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:yel", 0, 11,      "20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:grn", 0, 17,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:blu", 0, 20,      "0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:pur", 0, 21,      "10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:red", 0, 22,      "20,0,0,10,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+
+#    if test("it does a wheel sine sequence"):
+#      expect_buffer("0,7,1:sws:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:org", 0, 3,       "20,10,0,20,0,0,0,0,0", True, True)
+##      expect_buffer("seq:yel", 0, 5,       "20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:grn", 0, 10,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:pur", 0, 19,      "10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:red", 0, 22,      "20,0,0,20,0,0,20,0,0,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,10,0,20,0,0,0,0,0", True, True)
+
+#    if test("it does an opposite wheel sequence"):
+#      expect_buffer("0,7,1:seq:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:org", 0, 7,       "20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:yel", 0, 11,      "20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:grn", 0, 14,      "0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:blu", 0, 16,      "0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:pur", 0, 17,      "10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:red", 0, 23,      "20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+
+#    if test("it does an opposite swing sequence"):
+##      expect_buffer("0,7,1:sqs:red:flu", 0, 2, "20,0,0,0,0,0", True, True)
+###      expect_buffer("0,-3:seq:org", 0, 7,       "20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:yel", 0, 11,      "20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:grn", 0, 14,      "0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:blu", 0, 16,      "0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:pur", 0, 17,      "10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-3:seq:red", 0, 19,      "20,0,0,20,0,0,10,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
 # this doesn't work; doesn't fit the architecture - needs to draw two segments, partially before and after the seam.
 #    if test("it steps a wheel sequence by -1"):
@@ -1616,57 +1723,57 @@ def specs():
 
     # test adjusting sequence high/low, fixing current 
 
-    if test("the high limit can be changed"):
-      expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#    if test("the high limit can be changed"):
+#      expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
+#3      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#3      expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
-      expect_buffer("era:flu:0,-7,4:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 8,       "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("era:flu:0,-7,4:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:grn", 0, 8,       "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
-    if test("the low limit can be changed"):
-      expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#    if test("the low limit can be changed"):
+#      expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:grn", 0, 11,      "0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:blu", 0, 16,      "0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:pur", 0, 22,      "10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:red", 0, 23,      "20,0,0,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
-      expect_buffer("era:flu:0,-8,3:seq:red", 0, 4, "20,0,0,20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 8,       "20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 13,      "20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:grn", 0, 19,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:blu", 0, 22,      "0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("era:flu:0,-8,3:seq:red", 0, 4, "20,0,0,20,0,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:org", 0, 8,       "20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:yel", 0, 13,      "20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:grn", 0, 19,      "0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:blu", 0, 22,      "0,0,20,0,0,20,0,0,20,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,0,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,10,0,20,10,0,20,0,0,20,0,0,20,0,0,0,0,0", True, True)
 
-    if test("the sequencer can be reset"):
-      expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
-      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-9:seq:grn", 0, 8,  "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#    if test("the sequencer can be reset"):
+#      expect_buffer("0,7,1:seq:red", 0, 2, "20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:org", 0, 4,       "20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("seq:yel", 0, 7,       "20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-9:seq:grn", 0, 8,  "0,20,0,20,20,0,20,20,0,20,20,0,20,10,0,20,10,0,20,0,0,0,0,0", True, True)
 
-    if test("wheel sequencer stores index value as computed value"):
-      expect_buffer("0,7,1:seq:0:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)      
-      expect_buffer("0,-2:seq:org", 0, 5, "20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+#    if test("wheel sequencer stores index value as computed value"):
+#      expect_buffer("0,7,1:seq:0:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)      
+#      expect_buffer("0,-2:seq:org", 0, 5, "20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
 
-    if test("swing sequencer stores index value as computed value"):
-      expect_buffer("0,3,1:sqs:0:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0,-2:seq:org", 0, 5, "20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0:seq:0,-2:seq:yel", 0, 6, "20,20,0,20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0:seq:0,-2:seq:grn", 0, 8, "0,20,0,0,20,0,20,20,0,20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
-      expect_buffer("0:seq:0,-2:seq:blu", 0, 9, "0,0,20,0,20,0,0,20,0,20,20,0,20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+#    if test("swing sequencer stores index value as computed value"):
+#      expect_buffer("0,3,1:sqs:0:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0,-2:seq:org", 0, 5, "20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0:seq:0,-2:seq:yel", 0, 6, "20,20,0,20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0:seq:0,-2:seq:grn", 0, 8, "0,20,0,0,20,0,20,20,0,20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
+#      expect_buffer("0:seq:0,-2:seq:blu", 0, 9, "0,0,20,0,20,0,0,20,0,20,20,0,20,10,0,20,10,0,20,0,0,20,0,0,0,0,0", True, True)
 
-    if test("two sequencers can be added"):
-      expect_buffer("0,4,1:seq:1,4,1:seq:0,-5,1:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
+#    if test("two sequencers can be added"):
+#      expect_buffer("0,4,1:seq:1,4,1:seq:0,-5,1:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
 
-    if test("two sequencers can be subtracted"):
-      expect_buffer("0,5,3:seq:1,3,1:seq:0,-6,1:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
+#    if test("two sequencers can be subtracted"):
+#      expect_buffer("0,5,3:seq:1,3,1:seq:0,-6,1:seq:red", 0, 3, "20,0,0,20,0,0,0,0,0", True, True)
 
 
 
@@ -2103,7 +2210,7 @@ def run():
         if show_success > 0:
           lc.command(str(show_pending) + ":yel")                                                                                                                                                                  
 
-      lc.command("flu:cnt")
+      lc.command("flu:1:cnt")
 
 if __name__ == '__main__': 
   initialize() 
