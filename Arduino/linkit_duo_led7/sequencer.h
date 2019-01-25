@@ -107,7 +107,7 @@ void Sequence::set(byte type, int low, int high)
 
 void Sequence::set_limit(int low, int high){
   this->low = low;
-  this->max = high - 1;
+  this->max = max(this->low, high - 1);
 
   switch(this->type)
   {
@@ -289,7 +289,7 @@ int Sequence::increment_swing_normal(int step)
 //
 //  return this->computed = this->current;
 
-//    [[0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 998, 898, 798, 698, 598, 498, 398, 298, 198, 98]]
+//    [[0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 900, 800, 700, 600, 500, 400, 300, 200, 100, 0]]
 
   if(this->current + step > this->max)
   {
