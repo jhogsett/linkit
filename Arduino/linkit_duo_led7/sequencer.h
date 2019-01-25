@@ -278,29 +278,70 @@ int Sequence::increment_swing(int step)
 
 int Sequence::increment_swing_normal(int step)
 {
-  this->current += step;
-  
-  if(this->current > this->max)
+//  this->current += step;
+//  
+//  if(this->current > this->max)
+//  {
+//    int step_reflect = this->current - (this->max + 1);
+//    this->current = this->max - step_reflect;
+//    this->state = STATE_REVERSE;
+//  }
+//
+//  return this->computed = this->current;
+
+//    [[0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 998, 898, 798, 698, 598, 498, 398, 298, 198, 98]]
+
+  if(this->current + step > this->max)
   {
-    int step_reflect = this->current - (this->max + 1);
-    this->current = this->max - step_reflect;
+    int step_reflect = (this->current + step) - ((this->max + 1) - step);
+    this->current = (this->max + 1) - (step_reflect * 2);
     this->state = STATE_REVERSE;
+
+//    int step_reflect = this->low - (this->current - step);
+//    this->current = this->low + step_reflect;
+//    this->state = STATE_NORMAL;
+  } 
+  else 
+  {
+    this->current += step;
   }
 
   return this->computed = this->current;
 }
 
+// 0, 3, 6, 9, 12 needs to be 6
+// 0, 2, 4, 6, 8 needs to be 6
+
+// step 2, value 8, max 9, 10 > 9, first reflection would be 8 again but it should be 6
+
+// limit 8, 9 values, going in 5s, 0, 5, 10 exceeds 8 by 2, next 
+//          9A BCDEF
+// 01234567876 5432101234567876543210123456787654
+// x    x    x     x    x    x    x    x    x    
+// 0, 5, 6, 1,  4, 7, 2, 3, 8
+
 int Sequence::increment_swing_reverse(int step)
 {
-  this->current -= step;
+//  this->current -= step;
+//
+//  if(this->current < this->low)
+//  {
+//    int step_reflect = this->low - this->current;
+//    this->current = this->low + step_reflect;
+//    this->state = STATE_NORMAL;
+//  }
 
-  if(this->current < this->low)
+  if(this->current - step < this->low)
   {
-    int step_reflect = this->low - this->current;
+    int step_reflect = this->low - (this->current - step);
     this->current = this->low + step_reflect;
     this->state = STATE_NORMAL;
+  } 
+  else 
+  {
+    this->current -= step;
   }
-  
+
   return this->computed = this->current;
 }
 
