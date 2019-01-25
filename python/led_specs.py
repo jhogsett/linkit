@@ -1547,7 +1547,7 @@ def specs():
       expect_sequence("0,10000:seq:sto:1:red", "0,0,1000:seq:sto:1:red", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
 
     if test("wheel sequence handles maximum > 8-bit values #3"):
-      expect_sequence("0,30000:seq:sto:1:red", "0,0,2000:seq:sto:1:red", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+      expect_sequence("0,30720:seq:sto:1:red", "0,0,2048:seq:sto:1:red", [0, 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 0, 2048])
 
     if test("it does a wheel sequence with a step of -1"):
       expect_sequence("0,10:seq:sto:red", "0,0,-1:seq:sto:red", [0,9,8,7,6,5,4,3,2,1,0,9,8])
@@ -1565,7 +1565,7 @@ def specs():
       expect_sequence("0,3,3:seq:sto:red", "0:seq:sto:red", [3,3,3,3])
 
     if test("it handles the case of the limits being reversed/invalid"):
-      expect_sequence("0,1,5:seq:sto:red", "0:seq:sto:red", [1,1,1,1])
+      expect_sequence("0,1,5:seq:sto:red", "0:seq:sto:red", [5,5,5,5])
 
     # when setting a new high/low value, the sequencer does not advance
 
@@ -1601,7 +1601,7 @@ def specs():
       expect_sequence("0,10000:sqs:sto:1:org", "0,0,1000:seq:sto:1:org", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,8000,7000,6000,5000,4000,3000,2000,1000,0,1000])
 
     if test("swing sequence handles maximum > 8-bit values #3"):
-      expect_sequence("0,30000:sqs:sto:1:org", "0,0,4000:seq:sto:1:org", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+      expect_sequence("0,28672:sqs:sto:1:org", "0,0,4096:seq:sto:1:org", [0, 4096, 8192, 12288, 16384, 20480, 24576, 20480, 16384, 12288, 8192, 4096, 0, 4096])
 
     if test("it does a swing sequence with a step of -1"):
       expect_sequence("0,10:sqs:sto:org", "0,0,-1:seq:sto:org", [0,1,2,3,4,5,6,7,8,9,0,1])
@@ -1624,40 +1624,40 @@ def specs():
 
 
     if test("it does a wheel cosine sequence with only an upper limit"):
-      expect_sequence("0,15:swc:sto:grn", "0:seq:sto:grn", [0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0,1,2,3,4,0])
+      expect_sequence("0,15:swc:sto:grn", "0:seq:sto:grn", [0, 1, 2, 5, 8, 11, 14, 15, 15, 14, 11, 8, 5, 2, 1, 0, 1, 2, 5])
 
     if test("it does a wheel cosine sequence with an upper and lower limit"):
-      expect_sequence("0,15,1:swc:sto:grn", "0:seq:sto:grn", [1,2,3,4,1,2,3,4,1,1,2,3,4,0,1,2,3,4,0])
+      expect_sequence("0,15,1:swc:sto:grn", "0:seq:sto:grn", [1, 2, 3, 6, 9, 12, 14, 15, 14, 13, 10, 7, 4, 2, 1, 2, 3])
 
     if test("wheel cosine sequence handles negative low limit"):
-      expect_sequence("0,15,-5:swc:sto:1:grn", "0:seq:sto:1:grn", [-5,-4,-3,-2,-1,0,1,2,3,4,-5,-4,1,2,3,4,0,1,2,3,4,0])
+      expect_sequence("0,15,-5:swc:sto:1:grn", "0:seq:sto:1:grn", [-5, -4, -2, 0, 2, 5, 8, 11, 13, 14, 15, 15, 13, 11, 8, 5, 2, 0, -2, -3, -4, -4, -2, 0, 2, 5])
 
     if test("wheel cosine sequence handles > 8-bit values"):
-      expect_sequence("0,1000:swc:sto:1:grn", "0,0,100:seq:sto:1:grn", [0,100,200,300,400,500,600,700,800,900,0,100,200,300,400,500,600,700,800,900,0])
+      expect_sequence("0,1000:swc:sto:1:grn", "0,0,100:seq:sto:1:grn", [0, 94, 345, 651, 902, 1000, 902, 651, 345, 94, 0, 94, 345])
 
     if test("wheel cosine sequence handles large > 8-bit values #2"):
-      expect_sequence("0,10000:swc:sto:1:grn", "0,0,1000:seq:sto:1:grn", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+      expect_sequence("0,10000:swc:sto:1:grn", "0,0,1000:seq:sto:1:grn", [0, 941, 3451, 6196, 9020, 9961, 9216, 6863, 3451, 941, 0, 941, 3451])
 
     if test("wheel cosine sequence handles maximum > 8-bit values #3"):
-      expect_sequence("0,65535:swc:sto:1:grn", "0,0,4096:seq:sto:1:grn", [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0,1000,2000,3000,4000,5000,6000,7000,8000,9000,0])
+      expect_sequence("0,28672:swc:sto:1:grn", "0,0,4096:seq:sto:1:grn", [0, 4722, 16753, 26985, 27323, 17765, 5510, 0, 4722, 16753])
 
     if test("it does a wheel cosine sequence with a step of -1"):
-      expect_sequence("0,10:swc:sto:grn", "0,0,-1:seq:sto:grn", [0,9,8,7,6,5,4,3,2,1,0,9,8])
+      expect_sequence("0,20:swc:sto:grn", "0,0,-1:seq:sto:grn", [0, 1, 2, 4, 7, 10, 13, 16, 18, 20, 20, 19, 18, 16, 13, 10, 7, 4, 2, 0, 0, 1, 2, 4])
 
     if test("it does a wheel cosine sequence with a step of 2"):
-      expect_sequence("0,10:swc:sto:grn", "0,0,2:seq:sto:grn", [0,2,4,6,8,0,2,4,6,8,0,2])
+      expect_sequence("0,20:swc:sto:grn", "0,0,2:seq:sto:grn", [0, 2, 7, 13, 18, 20, 18, 13, 7, 2, 0, 2, 7, 13])
 
     if test("it does a wheel cosine sequence with a step of -2"):
-      expect_sequence("0,10:swc:sto:grn", "0,0,-2:seq:sto:grn", [0,8,6,4,2,0,8,6,4,2,0,8,6])
+      expect_sequence("0,20:swc:sto:grn", "0,0,-2:seq:sto:grn", [0, 2, 7, 13, 18, 20, 18, 13, 7, 2, 0, 2, 7, 13])
 
     if test("it does a wheel cosine sequence and gets the opposite value"):
-      expect_sequence("0,15:swc:sto:grn", "0,-3:seq:sto:grn", [4,3,2,1,0,4,3,2,1,0,4,3])
+      expect_sequence("0,15:swc:sto:grn", "0,-3:seq:sto:grn", [0, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 14, 13, 12])
 
     if test("it handles the case of the limits being the same"):
       expect_sequence("0,3,3:swc:sto:grn", "0:seq:sto:grn", [3,3,3,3])
 
     if test("it handles the case of the limits being reversed/invalid"):
-      expect_sequence("0,1,5:swc:sto:grn", "0:seq:sto:grn", [1,1,1,1])
+      expect_sequence("0,1,5:swc:sto:grn", "0:seq:sto:grn", [5,5,5,5])
 
 
 
