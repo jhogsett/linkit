@@ -86,7 +86,7 @@ Sequence * Sequence::sequences;
 
 int Sequence::width()
 {
-  return this->max - this->low;    
+  return (this->max + 1) - this->low;    
 }
   
 void Sequence::begin(Macros * macros, CommandProcessor * command_processor, Sequence * sequences)
@@ -121,7 +121,7 @@ void Sequence::set_limit(int low, int high){
 void Sequence::fix_current()
 {
   this->current = max(this->low, this->current);
-  this->current = min(this->max - 1, this->current);
+  this->current = min(this->max, this->current);
   this->previous = this->current;  
   this->computed = this->current;
   this->prev_computed = this->current;
@@ -144,7 +144,7 @@ void Sequence::reset()
 #define ADVANCE_SEQADD   -5
 #define ADVANCE_SEQSUB   -6
 #define ADVANCE_NEW_HIGH -7
-#define ADVANCE_NEW_LOW  -8
+#define ADVANCE_NEW_LOW  -8 
 #define ADVANCE_RESET    -9
 #define SAFETY_MARGIN 1
 
@@ -192,10 +192,14 @@ int Sequence::next(int advancement, int step) // step or macro
       return this->current = this->evaluate_macro(step);
     
     case ADVANCE_OPPOSITE:
+    { 
+      // computing the value first allows for a natural sequence if starting out sequencing opposites
+      int value = (this->max - this->current) + this->low;
       if(step == 0) step = 1;
       this->increment(step);
-      return (this->max - this->current) + this->low;
- 
+      return value; 
+    }
+     
     case ADVANCE_COMPUTED:
       return this->computed;
  
@@ -232,12 +236,29 @@ int Sequence::increment(int step)
 // this only works with positive step
 int Sequence::increment_wheel(int step)
 {
-  this->current += step;
-
-  if(this->current > this->max)
+// if step if < 0, need to check the low end instead
+  if(step < 0) {
+    if(this->current + step < this->low)
+    {
+      int step_carry = (this->current + step) - this->low;
+      this->current = (this->max + 1) + step_carry;    
+    } 
+    else 
+    {
+      this->current += step;
+    }
+  } 
+  else 
   {
-    int step_carry = step - (this->current - this->max);
-    this->current = this->low + step_carry;    
+    if(this->current + step > this->max)
+    {
+      int step_carry = (this->current + step) - (this->max + 1);
+      this->current = this->low + step_carry;    
+    } 
+    else 
+    {
+      this->current += step;
+    }
   }
 
   return this->computed = this->current;
@@ -261,7 +282,7 @@ int Sequence::increment_swing_normal(int step)
   
   if(this->current > this->max)
   {
-    int step_reflect = this->current - this->max;
+    int step_reflect = this->current - (this->max + 1);
     this->current = this->max - step_reflect;
     this->state = STATE_REVERSE;
   }
