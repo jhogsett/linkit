@@ -1,3 +1,7 @@
+// led_specs.py: 
+
+// something like 100:red or 500:red can cause the device to lock up
+
 // sequencer not handling negative values well
 
 // create expect_sequence()
