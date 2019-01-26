@@ -1585,7 +1585,7 @@ def specs():
       expect_sequence("0,10:seq:sto:red", "0,-8,0:seq:0,-1:seq:sto:red", [0,0])
 
     if test("when setting a new high value, the current value is adjusted"):
-      expect_sequence("0,5:seq:0,0,4:seq:sto:red", "0,-7,2:seq:0,-1:seq:sto:red", [4,2])
+      expect_sequence("0,5:seq:0,0,4:seq:sto:red", "0,-7,2:seq:0,-1:seq:sto:red", [4,1])
 
     if test("when setting a new low value, the current value is adjusted"):
       expect_sequence("0,5:seq:sto:red", "0,-8,2:seq:0,-1:seq:sto:red", [0,2])
@@ -1629,7 +1629,7 @@ def specs():
       expect_sequence("0,28672:sqs:sto:1:org", "0,0,4096:seq:sto:1:org", [0, 4096, 8192, 12288, 16384, 20480, 24576, 20480, 16384, 12288, 8192, 4096, 0, 4096])
 
     if test("it does a swing sequence with a step of -1"):
-      expect_sequence("0,10:sqs:sto:org", "0,0,-1:seq:sto:org", [0,1,2,3,4,5,6,7,8,9,0,1])
+      expect_sequence("0,10:sqs:sto:org", "0,0,-1:seq:sto:org", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7])
 
     if test("it does a swing sequence with a step of 2"):
       expect_sequence("0,10:sqs:sto:org", "0,0,2:seq:sto:org", [0,2,4,6,8,6,4,2,0,2,4,6,8,6,4,2,0,2])
@@ -1644,7 +1644,7 @@ def specs():
       expect_sequence("0,3,3:sqs:sto:org", "0:seq:sto:org", [3,3,3,3])
 
     if test("it handles the case of the limits being reversed/invalid"):
-      expect_sequence("0,1,5:sqs:sto:org", "0:seq:sto:org", [1,1,1,1])
+      expect_sequence("0,1,5:sqs:sto:org", "0:seq:sto:org", [5,5,5,5])
 
     if test("the high limit can be changed"):
       expect_sequence("0,10:sqs:0,-7,5:seq:sto:org", "0:seq:sto:org", [0, 1, 2, 3, 4, 3, 2, 1, 0, 1])
@@ -1659,7 +1659,7 @@ def specs():
       expect_sequence("0,10:sqs:sto:org", "0,-8,0:seq:0,-1:seq:sto:org", [0,0])
 
     if test("when setting a new high value, the current value is adjusted"):
-      expect_sequence("0,5:sqs:0,0,4:seq:sto:org", "0,-7,2:seq:0,-1:seq:sto:org", [4,2])
+      expect_sequence("0,5:sqs:0,0,4:seq:sto:org", "0,-7,2:seq:0,-1:seq:sto:org", [4,1])
 
     if test("when setting a new low value, the current value is adjusted"):
       expect_sequence("0,5:sqs:sto:org", "0,-8,2:seq:0,-1:seq:sto:org", [0,2])
