@@ -465,7 +465,12 @@ def expect_sequence(setup_command, advance_command, expected_values, flush = Tru
   lc.command(setup_command)
   got_values.append(int(get_accum0()))
 
-  times = len(expected_values) - 1
+  if len(expected_values) > 0:
+    times = len(expected_values) - 1
+  else:
+    # pass an empty list to get a default of 20 sequences
+    times = 20
+
   for i in range(0, times):
     lc.command(advance_command)
     got_values.append(int(get_accum0()))
@@ -1567,7 +1572,27 @@ def specs():
     if test("it handles the case of the limits being reversed/invalid"):
       expect_sequence("0,1,5:seq:sto:red", "0:seq:sto:red", [5,5,5,5])
 
-    # when setting a new high/low value, the sequencer does not advance
+    if test("the high limit can be changed"):
+      expect_sequence("0,10:seq:0,-7,5:seq:sto:red", "0:seq:sto:red", [0, 1, 2, 3, 4, 0, 1])
+
+    if test("the low limit can be changed"):
+      expect_sequence("0,10:seq:0,-8,5:seq:sto:red", "0:seq:sto:red", [5, 6, 7, 8, 9, 5, 6])
+
+    if test("when setting a new high value, the sequencer does not advance"):
+      expect_sequence("0,10:seq:sto:red", "0,-7,20:seq:0,-1:seq:sto:red", [0,0])
+
+    if test("when setting a new low value, the sequencer does not advance"):
+      expect_sequence("0,10:seq:sto:red", "0,-8,0:seq:0,-1:seq:sto:red", [0,0])
+
+    if test("when setting a new high value, the current value is adjusted"):
+      expect_sequence("0,5:seq:0,0,4:seq:sto:red", "0,-7,2:seq:0,-1:seq:sto:red", [4,1])
+
+    if test("when setting a new low value, the current value is adjusted"):
+      expect_sequence("0,5:seq:sto:red", "0,-8,2:seq:0,-1:seq:sto:red", [0,2])
+
+
+
+#adjust
 
     # it's possible to set a new high/low value
 
@@ -1604,7 +1629,7 @@ def specs():
       expect_sequence("0,28672:sqs:sto:1:org", "0,0,4096:seq:sto:1:org", [0, 4096, 8192, 12288, 16384, 20480, 24576, 20480, 16384, 12288, 8192, 4096, 0, 4096])
 
     if test("it does a swing sequence with a step of -1"):
-      expect_sequence("0,10:sqs:sto:org", "0,0,-1:seq:sto:org", [0,1,2,3,4,5,6,7,8,9,0,1])
+      expect_sequence("0,10:sqs:sto:org", "0,0,-1:seq:sto:org", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7])
 
     if test("it does a swing sequence with a step of 2"):
       expect_sequence("0,10:sqs:sto:org", "0,0,2:seq:sto:org", [0,2,4,6,8,6,4,2,0,2,4,6,8,6,4,2,0,2])
@@ -1619,7 +1644,25 @@ def specs():
       expect_sequence("0,3,3:sqs:sto:org", "0:seq:sto:org", [3,3,3,3])
 
     if test("it handles the case of the limits being reversed/invalid"):
-      expect_sequence("0,1,5:sqs:sto:org", "0:seq:sto:org", [1,1,1,1])
+      expect_sequence("0,1,5:sqs:sto:org", "0:seq:sto:org", [5,5,5,5])
+
+    if test("the high limit can be changed"):
+      expect_sequence("0,10:sqs:0,-7,5:seq:sto:org", "0:seq:sto:org", [0, 1, 2, 3, 4, 3, 2, 1, 0, 1])
+
+    if test("the low limit can be changed"):
+      expect_sequence("0,10:sqs:0,-8,5:seq:sto:org", "0:seq:sto:org", [5, 6, 7, 8, 9, 8, 7, 6, 5, 6])
+
+    if test("when setting a new high value, the sequencer does not advance"):
+      expect_sequence("0,10:sqs:sto:org", "0,-7,20:seq:0,-1:seq:sto:org", [0,0])
+
+    if test("when setting a new low value, the sequencer does not advance"):
+      expect_sequence("0,10:sqs:sto:org", "0,-8,0:seq:0,-1:seq:sto:org", [0,0])
+
+    if test("when setting a new high value, the current value is adjusted"):
+      expect_sequence("0,5:sqs:0,0,4:seq:sto:org", "0,-7,2:seq:0,-1:seq:sto:org", [4,1])
+
+    if test("when setting a new low value, the current value is adjusted"):
+      expect_sequence("0,5:sqs:sto:org", "0,-8,2:seq:0,-1:seq:sto:org", [0,2])
 
 
 
@@ -1659,9 +1702,25 @@ def specs():
     if test("it handles the case of the limits being reversed/invalid"):
       expect_sequence("0,1,5:swc:sto:grn", "0:seq:sto:grn", [5,5,5,5])
 
+    if test("the high limit can be changed"):
+      expect_sequence("0,20:swc:0,-7,10:seq:sto:grn", "0:seq:sto:grn", [0, 1, 3, 7, 9, 10, 9, 7, 3, 1, 0, 1])
 
+    if test("the low limit can be changed"):
+      expect_sequence("0,20:swc:0,-8,5:seq:sto:grn", "0:seq:sto:grn", [5, 6, 7, 10, 13, 16, 19, 20, 20, 19, 16, 13, 10, 7, 6, 5, 6, 7])
 
+    if test("when setting a new high value, the sequencer does not advance"):
+      expect_sequence("0,10:swc:sto:grn", "0,-7,20:seq:0,-1:seq:sto:grn", [0,0])
 
+    if test("when setting a new low value, the sequencer does not advance"):
+      expect_sequence("0,10:swc:sto:grn", "0,-8,0:seq:0,-1:seq:sto:grn", [0,0])
+
+    if test("when setting a new high value, the current value is adjusted"):
+      expect_sequence("0,20:swc:0,0,10:seq:sto:grn", "0,-7,10:seq:0,-2:seq:sto:grn", [20, 9])
+
+    if test("when setting a new low value, the current value is adjusted"):
+      expect_sequence("0,10:swc:0,0,1:seq:sto:grn", "0,-8,6:seq:0,-2:seq:sto:grn", [1, 6])
+
+# test changes to computed values in these cases
 
 
 
