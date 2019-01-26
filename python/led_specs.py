@@ -449,37 +449,53 @@ def expect_accumulators(command_, expected, flush = True, positive = True):
   else:
     expect_not_equal(str_[:-1], expected)
 
-def get_accum0():
+def get_accums():
   str_ = lc.get_accumulator()
-  return str_.split(",")[0]
+  return int(str_.split(",")[0]), int(str_.split(",")[1]), int(str_.split(",")[2])
 
-def expect_sequence(setup_command, advance_command, expected_values, flush = True, positive = True):
+# check for sequence of accum0,accum1,accum2 values
+def expect_sequence(setup_command, advance_command, expected_accum0_values, expected_accum1_values = None, expected_accum2_values = None, flush = True, positive = True):
   global test_command
   test_command = setup_command + "/" + advance_command
-  got_values = []
+  got_accum0_values = []
+  got_accum1_values = []
+  got_accum2_values = []
 
   if flush:
     setup_command += ":flu"
     advance_command += ":flu"
 
   lc.command(setup_command)
-  got_values.append(int(get_accum0()))
+  accum0, accum1, accum2 = get_accums()
+  got_accum0_values.append(accum0)
+  got_accum1_values.append(accum1)
+  got_accum2_values.append(accum2)
 
-  if len(expected_values) > 0:
-    times = len(expected_values) - 1
+  if len(expected_accum0_values) > 0:
+    times = len(expected_accum0_values) - 1
   else:
-    # pass an empty list to get a default of 20 sequences
-    times = 20
+    # pass an empty list to get a default of 25 sequences
+    times = 25
 
   for i in range(0, times):
     lc.command(advance_command)
-    got_values.append(int(get_accum0()))
+    accum0, accum1, accum2 = get_accums()
+    got_accum0_values.append(accum0)
+    got_accum1_values.append(accum1)
+    got_accum2_values.append(accum2)
 
   if positive:
-    expect_equal(str(got_values), str(expected_values))
+    expect_equal(str(got_accum0_values), str(expected_accum0_values))
+    if expected_accum1_values != None:
+      expect_equal(str(got_accum1_values), str(expected_accum1_values))
+    if expected_accum2_values != None:
+      expect_equal(str(got_accum2_values), str(expected_accum2_values))
   else:
-    expect_not_equal(str(expected_values), str(expected_values))
-
+    expect_not_equal(str(got_accum0_values), str(expected_accum0_values))
+    if expected_accum1_values != None:
+      expect_not_equal(str(got_accum1_values), str(expected_accum1_values))
+    if expected_accum2_values != None:
+      expect_not_equal(str(got_accum2_values), str(expected_accum2_values))
 
 # -----------------------------------------------------------------------------
 # --- helper functions ---
@@ -1593,6 +1609,13 @@ def specs():
     if test("it stores the index value as the computed value"):
       expect_sequence("0,5:seq:0:seq:sto:red", "0,-2:seq:sto:red", [1,1])
 
+    if test("it uses a macro to get the current value"):
+      lc.command("0:set:123")
+      expect_sequence("0,10:seq:sto:red", "red:0,-4,0:seq:sto", [0,123])
+
+    if test("getting next window works"):
+      expect_sequence("0,10:seq:sto:red", "red:0,0,2:snw:sto", [0, 0, 2, 4, 6, 0, 0, 2, 4], [0, 2, 2, 2, 2, 8, 2, 2, 2])
+
 
     if test("it does a swing sequence with only an upper limit"):
       expect_sequence("0,5:sqs:sto:org", "0:seq:sto:org", [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0])
@@ -1654,6 +1677,13 @@ def specs():
     if test("it stores the index value as the computed value"):
       expect_sequence("0,5:sqs:0:seq:sto:org", "0,-2:seq:sto:org", [1,1])
 
+    if test("it uses a macro to get the current value"):
+      lc.command("0:set:123")
+      expect_sequence("0,10:sqs:sto:org", "org:0,-4,0:seq:sto", [0,123])
+
+    if test("getting next window works"):
+      expect_sequence("0,10:sqs:sto:org", "org:0,0,2:snw:sto", [0, 0, 2, 4, 6, 6, 4, 2, 0, 0, 2, 4], [0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+
 
     if test("it does a wheel cosine sequence with only an upper limit"):
       expect_sequence("0,15:swc:sto:grn", "0:seq:sto:grn", [0, 1, 2, 5, 8, 11, 14, 15, 15, 14, 11, 8, 5, 2, 1, 0, 1, 2, 5])
@@ -1711,6 +1741,13 @@ def specs():
 
     if test("it resets to the starting value without advancing"):
       expect_sequence("0,5:swc:0:seq:sto:grn", "0,-9:seq:0,-2:seq:sto:grn", [2,0])
+
+    if test("it uses a macro to get the current value"):
+      lc.command("0:set:123")
+      expect_sequence("0,10:swc:sto:grn", "grn:0,-4,0:seq:sto", [0,123])
+
+    if test("getting next window works"):
+      expect_sequence("0,10:swc:sto:grn", "grn:0,0,2:snw:sto", [0, 0, 3, 9, 3, 0, 0, 3, 9], [0, 3, 6, 0, 6, 3, 3, 6, 0])
 
 
     if test("it does a wheel sine sequence with only an upper limit"):
@@ -1770,6 +1807,13 @@ def specs():
     if test("it resets to the starting value without advancing"):
       expect_sequence("0,10:sws:0:seq:sto:blu", "0,-9:seq:0,-2:seq:sto:blu", [2,0])
 
+    if test("it uses a macro to get the current value"):
+      lc.command("0:set:123")
+      expect_sequence("0,10:sws:sto:blu", "blu:0,-4,0:seq:sto", [0,123])
+
+    if test("getting next window works"):
+      expect_sequence("0,10:sws:sto:blu", "blu:0,0,2:snw:sto", [0, 0, 0, 2, 8, 5, 0, 0, 2, 8], [0, 0, 2, 6, 2, 5, 5, 2, 6, 2,])
+
 
     if test("setting a sequence leaves arg0 set to the low value"):
       expect_sequence("0,5,4:seq:sto:pur", "", [4])
@@ -1783,9 +1827,8 @@ def specs():
 
 
 
-# steps, negative step
+
 # next window
-# marcos, resetting
 
 ########################################################################
 # TESTING
