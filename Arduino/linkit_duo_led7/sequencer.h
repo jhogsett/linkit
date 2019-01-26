@@ -146,7 +146,7 @@ void Sequence::reset()
 #define ADVANCE_NEW_HIGH -7
 #define ADVANCE_NEW_LOW  -8 
 #define ADVANCE_RESET    -9
-#define SAFETY_MARGIN 1
+#define SAFETY_MARGIN 0
 
 int Sequence::next(int advancement, int step) // step or macro
 {
@@ -216,6 +216,11 @@ int Sequence::increment(int step)
 {
   this->previous = this->current;
 
+  if(this->low == this->max)
+  {
+    return this->current;
+  }
+
   switch(this->type)
   {
     default:
@@ -233,7 +238,6 @@ int Sequence::increment(int step)
   }
 }
 
-// this only works with positive step
 int Sequence::increment_wheel(int step)
 {
 // if step if < 0, need to check the low end instead
@@ -266,40 +270,44 @@ int Sequence::increment_wheel(int step)
 
 int Sequence::increment_swing(int step)
 {
+  bool inverse = false;
+  if(step < 0)
+  {
+    step *= -1;
+    inverse = true;
+  }
+
   switch(this->state)
   {
     case STATE_NORMAL:
-      return increment_swing_normal(step);
+      if(inverse && this->current == this->low)
+      {
+        return increment_swing_reverse(step);
+      }
+      else
+      {
+        return increment_swing_normal(step);
+      }
 
     case STATE_REVERSE:
-      return increment_swing_reverse(step);
+      if(inverse && this->current == this->max)
+      {
+        return increment_swing_normal(step);
+      }
+      else
+      {
+        return increment_swing_reverse(step);
+      }
   }
 }
 
 int Sequence::increment_swing_normal(int step)
 {
-//  this->current += step;
-//  
-//  if(this->current > this->max)
-//  {
-//    int step_reflect = this->current - (this->max + 1);
-//    this->current = this->max - step_reflect;
-//    this->state = STATE_REVERSE;
-//  }
-//
-//  return this->computed = this->current;
-
-//    [[0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 900, 800, 700, 600, 500, 400, 300, 200, 100, 0]]
-
   if(this->current + step > this->max)
   {
     int step_reflect = (this->current + step) - ((this->max + 1) - step);
     this->current = (this->max + 1) - (step_reflect * 2);
     this->state = STATE_REVERSE;
-
-//    int step_reflect = this->low - (this->current - step);
-//    this->current = this->low + step_reflect;
-//    this->state = STATE_NORMAL;
   } 
   else 
   {
@@ -309,28 +317,8 @@ int Sequence::increment_swing_normal(int step)
   return this->computed = this->current;
 }
 
-// 0, 3, 6, 9, 12 needs to be 6
-// 0, 2, 4, 6, 8 needs to be 6
-
-// step 2, value 8, max 9, 10 > 9, first reflection would be 8 again but it should be 6
-
-// limit 8, 9 values, going in 5s, 0, 5, 10 exceeds 8 by 2, next 
-//          9A BCDEF
-// 01234567876 5432101234567876543210123456787654
-// x    x    x     x    x    x    x    x    x    
-// 0, 5, 6, 1,  4, 7, 2, 3, 8
-
 int Sequence::increment_swing_reverse(int step)
 {
-//  this->current -= step;
-//
-//  if(this->current < this->low)
-//  {
-//    int step_reflect = this->low - this->current;
-//    this->current = this->low + step_reflect;
-//    this->state = STATE_NORMAL;
-//  }
-
   if(this->current - step < this->low)
   {
     int step_reflect = this->low - (this->current - step);
