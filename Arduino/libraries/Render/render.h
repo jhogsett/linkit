@@ -64,7 +64,7 @@ rgb_color Render::get_blink(rgb_color color, rgb_color render_color, byte effect
     float scale;
 
     if(effect_only == BLINK_ON_D){
-      byte color_index = min((blink_effects->blink_on(BLINK_ON_D) ? color.red : color.green), NUM_PALETTE_COLORS-1);
+      byte color_index = min((blink_effects->blink_on_cached(cache, effect_only) ? color.red : color.green), NUM_PALETTE_COLORS-1);
       render_color = Colors::get_palette()[color_index];
       scale = default_brightness_scale;
     } else {
