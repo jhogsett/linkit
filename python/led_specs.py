@@ -1241,7 +1241,91 @@ def specs():
 # RESET CLEAR AND STOP
 ########################################################################
   if group("reset, clear and stop"):                                                             
-    pending_test("reset, clear and stop")
+    #pending_test("reset, clear and stop")
+
+# reset
+#   this->set_zone(0);
+#   this->set_reverse(false);
+
+    pending_test("resetting resets the zone to zone 0")
+      # set a custom offset and window
+      # reset
+      # get offset and window
+      # offset should be zero
+      # window should be num_leds
+
+    pending_test("resetting turned reverse mode off")
+       # set reverse mode
+       # reset
+       # inquiry about reverse mode
+       # check that it's off
+
+
+
+# clear
+#  reset();
+#  
+#  // pausing on clear causes a problem for programs starting up,
+#  // that have to pause again afterwards; moved to reset
+#  resume();
+#
+#  byte orig_display = buffer->get_current_display();
+#  for(byte i = 0; i < NUM_BUFFERS; i++)
+#  {
+#    buffer->set_display(i);
+#    buffer->reset_black_level();
+#    buffer->erase(true);                                                          
+#  }
+#
+#  buffer->set_display(orig_display);
+#  buffer->set_draw_mode();
+#
+#  do_fan(false);
+
+    pending_test("clearing calls reset")
+      # resetting uniquely resets reversal
+      # test for this happening to prove reset was done
+
+    pending_test("clearing resumes effects and schedules")
+      # check for effect processing happening
+      # check for schedules operating
+
+    pending_test("clearing resets the black level back to black and erases the display")
+      # set custom black level
+      # add some colors
+      # clear
+      # check that it's erased to black
+
+    #if test("clearing saves and restores current display")
+    # TEST ON A MULTIPLE DISPLAY DEVICE
+
+    pending_test("clearing sets the default draw mode")
+      # set to alt draw mode
+      # clear
+      # test for default draw mode
+
+    #if test("clearing turns off the fan")
+    # don't have a way to test this in hardware
+
+
+# stop
+#  scheduler.reset_all_schedules();
+#  clear();                                                            
+#  pause();                                                            
+
+    pending_test("stopping halts all schedules")
+      # schedule a macro
+      # stop
+      # for a schedule run
+      # test that macro didn't operate
+
+    pending_test("stopping does clearing")
+      # clear uniquely resets draw mode
+      # test for this happening to prove clear was done
+
+    pending_test("stopping pauses effects and schedules")
+      # check for effect processing not happening
+      # check for schudles not happening
 
                                                                                                                                                                                                          
 ########################################################################
