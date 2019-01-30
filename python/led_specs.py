@@ -12,6 +12,7 @@ import argparse
 import led_command as lc
 import app_ui as ui
 import time
+import datetime
 
 app_description = "Apollo Lighting System - Test Framework v0.0 - Aug 10, 2017"
 slow_response_wait = 0.15
@@ -2271,7 +2272,11 @@ def specs():
  
 def run():                                  
   print
+
+  start_time = datetime.datetime.now()
   specs()
+  end_time = datetime.datetime.now()
+
   print 
 
   for error in test_failures:
@@ -2292,6 +2297,7 @@ def run():
     tc.red(str(num_skipped) + " skipped ") + 
     tc.blue(str(num_groups) + " groups")
   )                                                                     
+  print tc.white("tests ran in: " + str(end_time - start_time))
   print                                                                                                                                                                                            
 
   pre_test_reset()
@@ -2303,10 +2309,6 @@ def run():
       show_success = int(0.5 + (success_count * num_leds / total))
       show_failure = int(0.5 + ((failure_count + num_skipped) * num_leds / total))
       show_pending = int(0.5 + (num_pending * num_leds / total))
-
-      print "show success: " + str(show_success)
-      print "show failure: " + str(show_failure)
-      print "show pending: " + str(show_pending)
 
       lc.command("stp:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
 
