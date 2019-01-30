@@ -11,6 +11,7 @@ import test_colors
 import argparse
 import led_command as lc
 import app_ui as ui
+import time
 
 app_description = "Apollo Lighting System - Test Framework v0.0 - Aug 10, 2017"
 slow_response_wait = 0.15
@@ -1241,34 +1242,23 @@ def specs():
 # RESET CLEAR AND STOP
 ########################################################################
   if group("reset, clear and stop"):                                                             
-    #pending_test("reset, clear and stop")
 
-# reset
-#   this->set_zone(0);
-#   this->set_reverse(false);
+    if test("resetting resets the zone to zone 0"):
+      # there's a requirement for a minimum of 2 fine zones, each guaranteed not to be equal to the whole display
+      expect_offset("2:zon:mag:rst", 0)
+      expect_window("1:zon:mag:rst", num_leds)
 
-    pending_test("resetting resets the zone to zone 0")
-      # set a custom offset and window
-      # reset
-      # get offset and window
-      # offset should be zero
-      # window should be num_leds
+    if test("resetting turns reverse mode off"):
+      expect_int("1:rev:rst:0,6:tst", 0)
 
-    pending_test("resetting turned reverse mode off")
-       # set reverse mode
-       # reset
-       # inquiry about reverse mode
-       # check that it's off
-
+    if test("clear does a reset"):
+      expect_offset("2:zon:mag:clr", 0)
+      expect_window("1:zon:mag:clr", num_leds)
+      expect_int("1:rev:clr:0,6:tst", 0)
 
 
 # clear
-#  reset();
 #  
-#  // pausing on clear causes a problem for programs starting up,
-#  // that have to pause again afterwards; moved to reset
-#  resume();
-#
 #  byte orig_display = buffer->get_current_display();
 #  for(byte i = 0; i < NUM_BUFFERS; i++)
 #  {
@@ -1282,13 +1272,17 @@ def specs():
 #
 #  do_fan(false);
 
-    pending_test("clearing calls reset")
-      # resetting uniquely resets reversal
-      # test for this happening to prove reset was done
+    if test("clearing resumes effects"):
+      lc.command("stp:clr:grn:grn:ffd")
+      time.sleep(0.5)
+      expect_buffer("", 0, 2, "0,0,0,0,20,0")
 
-    pending_test("clearing resumes effects and schedules")
-      # check for effect processing happening
-      # check for schedules operating
+    if test("clearing resumes schedules"):
+      lc.command("0:set:red:-1:sch")
+      lc.command("stp:clr:10,0:sch")
+      time.sleep(0.2)
+      expect_buffer("", 0, 1, "20,0,0")
+
 
     pending_test("clearing resets the black level back to black and erases the display")
       # set custom black level
