@@ -1256,22 +1256,6 @@ def specs():
       expect_window("1:zon:mag:clr", num_leds)
       expect_int("1:rev:clr:0,6:tst", 0)
 
-
-# clear
-#  
-#  byte orig_display = buffer->get_current_display();
-#  for(byte i = 0; i < NUM_BUFFERS; i++)
-#  {
-#    buffer->set_display(i);
-#    buffer->reset_black_level();
-#    buffer->erase(true);                                                          
-#  }
-#
-#  buffer->set_display(orig_display);
-#  buffer->set_draw_mode();
-#
-#  do_fan(false);
-
     if test("clearing resumes effects"):
       lc.command("stp:clr:grn:grn:ffd")
       time.sleep(0.5)
@@ -1283,8 +1267,9 @@ def specs():
       time.sleep(0.2)
       expect_buffer("", 0, 1, "20,0,0")
 
-
-    pending_test("clearing resets the black level back to black and erases the display")
+    if test("clearing resets the black level back to black and erases the display"):
+      expect_buffer("5,25,15:sbl:era:flu", 0, 1, "5,25,15")
+      expect_buffer("clr", 0, 1, "0,0,0")	
       # set custom black level
       # add some colors
       # clear
@@ -1293,33 +1278,37 @@ def specs():
     #if test("clearing saves and restores current display")
     # TEST ON A MULTIPLE DISPLAY DEVICE
 
-    pending_test("clearing sets the default draw mode")
-      # set to alt draw mode
-      # clear
-      # test for default draw mode
+    if test("clearing sets the default draw mode"):
+      expect_buffer("1:drw:clr:red:0:pos:grn", 0, 1, "0,20,0")
 
     #if test("clearing turns off the fan")
     # don't have a way to test this in hardware
 
-
-# stop
-#  scheduler.reset_all_schedules();
-#  clear();                                                            
-#  pause();                                                            
-
-    pending_test("stopping halts all schedules")
+    if test("stopping halts all schedules"):
+      lc.command("0:set:tur:-1:sch")
+      lc.command("10,0:sch:stp")
+      time.sleep(0.2)
+      expect_buffer("", 0, 1, "0,0,0")
       # schedule a macro
       # stop
       # for a schedule run
       # test that macro didn't operate
 
-    pending_test("stopping does clearing")
+    if test("stopping does clearing"):
       # clear uniquely resets draw mode
       # test for this happening to prove clear was done
+      expect_buffer("1:drw:stp:red:0:pos:grn", 0, 1, "0,20,0")
 
-    pending_test("stopping pauses effects and schedules")
-      # check for effect processing not happening
-      # check for schudles not happening
+    if test("stopping pauses effects"):
+      lc.command("stp:red:cyn:ffd")
+      time.sleep(0.5)
+      expect_buffer("", 0, 2, "0,10,10,20,0,0")
+
+    if test("stopping pauses schedules"):
+      lc.command("0:set:red:-1:sch")
+      lc.command("stp:10,0:sch")
+      time.sleep(0.2)
+      expect_buffer("", 0, 1, "0,0,0")
 
                                                                                                                                                                                                          
 ########################################################################
