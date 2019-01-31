@@ -1,21 +1,23 @@
+// time metrics: fastest/slowest test/group
+
+// alternate specs display: green, yellow, red success dots
+
+// document minimum 2 zone requirement
+
+// add additional argument to expect_... for a default led display to avoid blank times during testing
+
 // add timing metrics to led specs
 
 // led_specs.py: 
 
 // something like 100:red or 500:red can cause the device to lock up
 
-// sequencer not handling negative values well
-
-// create expect_sequence()
-
-// needed specs
-// reset, clear, stop
+// needed specs:
 // carry
 // crossfade
 // "more general macro tests"
 // delay
 // random number
-// sequencing: steps, negative step, next window, using macro math
 // testing test framework features
 // configuring
 // static effect?
@@ -27,7 +29,7 @@
 // app command
 // draw modes
 
-
+// configure: set random seed
 
 // dynamic rendering hints
 

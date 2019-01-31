@@ -49,7 +49,10 @@
 #define CMD_RANDOM       41
 #define CMD_DYN_COLOR    42
 #define CMD_BLEND        43
+
+// not used nuch
 #define CMD_MAX          44
+
 #define CMD_DIM          45
 #define CMD_BRIGHT       46
 #define CMD_STATIC       47
@@ -74,11 +77,17 @@
 #define CMD_CONTINUE     66
 #define CMD_CLEAR        67
 #define CMD_LEVEL        68
+
+// maybe not needed since it can be done with crossfade; haven't used recently
 #define CMD_FADE         69
+
 #define CMD_ANIM_ROTATE  70
 #define CMD_CFADE        71
+
+// not needed
 #define CMD_BLINKR       72
 #define CMD_EFFECTR      73
+
 #define CMD_TEST         74
 #define CMD_CONFIGURE    75
 #define CMD_PIN          76
@@ -186,8 +195,8 @@ const char cmd_068[] PROGMEM = "lev";
 const char cmd_069[] PROGMEM = "fad";
 const char cmd_070[] PROGMEM = "art";
 const char cmd_071[] PROGMEM = "cfa";
-const char cmd_072[] PROGMEM = "blr";
-const char cmd_073[] PROGMEM = "efr";
+const char cmd_072[] PROGMEM = "blr"; // not used
+const char cmd_073[] PROGMEM = "efr"; // not used
 const char cmd_074[] PROGMEM = "tst";
 const char cmd_075[] PROGMEM = "cfg";
 const char cmd_076[] PROGMEM = "pin";
@@ -239,4 +248,3 @@ const char* const command_strings[] PROGMEM = {
 };
 
 #endif
-
