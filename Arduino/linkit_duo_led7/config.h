@@ -56,6 +56,8 @@
 // #define WEARABLE_AND_GLASSES_TYPE2
 
 // 200-LED overhead
+// 200-LED display/overhead
+// need to reduce char buffer to 60 to avoid memory corruption
 // #define RADIUS8
 
 // 44-LED Hard Hat
@@ -184,6 +186,7 @@
 #define NUM_SEQUENCERS 10
 #define NUM_MACRO_CHARS 25
 #define NUM_MEMORY_MACROS 2
+#define NUM_MEMORY_MACROS 1
 #define NUM_EEPROM_MACROS 41
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
