@@ -18,7 +18,7 @@
 #define LED_STRIP_90
 
 // 19-LED Mini Disc
-// #define MINI_DISC_19
+// #define MONUMENT
 
 // single 144-LED strip
 // #define LED_STRIP_144
@@ -113,6 +113,7 @@
 #define HIGH_BRIGHTNESS_PERCENT    25
 #define LOW_BRIGHTNESS_PERCENT     5
 #define MIN_BRIGHTNESS_PERCENT     2
+#define CROSSFADE_DELAY 1
 
 #ifdef LED_STRIP_72
 #define USE_1_DISPLAYS
@@ -236,7 +237,7 @@
 #define MIN_BRIGHTNESS_PERCENT     5
 #endif
 
-#ifdef MINI_DISC_19
+#ifdef MONUMENT
 #define USE_1_DISPLAYS
 #define ANIM_LED_COUNT 19
 #define DEFAULT_BRIGHTNESS_PERCENT 20
@@ -247,6 +248,7 @@
 #define HIGH_BRIGHTNESS_PERCENT    33
 #define LOW_BRIGHTNESS_PERCENT     10
 #define MIN_BRIGHTNESS_PERCENT     5
+#define CROSSFADE_DELAY 50
 #endif
 
 #ifdef WEARABLE_AND_HARDHAT

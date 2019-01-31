@@ -17,14 +17,6 @@
 
 #define DEFAULT_MACRO 10
 
-#if defined(MINI_DISC_19)
-#define CROSSFADE_DELAY 50
-#else
-#define CROSSFADE_DELAY 1
-#endif
-
-
-
 //Buffer *buffer
 //Render *renderer
 //EffectsProcessor *effects_processor
@@ -1715,4 +1707,3 @@ void Commands::do_xy_position(int arg0, int arg1, int arg2)
 #include "testing.h"
 
 #endif
-
