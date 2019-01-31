@@ -3,13 +3,14 @@
 
 #define DELIMITER_CHAR ':'
 #define DELIMITER_STR ":"
-#define MAX_STRING_LENGTH 80
 #define NUM_SUB_ARGS 3
 #define CMD_NULL -1
 #define CMD_NONE 0
 #define CMD_FIRST 1
 
 #define STRTOK_50_59_FIX
+
+// #define USE_EXT_CHAR_BUFFER
 
 // this doesn't work; interferes with setting a macro within a macro
 //#define ALT_STRTOK_50_59_FIX
@@ -18,7 +19,12 @@ class CommandProcessor
 {
   public:
 
+#if !defined(USE_EXT_CHAR_BUFFER)
+#define MAX_STRING_LENGTH 80 // 60 for Radius8
   char str[MAX_STRING_LENGTH];
+#else
+  char *str;
+#endif
 
   int sub_args[NUM_SUB_ARGS];
   int accumulators[NUM_SUB_ARGS];
@@ -28,7 +34,11 @@ class CommandProcessor
   byte num_commands;
   HardwareSerial *serial;
 
+#if !defined(USE_EXT_CHAR_BUFFER)
   void begin(HardwareSerial *serial, const char* const *commands, byte num_commands);
+#else
+  void begin(HardwareSerial *serial, const char* const *commands, byte num_commands, char *buffer, byte max_string_length);
+#endif
 
   bool input_available();
   bool received_command();
@@ -47,7 +57,13 @@ class CommandProcessor
   void send_ints(int value);
   void send_str(char * value);
   byte get_num_args() { return NUM_SUB_ARGS; }
+
+#if !defined(USE_EXT_CHAR_BUFFER)
   byte get_max_string_length() { return MAX_STRING_LENGTH - 1; }
+#else
+  byte max_string_length;
+  byte get_max_string_length() { return max_string_length - 1; }
+#endif
 
   private:
 
@@ -55,11 +71,20 @@ class CommandProcessor
   bool is_command_P(char *str, const char *command);
 };
 
+#if !defined(USE_EXT_CHAR_BUFFER)
 void CommandProcessor::begin(HardwareSerial *serial, const char* const *commands, byte num_commands){
+#else
+void CommandProcessor::begin(HardwareSerial *serial, const char* const *commands, byte num_commands, char *buffer, byte max_string_length){
+#endif
   this->serial = serial;
   this->commands = commands;
   this->num_commands = num_commands;
   this->serial = serial;
+
+#if defined(USE_EXT_CHAR_BUFFER)
+  this->str = buffer;
+  this->max_string_length = max_string_length;
+#endif
 
   for(int i = 0; i < NUM_SUB_ARGS; i++){
     sub_args[i] = 0;
@@ -83,7 +108,7 @@ bool CommandProcessor::received_command()
 {
   if(input_available())
   {
-    byte c = serial->readBytesUntil(DELIMITER_CHAR, str, MAX_STRING_LENGTH-1);
+    byte c = serial->readBytesUntil(DELIMITER_CHAR, str, get_max_string_length());
     this->str[c] = 0;
     return true;
   }
@@ -130,7 +155,7 @@ void CommandProcessor::save_args(char * args = NULL)
 // str2 is a pointer to a string in PROGMEM
 bool CommandProcessor::str_equal_P(char *str1, const char *str2)
 {
-  for(byte i = 0; i < MAX_STRING_LENGTH; i++)
+  for(byte i = 0; i < get_max_string_length(); i++)
   {
     char c1 = *(str1 + i);
     char c2 = (char)pgm_read_byte(str2 + i);
@@ -276,7 +301,7 @@ char * CommandProcessor::get_input_buffer()
   {
     // a timeout is not needed - the macro bytes are already present in the buffer
     // serial->setTimeout(0);
-    int c = serial->readBytesUntil('\0', this->str, MAX_STRING_LENGTH-1);
+    int c = serial->readBytesUntil('\0', this->str, get_max_string_length()-1);
     // serial->setTimeout(1000);
     this->str[c] = 0;
     return this->str;

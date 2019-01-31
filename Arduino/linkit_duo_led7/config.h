@@ -114,6 +114,7 @@
 #define LOW_BRIGHTNESS_PERCENT     5
 #define MIN_BRIGHTNESS_PERCENT     2
 #define CROSSFADE_DELAY 1
+#define MAX_STRING_LENGTH 80
 
 #ifdef LED_STRIP_72
 #define USE_1_DISPLAYS
@@ -197,6 +198,7 @@
 #define USE_MAPPING
 #define RADIUS8_MAPPING
 #endif
+//#define MAX_STRING_LENGTH 80
 
 #ifdef WEATHER_72
 #define USE_1_DISPLAYS

@@ -85,7 +85,11 @@ void Commands::do_test_inquiry(byte type, int arg2)
       break;
 
     case TEST_INQUIRY_MAX_STRING_LENGTH:
+#if !defined(USE_EXT_CHAR_BUFFER)    
       result = command_processor->get_max_string_length();
+#else
+      result = MAX_STRING_LENGTH;
+#endif
       break;
     case TEST_INQUIRY_TEST_FRAMEWORK_ENABLED:
 #ifdef USE_TEST_FRAMEWORK
@@ -317,4 +321,3 @@ void Commands::do_test_accumulators(){
 
 #endif
 #endif
-

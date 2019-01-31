@@ -10,6 +10,8 @@
 
 #include <color_math.h>
 #include <colors.h>
+
+//#define USE_EXT_CHAR_BUFFER
 #include <command_processor.h>
 
 #ifdef USE_POWER_EASE
@@ -110,9 +112,17 @@ class Dependencies
   // initialize all dependencies
   void begin();
 
+#if defined(USE_EXT_CHAR_BUFFER)
+  static char str[MAX_STRING_LENGTH];
+#endif
+
 //  // show a display to indicate health of the rendering routines on startup
 //  void self_test();
 };
+
+#if defined(USE_EXT_CHAR_BUFFER)
+char Dependencies::str[MAX_STRING_LENGTH];
+#endif
 
 // global settings
 Config Dependencies::config;
@@ -225,11 +235,23 @@ void Dependencies::begin()
 #endif
 
   // start up command processor, listening on the serial port and looking for the passed commands
+
+#if !defined(USE_EXT_CHAR_BUFFER)  
 #ifdef REAL_ARDUINO
   command_processor.begin(&Serial, command_strings, NUM_COMMANDS);
 #else
   command_processor.begin(&Serial1, command_strings, NUM_COMMANDS);
 #endif
+#else
+#ifdef REAL_ARDUINO
+  command_processor.begin(&Serial, command_strings, NUM_COMMANDS, str, MAX_STRING_LENGTH);
+#else
+  command_processor.begin(&Serial1, command_strings, NUM_COMMANDS, str, MAX_STRING_LENGTH);
+#endif
+#endif
+
+
+
 
   // start up the color math class
   // false = don't swap red & green
@@ -323,4 +345,3 @@ void Dependencies::begin()
 }
 
 #endif
-
