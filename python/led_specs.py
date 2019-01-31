@@ -589,6 +589,13 @@ def specs():
       time.sleep(0.2)
       expect_buffer("", 0, 1, "0,0,0")
 
+########################################################################
+# APP command
+########################################################################
+
+  if group("app command"):
+    pending_test("app_command")
+
 
 ########################################################################
 # PUSHING COLORS
@@ -1047,6 +1054,8 @@ def specs():
 
     if test("erases using the custom black level"):
       expect_buffer("2,3,4:sbl:era", 0, 1, "2,3,4")
+
+    pending_test("more custom black level tests")
 
 
 ########################################################################
@@ -1546,7 +1555,9 @@ def specs():
 
     if test("a macro can be set from within another macro that was set from within another macro"):
       lc.command_str("0:set:1:set:2:set:cyn:yel:mag")
-      expect_buffer("0:run:1:run:2:run", 0, 3, "20,0,20,20,20,0,0,20,20")
+      expect_buffer("0:run", 0, 3, "0,0,0,0,0,0,0,0,0")
+      expect_buffer("1:run", 0, 3, "0,0,0,0,0,0,0,0,0")
+      expect_buffer("2:run", 0, 3, "20,0,20,20,20,0,0,20,20")
 
     pending_test("more general macro tests")
 
@@ -2092,6 +2103,8 @@ def specs():
       lc.command_str("3,20:cfg")
       expect_effect("red:flu", 0, 1, "20")
 
+    pending_test("more configuration tests")
+
 
 ########################################################################
 # Dynamic Color Placement
@@ -2173,6 +2186,37 @@ def specs():
 
     if test("copied dynamic color with zooming should render properly"):
       expect_render("12:dyn:1,2,2:cpy", 0, 4, "51,38,0,51,38,0,51,38,0,51,38,0")
+
+
+########################################################################
+# STATIC EFFECT
+########################################################################
+  if group("static effect"):
+
+    pending_test("static effect")
+
+
+########################################################################
+# SCHEDULING
+########################################################################
+  if group("scheduling"):
+
+    pending_test("scheduling")
+
+########################################################################
+# MAPPING
+########################################################################
+  if group("mapping"):
+
+    pending_test("mapping")
+
+
+########################################################################
+# DRAW MODES
+########################################################################
+  if group("draw modes"):
+
+    pending_test("draw modes")
 
 
 ########################################################################
