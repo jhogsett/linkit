@@ -40,6 +40,9 @@ $timing-offset 5
     # start up the palette color sequencer
     (hsl-sequencer-start)
 
+    (circle-app-startup)
+
+[circle-app-startup]
     # start up the circle processing
     (((circle-init 2)))
 
