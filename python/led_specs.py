@@ -45,7 +45,7 @@ num_leds = 0
 palette_size = 0
 group_number_only = 0
 standard_palette = ""
-alternate_seed = 2
+alternate_seed = 99
 group_line_number = 0
 verbose_mode = False
 verbose_test_outcome = ""
@@ -125,7 +125,7 @@ def reset_default_effect():
 def reset_standard_seed():
   return "6,3," + str(standard_seed) + ":tst"
 
-def reset_alternate_seed():
+def set_alternate_seed():
   return "6,3," + str(alternate_seed) + ":tst"
 
 def pre_test_reset():
@@ -1556,7 +1556,11 @@ def specs():
 ########################################################################
   if group("delay"):                                                                                                            
 
-    pending_test("delay")                                                                                                                                                                                                           
+    if test("it delays the expected amount of time"):                                                                                                                                                                                                           
+      lc.command("0:set:400:del:blu:flu")
+      lc.command("100,0:sch:2:cnt")
+      time.sleep(1.0)
+      expect_buffer("", 0, 4, "0,0,20,0,0,20,0,0,20,0,0,0")
 
 
 ########################################################################
@@ -1564,7 +1568,40 @@ def specs():
 ########################################################################
   if group("random number"):                                                                                                            
 
-    pending_test("random numnber")                                                                                                                                                                                                           
+    if test("it generates a random numnber"):
+      expect_accumulators("rng:sto", "67,0,0")
+
+    if test("it generates a different random number"):
+      expect_accumulators("6,3,99:tst:rng:sto", "63,0,0")
+# this doesn't work:
+#      set_alternate_seed()
+#      expect_accumulators("rng:sto", "63,0,0")
+
+    if test("it generates a random number within the upper limit"):
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "3,4,2")
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "2,0,3")
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "3,3,4")
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "0,0,4")
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "2,2,2")
+
+    if test("it generates a random numbner within the lower and upper limits"):
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "8,9,7")
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "7,5,8")
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "8,8,9")
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "5,5,9")
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "7,7,7")
+
+    if test("it handles the limits being within 1"):
+      expect_accumulators("sod:3,2:rng:psh:3,2rng:psh:3,2:rng:psh", "2,3,2")
+
+    if test("it handles the limits being the same"):
+      expect_accumulators("neo:7,7:rng:psh:7,7:rng:psh:7,7:rng:psh", "7,7,7")
+
+    if test("it handles the limits being reversed"):
+      expect_accumulators("lbl:4,5:rng:psh:4,5:rng:psh:4,5:rng:psh", "5,5,5")
+
+    if test("it passes arg2 through to arg1"):
+      expect_accumulators("4,1,99:rng:sto", "2,99,0")
 
 
 ########################################################################
@@ -2144,126 +2181,126 @@ def specs():
   if group("math operations"):
 
     if test("should be able to add two values"):
-      expect_accumulators("2,5:psh:add", "7,0,0")
+      expect_accumulators("tur:2,5:psh:add", "7,0,0")
 
     if test("should be able to add positibve and negative values"):
-      expect_accumulators("3,-3:psh:add", "0,0,0")
+      expect_accumulators("tur:3,-3:psh:add", "0,0,0")
 
     if test("should be able to add positive and negative values and get a negative result"):
-      expect_accumulators("0,-3:psh:add", "-3,0,0")
+      expect_accumulators("tur:0,-3:psh:add", "-3,0,0")
 
     if test("should not crash when adding two large integers"):
-      expect_accumulators("32767,32767:psh:add", "-2,0,0")
+      expect_accumulators("tur:32767,32767:psh:add", "-2,0,0")
 
     if test("should not crash when adding two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:add", "3390,0,0")
+      expect_accumulators("tur:99999,99999:psh:add", "3390,0,0")
 
 
     if test("should be able to subtract two values"):
-      expect_accumulators("7,5:psh:sub", "2,0,0")
+      expect_accumulators("ros:7,5:psh:sub", "2,0,0")
 
     if test("should be able to subtract negative and positive values"):
-      expect_accumulators("0,-3:psh:sub", "3,0,0")
+      expect_accumulators("ros:0,-3:psh:sub", "3,0,0")
 
     if test("should not crash when subtracting two large integers"):
-      expect_accumulators("32767,32767:psh:sub", "0,0,0")
+      expect_accumulators("ros:32767,32767:psh:sub", "0,0,0")
 
     if test("should not crash when subtracting two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:sub", "0,0,0")
+      expect_accumulators("ros:99999,99999:psh:sub", "0,0,0")
     
 
     if test("should be able to multiply two values"):
-      expect_accumulators("2,5:psh:mul", "10,0,0")
+      expect_accumulators("lav:2,5:psh:mul", "10,0,0")
 
     if test("should be able to multiply by zero"):
-      expect_accumulators("0,1000:psh:mul", "0,0,0")
+      expect_accumulators("lav:0,1000:psh:mul", "0,0,0")
 
     if test("should be able to multiply by a negative number"):
-      expect_accumulators("2,-1:psh:mul", "-2,0,0")
+      expect_accumulators("lav:2,-1:psh:mul", "-2,0,0")
 
     if test("should not crash when multiplying two large integers"):
-      expect_accumulators("32767,32767:psh:mul", "1,0,0")
+      expect_accumulators("lav:32767,32767:psh:mul", "1,0,0")
 
     if test("should not crash when multiplying two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:mul", "-10559,0,0")
+      expect_accumulators("lav:99999,99999:psh:mul", "-10559,0,0")
 
 
     if test("should be able to divide two values"):
-      expect_accumulators("3,10:psh:div", "3,0,0")
+      expect_accumulators("olv:3,10:psh:div", "3,0,0")
 
     if test("should be able to divide zero by something"):
-      expect_accumulators("5,0:psh:div", "0,0,0")
+      expect_accumulators("olv:5,0:psh:div", "0,0,0")
 
     if test("a divide by zero is ignored, leaving accumulators as were"):
-      expect_accumulators("0,5:psh:div", "0,5,0")
+      expect_accumulators("olv:0,5:psh:div", "0,5,0")
 
     if test("should be able to divide a negative number"):
-      expect_accumulators("2,-5:psh:div", "-2,0,0")
+      expect_accumulators("olv:2,-5:psh:div", "-2,0,0")
 
     if test("should be able to divide by a negative number"):
-      expect_accumulators("-2, 5:psh:div", "-2,0,0")
+      expect_accumulators("olv:-2, 5:psh:div", "-2,0,0")
 
     if test("should not crash when dividing two large integers"):
-      expect_accumulators("32767,32767:psh:div", "1,0,0")
+      expect_accumulators("olv:32767,32767:psh:div", "1,0,0")
 
     if test("should not crash when dividing two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:div", "1,0,0")
+      expect_accumulators("olv:99999,99999:psh:div", "1,0,0")
 
 
     if test("should be able to modulus two values"):
-      expect_accumulators("3,10:psh:mod", "1,0,0")
+      expect_accumulators("amb:3,10:psh:mod", "1,0,0")
 
     if test("should be able to modulus zero by something"):
-      expect_accumulators("3,0,1:psh:mod", "0,0,0")
+      expect_accumulators("amb:3,0,1:psh:mod", "0,0,0")
 
     if test("a modulus by zero is ignored, leaving accumulators as were"):
-      expect_accumulators("0,5:psh:mod", "0,5,0")
+      expect_accumulators("amb:0,5:psh:mod", "0,5,0")
 
     if test("should be able to modulus a negative nunmber"):
       # mod returns an absolute value to ease restraining pixel location
-      expect_accumulators("3,-10:psh:mod", "1,0,0")
+      expect_accumulators("amb:3,-10:psh:mod", "1,0,0")
 
     if test("should be able to modulus by a negative nunmber"):
-      expect_accumulators("-3,10:psh:mod", "1,0,0")
+      expect_accumulators("amb:-3,10:psh:mod", "1,0,0")
 
     if test("should not crash when modulusing two large integers"):
-      expect_accumulators("32767,32767:psh:mod", "0,0,0")
+      expect_accumulators("amb:32767,32767:psh:mod", "0,0,0")
 
     if test("should not crash when modulusing two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:mod", "0,0,0")
+      expect_accumulators("amb:99999,99999:psh:mod", "0,0,0")
 
     if test("mod operation should also return a positive value"):
       # mod returns an absolute value to ease restraining pixel location
-      expect_accumulators("90,-26:psh:mod", "26,0,0")
+      expect_accumulators("amb:90,-26:psh:mod", "26,0,0")
 
 
     if test("should be able to diff two values"):
-      expect_accumulators("27,45:psh:dif", "18,0,0")
+      expect_accumulators("sky:27,45:psh:dif", "18,0,0")
 
     if test("should be able to diff two values in either direction"):
-      expect_accumulators("45,27:psh:dif", "18,0,0")
+      expect_accumulators("sky:45,27:psh:dif", "18,0,0")
 
     if test("should be able to diff two negative values"):
-      expect_accumulators("-27,-45:psh:dif", "18,0,0")
+      expect_accumulators("sky:-27,-45:psh:dif", "18,0,0")
 
     if test("should be able to diff two negative values in either direction"):
-      expect_accumulators("-45,-27:psh:dif", "18,0,0")
+      expect_accumulators("sky:-45,-27:psh:dif", "18,0,0")
 
 
     if test("should be able to average two values"):
-      expect_accumulators("27,45:psh:avg", "36,0,0")
+      expect_accumulators("neo:27,45:psh:avg", "36,0,0")
 
     if test("should be able to average two values in either direction"):
-      expect_accumulators("27,45:psh:avg", "36,0,0")
+      expect_accumulators("neo:27,45:psh:avg", "36,0,0")
 
     if test("should be able to average two negative values"):
-      expect_accumulators("-27,-45:psh:avg", "-36,0,0")
+      expect_accumulators("neo:-27,-45:psh:avg", "-36,0,0")
 
     if test("should be able to average two negative values in either direction"):
-      expect_accumulators("-45,-27:psh:avg", "-36,0,0")
+      expect_accumulators("neo:-45,-27:psh:avg", "-36,0,0")
 
     if test("mth operations should automatically recall accumulators into arguments"):
-      expect_accumulators("3,9:psh:mul:sto", "27,0,0")
+      expect_accumulators("neo:3,9:psh:mul:sto", "27,0,0")
 
 
 
