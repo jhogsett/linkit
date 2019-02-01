@@ -56,10 +56,15 @@ const byte PROGMEM zone_offsets[NUM_ZONES] = {  0,   0, 1,  7, 18, 33, 50, 67, 8
 const byte PROGMEM zone_windows[NUM_ZONES] = { 100,  1, 7, 18, 33, 50, 67, 82, 93, 99, 100,    50, 100 };
 
 #elif defined(ZONES_RADIUS8)
-#define NUM_ZONES 24
-#define FINE_ZONES 16 //                              16 rows                                                                  halves      quarters             middle half
-const byte PROGMEM zone_offsets[NUM_ZONES] = {   0,   0,  8, 14, 26, 38, 52, 68,  84, 100, 116, 132, 148, 162, 174, 186, 194,    0, 100,    50,  0,  50, 100,   150 };
-const byte PROGMEM zone_windows[NUM_ZONES] = { 200,   6, 14, 26, 38, 52, 68, 84, 100, 116, 132, 148, 162, 174, 186, 194, 200,  100, 200,   150, 50, 100, 150,   200  };
+//#define NUM_ZONES 24
+//#define FINE_ZONES 16 //                              16 rows                                                                  halves      quarters             middle half
+//const byte PROGMEM zone_offsets[NUM_ZONES] = {   0,   0,  8, 14, 26, 38, 52, 68,  84, 100, 116, 132, 148, 162, 174, 186, 194,    0, 100,    50,  0,  50, 100,   150 };
+//const byte PROGMEM zone_windows[NUM_ZONES] = { 200,   6, 14, 26, 38, 52, 68, 84, 100, 116, 132, 148, 162, 174, 186, 194, 200,  100, 200,   150, 50, 100, 150,   200  };
+
+#define NUM_ZONES 8
+#define FINE_ZONES 2 //                              halves      quarters            middle half
+const byte PROGMEM zone_offsets[NUM_ZONES] = {   0,     0, 100,    50,  0,  50, 100,   150 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 200,   100, 200,   150, 50, 100, 150,   200  };
 
 #elif defined(ZONES_DISC)
 #define NUM_ZONES 11
