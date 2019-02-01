@@ -568,10 +568,6 @@ def specs():
       lc.command("10,0:sch:stp")
       time.sleep(0.2)
       expect_buffer("", 0, 1, "0,0,0")
-      # schedule a macro
-      # stop
-      # for a schedule run
-      # test that macro didn't operate
 
     if test("stopping does clearing"):
       # clear uniquely resets draw mode
@@ -585,16 +581,42 @@ def specs():
 
     if test("stopping pauses schedules"):
       lc.command("0:set:red:-1:sch")
-      lc.command("stp:10,0:sch")
+      lc.command("2:cnt:stp:10,0:sch")
       time.sleep(0.2)
       expect_buffer("", 0, 1, "0,0,0")
+
 
 ########################################################################
 # APP command
 ########################################################################
 
   if group("app command"):
-    pending_test("app_command")
+
+    # app command clears all schedules then resumes schedule processing
+    if test("app command stops all schedules"):
+      lc.command("0:set:tur:-1:sch")
+      lc.command("10,0:sch:app")
+      time.sleep(0.2)
+      expect_buffer("", 0, 1, "0,0,0")
+
+    if test("app command does clear"):
+      # clear uniquely resets draw mode
+      # test for this happening to prove clear was done
+      expect_buffer("1:drw:app:blu:0:pos:grn", 0, 1, "0,20,0")
+
+    if test("app command pauses effects"):
+      lc.command("app:grn:blu")
+      time.sleep(0.5)
+      expect_buffer("", 0, 2, "0,0,20,0,20,0")      
+
+    if test("app command resumes schedule processing"):
+      lc.command("0:set:wht:-1:sch")
+      lc.command("app:10,0:sch")
+      time.sleep(0.2)
+      expect_buffer("pau", 0, 1, "20,20,20")
+
+    if test("app command resets the palette"):
+      expect_palette("yel:shf:app", 0, palette_size, standard_palette)
 
 
 ########################################################################
@@ -619,6 +641,7 @@ def specs():
     if test("if number of times < 1 it is set to 1"):
       expect_buffer("-5:red", 0, 2, "20,0,0,0,0,0")
 
+
 ########################################################################
 # SETTING EFFECTS
 ########################################################################
@@ -642,6 +665,7 @@ def specs():
       expect_effect("rnd:efr", 0, 1, "15")
       expect_effect("rnd:efr", 0, 1, "12")
 
+
 ########################################################################
 # PUSHING MULTIPLE COLORS
 ########################################################################
@@ -660,7 +684,12 @@ def specs():
   if group("pause and continue"):
 
     if test("it doesn't render while paused"):
-      expect_render("red", 0, 1, "0,0,0", False)
+      expect_render("pau:red", 0, 1, "0,0,0", False)
+
+    if test("it does render while not paused"):
+      lc.command("cnt:red")
+      time.sleep(0.1)
+      expect_render("", 0, 1, "51,0,0", False)
 
     # test pausing and resuming schedules and effects
   
@@ -1042,7 +1071,7 @@ def specs():
                 
     if test("current brightness level doesn't affect unscaling calculation"):                                                                                                                                    
       expect_render("1:lev:0,255,255:hsl:" + str(default_brightness) + ":lev", 0, 1, expected_rgb_color)
-                                                                                                                                    
+
 
 ########################################################################
 # CUSTOM BLACK LEVEL
@@ -1056,6 +1085,7 @@ def specs():
       expect_buffer("2,3,4:sbl:era", 0, 1, "2,3,4")
 
     pending_test("more custom black level tests")
+# default carry color
 
 
 ########################################################################
@@ -1370,6 +1400,9 @@ def specs():
     if test("animated rotation"):
      expect_render("lbl:art", 0, 2, "0,0,0,0,25,51", False)
 
+    pending_test("additional animated rotation tests")
+
+
 ########################################################################
 # ROTATION
 ########################################################################
@@ -1660,7 +1693,7 @@ def specs():
 ########################################################################
 # SEQUENCING
 ########################################################################
-  if group("sequencing"):                                                                                                            
+  if group("wheel sequencing"):                                                                                                            
 
     if test("it does a wheel sequence with only an upper limit"):
       expect_sequence("0,5:seq:sto:red", "0:seq:sto:red", [0,1,2,3,4,0,1,2,3,4,0])
@@ -1729,6 +1762,7 @@ def specs():
     if test("getting next window works"):
       expect_sequence("0,10:seq:sto:red", "red:0,0,2:snw:sto", [0, 0, 2, 4, 6, 0, 0, 2, 4], [0, 2, 2, 2, 2, 8, 2, 2, 2])
 
+  if group("swing sequencing"):
 
     if test("it does a swing sequence with only an upper limit"):
       expect_sequence("0,5:sqs:sto:org", "0:seq:sto:org", [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0])
@@ -1797,6 +1831,7 @@ def specs():
     if test("getting next window works"):
       expect_sequence("0,10:sqs:sto:org", "org:0,0,2:snw:sto", [0, 0, 2, 4, 6, 6, 4, 2, 0, 0, 2, 4], [0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
+  if group("wheel cosine sequencing"):
 
     if test("it does a wheel cosine sequence with only an upper limit"):
       expect_sequence("0,15:swc:sto:grn", "0:seq:sto:grn", [0, 1, 2, 5, 8, 11, 14, 15, 15, 14, 11, 8, 5, 2, 1, 0, 1, 2, 5])
@@ -1862,6 +1897,7 @@ def specs():
     if test("getting next window works"):
       expect_sequence("0,10:swc:sto:grn", "grn:0,0,2:snw:sto", [0, 0, 3, 9, 3, 0, 0, 3, 9], [0, 3, 6, 0, 6, 3, 3, 6, 0])
 
+  if group("wheel sine sequencing"):
 
     if test("it does a wheel sine sequence with only an upper limit"):
       expect_sequence("0,15:sws:sto:blu", "0:seq:sto:blu", [0, 4, 2, 0, 0, 1, 3, 6, 9, 12, 14, 15, 15, 13, 11, 7, 4, 2, 0, 0, 1])
@@ -1928,6 +1964,8 @@ def specs():
       expect_sequence("0,10:sws:sto:blu", "blu:0,0,2:snw:sto", [0, 0, 0, 2, 8, 5, 0, 0, 2, 8], [0, 0, 2, 6, 2, 5, 5, 2, 6, 2,])
 
 
+  if group("misc sequencing"):
+
     if test("setting a sequence leaves arg0 set to the low value"):
       expect_sequence("0,5,4:seq:sto:pur", "", [4])
 
@@ -1937,11 +1975,6 @@ def specs():
     if test("two sequencers can be subtracted"):
       expect_sequence("0,5,3:seq:1,3,1:seq:sto:pur", "0,-6,1:seq:sto:pur", [1,2])
 
-
-
-
-
-# next window
 
 ########################################################################
 # TESTING
@@ -2215,6 +2248,14 @@ def specs():
 # DRAW MODES
 ########################################################################
   if group("draw modes"):
+
+    pending_test("draw modes")
+
+
+########################################################################
+# PUSH AND POP
+########################################################################
+  if group("push and pop"):
 
     pending_test("draw modes")
 
