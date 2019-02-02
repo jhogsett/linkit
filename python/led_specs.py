@@ -56,17 +56,20 @@ skip_led_report = None
 quiet_mode = None
 plan_mode = False
 test_plan = []
+random_order = False
+group_plan = []
 
 def initialize():
-  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report, quiet_mode
+  global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report, quiet_mode, random_order
 
   parser = argparse.ArgumentParser(description=app_description)
-  parser.add_argument("-g", "--group",     type=int, dest="group",      default=0, help="group number to test")
-  parser.add_argument("-n", "--groupname",           dest="groupname",  default="", help="group name matching text to test")
-  parser.add_argument("-t", "--test",      type=int, dest="test",       default=0, help="test number to test")
+  parser.add_argument("-g", "--group",     type=int, dest="group",      default=0,           help="group number to test")
+  parser.add_argument("-n", "--groupname",           dest="groupname",  default="",          help="group name matching text to test")
+  parser.add_argument("-t", "--test",      type=int, dest="test",       default=0,           help="test number to test")
   parser.add_argument("-s", "--skip-report",         dest="skip_report",action='store_true', help="skip showing results on LED display")
   parser.add_argument("-v", "--verbose",             dest="verbose",    action='store_true', help="enable verbose mode")
-  parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
+  parser.add_argument("-q", "--quiet",               dest="quiet",      action="store_true", help="don't use terminal colors (False)")
+  parser.add_argument("-r", "--random",              dest="random",     action="store_true", help="test in random order (False)")
 
   args = parser.parse_args()
   group_number_only = args.group
@@ -75,10 +78,11 @@ def initialize():
   verbose_mode = args.verbose
   skip_led_report = args.skip_report
   quiet_mode = args.quiet
+  random_order = args.random
 
   tc.begin(quiet_mode)
   ui.begin(verbose_mode, quiet_mode)
-  lc.begin(verbose_mode)
+  lc.begin(False) #verbose_mode)
 
   do_reset_device()
   num_leds = lc.get_num_leds()
@@ -108,6 +112,8 @@ def introduction():
   if group_number_only != 0:
     ui.report_info_alt("group " + str(group_number_only) + " only")
 
+  if test_number_only != 0:
+    ui.report_info_alt("test " + str(test_number_only) + " only")
 
 # -----------------------------------------------------------------------------
 # --- device handling ---
@@ -165,11 +171,19 @@ def group(description):
   else:
     group_number = group_number + 1
     group_description = description
-    group_line_number = get_line_number(2)
 
+    # short-circuit groups with test numbers beyond the requested one
     #if test_number_only != 0 and test_number_only <= test_number:
-    if test_number_only != 0 and test_number_only != test_number:
+    #  return False
+
+    # always return True since any group could have the test number in it
+    #if test_number_only != 0:
+    #  return True
+
+    if random_order and test_number > test_number_only:
       return False
+
+    group_line_number = get_line_number(2)
 
     if group_number_only == 0 and group_name_only == "":
       if verbose_mode:
@@ -192,16 +206,17 @@ def group(description):
   return False
 
 def test(description):
-  global num_tests, test_number, test_description, test_failures, last_test_number, test_line_number, verbose_test_outcome
+  global num_tests, test_number, test_description, test_failures, last_test_number, test_line_number, verbose_test_outcome, group_plan
 
   if plan_mode:
     num_tests = num_tests + 1
+    group_plan.append(group_number)
   else:
     test_number = test_number + 1
     test_description = description 
     test_line_number = get_line_number(2)
 
-    pre_test_reset()
+#    pre_test_reset()
 
     if test_number_only == 0:
       pre_test_reset()
@@ -2413,7 +2428,7 @@ def specs():
 ########################################################################                     
 
 def planning():
-  global plan_mode, test_plan
+  global plan_mode, test_plan, group_plan
   ui.report_verbose("planning...")
 
   plan_mode = True
@@ -2426,19 +2441,27 @@ def planning():
   test_plan = [ i for i in range(1, num_tests+1) ]
   shuffle(test_plan)
 
-def do_test_plan():
-  for test_number in test_plan:
-   @@@ 
+def planned_specs():
+  global test_number_only, test_number
+  for test in test_plan:
+     ui.report_verbose("random test: " + str(test))
+     test_number = 0
+     test_number_only = test
+     group_number_only = group_plan[test]
+     specs()
 
 
 def run():                                  
   print
-
   start_time = datetime.datetime.now()
-  planning()
-  specs()
-  end_time = datetime.datetime.now()
 
+  if random_order:
+    planning()
+    planned_specs()
+  else:
+    specs()
+
+  end_time = datetime.datetime.now()
   print 
 
   for error in test_failures:
