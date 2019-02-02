@@ -13,6 +13,7 @@ import led_command as lc
 import app_ui as ui
 import time
 import datetime
+from random import shuffle
 
 app_description = "Apollo Lighting System - Test Framework v0.0 - Aug 10, 2017"
 slow_response_wait = 0.15
@@ -53,7 +54,8 @@ group_name_only = ""
 test_number_only = 0
 skip_led_report = None
 quiet_mode = None
-
+plan_mode = False
+test_plan = []
 
 def initialize():
   global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report, quiet_mode
@@ -156,46 +158,63 @@ def get_line_number(back):
 
 def group(description):                                                                    
   global group_number, group_description, last_group_number, num_groups, group_line_number
-  group_line_number = get_line_number(2)
-  group_number = group_number + 1
-  num_groups += 1
-  group_description = description
-  if test_number_only != 0 and test_number_only <= test_number:
-    return False
-  if group_number_only == 0 and group_name_only == "":
-    if verbose_mode:
-      if test_number_only == 0:
-        print group_message(),
+
+  if plan_mode:
+    num_groups += 1
     return True
-  if group_number_only == group_number:
-    if verbose_mode:
-      if test_number_only == 0:
-        print group_message(),
-    return True
-  if group_name_only != "" and group_name_only.lower() in description.lower():
-    if verbose_mode:
-      if test_number_only == 0:
-        print group_message(),
-    return True
+  else:
+    group_number = group_number + 1
+    group_description = description
+    group_line_number = get_line_number(2)
+
+    #if test_number_only != 0 and test_number_only <= test_number:
+    if test_number_only != 0 and test_number_only != test_number:
+      return False
+
+    if group_number_only == 0 and group_name_only == "":
+      if verbose_mode:
+        if test_number_only == 0:
+          print group_message(),
+      return True
+
+    if group_number_only == group_number:
+      if verbose_mode:
+        if test_number_only == 0:
+          print group_message(),
+      return True
+
+    if group_name_only != "" and group_name_only.lower() in description.lower():
+      if verbose_mode:
+        if test_number_only == 0:
+          print group_message(),
+      return True
+
   return False
 
 def test(description):
-  global test_number, test_description, test_failures, last_test_number, test_line_number, verbose_test_outcome
-  test_number = test_number + 1
-  test_description = description 
-  test_line_number = get_line_number(2)
-  pre_test_reset()
-  if test_number_only == 0:
+  global num_tests, test_number, test_description, test_failures, last_test_number, test_line_number, verbose_test_outcome
+
+  if plan_mode:
+    num_tests = num_tests + 1
+  else:
+    test_number = test_number + 1
+    test_description = description 
+    test_line_number = get_line_number(2)
+
     pre_test_reset()
-    if verbose_mode:
-      verbose_test_outcome = test_message()
-    return True
-  if test_number == test_number_only:
-    pre_test_reset()
-    if verbose_mode:
-      print group_message(),
-      print test_message(),
-    return True
+
+    if test_number_only == 0:
+      pre_test_reset()
+      if verbose_mode:
+        verbose_test_outcome = test_message()
+      return True
+
+    if test_number == test_number_only:
+      pre_test_reset()
+      if verbose_mode:
+        print group_message(),
+        print test_message(),
+      return True
   return False
 
 def pending_test(description):                                                                                                                                                                             
@@ -1689,6 +1708,7 @@ def specs():
     if test("doesn't get stuck if there are no non-empty spots"):
       expect_buffer("2:win:-2:rps:wht", 0, 2, "20,20,20,0,0,0")
 
+# custom black level
 
 ########################################################################
 # SEQUENCING
@@ -2391,11 +2411,31 @@ def specs():
 
 ########################################################################                     
 ########################################################################                     
- 
+
+def planning():
+  global plan_mode, test_plan
+  ui.report_verbose("planning...")
+
+  plan_mode = True
+  specs()
+  plan_mode = False
+
+  ui.report_verbose("number of groups: " + str(num_groups))
+  ui.report_verbose("number of tests: " + str(num_tests))
+
+  test_plan = [ i for i in range(1, num_tests+1) ]
+  shuffle(test_plan)
+
+def do_test_plan():
+  for test_number in test_plan:
+   @@@ 
+
+
 def run():                                  
   print
 
   start_time = datetime.datetime.now()
+  planning()
   specs()
   end_time = datetime.datetime.now()
 
