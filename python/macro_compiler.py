@@ -233,6 +233,7 @@ def pre_process_script(script_lines):
     new_lines = pre_rewrite(new_lines)
     new_lines = translate_commands(new_lines)
     new_lines = process_directives(new_lines)
+    ingest_directives()
     new_lines = capture_templates(new_lines)
     new_lines = process_get_variables(new_lines)
     new_lines = process_set_variables(new_lines)
@@ -311,9 +312,11 @@ def process_directives(script_lines):
     new_lines = []
     for line in script_lines:
         args = get_key_args(line, "%")
-        if len(args) >= 2:
+        if len(args) > 0:
             directive_name = "%" + args[0]
-            if len(args) == 2:
+            if len(args) == 1:
+                directive_value = True
+            elif len(args) == 2:
                 directive_value = args[1]
             elif len(args) == 3:
                 directive_value = { args[2] : args[3] }
@@ -323,6 +326,11 @@ def process_directives(script_lines):
         else:
             new_lines.append(line)
     return new_lines
+
+def ingest_directives():
+    global allow_mutability
+    if "%allow-mutability" in resolved:
+        allow_mutability = True
 
 ## ----------------------------------------------------
 
