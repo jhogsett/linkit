@@ -11,6 +11,8 @@ import test_colors
 import argparse
 import led_command as lc
 import app_ui as ui
+import time
+import datetime
 
 app_description = "Apollo Lighting System - Test Framework v0.0 - Aug 10, 2017"
 slow_response_wait = 0.15
@@ -43,7 +45,7 @@ num_leds = 0
 palette_size = 0
 group_number_only = 0
 standard_palette = ""
-alternate_seed = 2
+alternate_seed = 99
 group_line_number = 0
 verbose_mode = False
 verbose_test_outcome = ""
@@ -123,7 +125,7 @@ def reset_default_effect():
 def reset_standard_seed():
   return "6,3," + str(standard_seed) + ":tst"
 
-def reset_alternate_seed():
+def set_alternate_seed():
   return "6,3," + str(alternate_seed) + ":tst"
 
 def pre_test_reset():
@@ -518,6 +520,105 @@ def rendered_color_value(buffer_color_value):
 ########################################################################
 
 def specs():
+
+########################################################################
+# RESET CLEAR AND STOP
+########################################################################
+  if group("reset, clear and stop"):
+
+    if test("resetting resets the zone to zone 0"):
+      # there's a requirement for a minimum of 2 fine zones, each guaranteed not to be equal to the whole display
+      expect_offset("2:zon:mag:rst", 0)
+      expect_window("1:zon:mag:rst", num_leds)
+
+    if test("resetting turns reverse mode off"):
+      expect_int("1:rev:rst:0,6:tst", 0)
+
+    if test("clear does a reset"):
+      expect_offset("2:zon:mag:clr:pau", 0)
+      expect_window("1:zon:mag:clr:pau", num_leds)
+      expect_int("1:rev:clr:pau:0,6:tst", 0)
+
+    if test("clearing resumes effects"):
+      lc.command("stp:clr:grn:grn:ffd")
+      time.sleep(0.5)
+      expect_buffer("pau", 0, 2, "0,0,0,0,20,0")
+
+    if test("clearing resumes schedules"):
+      lc.command("0:set:red:-1:sch")
+      lc.command("stp:clr:10,0:sch")
+      time.sleep(0.2)
+      expect_buffer("pau", 0, 1, "20,0,0")
+
+    if test("clearing resets the black level back to black and erases the display"):
+      expect_buffer("5,25,15:sbl:era:flu", 0, 1, "5,25,15")
+      expect_buffer("clr:pau", 0, 1, "0,0,0")
+
+    #if test("clearing saves and restores current display")
+    # TEST ON A MULTIPLE DISPLAY DEVICE
+
+    if test("clearing sets the default draw mode"):
+      expect_buffer("1:drw:clr:red:0:pos:grn:pau", 0, 1, "0,20,0")
+
+    #if test("clearing turns off the fan")
+    # don't have a way to test this in hardware
+
+    if test("stopping halts all schedules"):
+      lc.command("0:set:tur:-1:sch")
+      lc.command("10,0:sch:stp")
+      time.sleep(0.2)
+      expect_buffer("", 0, 1, "0,0,0")
+
+    if test("stopping does clearing"):
+      # clear uniquely resets draw mode
+      # test for this happening to prove clear was done
+      expect_buffer("1:drw:stp:red:0:pos:grn", 0, 1, "0,20,0")
+
+    if test("stopping pauses effects"):
+      lc.command("stp:red:cyn:ffd")
+      time.sleep(0.5)
+      expect_buffer("", 0, 2, "0,10,10,20,0,0")
+
+    if test("stopping pauses schedules"):
+      lc.command("0:set:red:-1:sch")
+      lc.command("2:cnt:stp:10,0:sch")
+      time.sleep(0.2)
+      expect_buffer("", 0, 1, "0,0,0")
+
+
+########################################################################
+# APP command
+########################################################################
+
+  if group("app command"):
+
+    # app command clears all schedules then resumes schedule processing
+    if test("app command stops all schedules"):
+      lc.command("0:set:tur:-1:sch")
+      lc.command("10,0:sch:app")
+      time.sleep(0.2)
+      expect_buffer("", 0, 1, "0,0,0")
+
+    if test("app command does clear"):
+      # clear uniquely resets draw mode
+      # test for this happening to prove clear was done
+      expect_buffer("1:drw:app:blu:0:pos:grn", 0, 1, "0,20,0")
+
+    if test("app command pauses effects"):
+      lc.command("app:grn:blu")
+      time.sleep(0.5)
+      expect_buffer("", 0, 2, "0,0,20,0,20,0")      
+
+    if test("app command resumes schedule processing"):
+      lc.command("0:set:wht:-1:sch")
+      lc.command("app:10,0:sch")
+      time.sleep(0.2)
+      expect_buffer("pau", 0, 1, "20,20,20")
+
+    if test("app command resets the palette"):
+      expect_palette("yel:shf:app", 0, palette_size, standard_palette)
+
+
 ########################################################################
 # PUSHING COLORS
 ########################################################################
@@ -539,6 +640,7 @@ def specs():
 
     if test("if number of times < 1 it is set to 1"):
       expect_buffer("-5:red", 0, 2, "20,0,0,0,0,0")
+
 
 ########################################################################
 # SETTING EFFECTS
@@ -563,6 +665,7 @@ def specs():
       expect_effect("rnd:efr", 0, 1, "15")
       expect_effect("rnd:efr", 0, 1, "12")
 
+
 ########################################################################
 # PUSHING MULTIPLE COLORS
 ########################################################################
@@ -581,7 +684,12 @@ def specs():
   if group("pause and continue"):
 
     if test("it doesn't render while paused"):
-      expect_render("red", 0, 1, "0,0,0", False)
+      expect_render("pau:red", 0, 1, "0,0,0", False)
+
+    if test("it does render while not paused"):
+      lc.command("cnt:red")
+      time.sleep(0.1)
+      expect_render("", 0, 1, "51,0,0", False)
 
     # test pausing and resuming schedules and effects
   
@@ -963,7 +1071,7 @@ def specs():
                 
     if test("current brightness level doesn't affect unscaling calculation"):                                                                                                                                    
       expect_render("1:lev:0,255,255:hsl:" + str(default_brightness) + ":lev", 0, 1, expected_rgb_color)
-                                                                                                                                    
+
 
 ########################################################################
 # CUSTOM BLACK LEVEL
@@ -975,6 +1083,9 @@ def specs():
 
     if test("erases using the custom black level"):
       expect_buffer("2,3,4:sbl:era", 0, 1, "2,3,4")
+
+    pending_test("more custom black level tests")
+# default carry color
 
 
 ########################################################################
@@ -1236,13 +1347,6 @@ def specs():
       expect_render("flu", 0, 1, "12,0,0", False)
       expect_render("flu", 0, 1, "5,0,0", False)
 
-
-########################################################################
-# RESET CLEAR AND STOP
-########################################################################
-  if group("reset, clear and stop"):                                                             
-    pending_test("reset, clear and stop")
-
                                                                                                                                                                                                          
 ########################################################################
 # BRIGHTNESS LEVEL
@@ -1295,6 +1399,9 @@ def specs():
 
     if test("animated rotation"):
      expect_render("lbl:art", 0, 2, "0,0,0,0,25,51", False)
+
+    pending_test("additional animated rotation tests")
+
 
 ########################################################################
 # ROTATION
@@ -1481,7 +1588,9 @@ def specs():
 
     if test("a macro can be set from within another macro that was set from within another macro"):
       lc.command_str("0:set:1:set:2:set:cyn:yel:mag")
-      expect_buffer("0:run:1:run:2:run", 0, 3, "20,0,20,20,20,0,0,20,20")
+      expect_buffer("0:run", 0, 3, "0,0,0,0,0,0,0,0,0")
+      expect_buffer("1:run", 0, 3, "0,0,0,0,0,0,0,0,0")
+      expect_buffer("2:run", 0, 3, "20,0,20,20,20,0,0,20,20")
 
     pending_test("more general macro tests")
 
@@ -1491,7 +1600,11 @@ def specs():
 ########################################################################
   if group("delay"):                                                                                                            
 
-    pending_test("delay")                                                                                                                                                                                                           
+    if test("it delays the expected amount of time"):                                                                                                                                                                                                           
+      lc.command("0:set:400:del:blu:flu")
+      lc.command("100,0:sch:2:cnt")
+      time.sleep(1.0)
+      expect_buffer("", 0, 4, "0,0,20,0,0,20,0,0,20,0,0,0")
 
 
 ########################################################################
@@ -1499,7 +1612,40 @@ def specs():
 ########################################################################
   if group("random number"):                                                                                                            
 
-    pending_test("random numnber")                                                                                                                                                                                                           
+    if test("it generates a random numnber"):
+      expect_accumulators("rng:sto", "67,0,0")
+
+    if test("it generates a different random number"):
+      expect_accumulators("6,3,99:tst:rng:sto", "63,0,0")
+# this doesn't work:
+#      set_alternate_seed()
+#      expect_accumulators("rng:sto", "63,0,0")
+
+    if test("it generates a random number within the upper limit"):
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "3,4,2")
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "2,0,3")
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "3,3,4")
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "0,0,4")
+      expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "2,2,2")
+
+    if test("it generates a random numbner within the lower and upper limits"):
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "8,9,7")
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "7,5,8")
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "8,8,9")
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "5,5,9")
+      expect_accumulators("tun:10,5:rng:psh:10,5:rng:psh:10,5:rng:psh", "7,7,7")
+
+    if test("it handles the limits being within 1"):
+      expect_accumulators("sod:3,2:rng:psh:3,2rng:psh:3,2:rng:psh", "2,3,2")
+
+    if test("it handles the limits being the same"):
+      expect_accumulators("neo:7,7:rng:psh:7,7:rng:psh:7,7:rng:psh", "7,7,7")
+
+    if test("it handles the limits being reversed"):
+      expect_accumulators("lbl:4,5:rng:psh:4,5:rng:psh:4,5:rng:psh", "5,5,5")
+
+    if test("it passes arg2 through to arg1"):
+      expect_accumulators("4,1,99:rng:sto", "2,99,0")
 
 
 ########################################################################
@@ -1547,7 +1693,7 @@ def specs():
 ########################################################################
 # SEQUENCING
 ########################################################################
-  if group("sequencing"):                                                                                                            
+  if group("wheel sequencing"):                                                                                                            
 
     if test("it does a wheel sequence with only an upper limit"):
       expect_sequence("0,5:seq:sto:red", "0:seq:sto:red", [0,1,2,3,4,0,1,2,3,4,0])
@@ -1616,6 +1762,7 @@ def specs():
     if test("getting next window works"):
       expect_sequence("0,10:seq:sto:red", "red:0,0,2:snw:sto", [0, 0, 2, 4, 6, 0, 0, 2, 4], [0, 2, 2, 2, 2, 8, 2, 2, 2])
 
+  if group("swing sequencing"):
 
     if test("it does a swing sequence with only an upper limit"):
       expect_sequence("0,5:sqs:sto:org", "0:seq:sto:org", [0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0])
@@ -1684,6 +1831,7 @@ def specs():
     if test("getting next window works"):
       expect_sequence("0,10:sqs:sto:org", "org:0,0,2:snw:sto", [0, 0, 2, 4, 6, 6, 4, 2, 0, 0, 2, 4], [0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
+  if group("wheel cosine sequencing"):
 
     if test("it does a wheel cosine sequence with only an upper limit"):
       expect_sequence("0,15:swc:sto:grn", "0:seq:sto:grn", [0, 1, 2, 5, 8, 11, 14, 15, 15, 14, 11, 8, 5, 2, 1, 0, 1, 2, 5])
@@ -1749,6 +1897,7 @@ def specs():
     if test("getting next window works"):
       expect_sequence("0,10:swc:sto:grn", "grn:0,0,2:snw:sto", [0, 0, 3, 9, 3, 0, 0, 3, 9], [0, 3, 6, 0, 6, 3, 3, 6, 0])
 
+  if group("wheel sine sequencing"):
 
     if test("it does a wheel sine sequence with only an upper limit"):
       expect_sequence("0,15:sws:sto:blu", "0:seq:sto:blu", [0, 4, 2, 0, 0, 1, 3, 6, 9, 12, 14, 15, 15, 13, 11, 7, 4, 2, 0, 0, 1])
@@ -1815,6 +1964,8 @@ def specs():
       expect_sequence("0,10:sws:sto:blu", "blu:0,0,2:snw:sto", [0, 0, 0, 2, 8, 5, 0, 0, 2, 8], [0, 0, 2, 6, 2, 5, 5, 2, 6, 2,])
 
 
+  if group("misc sequencing"):
+
     if test("setting a sequence leaves arg0 set to the low value"):
       expect_sequence("0,5,4:seq:sto:pur", "", [4])
 
@@ -1824,11 +1975,6 @@ def specs():
     if test("two sequencers can be subtracted"):
       expect_sequence("0,5,3:seq:1,3,1:seq:sto:pur", "0,-6,1:seq:sto:pur", [1,2])
 
-
-
-
-
-# next window
 
 ########################################################################
 # TESTING
@@ -1990,6 +2136,8 @@ def specs():
       lc.command_str("3,20:cfg")
       expect_effect("red:flu", 0, 1, "20")
 
+    pending_test("more configuration tests")
+
 
 ########################################################################
 # Dynamic Color Placement
@@ -2074,131 +2222,170 @@ def specs():
 
 
 ########################################################################
+# STATIC EFFECT
+########################################################################
+  if group("static effect"):
+
+    pending_test("static effect")
+
+
+########################################################################
+# SCHEDULING
+########################################################################
+  if group("scheduling"):
+
+    pending_test("scheduling")
+
+########################################################################
+# MAPPING
+########################################################################
+  if group("mapping"):
+
+    pending_test("mapping")
+
+
+########################################################################
+# DRAW MODES
+########################################################################
+  if group("draw modes"):
+
+    pending_test("draw modes")
+
+
+########################################################################
+# PUSH AND POP
+########################################################################
+  if group("push and pop"):
+
+    pending_test("draw modes")
+
+
+########################################################################
 # Math operations
 ########################################################################
   if group("math operations"):
 
     if test("should be able to add two values"):
-      expect_accumulators("2,5:psh:add", "7,0,0")
+      expect_accumulators("tur:2,5:psh:add", "7,0,0")
 
     if test("should be able to add positibve and negative values"):
-      expect_accumulators("3,-3:psh:add", "0,0,0")
+      expect_accumulators("tur:3,-3:psh:add", "0,0,0")
 
     if test("should be able to add positive and negative values and get a negative result"):
-      expect_accumulators("0,-3:psh:add", "-3,0,0")
+      expect_accumulators("tur:0,-3:psh:add", "-3,0,0")
 
     if test("should not crash when adding two large integers"):
-      expect_accumulators("32767,32767:psh:add", "-2,0,0")
+      expect_accumulators("tur:32767,32767:psh:add", "-2,0,0")
 
     if test("should not crash when adding two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:add", "3390,0,0")
+      expect_accumulators("tur:99999,99999:psh:add", "3390,0,0")
 
 
     if test("should be able to subtract two values"):
-      expect_accumulators("7,5:psh:sub", "2,0,0")
+      expect_accumulators("ros:7,5:psh:sub", "2,0,0")
 
     if test("should be able to subtract negative and positive values"):
-      expect_accumulators("0,-3:psh:sub", "3,0,0")
+      expect_accumulators("ros:0,-3:psh:sub", "3,0,0")
 
     if test("should not crash when subtracting two large integers"):
-      expect_accumulators("32767,32767:psh:sub", "0,0,0")
+      expect_accumulators("ros:32767,32767:psh:sub", "0,0,0")
 
     if test("should not crash when subtracting two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:sub", "0,0,0")
+      expect_accumulators("ros:99999,99999:psh:sub", "0,0,0")
     
 
     if test("should be able to multiply two values"):
-      expect_accumulators("2,5:psh:mul", "10,0,0")
+      expect_accumulators("lav:2,5:psh:mul", "10,0,0")
 
     if test("should be able to multiply by zero"):
-      expect_accumulators("0,1000:psh:mul", "0,0,0")
+      expect_accumulators("lav:0,1000:psh:mul", "0,0,0")
 
     if test("should be able to multiply by a negative number"):
-      expect_accumulators("2,-1:psh:mul", "-2,0,0")
+      expect_accumulators("lav:2,-1:psh:mul", "-2,0,0")
 
     if test("should not crash when multiplying two large integers"):
-      expect_accumulators("32767,32767:psh:mul", "1,0,0")
+      expect_accumulators("lav:32767,32767:psh:mul", "1,0,0")
 
     if test("should not crash when multiplying two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:mul", "-10559,0,0")
+      expect_accumulators("lav:99999,99999:psh:mul", "-10559,0,0")
 
 
     if test("should be able to divide two values"):
-      expect_accumulators("3,10:psh:div", "3,0,0")
+      expect_accumulators("olv:3,10:psh:div", "3,0,0")
 
     if test("should be able to divide zero by something"):
-      expect_accumulators("5,0:psh:div", "0,0,0")
+      expect_accumulators("olv:5,0:psh:div", "0,0,0")
 
     if test("a divide by zero is ignored, leaving accumulators as were"):
-      expect_accumulators("0,5:psh:div", "0,5,0")
+      expect_accumulators("olv:0,5:psh:div", "0,5,0")
 
     if test("should be able to divide a negative number"):
-      expect_accumulators("2,-5:psh:div", "-2,0,0")
+      expect_accumulators("olv:2,-5:psh:div", "-2,0,0")
 
     if test("should be able to divide by a negative number"):
-      expect_accumulators("-2, 5:psh:div", "-2,0,0")
+      expect_accumulators("olv:-2, 5:psh:div", "-2,0,0")
 
     if test("should not crash when dividing two large integers"):
-      expect_accumulators("32767,32767:psh:div", "1,0,0")
+      expect_accumulators("olv:32767,32767:psh:div", "1,0,0")
 
     if test("should not crash when dividing two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:div", "1,0,0")
+      expect_accumulators("olv:99999,99999:psh:div", "1,0,0")
 
 
     if test("should be able to modulus two values"):
-      expect_accumulators("3,10:psh:mod", "1,0,0")
+      expect_accumulators("amb:3,10:psh:mod", "1,0,0")
 
     if test("should be able to modulus zero by something"):
-      expect_accumulators("3,0,1:psh:mod", "0,0,0")
+      expect_accumulators("amb:3,0,1:psh:mod", "0,0,0")
 
     if test("a modulus by zero is ignored, leaving accumulators as were"):
-      expect_accumulators("0,5:psh:mod", "0,5,0")
+      expect_accumulators("amb:0,5:psh:mod", "0,5,0")
 
     if test("should be able to modulus a negative nunmber"):
       # mod returns an absolute value to ease restraining pixel location
-      expect_accumulators("3,-10:psh:mod", "1,0,0")
+      expect_accumulators("amb:3,-10:psh:mod", "1,0,0")
 
     if test("should be able to modulus by a negative nunmber"):
-      expect_accumulators("-3,10:psh:mod", "1,0,0")
+      expect_accumulators("amb:-3,10:psh:mod", "1,0,0")
 
     if test("should not crash when modulusing two large integers"):
-      expect_accumulators("32767,32767:psh:mod", "0,0,0")
+      expect_accumulators("amb:32767,32767:psh:mod", "0,0,0")
 
     if test("should not crash when modulusing two crazy large numbers"):
-      expect_accumulators("99999,99999:psh:mod", "0,0,0")
+      expect_accumulators("amb:99999,99999:psh:mod", "0,0,0")
 
     if test("mod operation should also return a positive value"):
       # mod returns an absolute value to ease restraining pixel location
-      expect_accumulators("90,-26:psh:mod", "26,0,0")
+      expect_accumulators("amb:90,-26:psh:mod", "26,0,0")
 
 
     if test("should be able to diff two values"):
-      expect_accumulators("27,45:psh:dif", "18,0,0")
+      expect_accumulators("sky:27,45:psh:dif", "18,0,0")
 
     if test("should be able to diff two values in either direction"):
-      expect_accumulators("45,27:psh:dif", "18,0,0")
+      expect_accumulators("sky:45,27:psh:dif", "18,0,0")
 
     if test("should be able to diff two negative values"):
-      expect_accumulators("-27,-45:psh:dif", "18,0,0")
+      expect_accumulators("sky:-27,-45:psh:dif", "18,0,0")
 
     if test("should be able to diff two negative values in either direction"):
-      expect_accumulators("-45,-27:psh:dif", "18,0,0")
+      expect_accumulators("sky:-45,-27:psh:dif", "18,0,0")
 
 
     if test("should be able to average two values"):
-      expect_accumulators("27,45:psh:avg", "36,0,0")
+      expect_accumulators("neo:27,45:psh:avg", "36,0,0")
 
     if test("should be able to average two values in either direction"):
-      expect_accumulators("27,45:psh:avg", "36,0,0")
+      expect_accumulators("neo:27,45:psh:avg", "36,0,0")
 
     if test("should be able to average two negative values"):
-      expect_accumulators("-27,-45:psh:avg", "-36,0,0")
+      expect_accumulators("neo:-27,-45:psh:avg", "-36,0,0")
 
     if test("should be able to average two negative values in either direction"):
-      expect_accumulators("-45,-27:psh:avg", "-36,0,0")
+      expect_accumulators("neo:-45,-27:psh:avg", "-36,0,0")
 
     if test("mth operations should automatically recall accumulators into arguments"):
-      expect_accumulators("3,9:psh:mul:sto", "27,0,0")
+      expect_accumulators("neo:3,9:psh:mul:sto", "27,0,0")
 
 
 
@@ -2207,7 +2394,11 @@ def specs():
  
 def run():                                  
   print
+
+  start_time = datetime.datetime.now()
   specs()
+  end_time = datetime.datetime.now()
+
   print 
 
   for error in test_failures:
@@ -2228,6 +2419,7 @@ def run():
     tc.red(str(num_skipped) + " skipped ") + 
     tc.blue(str(num_groups) + " groups")
   )                                                                     
+  print tc.white("tests ran in: " + str(end_time - start_time))
   print                                                                                                                                                                                            
 
   pre_test_reset()
@@ -2239,10 +2431,6 @@ def run():
       show_success = int(0.5 + (success_count * num_leds / total))
       show_failure = int(0.5 + ((failure_count + num_skipped) * num_leds / total))
       show_pending = int(0.5 + (num_pending * num_leds / total))
-
-      print "show success: " + str(show_success)
-      print "show failure: " + str(show_failure)
-      print "show pending: " + str(show_pending)
 
       lc.command("stp:0:lev:0,0:cfg:1,0:cfg:2,0:cfg")
 

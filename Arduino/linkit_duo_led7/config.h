@@ -15,10 +15,10 @@
 // #define APOLLO_DISPLAY
 
 // single 90-LED strip for dev
-#define LED_STRIP_90
+// #define LED_STRIP_90
 
 // 19-LED Mini Disc
-// #define MINI_DISC_19
+// #define MONUMENT
 
 // single 144-LED strip
 // #define LED_STRIP_144
@@ -36,7 +36,7 @@
 // #define WEATHER_72
 
 // 36-LED annunciator
-//  #define ANNUNCIATOR
+// #define ANNUNCIATOR
 
 // 54-LED annunciator #2
 // #define ANNUNCIATOR2
@@ -55,8 +55,9 @@
 // spy:
 // #define WEARABLE_AND_GLASSES_TYPE2
 
-// 200-LED overhead
-// #define RADIUS8
+// 200-LED display/overhead
+// need to reduce char buffer to 60 to avoid memory corruption
+#define RADIUS8
 
 // 44-LED Hard Hat
 // #define HARDHAT
@@ -111,6 +112,7 @@
 #define HIGH_BRIGHTNESS_PERCENT    25
 #define LOW_BRIGHTNESS_PERCENT     5
 #define MIN_BRIGHTNESS_PERCENT     2
+#define CROSSFADE_DELAY 1
 
 #ifdef LED_STRIP_72
 #define USE_1_DISPLAYS
@@ -183,7 +185,7 @@
 #define FADE_RATE 0.925
 #define NUM_SEQUENCERS 10
 #define NUM_MACRO_CHARS 25
-#define NUM_MEMORY_MACROS 2
+#define NUM_MEMORY_MACROS 1
 #define NUM_EEPROM_MACROS 41
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
@@ -233,7 +235,7 @@
 #define MIN_BRIGHTNESS_PERCENT     5
 #endif
 
-#ifdef MINI_DISC_19
+#ifdef MONUMENT
 #define USE_1_DISPLAYS
 #define ANIM_LED_COUNT 19
 #define DEFAULT_BRIGHTNESS_PERCENT 20
@@ -244,6 +246,7 @@
 #define HIGH_BRIGHTNESS_PERCENT    33
 #define LOW_BRIGHTNESS_PERCENT     10
 #define MIN_BRIGHTNESS_PERCENT     5
+#define CROSSFADE_DELAY 50
 #endif
 
 #ifdef WEARABLE_AND_HARDHAT
