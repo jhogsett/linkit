@@ -148,12 +148,16 @@ void Sequence::reset()
 #define ADVANCE_RESET      -9
 #define ADVANCE_PREVIOUS  -10
 #define ADVANCE_PREV_COMP -11
+#define ADVANCE_NEXT_NO_SAVE -12
 #define SAFETY_MARGIN 0
 
 int Sequence::next(int advancement, int step, bool save_previous_computed) // step or macro
 {
   switch(advancement)
   {
+    case ADVANCE_NEXT_NO_SAVE:
+      return this->next(ADVANCE_NEXT, step, false);
+      
     case ADVANCE_PREVIOUS:
       return this->previous;
       

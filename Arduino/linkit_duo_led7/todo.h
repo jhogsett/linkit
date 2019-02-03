@@ -1,6 +1,25 @@
+// some way to make this automatic, so extra templates don't have to be created just to call the template instance macros multiple times
+//[[advance-all-temp INSTANCE
+//    (advance-INSTANCE)
+//]]
+// maybe overload (( ))
+// ((advance-INSTANCE <num-instances>)) bad idea, (( )) already has arguments
+// maybe [[[ ]]]
+
+
+// directive to allow mutability
+
+// something like snw but makes it easy to erase before drawing next segment
+
+// there are no position tests, no push/pop tests, no scheduling tests, no mapping tests, no draw mode tests
+
+// change fade effect to be a cross fade to the current black level
+
+// are data/render buffers mirrored in program memory for initialization?
+
 // time metrics: fastest/slowest test/group
 
-// alternate specs display: green, yellow, red success dots
+// alternate specs led display: green, yellow, red success dots
 
 // document minimum 2 zone requirement
 
@@ -16,8 +35,6 @@
 // carry
 // crossfade
 // "more general macro tests"
-// delay
-// random number
 // testing test framework features
 // configuring
 // static effect?
