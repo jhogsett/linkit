@@ -9,7 +9,7 @@
 
 $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
-$render-time <base-next-time>
+$render-time `1*<base-next-time>`
 $fade-rate 9000
 $num-instances 4
 
@@ -17,8 +17,8 @@ $width 10
 $low-limit `<width>/2`
 $high-limit `<NUM-LEDS>-<low-limit>`
 
-$base-next-time 120
-$add-time -5
+$base-next-time 100
+$add-time 5
 
 %play-macro app
 
@@ -41,18 +41,63 @@ $HSL-TIME 1000
 
 [start-up]
     # start the macro instances
-    (((init <num-instances>)))
+    (init-all)
 
     # start up the palette color sequencer
     (hsl-sequencer-start)
 
     # schedule the display rendering
-    (render <render-time>)
+    (render-all <render-time>)
+
+
+# [[[init <num-instances>]]]
+# would get replaced by
+# (init-all)
+# then later:
+# [init-all]
+#   (((init-all-temp <num-instances>)))
+# [[init-all-template INSTANCE
+#   (init-INSTANCE)
+# ]]
+#(((init-all-temp <num-instances>)))
+#(init-INSTANCE)
+#could add in scheduling time somehow too
+
+
+
+[init-all]
+    (((init-all-temp <num-instances>)))
+
+[erase-all]
+    (((erase-all-temp <num-instances>)))
+
+[advance-all]
+    (((advance-all-temp <num-instances>)))
+
+[draw-all]
+    (((draw-all-temp <num-instances>)))
+
+[render-all]
+    (erase-all)
+    (draw-all)
+    flush
 
 (((macro <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
 
-[[init INSTANCE
+[[init-all-temp INSTANCE
     (init-INSTANCE)
+]]
+
+[[erase-all-temp INSTANCE
+    (erase-INSTANCE)
+]]
+
+[[advance-all-temp INSTANCE
+    (advance-INSTANCE)
+]]
+
+[[draw-all-temp INSTANCE
+    (draw-INSTANCE)
 ]]
 
 [[macro INSTANCE PALETTE TIME
@@ -61,17 +106,17 @@ $HSL-TIME 1000
         {seq-INSTANCE},<high-limit>,<low-limit>
         wheel-cosine-sequencer
 
-        (next-INSTANCE TIME)
+        (advance-INSTANCE TIME)
 
-    [next-INSTANCE]
-        (erase-INSTANCE)
-        (draw-INSTANCE)
+    [advance-INSTANCE]
+        {seq-INSTANCE},<GET-NEXT>
+        sequence
 
     [erase-INSTANCE]
         <low-limit>
         push
 
-        {seq-INSTANCE},<GET-COMPUTED>
+        {seq-INSTANCE},<GET-PREV-COMPUTED>
         sequence
         push
         subtract
@@ -80,14 +125,16 @@ $HSL-TIME 1000
         recall
 
         position
-        erase
+        black
+        flood
+        #erase
         reset 
 
     [draw-INSTANCE]
         <low-limit>
         push
 
-        {seq-INSTANCE},<GET-NEXT>
+        {seq-INSTANCE},<GET-COMPUTED>
         sequence
         push
         subtract
@@ -104,17 +151,4 @@ $HSL-TIME 1000
         reset
 
 ]]
-
-
-
-
-
-
-
-
-
-
-
-
-
 
