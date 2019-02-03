@@ -1981,6 +1981,9 @@ def specs():
     if test("the previous computed value can be retrieved"):
       expect_sequence("0,10:swc:sto:pur", "0:seq:0,-2:seq:sto:0,-11:seq:psh:pur", [0, 0, 1, 3, 7, 9, 10, 9, 7, 3, 1, 0, 1, 3], [0, 1, 3, 7, 9, 10, 9, 7, 3, 1, 0, 1, 3, 7])
 
+    if test("it advances without changing the previous computed value"):
+      expect_sequence("0,10:swc:sto:pur", "0,-12:seq:0,-2:seq:sto:0,-11:seq:psh:pur", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 3, 7, 9, 10, 9, 7, 3, 1, 0, 1, 3])
+
 
 ########################################################################
 # TESTING
