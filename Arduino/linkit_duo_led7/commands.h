@@ -1208,7 +1208,7 @@ int Commands::do_next_sequence(int arg0, int arg1, int arg2)
 void Commands::do_next_window(int arg0, int arg1, int arg2)
 {
   // position is some new position
-  byte position = sequencer.next(arg0, arg1, arg2);
+  byte position = sequencer.next(arg0, arg1, arg2, false);
 
   // compute previous position, arg0 is the sequence number
   byte previous_position = sequencer.previous_computed(arg0);

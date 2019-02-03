@@ -15,7 +15,7 @@
 // #define APOLLO_DISPLAY
 
 // single 90-LED strip for dev
-// #define LED_STRIP_90
+#define LED_STRIP_90
 
 // 19-LED Mini Disc
 // #define MONUMENT
@@ -57,7 +57,7 @@
 
 // 200-LED display/overhead
 // need to reduce char buffer to 60 to avoid memory corruption
-#define RADIUS8
+// #define RADIUS8
 
 // 44-LED Hard Hat
 // #define HARDHAT
