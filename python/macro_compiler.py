@@ -73,7 +73,7 @@ def remaining_sequencers():
 ########################################################################
 
 def reset():
-    global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
+    global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, allow_mutability
     global final_macro_numbers, includes
     macros = {}
     macro_commands = {}
@@ -86,6 +86,7 @@ def reset():
     next_available_macro_number = starting_macro_number
     next_available_sequencer_number = 0
     resolve_presets(presets)
+    allow_mutability = False
 
 def reset_next_available_sequence_number():
     next_available_sequencer_number = 0
