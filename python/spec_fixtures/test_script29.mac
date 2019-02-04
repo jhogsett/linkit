@@ -6,7 +6,8 @@ $value 2
 
 $OVERRIDE1 30
 $OVERRIDE2 `30`
-$OVERRIDE3 `<value>*30`
+$OVERRIDE3 <value>
+$OVERRIDE4 `<value>*30`
 
 [m1]
   <OVERRIDE1>
@@ -16,4 +17,7 @@ $OVERRIDE3 `<value>*30`
 
 [m3]
   <OVERRIDE3>
+
+[m4]
+  <OVERRIDE4>
 
