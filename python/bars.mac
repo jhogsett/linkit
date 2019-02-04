@@ -17,8 +17,8 @@ $width 8
 $low-limit `<width>/2`
 $high-limit `<NUM-LEDS>-<low-limit>`
 
-$base-next-time 120
-$add-time 5
+$base-next-time 70
+$add-time 3
 
 %play-macro bars-app
 
@@ -59,7 +59,7 @@ $black-level-time 20000
 
     (start-up)
 
-    (start-black-level)
+#    (start-black-level)
 
 [start-up]
     # start the macro instances
@@ -100,7 +100,8 @@ $black-level-time 20000
     (((draw-all-temp <num-instances>)))
 
 [render-all]
-    (erase-all)
+#    (erase-all)
+    erase
     (draw-all)
     flush
 
