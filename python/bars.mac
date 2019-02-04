@@ -9,22 +9,42 @@
 
 $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
-$render-time `1*<base-next-time>`
+$render-time <base-next-time>
 $fade-rate 9000
-$num-instances 4
+$num-instances 3
 
-$width 10
+$width 8
 $low-limit `<width>/2`
 $high-limit `<NUM-LEDS>-<low-limit>`
 
-$base-next-time 100
+$base-next-time 120
 $add-time 5
 
-%play-macro app
+%play-macro bars-app
 
 $HSL-TIME 1000
+$HSL-ANGLE 120
 
-[app 10]
+$black-level-time 20000
+
+[start-black-level]
+    (new-black-level <black-level-time>)
+
+[new-black-level]
+    2
+    random-number
+    push
+    2
+    random-number
+    push
+    2
+    random-number
+    push
+    recall
+    set-black-level
+    erase
+
+[bars-app 10]
     application
  
     # set the preset draw mode
@@ -38,6 +58,8 @@ $HSL-TIME 1000
     level
 
     (start-up)
+
+    (start-black-level)
 
 [start-up]
     # start the macro instances
@@ -125,9 +147,8 @@ $HSL-TIME 1000
         recall
 
         position
-        black
-        flood
-        #erase
+        erase
+
         reset 
 
     [draw-INSTANCE]
@@ -145,7 +166,8 @@ $HSL-TIME 1000
         position
 
         PALETTE
-        dynamic-color
+        palette-color
+        dim
         flood
 
         reset
