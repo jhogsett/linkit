@@ -1,0 +1,12 @@
+
+[app 10]
+    [[[init 6]]]
+
+(((object 6)))
+
+[[object INSTANCE
+  [init-INSTANCE]
+    INSTANCE
+    red
+]]
+

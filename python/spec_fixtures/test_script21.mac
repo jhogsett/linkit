@@ -27,7 +27,7 @@ $color-step 1
   (((worm-start 3)))
   (colorseq-start)
 
-(((worm `NUM-LEDS/30` `<time1>-(X*5)` `<time2>-(X*5)` X `X+1`)))
+(((worm `<NUM-LEDS>/30` `<time1>-(X*5)` `<time2>-(X*5)` X `X+1`)))
 
 [[worm-start X
   (worm-start-X)

@@ -235,9 +235,16 @@ def pre_process_script(script_lines):
     new_lines = translate_commands(new_lines)
     new_lines = process_directives(new_lines)
     ingest_directives()
-    new_lines = capture_templates(new_lines)
+
     new_lines = process_get_variables(new_lines)
     new_lines = process_set_variables(new_lines)
+
+    new_lines = expand_multi_macros(new_lines)
+    new_lines = capture_templates(new_lines)
+
+#    new_lines = process_get_variables(new_lines)
+#    new_lines = process_set_variables(new_lines)
+
     new_lines = expand_meta_templates(new_lines)
     new_lines = expand_templates(new_lines)
     return new_lines
@@ -363,14 +370,57 @@ def capture_templates(script_lines):
 
 ## ----------------------------------------------------
 
+def expand_multi_macros(script_lines):
+    new_lines = []
+    add_lines = []
+    for line in script_lines:
+        line = line.strip()
+        # do any variable replacements that can be done
+        line = replace_all_variables(line)
+        args = extract_args(line, "[[[", "]]]")
+        if len(args) >= 2:
+            macro_name = args[0]
+            num_instance_arg = args[1]
+            num_instance_max = None
+            start, end = locate_delimiters(num_instance_arg, "`", "`")
+            if start != -1 and end != -1:
+                expression = extract_contents(num_instance_arg, "`", "`")
+                num_instance_max = eval(expression)
+            else:
+                try:
+                    num_instance_max = int(num_instance_arg)
+                except ValueError:
+                    raise ValueError("Multi macro cannot be expanded due to unresolved non-integer argument: " + num_instance_arg);
+                except:
+                    raise ValueError("Multi macro cannot be expanded due to unprocessable argument: " + num_instance_arg);
+            # remaining argument, if any, is the optional schedule replacement
+            schedule = " ".join(args[2:])
+            multi_macro_name = macro_name + "-all-" + str(num_instance_max)
+            template_name = multi_macro_name + "-template"
+            # replace the multi macro expression with the call to the new macro
+            new_lines.append("(" + multi_macro_name + ")")
+            # create the lines that will be added after this set of lines is processed:
+            # add the multi macro
+            add_lines.append("[" + multi_macro_name + "]")
+            # add the meta-template
+            add_lines.append("  (((" + template_name + " " + str(num_instance_max) + " " + schedule + ")))")
+            # add the template
+            add_lines.append("[[" + template_name + " INSTANCE SCHEDULE")
+            add_lines.append("(" + macro_name + "-INSTANCE SCHEDULE)")
+            add_lines.append("]]")
+        else:
+            new_lines.append(line)
+    return new_lines + add_lines
+
+
 def expand_meta_templates(script_lines):
     new_lines = []
     for line in script_lines:
         line = line.strip()
+        # do any variable replacements that can be done
+        line = replace_all_variables(line) # ?????
         args = extract_args(line, "(((", ")))")
         if len(args) >= 2:
-            # do any variable replacements that can be done
-            line = replace_all_variables(line)
             args = extract_args(line, "(((", ")))")
             template_name = args[0]
             index_arg = args[1]
@@ -378,26 +428,14 @@ def expand_meta_templates(script_lines):
             start, end = locate_delimiters(index_arg, "`", "`")
             if start != -1 and end != -1:
                 expression = extract_contents(index_arg, "`", "`")
-                # replace any preset arguments to allow use in computing macro index max
-                for key in presets:
-                    expression = expression.replace(key, str(presets[key]))
                 index_max = eval(expression)
             else:
                 try:
                     index_max = int(index_arg)
                 except ValueError:
-                    # argument may be a variable reference
-                    value = extract_contents(index_arg, "<", ">")
-                    if len(value) > 0:
-                        if value in resolved:
-                            index_max = int(resolved[value])
-                        else:
-                            raise ValueError("Meta template cannot be expanded due to unresolved variable reference: " + value);
-                    else:
-                        raise ValueError("Meta template cannot be expanded due to unresolved non-integer argument: " + index_arg);
+                    raise ValueError("Meta template cannot be expanded due to unresolved non-integer argument: " + index_arg);
                 except:
                     raise ValueError("Meta template cannot be expanded due to unprocessable argument: " + index_arg);
-
             # remaining arguments, if any, are the search replacements
             replacements = " ".join(args[2:])
             for index in range(0, index_max):
