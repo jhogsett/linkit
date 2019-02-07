@@ -1,0 +1,12 @@
+
+[app 10]
+    [[[sched 6 50]]]
+
+(((object 6)))
+
+[[object INSTANCE
+  [sched-INSTANCE]
+    INSTANCE
+    red
+]]
+

@@ -701,7 +701,7 @@ def process_set_macro(line):
             # replace with a proxy macro number marker
             # marked by being < 0
             proxy_macro_number = str(macro_number * -1)
-            ui.report_verbose_alt("process_set_macron new proxy macro number marker: " + proxy_macro_number)
+            ui.report_verbose_alt("process_set_macro new proxy macro number marker: " + proxy_macro_number)
             return "'" + proxy_macro_number + "':set"
 
     # return the unprocessed line

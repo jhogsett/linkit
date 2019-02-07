@@ -1,0 +1,9 @@
+10:set:11:run
+4:set:0:red
+5:set:1:red
+6:set:2:red
+7:set:3:red
+8:set:4:red
+9:set:5:red
+11:set:50,4:sch:50,5:sch:50,6:sch:50,7:sch:50,8:sch:50,9:sch
+

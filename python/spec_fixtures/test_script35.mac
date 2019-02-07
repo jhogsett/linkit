@@ -1,0 +1,15 @@
+
+$num-instances 6
+$sched-time 50
+
+[app 10]
+    [[[sched <num-instances> <sched-time>]]]
+
+(((object <num-instances>)))
+
+[[object INSTANCE
+  [sched-INSTANCE]
+    INSTANCE
+    red
+]]
+
