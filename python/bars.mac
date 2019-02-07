@@ -7,11 +7,12 @@
 %allow-mutability
 %play-macro bars-app
 
-$num-instances 4
+$num-instances 3
 $width 8
-$HSL-ANGLE 90
-$background-width 6
+$HSL-ANGLE 45
+$background-width 8
 $background-time 140
+$background-sat 63
 $background-level 2
 $background-step -1
 
@@ -64,17 +65,27 @@ $HSL-TIME 1000
     {seq-bg},<GET-NEXT>,<background-step>
     sequence
 
-[erase-all]
-    erase
-
+[erase-draw]
     {seq-bg},<GET-CURRENT>
     sequence
     position
 
-    0,0,<background-level>
+    <background-level>
+    push
+    <background-sat>
+    push
+    {seq-hsl},<GET-CURRENT>
+    sequence
+    push
+    recall
     hsl-color
 
     reset
+
+[erase-all]
+    erase
+
+    (erase-draw)
 
     `<NUM-LEDS>/2`
     window
