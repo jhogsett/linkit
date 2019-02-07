@@ -11,7 +11,7 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <base-next-time>
 $fade-rate 9000
-$num-instances 3
+$num-instances 4
 
 $width 8
 $low-limit `<width>/2`
@@ -23,7 +23,7 @@ $add-time 3
 %play-macro bars-app
 
 $HSL-TIME 1000
-$HSL-ANGLE 120
+$HSL-ANGLE 90
 
 $black-level-time 20000
 
