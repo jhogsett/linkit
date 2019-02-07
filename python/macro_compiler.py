@@ -443,7 +443,12 @@ def template_replacements(template_lines, keys, replacements):
         new_lines = []
         for line in lines:
             for index, key in enumerate(keys):
-                line = line.replace(key, replacements[index])
+                if index < len(replacements):
+                    replacement = replacements[index]
+                else:
+                    ui.report_verbose_alt("template replacement missing for: " + key)
+                    replacement = ''
+                line = line.replace(key, replacement)
             new_lines.append(line)
         if new_lines == orig_lines:
             return new_lines
