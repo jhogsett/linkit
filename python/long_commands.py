@@ -88,7 +88,8 @@ long_commands = {
  "pause" : "pau",
  "continue" : "cnt",
  "clear" : "clr",
- "level" : "lev",
+ "level" : "lev",            # deprecated
+ "set-brightness-level" : "lev",
  "fade" : "fad",
  "animated-rotate" : "art",
  "crossfade" : "cfa",
@@ -128,6 +129,7 @@ long_commands = {
  "modulo" : "mod",
  "difference" : "dif",
  "average" : "avg",
- "draw-mode" : "drw"
+ "draw-mode" : "drw",      # deprecated
+ "set-draw-mode" : "drw"
 }
 
