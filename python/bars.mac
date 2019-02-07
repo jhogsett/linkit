@@ -10,6 +10,10 @@
 $num-instances 4
 $width 8
 $HSL-ANGLE 90
+$background-width 6
+$background-time 140
+$background-level 2
+$background-step -1
 
 $base-next-time 70
 $draw-mode <DRAW-WRITE>
@@ -44,10 +48,45 @@ $HSL-TIME 1000
     # schedule the display rendering
     (render-all <render-time>)
 
+    (background-start)
+
 [render-all]
-    erase
+    (erase-all)
     [[[draw <num-instances>]]]
     flush
+
+[background-start]
+    {seq-bg},<background-width>
+    wheel-sequencer
+    (background-advance <background-time>)
+
+[background-advance]
+    {seq-bg},<GET-NEXT>,<background-step>
+    sequence
+
+[erase-all]
+    erase
+
+    {seq-bg},<GET-CURRENT>
+    sequence
+    position
+
+    0,0,<background-level>
+    hsl-color
+
+    reset
+
+    `<NUM-LEDS>/2`
+    window
+
+    <background-width>
+    copy
+
+    reset
+
+    mirror
+
+    (hsl-sequencer)
 
 (((bar <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
 

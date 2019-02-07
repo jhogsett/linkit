@@ -34,8 +34,10 @@ long_commands = {
  "window" : "win",
  "offset" : "off",
  "reverse" : "rev",
- "red-green-blue" : "rgb",
- "hue-saturation-lightness" : "hsl",
+ "red-green-blue" : "rgb",           # deprecated
+ "rgb-color" : "rgb",
+ "hue-saturation-lightness" : "hsl", # deprecated
+ "hsl-color" : "hsl",
  "red" : "red",
  "orange" : "org",
  "yellow" : "yel",
