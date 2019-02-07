@@ -1,69 +1,42 @@
 # ----------------------------------------------------------------
-# 
-# 
+# Swinging Color Bars v.1.0 2/0/2019 
 # ----------------------------------------------------------------
 
 %include symbols
 %include hsl-sequencer
 %allow-mutability
+%play-macro bars-app
 
+$num-instances 4
+$width 8
+$HSL-ANGLE 90
+
+$base-next-time 70
 $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <base-next-time>
 $fade-rate 9000
-$num-instances 4
-
-$width 8
 $low-limit `<width>/2`
 $high-limit `<NUM-LEDS>-<low-limit>`
-
-$base-next-time 70
 $add-time 3
 
-%play-macro bars-app
-
 $HSL-TIME 1000
-$HSL-ANGLE 90
-
-$black-level-time 20000
-
-[start-black-level]
-    (new-black-level <black-level-time>)
-
-[new-black-level]
-    2
-    random-number
-    push
-    2
-    random-number
-    push
-    2
-    random-number
-    push
-    recall
-    set-black-level
-    erase
 
 [bars-app 10]
     application
  
     # set the preset draw mode
     <draw-mode>
-    draw-mode
+    set-draw-mode
 
     <CONFIG-FADE-RATE> = <fade-rate>
 
     # set the preset brightness level
     <brightness>
-    level
+    set-brightness-level
 
-    (start-up)
-
-#    (start-black-level)
-
-[start-up]
     # start the macro instances
-    (init-all)
+    [[[start <num-instances>]]]
 
     # start up the palette color sequencer
     (hsl-sequencer-start)
@@ -71,61 +44,16 @@ $black-level-time 20000
     # schedule the display rendering
     (render-all <render-time>)
 
-
-# [[[init <num-instances>]]]
-# would get replaced by
-# (init-all)
-# then later:
-# [init-all]
-#   (((init-all-temp <num-instances>)))
-# [[init-all-template INSTANCE
-#   (init-INSTANCE)
-# ]]
-#(((init-all-temp <num-instances>)))
-#(init-INSTANCE)
-#could add in scheduling time somehow too
-
-
-
-[init-all]
-    (((init-all-temp <num-instances>)))
-
-[erase-all]
-    (((erase-all-temp <num-instances>)))
-
-[advance-all]
-    (((advance-all-temp <num-instances>)))
-
-[draw-all]
-    (((draw-all-temp <num-instances>)))
-
 [render-all]
-#    (erase-all)
     erase
-    (draw-all)
+    [[[draw <num-instances>]]]
     flush
 
-(((macro <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
+(((bar <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
 
-[[init-all-temp INSTANCE
-    (init-INSTANCE)
-]]
+[[bar INSTANCE PALETTE TIME
 
-[[erase-all-temp INSTANCE
-    (erase-INSTANCE)
-]]
-
-[[advance-all-temp INSTANCE
-    (advance-INSTANCE)
-]]
-
-[[draw-all-temp INSTANCE
-    (draw-INSTANCE)
-]]
-
-[[macro INSTANCE PALETTE TIME
-
-    [init-INSTANCE]
+    [start-INSTANCE]
         {seq-INSTANCE},<high-limit>,<low-limit>
         wheel-cosine-sequencer
 
@@ -134,23 +62,6 @@ $black-level-time 20000
     [advance-INSTANCE]
         {seq-INSTANCE},<GET-NEXT>
         sequence
-
-    [erase-INSTANCE]
-        <low-limit>
-        push
-
-        {seq-INSTANCE},<GET-PREV-COMPUTED>
-        sequence
-        push
-        subtract
-
-        <width>
-        recall
-
-        position
-        erase
-
-        reset 
 
     [draw-INSTANCE]
         <low-limit>
@@ -172,6 +83,5 @@ $black-level-time 20000
         flood
 
         reset
-
 ]]
 
