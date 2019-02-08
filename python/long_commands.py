@@ -34,8 +34,10 @@ long_commands = {
  "window" : "win",
  "offset" : "off",
  "reverse" : "rev",
- "red-green-blue" : "rgb",
- "hue-saturation-lightness" : "hsl",
+ "red-green-blue" : "rgb",           # deprecated
+ "rgb-color" : "rgb",
+ "hue-saturation-lightness" : "hsl", # deprecated
+ "hsl-color" : "hsl",
  "red" : "red",
  "orange" : "org",
  "yellow" : "yel",
@@ -88,7 +90,8 @@ long_commands = {
  "pause" : "pau",
  "continue" : "cnt",
  "clear" : "clr",
- "level" : "lev",
+ "level" : "lev",            # deprecated
+ "set-brightness-level" : "lev",
  "fade" : "fad",
  "animated-rotate" : "art",
  "crossfade" : "cfa",
@@ -128,6 +131,7 @@ long_commands = {
  "modulo" : "mod",
  "difference" : "dif",
  "average" : "avg",
- "draw-mode" : "drw"
+ "draw-mode" : "drw",      # deprecated
+ "set-draw-mode" : "drw"
 }
 

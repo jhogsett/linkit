@@ -1,0 +1,88 @@
+# ----------------------------------------------------------------
+# Swinging Color Bars v.1.0 2/0/2019 
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+%allow-mutability
+%play-macro bars-app
+
+$num-instances 4
+$width 10
+$HSL-ANGLE 90
+
+$base-next-time 70
+$draw-mode <DRAW-WRITE>
+$brightness <BRIGHTNESS-AUTO>
+$render-time <base-next-time>
+$fade-rate 9000
+$low-limit `<width>/2`
+$high-limit `<NUM-LEDS>-<low-limit>`
+$add-time 3
+
+$HSL-TIME 1000
+
+[bars-app 10]
+    application
+ 
+    # set the preset draw mode
+    <draw-mode>
+    set-draw-mode
+
+    <CONFIG-FADE-RATE> = <fade-rate>
+
+    # set the preset brightness level
+    <brightness>
+    set-brightness-level
+
+    # start the macro instances
+    [[[start <num-instances>]]]
+
+    # start up the palette color sequencer
+    (hsl-sequencer-start)
+
+    # schedule the display rendering
+    (render-all <render-time>)
+
+[render-all]
+    erase
+    [[[draw <num-instances>]]]
+    flush
+
+(((bar <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
+
+[[bar INSTANCE PALETTE TIME
+
+    [start-INSTANCE]
+        {seq-INSTANCE},<high-limit>,<low-limit>
+        wheel-cosine-sequencer
+
+        (advance-INSTANCE TIME)
+
+    [advance-INSTANCE]
+        {seq-INSTANCE},<GET-NEXT>
+        sequence
+
+    [draw-INSTANCE]
+        <low-limit>
+        push
+
+        {seq-INSTANCE},<GET-COMPUTED>
+        sequence
+        push
+        subtract
+
+        <width>
+        recall
+
+        position
+
+        PALETTE
+        palette-color
+        dim
+        dim
+        flood
+
+        reset
+]]
+

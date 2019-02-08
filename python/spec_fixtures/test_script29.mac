@@ -1,0 +1,23 @@
+
+%include test_script29_include
+%allow-mutability
+
+$value 2
+
+$OVERRIDE1 30
+$OVERRIDE2 `30`
+$OVERRIDE3 <value>
+$OVERRIDE4 `<value>*30`
+
+[m1]
+  <OVERRIDE1>
+
+[m2]
+  <OVERRIDE2>
+
+[m3]
+  <OVERRIDE3>
+
+[m4]
+  <OVERRIDE4>
+

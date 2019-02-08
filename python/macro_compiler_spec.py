@@ -261,7 +261,7 @@ def specs():
         report_test("Crash script", fixture_file)
       try:
         compiled_script = mc.compile_file(fixture_file)
-        expect("Script raised an error", True, False)
+        expect("Script " + fixture_file + " was expected to raise an error", "no error raised", "error raised")
         if verbose_mode:
           print_script(compiled_script)
       except ValueError as error:

@@ -1,0 +1,14 @@
+
+$num-instances 6
+
+[app 10]
+    [[[init `1*<num-instances>`]]]
+
+(((object <num-instances>)))
+
+[[object INSTANCE
+  [init-INSTANCE]
+    INSTANCE
+    red
+]]
+

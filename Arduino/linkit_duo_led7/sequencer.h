@@ -32,7 +32,7 @@ class Sequence
   void set_limit(int low, int high);
   void fix_current();
   void reset();
-  int next(int advancement, int step);
+  int next(int advancement, int step, bool save_previous_computed);
 
 //  int next_position(int advancement, int step);
 //  int next_window(int *advancement, int step);  // sets arg1 to the window distance to fill without gaps
@@ -49,7 +49,7 @@ class Sequence
 
   private:
 
-  int increment(int step);
+  int increment(int step, bool save_prev_computed);
   int increment_wheel(int step);
   int increment_swing(int step);
   int increment_swing_normal(int step);
@@ -136,22 +136,34 @@ void Sequence::reset()
   this->state = STATE_NORMAL;
 }
 
-#define ADVANCE_NEXT      0
-#define ADVANCE_CURRENT  -1
-#define ADVANCE_COMPUTED -2
-#define ADVANCE_OPPOSITE -3
-#define ADVANCE_MACRO    -4
-#define ADVANCE_SEQADD   -5
-#define ADVANCE_SEQSUB   -6
-#define ADVANCE_NEW_HIGH -7
-#define ADVANCE_NEW_LOW  -8 
-#define ADVANCE_RESET    -9
+#define ADVANCE_NEXT        0
+#define ADVANCE_CURRENT    -1
+#define ADVANCE_COMPUTED   -2
+#define ADVANCE_OPPOSITE   -3
+#define ADVANCE_MACRO      -4
+#define ADVANCE_SEQADD     -5
+#define ADVANCE_SEQSUB     -6
+#define ADVANCE_NEW_HIGH   -7
+#define ADVANCE_NEW_LOW    -8 
+#define ADVANCE_RESET      -9
+#define ADVANCE_PREVIOUS  -10
+#define ADVANCE_PREV_COMP -11
+#define ADVANCE_NEXT_NO_SAVE -12
 #define SAFETY_MARGIN 0
 
-int Sequence::next(int advancement, int step) // step or macro
+int Sequence::next(int advancement, int step, bool save_previous_computed) // step or macro
 {
   switch(advancement)
   {
+    case ADVANCE_NEXT_NO_SAVE:
+      return this->next(ADVANCE_NEXT, step, false);
+      
+    case ADVANCE_PREVIOUS:
+      return this->previous;
+      
+    case ADVANCE_PREV_COMP:
+      return this->prev_computed;
+      
     case ADVANCE_RESET:
       this->reset();
       return this->current;
@@ -196,7 +208,7 @@ int Sequence::next(int advancement, int step) // step or macro
       // computing the value first allows for a natural sequence if starting out sequencing opposites
       int value = (this->max - this->current) + this->low;
       if(step == 0) step = 1;
-      this->increment(step);
+      this->increment(step, save_previous_computed);
       return value; 
     }
      
@@ -205,16 +217,21 @@ int Sequence::next(int advancement, int step) // step or macro
  
     case ADVANCE_CURRENT:
       return this->current;
- 
+
     case ADVANCE_NEXT:
+    default:
       if(step == 0) step = 1;
-      return this->increment(step);
+      return this->increment(step, save_previous_computed);
   }
 }
 
-int Sequence::increment(int step)
+int Sequence::increment(int step, bool save_prev_computed)
 {
   this->previous = this->current;
+
+  if(save_prev_computed){
+    this->prev_computed = this->computed;
+  }
 
   if(this->low == this->max)
   {
@@ -400,7 +417,7 @@ class Sequencer
   void begin(Macros * macros, CommandProcessor * command_processor);
   void set(int sequencer, byte type, int low, int high);
   void reset(int sequencer);
-  int next(int sequencer, int advancement, int step);
+  int next(int sequencer, int advancement, int step, bool save_previous_computed = true);
   int current(int sequencer);
   int previous(int sequencer);
   int previous_computed(int sequencer);
@@ -432,9 +449,9 @@ void Sequencer::reset(int sequencer)
   sequences[sequencer].reset();
 }
 
-int Sequencer::next(int sequencer, int advancement, int step)
+int Sequencer::next(int sequencer, int advancement, int step, bool save_previous_computed)
 {
-  return sequences[sequencer].next(advancement, step);  
+  return sequences[sequencer].next(advancement, step, save_previous_computed);  
 }
 
 int Sequencer::current(int sequencer)
