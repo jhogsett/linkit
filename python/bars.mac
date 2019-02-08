@@ -7,14 +7,9 @@
 %allow-mutability
 %play-macro bars-app
 
-$num-instances 3
-$width 8
-$HSL-ANGLE 45
-$background-width 8
-$background-time 140
-$background-sat 63
-$background-level 2
-$background-step -1
+$num-instances 4
+$width 10
+$HSL-ANGLE 90
 
 $base-next-time 70
 $draw-mode <DRAW-WRITE>
@@ -49,55 +44,10 @@ $HSL-TIME 1000
     # schedule the display rendering
     (render-all <render-time>)
 
-    (background-start)
-
 [render-all]
-    (erase-all)
+    erase
     [[[draw <num-instances>]]]
     flush
-
-[background-start]
-    {seq-bg},<background-width>
-    wheel-sequencer
-    (background-advance <background-time>)
-
-[background-advance]
-    {seq-bg},<GET-NEXT>,<background-step>
-    sequence
-
-[erase-draw]
-    {seq-bg},<GET-CURRENT>
-    sequence
-    position
-
-    <background-level>
-    push
-    <background-sat>
-    push
-    {seq-hsl},<GET-CURRENT>
-    sequence
-    push
-    recall
-    hsl-color
-
-    reset
-
-[erase-all]
-    erase
-
-    (erase-draw)
-
-    `<NUM-LEDS>/2`
-    window
-
-    <background-width>
-    copy
-
-    reset
-
-    mirror
-
-    (hsl-sequencer)
 
 (((bar <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
 
@@ -129,6 +79,7 @@ $HSL-TIME 1000
 
         PALETTE
         palette-color
+        dim
         dim
         flood
 
