@@ -12,7 +12,7 @@ $hsl-time 100
 
 [hsl-sequencer-start]
     {seq-hsl},360
-    start-wheel-sequencer
+    start-wheel-sequence
     (hsl-sequencer <hsl-time>)
 
 [hsl-sequencer]

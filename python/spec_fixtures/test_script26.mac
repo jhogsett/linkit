@@ -95,15 +95,15 @@ $num-worms 5
     <fade-type>
 
     # fill the whole space
-    flood
+    fill
     
     # restore the viewport
-    reset
+    reset-buffer
 
   # macro to sequence the 5/6 sequencer at a variable rate
   [worm-advance-X]
     # advance the sequencer
     <seq-SEQ2>,0,STEP
-    sequence
+    advance-sequence
 ]]
 
