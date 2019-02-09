@@ -4,26 +4,26 @@
 
 %include symbols
 %include hsl-sequencer
-%allow-mutability
 %play-macro bars-app
 
 $num-instances 4
-$width 10
+$instance-width 10
+
+%allow-mutability
 $HSL-ANGLE 90
+$HSL-TIME 1000
 
 $base-next-time 70
 $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <base-next-time>
 $fade-rate 9000
-$low-limit `<width>/2`
+$low-limit `<instance-width>/2`
 $high-limit `<NUM-LEDS>-<low-limit>`
 $add-time 3
 
-$HSL-TIME 1000
-
 [bars-app 10]
-    application
+    start-application
  
     # set the preset draw mode
     <draw-mode>
@@ -33,7 +33,7 @@ $HSL-TIME 1000
 
     # set the preset brightness level
     <brightness>
-    set-brightness-level
+    set-brightness
 
     # start the macro instances
     [[[start <num-instances>]]]
@@ -45,9 +45,9 @@ $HSL-TIME 1000
     (render-all <render-time>)
 
 [render-all]
-    erase
+    erase-buffer
     [[[draw <num-instances>]]]
-    flush
+    refresh-display
 
 (((bar <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
 
@@ -55,34 +55,34 @@ $HSL-TIME 1000
 
     [start-INSTANCE]
         {seq-INSTANCE},<high-limit>,<low-limit>
-        wheel-cosine-sequencer
+        start-cosine-sequence
 
         (advance-INSTANCE TIME)
 
     [advance-INSTANCE]
         {seq-INSTANCE},<GET-NEXT>
-        sequence
+        advance-sequence
 
     [draw-INSTANCE]
         <low-limit>
         push
 
         {seq-INSTANCE},<GET-COMPUTED>
-        sequence
+        advance-sequence
         push
-        subtract
+	-equals
 
-        <width>
+        <instance-width>
         recall
 
-        position
+        set-position
 
         PALETTE
-        palette-color
-        dim
-        dim
-        flood
+        add-palette-color
+        darken
+        darken
+        fill
 
-        reset
+        reset-buffer
 ]]
 
