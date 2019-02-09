@@ -24,15 +24,15 @@ $wanderer-max-half <wanderer-max>
 
 # set up the application on macro #10
 [wanderer-app 10]
-    application
+    start-application
  
     # set the preset draw mode
     <wanderer-draw-mode>
-    draw-mode
+    set-draw-mode
 
     # set the preset brightness level
     <wanderer-brightness>
-    level
+    set-brightness
 
     # create 5 meta-templates for wanderer setup
     (((wanderer-setup 5)))
@@ -46,7 +46,7 @@ $wanderer-max-half <wanderer-max>
 # use a custom rendering
 [wanderer-render]
     mirror
-    flush
+    refresh-display
 
 # create 5 meta-templates for wander processing
 (((wanderer 5)))
@@ -69,20 +69,20 @@ $wanderer-max-half <wanderer-max>
     [wanderer-advance-X]
         # advance the sequencer
         <seq-X>,<MACRO-SEQ>,<wanderer-math-X>        
-        sequence
+        advance-sequence
 
         # set the pixel position from the sequencer value
-        position
+        set-position
 
         # use the template value as the palette index
         X
-        palette-color
+        add-palette-color
 
         # set a fade effect
         <wanderer-fade-type>
         
         # restore viewport
-        reset
+        reset-buffer
 
     [wanderer-math-X]
         # pass the sequencer number
@@ -102,24 +102,24 @@ $wanderer-max-half <wanderer-max>
         recall
 
         # get the sequencer's current value and push onto stack
-        sequence
+        advance-sequence
         push
 
         # get a random number in the set range
         <wander-range>
-        random-number
+        get-random-number
 
         # push onto stack and add the two values
         push
-        add
+        add-equals
 
         # subtract half the random number so direction is random
         <wander-neg-range>
         push
-        add
+        add-equals
 
         # return the modulus of half the max width, since display will be mirrored
         <wanderer-max-half>
         push
-        modulo
+        mod-equals
 

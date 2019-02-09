@@ -15,17 +15,17 @@ $num-instances 6
 %play-macro app
 
 [app 10]
-    application
+    start-application
  
     # set the preset draw mode
     <draw-mode>
-    draw-mode
+    set-draw-mode
 
     <CONFIG-FADE-RATE> = <fade-rate>
 
     # set the preset brightness level
     <brightness>
-    level
+    set-brightness
 
     (start-up)
 
@@ -53,6 +53,6 @@ $num-instances 6
 
     [setup-INSTANCE]
         PALETTE
-        dynamic-color 
+        add-dynamic-color 
 ]]
 

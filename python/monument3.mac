@@ -1,6 +1,7 @@
 %include symbols
 %include hsl-sequencer
 
+%allow-mutability
 $HSL-ANGLE 20
 #40
 
@@ -19,9 +20,9 @@ $time-factor 4
 %play-macro monument-app
 
 [monument-app 10]
-  application
+  start-application
   <DEFAULT-BRIGHTNESS>
-  level
+  set-brightness
   (hsl-sequencer-start)
   (setup)
 
@@ -76,24 +77,24 @@ $time-factor 4
 [[setup-ring NAME ZONE ZOOM COLOR1 COLOR2 COLOR3
   [setup-ring-NAME]
     ZONE
-    zone
+    set-zone
     COLOR1
-    dynamic-color
+    add-dynamic-color
     COLOR2
-    dynamic-color
+    add-dynamic-color
     COLOR3
-    dynamic-color
+    add-dynamic-color
     3,0,ZOOM
     copy
-    reset
+    reset-buffer
 ]]
 
 [[rotate-ring NAME ZONE
   [rotate-NAME]
     ZONE
-    zone
-    animated-rotate
-    flush
-    reset
+    set-zone
+    do-animated-rotation
+    refresh-display
+    reset-buffer
 ]]
 
