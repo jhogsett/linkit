@@ -1,0 +1,28 @@
+# ----------------------------------------------------------------
+# HSL Color Sequencer
+# sequences palette colors automatically
+# ----------------------------------------------------------------
+
+%include symbols
+%play-macro hsl-sequencer-start
+
+$HSL-ANGLE 60
+$HSL-STEP 2
+$HSL-TIME 100
+
+[hsl-sequencer-start]
+    {seq-hsl},360
+    start-wheel-sequence
+
+    (hsl-sequencer <HSL-TIME>)
+
+[hsl-sequencer]
+    {seq-hsl},<GET-NEXT>,<HSL-STEP>
+    advance-sequence
+    store
+
+    <HSL-ANGLE>
+    recall
+
+    set-palette-by-hue
+
