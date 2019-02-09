@@ -158,12 +158,13 @@ def load_file(filename, default_ext=".mac"):
 ## ----------------------------------------------------
 
 def remove_fixed_macro_numbers(line):
-    start, end = locate_delimiters(line, "[", "]")
-    if start != -1 and end != -1:
-        args = extract_args(line, "[", "]")
-        if len(args) == 2 and is_number(args[1]):
-            # leave only the name
-            return "[" + args[0] + "]"
+    if not line_has_unresolved_for_include_rewrite(line):
+        start, end = locate_delimiters(line, "[", "]")
+        if start != -1 and end != -1:
+            args = extract_args(line, "[", "]")
+            if len(args) == 2 and is_number(args[1]):
+                # leave only the name
+                return "[" + args[0] + "]"
     return line
 
 ## ----------------------------------------------------
@@ -1157,6 +1158,12 @@ def line_has_macro_marker(line):
 def line_has_template_marker(line):
     return len(line) > 0 and ("[[" in line or "]]" in line or "((" in line or "))" in line)
 
+def line_has_meta_template_marker(line):
+    return len(line) > 0 and ("(((" in line or ")))" in line)
+
+def line_has_multi_macro_marker(line):
+    return len(line) > 0 and ("[[[" in line or "]]]" in line)
+
 def line_has_sequence_marker(line):
     return len(line) > 0 and ("{" in line or "}" in line)
 
@@ -1165,6 +1172,9 @@ def line_has_unresolved(line):
 
 def line_has_unresolved_for_python_evaluation(line):
     return line_has_unresolved_variables(line) or line_has_python_expression(line) or line_has_template_marker(line) or line_has_sequence_marker(line)
+
+def line_has_unresolved_for_include_rewrite(line):
+    return line_has_template_marker(line) or line_has_multi_macro_marker(line)
 
 ########################################################################
 ## line maniupation routines
