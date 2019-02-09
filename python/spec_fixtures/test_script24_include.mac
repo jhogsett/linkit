@@ -21,5 +21,5 @@ $hsl-time 100
     store
     <hsl-angle>
     recall
-    palette-color-by-hue
+    set-palette-by-hue
 
