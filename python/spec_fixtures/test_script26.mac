@@ -19,11 +19,11 @@ $fade-type ffd
 $num-worms 5
 
 [inchworm-app 10]
-  application
+  start-application
 
   # make colors intermingle
   <DRAW-PLUS>
-  draw-mode
+  set-draw-mode
 
   # schedule the renderer
   (render <render-time>)
@@ -85,11 +85,11 @@ $num-worms 5
     sequence-next-window
 
     # set drawing window
-    position
+    set-position
 
     # place the palette color
     COLOR
-    palette-color
+    add-palette-color
 
     # set the fade type
     <fade-type>

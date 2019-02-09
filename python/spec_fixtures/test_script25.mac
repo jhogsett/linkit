@@ -8,7 +8,7 @@ $value 3
 [[testing X Y
   [macro-X]
     `Y+2`
-     palette-color
-     flush
+     add-palette-color
+     refresh-display
 ]]
 

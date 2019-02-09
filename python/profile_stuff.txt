@@ -1,0 +1,7 @@
+alias cc='/root/dev/linkit/python/color_command.py'
+alias pm='/root/dev/linkit/python/progmac.py'
+alias lt='/root/dev/linkit/python/led_specs.py'
+alias mc='/root/dev/linkit/python/macro_compiler.py'
+alias mcs='/root/dev/linkit/python/macro_compiler_spec.py'
+alias us='/root/dev/linkit/python/udp_send.py'
+

@@ -17,9 +17,9 @@ $hsl-time 100
 
 [hsl-sequencer]
     <seq-hsl>,<GET-NEXT>,<hsl-step>
-    sequence
+    advance-sequence
     store
     <hsl-angle>
     recall
-    color-sequence-hue
+    palette-color-by-hue
 
