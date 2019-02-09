@@ -112,9 +112,9 @@ long_commands = {
  "set-breathe" : "bre",
  "dynamic-breate" : "brd",
  "set-dynamic-breate" : "brd",
- "slow-fade" : "sfd",
+ "slow-fade" : "sfd",			# keep as a type
  "set-slow-fade" : "sfd",
- "fast-fade" : "ffd",
+ "fast-fade" : "ffd",                   # keep as a type
  "set-fast-fade" : "ffd",
  "store" : "sto",
  "recall" : "rcl",
@@ -165,15 +165,18 @@ long_commands = {
  "shuffle-palette" : "shf",
  "reset-palette" : "1:shf",
  "set-black-level" : "sbl",
- "sequence" : "seq",
+ "sequence" : "seq",			# deprecated
  "advance-sequence" : "seq",
- "wheel-sequencer" : "seq",
+ "get-sequence" : "seq",
+ "wheel-sequencer" : "seq",		# keep as a type
  "start-wheel-sequence" : "seq",
- "swing-sequencer" : "sqs",
+ "swing-sequencer" : "sqs",              # keep as a type
  "start-swing-sequence" : "sqs",
- "wheel-cosine-sequencer" : "swc",
+ "wheel-cosine-sequencer" : "swc",      # keep as a type
+ "cosine-sequencer" : "swc",             # keep as a type
  "start-cosine-sequence" : "swc",
- "wheel-sine-sequencer" : "sws",
+ "wheel-sine-sequencer" : "sws",        # keep as a type
+ "sine-sequencer" : "sws",              # keep as a type
  "start-sine-sequence" : "sws",
  "sequence-next-window" : "snw",
  "color-sequence-hue" : "csh",
@@ -187,19 +190,19 @@ long_commands = {
  "application" : "app",
  "start-application" : "app",
  "add" : "add",
- "+equals" : "add",
+ "add-equals" : "add",
  "subtract" : "sub",
- "-equals" : "sub",
+ "sub-equals" : "sub",
  "multiply" : "mul",
- "*equals" : "mul",
+ "mul-equals" : "mul",
  "divide" : "div",
- "/equals" : "div",
+ "div-equals" : "div",
  "modulo" : "mod",
- "%equals" : "mod",
+ "mod-equals" : "mod",
  "difference" : "dif",
- "|equals" : "dif",
+ "dif-equals" : "dif",
  "average" : "avg",
- "^equals" : "avg",
+ "avg-equals" : "avg",
  "draw-mode" : "drw",      # deprecated
  "set-draw-mode" : "drw",
  "clear-schedules" : "-1:sch",

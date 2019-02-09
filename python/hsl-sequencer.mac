@@ -12,14 +12,17 @@ $HSL-TIME 100
 
 [hsl-sequencer-start]
     {seq-hsl},360
-    wheel-sequencer
+    start-wheel-sequence
+
     (hsl-sequencer <HSL-TIME>)
 
 [hsl-sequencer]
     {seq-hsl},<GET-NEXT>,<HSL-STEP>
-    sequence
+    advance-sequence
     store
+
     <HSL-ANGLE>
     recall
-    color-sequence-hue
+
+    set-palette-by-hue
 

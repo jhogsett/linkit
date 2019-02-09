@@ -70,7 +70,7 @@ $add-time 3
         {seq-INSTANCE},<GET-COMPUTED>
         advance-sequence
         push
-	-equals
+	sub-equals
 
         <instance-width>
         recall

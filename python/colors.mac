@@ -1,4 +1,5 @@
 # ----------------------------------------------------------------
+# Slowly rotating color cycle
 # ----------------------------------------------------------------
 
 %include symbols
@@ -11,14 +12,14 @@ $draw-time 1000
 $the-color <RED>
 
 [colors-app 10]
-  application
-  (render <render-time>)
+  start-application
   (color-draw <draw-time>)
   (hsl-sequencer-start)
   (hsl-sequencer <draw-time>)
+  (render <render-time>)
 
 [color-draw]
   <the-color>
-  palette-color
-  flood
+  add-palette-color
+  fill
  
