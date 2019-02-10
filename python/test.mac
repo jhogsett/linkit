@@ -1,0 +1,12 @@
+
+[app 10]
+
+    <NUM-LEDS>
+    get-random-number
+
+    set-position 
+    {{
+        red
+        set-breathe
+    }}
+

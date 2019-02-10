@@ -69,18 +69,17 @@ $HSL-TIME 1000
     {seq-bg},<GET-CURRENT>
     get-sequence
     set-position
-
-    <background-level>
-    push
-    <background-sat>
-    push
-    {seq-hsl},<GET-CURRENT>
-    get-sequence
-    push
-    recall
-    add-hsl-color
-
-    reset-buffer
+    {{
+        <background-level>
+        push
+        <background-sat>
+        push
+        {seq-hsl},<GET-CURRENT>
+        get-sequence
+        push
+        recall
+        add-hsl-color
+    }}
 
 [erase-all]
     erase-buffer
@@ -89,11 +88,10 @@ $HSL-TIME 1000
 
     `<NUM-LEDS>/2`
     set-window
-
-    <background-width>
-    copy
-
-    reset-buffer
+    {{
+        <background-width>
+        copy
+    }}
 
     mirror
 
@@ -126,12 +124,12 @@ $HSL-TIME 1000
         recall
 
         set-position
+        {{
+            PALETTE
+            add-palette-color
+            darken
 
-        PALETTE
-        add-palette-color
-        dim
-        flood
-
-        reset-buffer
+            fill
+        }}
 ]]
 

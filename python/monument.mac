@@ -53,23 +53,25 @@ $color3 <BLUE>
   [setup-ring-NAME]
     ZONE
     set-zone
-    <color1>
-    add-dynamic-color
-    <color2>
-    add-dynamic-color
-    <color3>
-    add-dynamic-color
-    3,0,ZOOM
-    copy
-    reset-buffer
+    {{
+      <color1>
+      add-dynamic-color
+      <color2>
+      add-dynamic-color
+      <color3>
+      add-dynamic-color
+      3,0,ZOOM
+      copy
+    }}
 ]]
 
 [[rotate-ring NAME ZONE
   [rotate-NAME]
     ZONE
     set-zone
-    do-animated-rotation
-    refresh-display
-    reset-buffer
+    {{
+      do-animated-rotation
+      refresh-display
+    }}
 ]]
 

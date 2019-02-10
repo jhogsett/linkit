@@ -85,19 +85,17 @@ $add-time 3
         push
 	sub-equals
 
-#        <instance-width>
         {seq-width},<GET-CURRENT>
         get-sequence
         recall
 
         set-position
-
-        PALETTE
-        add-palette-color
-        darken
-        darken
-        fill
-
-        reset-buffer
+        {{
+            PALETTE
+            add-palette-color
+            darken
+            darken
+            fill
+        }}
 ]]
 
