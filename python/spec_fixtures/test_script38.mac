@@ -1,5 +1,5 @@
 
-[app 10]
+[app1 10]
 
     <NUM-LEDS>
     get-random-number
@@ -8,5 +8,15 @@
     {{
         red
         set-breathe
+    }}
+
+[app2 11]
+
+    <NUM-LEDS>
+    get-random-number
+
+    set-position {{
+        blue
+        set-blink
     }}
 

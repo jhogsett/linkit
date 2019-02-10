@@ -1,2 +1,3 @@
 10:set:90:rng:pos:red:bre:rst
+11:set:90:rng:pos:blu:bli:rst
 
