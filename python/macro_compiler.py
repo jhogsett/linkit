@@ -503,7 +503,7 @@ def resolution_pass(script_lines):
     new_lines = []
     for line in script_lines:
         new_line = process_line(line)
-        if new_line != None and new_line != '': #@@@@@:
+        if new_line != None and new_line != '':
             new_lines.append(new_line)
     passes += 1
     if verbose_mode:
@@ -583,11 +583,11 @@ def process_evaluate_python(line):
                 #iif not line_has_unresolved_variables(expression):
                 #if not line_has_unresolved(expression):
 		if not line_has_unresolved_for_python_evaluation(expression):
-                    #ui.report_verbose_alt("-evaluating Python: " + expression)
+                    #ui.report_verbose_alt2("-evaluating Python: " + expression)
                     result = eval(expression)
 #todo-catch error
-                    #ui.report_verbose_alt("=evaluated result: " + str(result))
-                    #ui.report_verbose_alt("process_evaluate_python replacing python expression '{}' with '{}'".format(expression, result))
+                    #ui.report_verbose_alt2("=evaluated result: " + str(result))
+                    #ui.report_verbose_alt2("process_evaluate_python replacing python expression '{}' with '{}'".format(expression, result))
                     new_line.append(replace_args(segment, "`", "`", str(result), True))
                 else:
                     #ui.report_verbose_alt2("skipping segment with unresolved: " + expression)
@@ -599,7 +599,7 @@ def process_evaluate_python(line):
         return result
 
     # return the unprocessed line
-    # ui.report_verbose("process_evaluate_python returning unprocessed line '{}'".format(line))
+    #ui.report_verbose_alt2("process_evaluate_python returning unprocessed line '{}'".format(line))
     return line
 
 ## ----------------------------------------------------
@@ -611,7 +611,7 @@ def process_set_variable(line):
 
     # can only process if there are no unresolved values
     # ? does this leave out variable unresolves?
-    if not line_has_unresolved(line):
+    if True: #not line_has_unresolved(line):
 
         # see if line has a variable setting
         args = get_key_args(line, "$")
@@ -894,7 +894,9 @@ def post_clean_up(script_lines):
                 # remove unnecessary (zero) arguments
                 ",0:" : ":",
                 ",0,0:" : ":",
-                ":0,0,0:" : ":"
+                ":0,0,0:" : ":",
+                # remove spaces
+                " " : "",
         }
         return do_clean_ups(script_lines, clean_ups)
 
@@ -1244,9 +1246,15 @@ def replace_args(line, start_delimiter, end_delimiter, replacement, outer=False)
     return line
 
 def replace_all_variables(line):
+    orig_line = line
+    runaway_line_length = max_string_length * 4
+    max_times = 100
     while True:
+        max_times -= 1
         prev_line = line
         line = process_get_variable(line)
+        if len(line) > runaway_line_length or max_times == 0:
+            raise ValueError("Infinite recursion on line: " + orig_line)
         if line != prev_line:
             continue
         break

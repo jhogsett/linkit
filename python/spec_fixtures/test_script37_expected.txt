@@ -2,7 +2,7 @@
 72:set:flu
 4:set:0,0,2:seq:sto:60:rcl:csh
 5:set:0,360:seq:100,4:sch
-6:set:1,15,0:swc:151,16:sch
+6:set:1,15:swc:151,16:sch
 7:set:2,30,15:swc:152,17:sch
 8:set:3,45,30:swc:153,18:sch
 9:set:4,60,45:swc:154,19:sch

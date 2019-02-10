@@ -1,2 +1,2 @@
-The script did not compile successfully due to unresolved values.
+Infinite recursion on line: <var1>
 
