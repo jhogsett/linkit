@@ -10,7 +10,7 @@ $num-instances 4
 $instance-width 10
 
 %allow-mutability
-$HSL-ANGLE 90
+$HSL-ANGLE `360/<num-instances>`
 $HSL-TIME 1000
 
 $base-next-time 70
