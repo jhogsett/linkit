@@ -19,11 +19,11 @@ $fade-type ffd
 $num-worms 5
 
 [inchworm-app 10]
-  application
+  start-application
 
   # make colors intermingle
   <DRAW-PLUS>
-  draw-mode
+  set-draw-mode
 
   # schedule the renderer
   (render <render-time>)
@@ -77,7 +77,7 @@ $num-worms 5
   [worm-draw-X]
     # advance the 1/6 sequencer
     <seq-SEQ1>
-    sequence
+    advance-sequence
 
     # add the two sequencers
     # get and set the offset,window to fill in for this frame
@@ -85,25 +85,25 @@ $num-worms 5
     sequence-next-window
 
     # set drawing window
-    position
+    set-position
 
     # place the palette color
     COLOR
-    palette-color
+    add-palette-color
 
     # set the fade type
     <fade-type>
 
     # fill the whole space
-    flood
+    fill
     
     # restore the viewport
-    reset
+    reset-buffer
 
   # macro to sequence the 5/6 sequencer at a variable rate
   [worm-advance-X]
     # advance the sequencer
     <seq-SEQ2>,0,STEP
-    sequence
+    advance-sequence
 ]]
 

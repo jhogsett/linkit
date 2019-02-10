@@ -72,5 +72,5 @@ $ROSE 17
 
 # standard render function, consumes partial final macro
 [render !]
-  flush
+  refresh-display
 

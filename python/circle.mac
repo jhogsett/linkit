@@ -25,17 +25,17 @@ $timing-offset 5
 
 # set up the application on macro #10
 [circle-app 10]
-    application
+    start-application
  
     # set the preset draw mode
     <draw-mode>
-    draw-mode
+    set-draw-mode
 
     <CONFIG-FADE-RATE> = <fade-rate>
 
     # set the preset brightness level
     <brightness>
-    level
+    set-brightness
 
     # start up the palette color sequencer
     (hsl-sequencer-start)
@@ -86,15 +86,15 @@ $timing-offset 5
 
     [circle-advance-x-INSTANCE]
         <seq-x-INSTANCE>,<GET-NEXT>
-        sequence
+        advance-sequence
 
     [circle-advance-y-INSTANCE]
         <seq-y-INSTANCE>,<GET-NEXT>
-        sequence
+        advance-sequence
 
     [circle-math-x-INSTANCE]
         <seq-x-INSTANCE>,<GET-COMPUTED>
-        sequence
+        get-sequence
         push
         FACTOR
         push
@@ -102,7 +102,7 @@ $timing-offset 5
 
     [circle-math-y-INSTANCE]
         <seq-y-INSTANCE>,<GET-COMPUTED>
-        sequence
+        get-sequence
         push
         FACTOR
         push
@@ -110,7 +110,7 @@ $timing-offset 5
 
     [circle-draw-INSTANCE]
         `INSTANCE*3`
-        palette-color
+        add-palette-color
         <fade-type>
 
     [circle-step-INSTANCE]
@@ -118,11 +118,11 @@ $timing-offset 5
         push
 
         <seq-step-x-INSTANCE>,<MACRO-SEQ>,<circle-math-x-INSTANCE>
-        sequence
+        advance-sequence
         push
 
         <seq-step-y-INSTANCE>,<MACRO-SEQ>,<circle-math-y-INSTANCE>
-        sequence
+        advance-sequence
         push
 
 #        <seq-step-x-INSTANCE>,<MACRO-SEQ>,<circle-math-x-INSTANCE>
@@ -130,8 +130,8 @@ $timing-offset 5
 #        push
 
         recall
-        xy-position
+        set-xy-position
 
-        reset
+        reset-buffer
 ]]
 

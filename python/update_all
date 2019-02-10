@@ -1,0 +1,21 @@
+#!/bin/sh
+
+ssh -o ConnectTimeout=5 root@annunciator.local /root/update
+ssh -o ConnectTimeout=5 root@annunciator2.local /root/update
+ssh -o ConnectTimeout=5 root@apollo.local /root/update
+ssh -o ConnectTimeout=5 root@blinkit.local /root/update
+ssh -o ConnectTimeout=5 root@decoration3.local /root/update
+ssh -o ConnectTimeout=5 root@decoration4.local /root/update
+ssh -o ConnectTimeout=5 root@monument.local /root/update
+ssh -o ConnectTimeout=5 root@monument3.local /root/update
+ssh -o ConnectTimeout=5 root@platform.local /root/update
+ssh -o ConnectTimeout=5 root@projector.local /root/update
+ssh -o ConnectTimeout=5 root@projector2.local /root/update
+ssh -o ConnectTimeout=5 root@radius8.local /root/update
+ssh -o ConnectTimeout=5 root@sphere.local /root/update
+ssh -o ConnectTimeout=5 root@sphere2.local /root/update
+ssh -o ConnectTimeout=5 root@spy.local /root/update
+ssh -o ConnectTimeout=5 root@wearable.local /root/update
+ssh -o ConnectTimeout=5 root@weather.local /root/update
+ssh -o ConnectTimeout=5 root@weather2.local /root/update
+

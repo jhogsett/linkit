@@ -9,28 +9,28 @@ $right-strip 4
 $lenses-only 5
 
 [glass-light-white 10]
-  application
+  start-application
   (init)
   (light-set-wht)
 
 [glass-light-red 12]
-  application
+  start-application
   (init)
   (light-set-red)
 
 [glass-light-tungsten 11]
-  application
+  start-application
   (init)
   (light-set-tun)
 
 [glass-light-neon 13]
-  application
+  start-application
   (init)
   (light-set-neo)
 
 [init]
   <brightness>
-  level
+  set-brightness
   <EFFECTS-PROCESSING>
   continue
 
@@ -43,14 +43,14 @@ $lenses-only 5
   [light-set-FRONT-COLOR]
     (light-sides-FRONT-COLOR)
     (light-front-FRONT-COLOR)
-    flush
+    refresh-display
 
   [light-sides-FRONT-COLOR]
     <right-strip>
-    zone
+    set-zone
     (light-side-FRONT-COLOR)
     <left-strip>
-    zone
+    set-zone
     (light-side-FRONT-COLOR)
 
   [light-side-FRONT-COLOR]
@@ -59,12 +59,12 @@ $lenses-only 5
     dim
     dim
 #    blink
-    breathe
+    set-breathe
     flood
 
   [light-front-FRONT-COLOR]
     <lenses-only>
-    zone
+    set-zone
     FRONT-COLOR
     flood
 ]]

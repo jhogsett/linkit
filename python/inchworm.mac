@@ -14,38 +14,27 @@ $width1 <NUM-LEDS>
 $width2 `<NUM-LEDS> * 5 / 6`
 $time1 50
 $time2 200
-$seq-type sqs
-$fade-type ffd
+$seq-type swing-sequencer
+$fade-type fast-fade
 
 [inchworm-app 10]
-  application
+  start-application
 
   # make colors intermingle
   <DRAW-PLUS>
-  draw-mode
+  set-draw-mode
 
-  # schedule the renderer
-  (render <render-time>)
-  
   # start the worms
-  (worms-start)
+  [[[worm-start 5]]]
   
   # start the palette color sequencer
   (hsl-sequencer-start)
 
-# start up all worms
-[worms-start]
-  # expand 5 wornm start meta-templates
-  (((worm-start 5)))
+  # schedule the renderer
+  (render <render-time>)
 
 # expand 5 meta-templates for worms, computing the various values
 (((worm 5 `<time1>-(INSTANCE*5)` `<time2>-(INSTANCE*5)` INSTANCE `INSTANCE+1` INSTANCE `INSTANCE+5`)))
-
-# template for starting worms
-# INSTANCE - worm number
-[[worm-start INSTANCE
-  (worm-start-INSTANCE)
-]]
 
 # template for all worm processing
 # INSTANCE - worm number
@@ -56,6 +45,7 @@ $fade-type ffd
 # SEQ1 - fast advancing sequencer number
 # SEQ2 - slow advancing sequencer number
 [[worm INSTANCE TIME1 TIME2 COLOR STEP SEQ1 SEQ2
+
   # start up a worm
   [worm-start-INSTANCE]
     # allocate a sequencer 1/6 the display width for the small/fast sequence
@@ -76,7 +66,7 @@ $fade-type ffd
   [worm-draw-INSTANCE]
     # advance the 1/6 sequencer
     <seq-SEQ1>,<GET-NEXT-NO-SAVE>
-    sequence
+    advance-sequence
 
     # add the two sequencers
     # get and set the offset,window to fill in for this frame
@@ -84,25 +74,25 @@ $fade-type ffd
     sequence-next-window
 
     # set drawing window
-    position
+    set-position
 
     # place the palette color
     COLOR
-    palette-color
+    add-palette-color
 
     # set the fade type
     <fade-type>
 
     # fill the whole space
-    flood
+    fill
     
     # restore the viewport
-    reset
+    reset-buffer
 
   # macro to sequence the 5/6 sequencer at a variable rate
   [worm-advance-INSTANCE]
     # advance the sequencer
     <seq-SEQ2>,<GET-NEXT-NO-SAVE>,STEP
-    sequence
+    advance-sequence
 ]]
 

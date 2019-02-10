@@ -80,5 +80,5 @@ $RANDOM-POSITION-FILLED -2
 
 # standard render function, consumes partial final macro
 [render !]
-  flush
+  refresh-display
 
