@@ -73,16 +73,14 @@ $wanderer-max-half <wanderer-max>
 
         # set the pixel position from the sequencer value
         set-position
+        {{
+            # use the template value as the palette index
+            X
+            add-palette-color
 
-        # use the template value as the palette index
-        X
-        add-palette-color
-
-        # set a fade effect
-        <wanderer-fade-type>
-        
-        # restore viewport
-        reset-buffer
+            # set a fade effect
+            <wanderer-fade-type>
+        }}
 
     [wanderer-math-X]
         # pass the sequencer number

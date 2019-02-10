@@ -76,13 +76,12 @@ $add-time 3
         recall
 
         set-position
-
-        PALETTE
-        add-palette-color
-        darken
-        darken
-        fill
-
-        reset-buffer
+        {{
+            PALETTE
+            add-palette-color
+            darken
+            darken
+            fill
+        }}
 ]]
 

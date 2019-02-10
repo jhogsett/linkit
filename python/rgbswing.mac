@@ -35,11 +35,12 @@ $fade-type ffd
 	<sequencer0>
 	sequence-next-window
 	set-position
-	<RED>
-	add-palette-color
-	<fade-type>
-	flood
-	reset-buffer
+        {{
+	     <RED>
+	    add-palette-color
+	    <fade-type>
+	    fill
+        }}
 
 [start-1]
 	{sequencer1},<max-width-half>
@@ -50,11 +51,12 @@ $fade-type ffd
 	{sequencer1}
 	sequence-next-window
 	set-position
-	<GREEN>
-	add-palette-color
-	<fade-type>
-	fill
-	reset-buffer
+        {{
+	    <GREEN>
+	    add-palette-color
+	    <fade-type>
+	    fill
+        }}
 
 [start-2]
 	{sequencer2},<max-width>
@@ -65,11 +67,12 @@ $fade-type ffd
 	<sequencer2>,<MACRO-SEQ>,<math-2>
 	sequence-next-window
 	set-position
-	<BLUE>
-	add-palette-color
-	<fade-type>
-	fill
-	reset-buffer
+        {{
+	    <BLUE>
+	    add-palette-color
+	    <fade-type>
+	    fill
+	}}
 
 [math-2]
 	{sequencer0},<GET-COMPUTED>
