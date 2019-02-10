@@ -7,10 +7,10 @@
 %play-macro bars-app
 
 $num-instances 4
-$instance-width 10
+$instance-width `int(<NUM-LEDS>/10)`
 
 %allow-mutability
-$HSL-ANGLE `360/<num-instances>`
+$HSL-ANGLE `int(360/<num-instances>)`
 $HSL-TIME 1000
 
 $base-next-time 70
@@ -18,7 +18,7 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <base-next-time>
 $fade-rate 9000
-$low-limit `<instance-width>/2`
+$low-limit `int(<instance-width>/2)`
 $high-limit `<NUM-LEDS>-<low-limit>`
 $add-time 3
 
