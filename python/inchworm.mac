@@ -16,6 +16,7 @@ $time1 50
 $time2 200
 $seq-type swing-sequencer
 $fade-type fast-fade
+$num-worms 5
 
 [inchworm-app 10]
   start-application
@@ -25,7 +26,7 @@ $fade-type fast-fade
   set-draw-mode
 
   # start the worms
-  [[[worm-start 5]]]
+  [[[worm-start <num-worms>]]]
   
   # start the palette color sequencer
   (hsl-sequencer-start)
@@ -34,7 +35,7 @@ $fade-type fast-fade
   (render <render-time>)
 
 # expand 5 meta-templates for worms, computing the various values
-(((worm 5 `<time1>-(INSTANCE*5)` `<time2>-(INSTANCE*5)` INSTANCE `INSTANCE+1` INSTANCE `INSTANCE+5`)))
+(((worm <num-worms> `<time1>-(INSTANCE*5)` `<time2>-(INSTANCE*5)` INSTANCE `INSTANCE+1` INSTANCE `INSTANCE+5`)))
 
 # template for all worm processing
 # INSTANCE - worm number
