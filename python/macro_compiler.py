@@ -231,6 +231,9 @@ def pre_process_script(script_lines):
     report_verbose_script(new_lines, "script after processing directives")
     ingest_directives()
 
+    new_lines = process_blocks(new_lines)
+    report_verbose_script(new_lines, "script after processing blocks")
+
     new_lines = process_set_variables(new_lines)
     report_verbose_script(new_lines, "script after capturing variables")
 
@@ -335,6 +338,24 @@ def ingest_directives():
     global allow_mutability
     if "%allow-mutability" in resolved:
         allow_mutability = True
+
+## ----------------------------------------------------
+
+def process_blocks(script_lines):
+    new_lines = []
+    for line in script_lines:
+        line = line.strip()
+        if "{{" in line:
+            position = line.find("{{")
+            new_line = line[:position]
+            if len(new_line) > 0:
+                new_lines.append(line[:position])
+        elif "}}" in line:
+            new_lines.append("rst")
+        else:
+            new_lines.append(line)
+
+    return new_lines
 
 ## ----------------------------------------------------
 
