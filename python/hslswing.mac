@@ -28,7 +28,7 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 
 [init]						# define macro 'init' to set up schedules
 	[[[start 2]]]              		# invoke a multi macro to start up the swingers
-                                        	# this expands to: ((circular-swingers 0)) and ((circular-swingers 1))
+                                        	# this expands to: (start-all-2) [start-all-2] ((start-all-temp 2)) [[start-all-temp X (start-X)]]
 	(average-swinger)			# start up the averaging swinger
 	(hsl-sequencer-start)			# start up the hsl sequencer
 

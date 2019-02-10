@@ -17,7 +17,7 @@ $HSL-TIME 100
     (hsl-sequencer <HSL-TIME>)
 
 [hsl-sequencer]
-    {seq-hsl},<GET-NEXT>,<HSL-STEP>
+    {seq-hsl}, <GET-NEXT>, <HSL-STEP>
     advance-sequence
     store
 

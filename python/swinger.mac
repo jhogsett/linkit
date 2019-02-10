@@ -34,8 +34,9 @@ $swinger-max-half <swinger-max>
 (((swinger 6)))
 
 [[swinger X
+
     [setup-swinger-X]
-        {seq-X},`X*(<NUM-LEDS>/6)+(<NUM-LEDS>/6)`,`X*(<NUM-LEDS>/6)`
+        {seq-X}, `X*(<NUM-LEDS>/6)+(<NUM-LEDS>/6)`, `X*(<NUM-LEDS>/6)`
         <swinger-sequencer-type>
 
         (swinger-X `<swinger-base-timing>+(<seq-X>*<swinger-timing-gap>)`)
