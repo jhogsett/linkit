@@ -10,12 +10,12 @@ $brightness <BRIGHTNESS-AUTO>
 $render-time <ball-time>
 $fade-rate 9000
 $ball-time 50
-$box-width 10
+$box-width 15
 $box-time 100
 $num-boxes 3
 $balls-per-box 3
-$box-instance-time 50
-$ball-instance-time 20
+$box-instance-time 30
+$ball-instance-time 10
 
 #%allow-mutability
 #$HSL-ANGLE `int(360/<num-boxes>)`
@@ -49,9 +49,9 @@ $ball-instance-time 20
 
 (((box <num-boxes> `<box-instance-time>*INSTANCE+<box-time>` <box-width> `<NUM-LEDS>-<box-width>` swing-sequencer)))
 
-(((ball <balls-per-box> 0 `INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<RED>+INSTANCE`)))
-(((ball <balls-per-box> 1 `INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<GREEN>+INSTANCE`)))
-(((ball <balls-per-box> 2 `INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<GREEN>+INSTANCE`)))
+(((ball <balls-per-box> 0 `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<RED>+INSTANCE`)))
+(((ball <balls-per-box> 1 `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<YELLOW>+INSTANCE`)))
+(((ball <balls-per-box> 2 `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<BLUE>+INSTANCE`)))
 
 [[ball-start-all BALL BOX
     (ball-start-BOX-BALL)
