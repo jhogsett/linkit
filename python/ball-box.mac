@@ -9,9 +9,9 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <base-time>
 $fade-rate 9000
-$base-time 75
-$box-width 10
-$box-time 150
+$base-time 50
+$box-width 20
+$box-time 200
 $num-boxes 1
 $balls-per-box 3
 $box-instance-time 50
@@ -57,6 +57,10 @@ $ball-instance-time 20
 
 [set-box-window]
     recall
+    get-sequence
+    push    
+
+    recall
     set-offset
 
     <box-width>
@@ -65,9 +69,9 @@ $ball-instance-time 20
 
     set-window
 
-[[ball-render-all BALL BOX
+[[ball-render-each BALL BOX
     {{
-        (set-box-window)
+        (box-set-window-BOX)
         (ball-render-BOX-BALL)
     }}
 ]]
@@ -87,11 +91,12 @@ $ball-instance-time 20
         advance-sequence
 
     [box-render-INSTANCE]
-        {seq-box-INSTANCE}, <GET-CURRENT>
-        get-sequence
-        push
+        (((ball-render-each <balls-per-box> INSTANCE)))
 
-        (((ball-render-all <balls-per-box> INSTANCE)))
+    [box-set-window-INSTANCE]
+        {seq-box-INSTANCE}, <GET-CURRENT>
+        store
+        (set-box-window)
 ]]
 
 [[ball INSTANCE BOX SCHEDULE WIDTH SEQ-TYPE COLOR
