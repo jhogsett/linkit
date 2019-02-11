@@ -90,7 +90,16 @@ $ball-instance-time 20
         {seq-box-INSTANCE}
         advance-sequence
 
+    [box-erase-INSTANCE]
+        (box-set-window-INSTANCE)
+        1,0,0
+        set-black-level
+        erase-buffer
+        0,0,0
+        set-black-level
+        
     [box-render-INSTANCE]
+        (box-erase-INSTANCE)
         (((ball-render-each <balls-per-box> INSTANCE)))
 
     [box-set-window-INSTANCE]
