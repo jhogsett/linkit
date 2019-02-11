@@ -928,9 +928,9 @@ def do_clean_ups(script_lines, clean_ups):
 def post_clean_up(script_lines):
         clean_ups = {
                 # remove unnecessary (zero) arguments
-                ",0:" : ":",
-                ",0,0:" : ":",
                 ":0,0,0:" : ":",
+                ",0,0:" : ":",
+                ",0:" : ":",
                 # remove spaces
                 " " : "",
         }
