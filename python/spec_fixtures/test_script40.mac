@@ -1,0 +1,8 @@
+
+[macro]
+1,0,0
+set-black-level
+erase-buffer
+0,0,0
+set-black-level
+

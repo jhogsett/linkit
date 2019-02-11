@@ -78,23 +78,25 @@ $time-factor 4
   [setup-ring-NAME]
     ZONE
     set-zone
-    COLOR1
-    add-dynamic-color
-    COLOR2
-    add-dynamic-color
-    COLOR3
-    add-dynamic-color
-    3,0,ZOOM
-    copy
-    reset-buffer
+    {{
+      COLOR1
+      add-dynamic-color
+      COLOR2
+      add-dynamic-color
+      COLOR3
+      add-dynamic-color
+      3,0,ZOOM
+      copy
+    }}
 ]]
 
 [[rotate-ring NAME ZONE
   [rotate-NAME]
     ZONE
     set-zone
-    do-animated-rotation
-    refresh-display
-    reset-buffer
+    {{
+      do-animated-rotation
+      refresh-display
+    }}
 ]]
 

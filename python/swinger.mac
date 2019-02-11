@@ -45,13 +45,12 @@ $swinger-max-half <swinger-max>
         {seq-X}
         sequence-next-window
         set-position
+        {{
+            <seq-X>
+            add-palette-color
+            <swinger-fade-type>
 
-        <seq-X>
-        add-palette-color
-        <swinger-fade-type>
-
-        fill
-        
-	reset-buffer
+            fill
+        }}
 ]]
 

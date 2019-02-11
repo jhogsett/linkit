@@ -10,7 +10,10 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time 120
 $fade-rate 9000
-$num-instances 6
+$num-instances 12
+
+%allow-mutability
+$HSL-ANGLE `int(360/<num-instances>)`
 
 %play-macro app
 
@@ -31,7 +34,10 @@ $num-instances 6
 
 [start-up]
     # start the macro instances
-    (((init <num-instances>)))
+    [[[init <num-instances>]]]
+
+    <num-instances>, <AUTO-TIMES>, `int(<NUM-LEDS>/<num-instances>)`
+    duplicate
 
     # start up the palette color sequencer
     (hsl-sequencer-start)
@@ -40,10 +46,6 @@ $num-instances 6
     (render <render-time>)
 
 (((macro <num-instances> INSTANCE)))
-
-[[init INSTANCE
-    (init-INSTANCE)
-]]
 
 [[macro INSTANCE PALETTE
 

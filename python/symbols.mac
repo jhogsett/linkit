@@ -77,6 +77,8 @@ $RANDOM-POSITION-ANY 0
 $RANDOM-POSITION-EMPTY -1
 $RANDOM-POSITION-FILLED -2
 
+# copy/paste/duplicate
+$AUTO-TIMES 0
 
 # standard render function, consumes partial final macro
 [render !]

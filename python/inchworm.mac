@@ -76,23 +76,20 @@ $num-worms 5
 
     # set drawing window
     set-position
+    {{
+        # place the palette color
+        COLOR
+        add-palette-color
 
-    # place the palette color
-    COLOR
-    add-palette-color
+        # set the fade type
+       <fade-type>
 
-    # set the fade type
-    <fade-type>
-
-    # fill the whole space
-    fill
-    
-    # restore the viewport
-    reset-buffer
+        # fill the whole space
+        fill
+    }}
 
   # macro to sequence the 5/6 sequencer at a variable rate
   [worm-advance-INSTANCE]
-    # advance the sequencer
     <seq-SEQ2>,<GET-NEXT-NO-SAVE>,STEP
     advance-sequence
 ]]

@@ -1,0 +1,136 @@
+# ----------------------------------------------------------------
+# 
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+
+$draw-mode <DRAW-WRITE>
+$brightness <BRIGHTNESS-AUTO>
+$render-time <ball-time>
+$fade-rate 9000
+$ball-time 50
+$box-width 15
+$box-time 100
+$num-boxes 3
+$balls-per-box 3
+$box-instance-time 30
+$ball-instance-time 10
+
+#%allow-mutability
+#$HSL-ANGLE `int(360/<num-boxes>)`
+
+%play-macro app
+
+[app 10]
+    start-application
+ 
+    # set the preset draw mode
+    <draw-mode>
+    set-draw-mode
+
+    <CONFIG-FADE-RATE> = <fade-rate>
+
+    # set the preset brightness level
+    <brightness>
+    set-brightness
+
+    [[[box-start <num-boxes>]]]
+
+    (app-render <render-time>)
+
+    (hsl-sequencer-start)
+
+[app-render]
+    {{{
+        erase-buffer
+        [[[box-render <num-boxes>]]]
+    }}}
+
+(((box <num-boxes> `<box-instance-time>*INSTANCE+<box-time>` <box-width> `<NUM-LEDS>-<box-width>` swing-sequencer)))
+
+(((ball <balls-per-box> 0 `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<RED>+INSTANCE`)))
+(((ball <balls-per-box> 1 `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<YELLOW>+INSTANCE`)))
+(((ball <balls-per-box> 2 `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<BLUE>+INSTANCE`)))
+
+[[ball-start-all BALL BOX
+    (ball-start-BOX-BALL)
+]]
+
+[set-box-window]
+    recall
+    get-sequence
+    push    
+
+    recall
+    set-offset
+
+    <box-width>
+    push
+    add-equals
+
+    set-window
+
+[[ball-render-each BALL BOX
+    {{
+        (box-set-window-BOX)
+        (ball-render-BOX-BALL)
+    }}
+]]
+
+[[box INSTANCE SCHEDULE WIDTH MAX SEQ-TYPE
+
+    [box-start-INSTANCE]
+        {seq-box-INSTANCE}, MAX
+        SEQ-TYPE
+
+        (((ball-start-all <balls-per-box> INSTANCE)))
+
+        (box-step-INSTANCE SCHEDULE)
+
+    [box-step-INSTANCE]
+        {seq-box-INSTANCE}
+        advance-sequence
+
+    [box-erase-INSTANCE]
+        (box-set-window-INSTANCE)
+        INSTANCE
+        add-palette-color
+        darken
+        darken
+        darken
+        fill
+        
+    [box-render-INSTANCE]
+        (box-erase-INSTANCE)
+        (((ball-render-each <balls-per-box> INSTANCE)))
+
+    [box-set-window-INSTANCE]
+        {seq-box-INSTANCE}, <GET-CURRENT>
+        store
+        (set-box-window)
+]]
+
+[[ball INSTANCE BOX SCHEDULE WIDTH SEQ-TYPE COLOR
+
+    [ball-start-BOX-INSTANCE]
+        {seq-ball-BOX-INSTANCE}, WIDTH
+        SEQ-TYPE
+
+        (ball-step-BOX-INSTANCE SCHEDULE)
+
+    [ball-step-BOX-INSTANCE]
+        {seq-ball-BOX-INSTANCE}
+        advance-sequence
+
+    [ball-render-BOX-INSTANCE]
+        {seq-ball-BOX-INSTANCE}, <GET-CURRENT>
+        get-sequence
+
+        set-position
+        {{
+            COLOR
+            add-palette-color
+        }}
+]]
+

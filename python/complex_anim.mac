@@ -7,10 +7,12 @@
 %play-macro bars-app
 
 $num-instances 4
-$instance-width `int(<NUM-LEDS>/10)`
+$instance-width 12
+
+$width-time 1250
 
 %allow-mutability
-$HSL-ANGLE `int(360/<num-instances>)`
+$HSL-ANGLE `360/<num-instances>`
 $HSL-TIME 1000
 
 $base-next-time 70
@@ -18,7 +20,7 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <base-next-time>
 $fade-rate 9000
-$low-limit `int(<instance-width>/2)`
+$low-limit `<instance-width>/2`
 $high-limit `<NUM-LEDS>-<low-limit>`
 $add-time 3
 
@@ -43,6 +45,17 @@ $add-time 3
 
     # schedule the display rendering
     (render-all <render-time>)
+
+    (start-width-sequencer)
+
+[start-width-sequencer]
+  {seq-width}, `1+<instance-width>`, `int(<instance-width>/4)`
+  start-swing-sequence
+  (advance-width-sequence <width-time>)
+
+[advance-width-sequence]
+  {seq-width},<GET-NEXT>
+  advance-sequence
 
 [render-all]
     erase-buffer
@@ -72,7 +85,8 @@ $add-time 3
         push
 	sub-equals
 
-        <instance-width>
+        {seq-width},<GET-CURRENT>
+        get-sequence
         recall
 
         set-position
