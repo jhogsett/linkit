@@ -240,6 +240,9 @@ def pre_process_script(script_lines):
     new_lines = process_get_variables(new_lines)
     report_verbose_script(new_lines, "script after replacing variables")
 
+#    new_lines = capture_templates(new_lines)
+#    report_verbose_script(new_lines, "script after capturing templates")
+
     new_lines = expand_multi_macros(new_lines)
     report_verbose_script(new_lines, "script after expanding multi macros")
 
@@ -250,7 +253,16 @@ def pre_process_script(script_lines):
     report_verbose_script(new_lines, "script after expanding meta templates")
 
     new_lines = expand_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding templates - pre-processing done")
+    report_verbose_script(new_lines, "script after expanding templates")
+
+#    new_lines = expand_multi_macros(new_lines)
+#    report_verbose_script(new_lines, "script after expanding multi macros pass #2")
+
+    new_lines = expand_meta_templates(new_lines)
+    report_verbose_script(new_lines, "script after expanding meta templates pass #2")
+
+    new_lines = expand_templates(new_lines)
+    report_verbose_script(new_lines, "script after expanding templates pass #2")
 
     return new_lines
 
@@ -345,11 +357,18 @@ def process_blocks(script_lines):
     new_lines = []
     for line in script_lines:
         line = line.strip()
-        if "{{" in line:
+        if "{{{" in line:
+            position = line.find("{{{")
+            new_line = line[:position]
+            if len(new_line) > 0:
+                new_lines.append(line[:position])
+        elif "{{" in line:
             position = line.find("{{")
             new_line = line[:position]
             if len(new_line) > 0:
                 new_lines.append(line[:position])
+        elif "}}}" in line:
+            new_lines.append("flu")
         elif "}}" in line:
             new_lines.append("rst")
         else:
@@ -622,32 +641,33 @@ def process_evaluate_python(line):
 
 def process_set_variable(line):
     line = line.strip()
-    if len(line) < 1:
-        return ''
+    if len(line) > 0:
 
-    # can only process if there are no unresolved values
-    # ? does this leave out variable unresolves?
-    if True: #not line_has_unresolved(line):
+        # can only process if there are no unresolved values
+        # ? does this leave out variable unresolves?
+        if True: #not line_has_unresolved(line):
 
-        # see if line has a variable setting
-        args = get_key_args(line, "$")
-        if len(args) >= 2:
+            # see if line has a variable setting
+            args = get_key_args(line, "$")
+            if len(args) >= 2:
 
-            variable_name = args[0]
+                variable_name = args[0]
 
-            # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
-            variable_value = line[len(variable_name) + 1:].strip()
+                if variable_name in presets:
+                    # override this variable with the preset
+                    return ''
 
-            # can only set if not already set, or a preset that allows overwriting
-            if not immutable_resolved_value(variable_name, variable_value):
-                #ui.report_verbose("process_set_variable settings {}={}".format(variable_name, variable_value))
-                set_resolved(variable_name, variable_value)
+                # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
+                variable_value = line[len(variable_name) + 1:].strip()
 
-            # return a blank line now that this one is consumed
-            return ''
+                # can only set if not already set, or a preset that allows overwriting
+                if not immutable_resolved_value(variable_name, variable_value):
+                    #ui.report_verbose("process_set_variable settings {}={}".format(variable_name, variable_value))
+                    set_resolved(variable_name, variable_value)
 
-    # return the unprocessed line
-    # ui.report_verbose("process_set_variable returning unprocessed line '{}'".format(line))
+                # return a blank line now that this one is consumed
+                return ''
+
     return line
 
 ## ----------------------------------------------------
