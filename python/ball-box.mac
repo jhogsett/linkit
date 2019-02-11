@@ -7,12 +7,12 @@
 
 $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
-$render-time <base-time>
+$render-time <ball-time>
 $fade-rate 9000
-$base-time 50
-$box-width 20
-$box-time 200
-$num-boxes 1
+$ball-time 50
+$box-width 10
+$box-time 100
+$num-boxes 3
 $balls-per-box 3
 $box-instance-time 50
 $ball-instance-time 20
@@ -49,7 +49,9 @@ $ball-instance-time 20
 
 (((box <num-boxes> `<box-instance-time>*INSTANCE+<box-time>` <box-width> `<NUM-LEDS>-<box-width>` swing-sequencer)))
 
-(((ball <balls-per-box> 0 `INSTANCE*<ball-instance-time>+<base-time>` <box-width> swing-sequencer `<RED>+INSTANCE`)))
+(((ball <balls-per-box> 0 `INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<RED>+INSTANCE`)))
+(((ball <balls-per-box> 1 `INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<GREEN>+INSTANCE`)))
+(((ball <balls-per-box> 2 `INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<GREEN>+INSTANCE`)))
 
 [[ball-start-all BALL BOX
     (ball-start-BOX-BALL)
@@ -92,11 +94,12 @@ $ball-instance-time 20
 
     [box-erase-INSTANCE]
         (box-set-window-INSTANCE)
-        1,0,0
-        set-black-level
-        erase-buffer
-        0,0,0
-        set-black-level
+        INSTANCE
+        add-palette-color
+        darken
+        darken
+        darken
+        fill
         
     [box-render-INSTANCE]
         (box-erase-INSTANCE)
