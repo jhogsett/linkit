@@ -12,16 +12,22 @@ $fade-rate 9000
 $ball-time 60
 $box-width 15
 $box-time 120
-$num-boxes 4
+$num-boxes 3
 $balls-per-box 2
 $box-instance-time 30
 $ball-instance-time 10
 $refresh-time 80
 $box-sequencer swing-sequencer
 $ball-sequencer swing-sequencer
+$box-step 0
+$ball-step 0
+
+$bgtype-line 1
+$bgtype-points 2
+$background-type <bgtype-line>
 
 #%allow-mutability
-#$HSL-ANGLE `int(360/<num-boxes>)`
+#$HSL-ANGLE `int(360/(<num-boxes>*<balls-per-box>))`
 
 %play-macro app
 
@@ -40,15 +46,12 @@ $ball-sequencer swing-sequencer
 
     [[[box-start <num-boxes>]]]
 
-    (app-render <render-time>)
-    (refresh <refresh-time>)
+    (boxes-render <render-time>)
+    (render <refresh-time>)
 
     (hsl-sequencer-start)
 
-[refresh]
-    refresh-display
-
-[app-render]
+[boxes-render]
     erase-buffer
     [[[box-render <num-boxes>]]]
 
@@ -57,41 +60,11 @@ $ball-sequencer swing-sequencer
 (((create-balls-for-box <num-boxes>)))
 
 [[create-balls-for-box BOX
-    (((ball <balls-per-box> BOX `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> <ball-sequencer> `BOX*INSTANCE+<RED>`)))
+    (((ball <balls-per-box> BOX `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> <ball-sequencer> `BOX+INSTANCE+<RED>`)))
 ]]
 
-[[ball-start-all BALL BOX
-    (ball-start-BOX-BALL)
-]]
 
-[set-box-window]
-    recall
-    get-sequence
-    push    
-
-    recall
-    set-offset
-
-    <box-width>
-    push
-    add-equals
-
-    set-window
-
-[[ball-render-each BALL BOX
-    {{
-        (box-set-window-BOX)
-        (ball-render-BOX-BALL)
-    }}
-]]
-
-[render-background]
-    pop
-    add-palette-color
-    darken
-    darken
-    darken
-    fill
+###### BOX ######
 
 [[box INSTANCE SCHEDULE WIDTH MAX SEQ-TYPE
 
@@ -105,14 +78,14 @@ $ball-sequencer swing-sequencer
         (box-step-INSTANCE SCHEDULE)
 
     [box-step-INSTANCE]
-        {seq-box-INSTANCE}
+        {seq-box-INSTANCE},<GET-NEXT>,<box-step>
         advance-sequence
 
     [box-erase-INSTANCE]
         (box-set-window-INSTANCE)
         INSTANCE
         push
-        (render-background)
+        (box-draw-background)
         
     [box-render-INSTANCE]
         (box-erase-INSTANCE)
@@ -121,8 +94,55 @@ $ball-sequencer swing-sequencer
     [box-set-window-INSTANCE]
         {seq-box-INSTANCE}, <GET-CURRENT>
         store
-        (set-box-window)
+        (box-set-window)
 ]]
+
+[box-draw-background]
+<<< <background-type> == <bgtype-points>
+     dark-gray
+
+    <box-width>
+    set-position
+    {{
+        dark-gray
+    }}
+>>>
+<<< <background-type> == <bgtype-line>
+    pop
+    add-palette-color
+    darken
+    darken
+    darken
+    fill
+>>>
+
+[box-set-window]
+    recall
+    get-sequence
+    push
+
+    recall
+    set-offset
+
+    <box-width>
+    push
+    add-equals
+
+    set-window
+
+[[ball-start-all BALL BOX
+    (ball-start-BOX-BALL)
+]]
+
+[[ball-render-each BALL BOX
+    {{
+        (box-set-window-BOX)
+        (ball-render-BOX-BALL)
+    }}
+]]
+
+
+###### BALL ######
 
 [[ball INSTANCE BOX SCHEDULE WIDTH SEQ-TYPE COLOR
 
@@ -133,7 +153,7 @@ $ball-sequencer swing-sequencer
         (ball-step-BOX-INSTANCE SCHEDULE)
 
     [ball-step-BOX-INSTANCE]
-        {seq-ball-BOX-INSTANCE}
+        {seq-ball-BOX-INSTANCE},<GET-NEXT>,<ball-step>
         advance-sequence
 
     [ball-render-BOX-INSTANCE]
@@ -146,4 +166,5 @@ $ball-sequencer swing-sequencer
             add-palette-color
         }}
 ]]
+
 
