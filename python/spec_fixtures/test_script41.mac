@@ -1,0 +1,32 @@
+
+$num-outer 5
+$num-inner 5
+
+[app]
+(((do-outer <num-outer>)))
+
+(((outer <num-outer>)))
+
+[[do-outer INSTANCE
+    (doit-INSTANCE)
+]]
+
+[[do-inner INSTANCE PARENT
+    (doit-PARENT-INSTANCE)
+]]
+
+[[outer INSTANCE
+   [doit-INSTANCE]
+       (((do-inner <num-inner> INSTANCE)))
+
+   (((inner <num-inner> INSTANCE)))
+]]
+
+[[inner INSTANCE PARENT
+    [doit-PARENT-INSTANCE]
+        INSTANCE
+        red
+        PARENT
+        blue
+]]
+
