@@ -9,13 +9,14 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <ball-time>
 $fade-rate 9000
-$ball-time 50
+$ball-time 60
 $box-width 15
-$box-time 100
+$box-time 120
 $num-boxes 3
 $balls-per-box 3
 $box-instance-time 30
 $ball-instance-time 10
+$refresh-time 50
 
 #%allow-mutability
 #$HSL-ANGLE `int(360/<num-boxes>)`
@@ -38,14 +39,16 @@ $ball-instance-time 10
     [[[box-start <num-boxes>]]]
 
     (app-render <render-time>)
+    (refresh <refresh-time>)
 
     (hsl-sequencer-start)
 
+[refresh]
+    refresh-display
+
 [app-render]
-    {{{
-        erase-buffer
-        [[[box-render <num-boxes>]]]
-    }}}
+    erase-buffer
+    [[[box-render <num-boxes>]]]
 
 (((box <num-boxes> `<box-instance-time>*INSTANCE+<box-time>` <box-width> `<NUM-LEDS>-<box-width>` swing-sequencer)))
 
@@ -78,14 +81,23 @@ $ball-instance-time 10
     }}
 ]]
 
+[render-background]
+    pop
+    add-palette-color
+    darken
+    darken
+    darken
+    fill
+
 [[box INSTANCE SCHEDULE WIDTH MAX SEQ-TYPE
+
+    [box-start-balls-INSTANCE]
+        (((ball-start-all <balls-per-box> INSTANCE)))
 
     [box-start-INSTANCE]
         {seq-box-INSTANCE}, MAX
         SEQ-TYPE
-
-        (((ball-start-all <balls-per-box> INSTANCE)))
-
+        (box-start-balls-INSTANCE)
         (box-step-INSTANCE SCHEDULE)
 
     [box-step-INSTANCE]
@@ -95,11 +107,8 @@ $ball-instance-time 10
     [box-erase-INSTANCE]
         (box-set-window-INSTANCE)
         INSTANCE
-        add-palette-color
-        darken
-        darken
-        darken
-        fill
+        push
+        (render-background)
         
     [box-render-INSTANCE]
         (box-erase-INSTANCE)

@@ -240,9 +240,6 @@ def pre_process_script(script_lines):
     new_lines = process_get_variables(new_lines)
     report_verbose_script(new_lines, "script after replacing variables")
 
-#    new_lines = capture_templates(new_lines)
-#    report_verbose_script(new_lines, "script after capturing templates")
-
     new_lines = expand_multi_macros(new_lines)
     report_verbose_script(new_lines, "script after expanding multi macros")
 
@@ -254,9 +251,6 @@ def pre_process_script(script_lines):
 
     new_lines = expand_templates(new_lines)
     report_verbose_script(new_lines, "script after expanding templates")
-
-#    new_lines = expand_multi_macros(new_lines)
-#    report_verbose_script(new_lines, "script after expanding multi macros pass #2")
 
     new_lines = expand_meta_templates(new_lines)
     report_verbose_script(new_lines, "script after expanding meta templates pass #2")
