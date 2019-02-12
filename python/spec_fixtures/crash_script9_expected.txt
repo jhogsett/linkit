@@ -1,2 +1,2 @@
-Infinite recursion on line: <var2>
+Infinite recursion on line: <var1>
 
