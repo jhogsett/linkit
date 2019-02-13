@@ -18,8 +18,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       flush(true); 
       break;
       
-    case CMD_ERASE: 
-      buffer->erase(false); 
+    case CMD_ERASE:
+      if(arg0 != 0)
+        buffer->fast_erase();
+      else
+        buffer->erase(false); 
       break;
   
     case CMD_ROTATE: 
