@@ -239,9 +239,9 @@ def failure_message(got, expected):
     tc.yellow(" @ " + str(test_line_number)) +
     tc.red(" Failed!\n") +
     tc.white("\texpected:\n") +
-    tc.red("\t\t[" + expected + "]\n") +
+    tc.red("\t\t[" + str(expected) + "]\n") +
     tc.white("\tgot:\n") +
-    tc.green("\t\t[" + got + "]") +
+    tc.green("\t\t[" + str(got) + "]") +
     "\n")
 
 def pending_message():
@@ -279,8 +279,8 @@ def report_failure(got, expected):
   test_failure_summaries.append(
     tc.yellow("\t@ " + str(test_line_number) + " ") + 
     tc.cyan(test_command) + 
-    tc.red(" -" + expected) + 
-    tc.green(" +" + got) + 
+    tc.red(" -" + str(expected)) + 
+    tc.green(" +" + str(got)) + 
     "\n") 
 
   if verbose_mode:
@@ -321,7 +321,7 @@ def succeed():
 # -----------------------------------------------------------------------------
 # --- expectations ---
 
-def expect_equal(got, expected):
+def _expect_equal(got, expected):
   global test_line_number
   test_line_number = get_line_number(3)
   if got != expected:
@@ -329,7 +329,7 @@ def expect_equal(got, expected):
   else:
     succeed()
 
-def expect_not_equal(got, expected):
+def _expect_not_equal(got, expected):
   global test_line_number
   test_line_number = get_line_number(3)
   if got == expected:
@@ -343,7 +343,7 @@ def expect_macro(command_, macro, expected):
   lc.command(command_)
   str_ = lc.get_macro_raw(macro)
   count = len(expected)
-  expect_equal(str_[:count], expected)
+  _expect_equal(str_[:count], expected)
 
 def expect_buffer(command_, start, count, expected, flush = True, slow = False, positive = True):
   global test_command
@@ -353,9 +353,9 @@ def expect_buffer(command_, start, count, expected, flush = True, slow = False, 
   lc.command(command_)
   str_ = lc.get_buffer(start, count, slow)
   if positive:
-    expect_equal(str_[:-1], expected)
+    _expect_equal(str_[:-1], expected)
   else:
-    expect_not_equal(str_[:-1], expected)
+    _expect_not_equal(str_[:-1], expected)
 
 def expect_render(command_, start, count, expected, flush = True, slow = False, positive = True):
   global test_command
@@ -365,9 +365,9 @@ def expect_render(command_, start, count, expected, flush = True, slow = False, 
   lc.command(command_)                                                
   str_ = lc.get_render(start, count, slow)
   if positive:
-    expect_equal(str_[:-1], expected)                                
+    _expect_equal(str_[:-1], expected)                                
   else:
-    expect_not_equal(str_[:-1], expected)
+    _expect_not_equal(str_[:-1], expected)
                                                                  
 def expect_effect(command_, start, count, expected, flush = True, slow = False, positive = True):               
   global test_command
@@ -377,9 +377,9 @@ def expect_effect(command_, start, count, expected, flush = True, slow = False, 
   lc.command(command_)
   str_ = lc.get_effect(start, count, slow)
   if positive:
-    expect_equal(str_[:-1], expected)                                
+    _expect_equal(str_[:-1], expected)                                
   else:
-    expect_not_equal(str_[:-1], expected)
+    _expect_not_equal(str_[:-1], expected)
                                                                  
 def expect_palette(command_, start, count, expected, positive=True):               
   global test_command
@@ -389,15 +389,15 @@ def expect_palette(command_, start, count, expected, positive=True):
   lc.command(command_ + display_command)                                                
   str_ = lc.get_palette(start, count, True)
   if positive:
-    expect_equal(str_[:-1], expected)                                
+    _expect_equal(str_[:-1], expected)                                
   else:
-    expect_not_equal(str_[:-1], expected)
+    _expect_not_equal(str_[:-1], expected)
 
 def expect_int(command_, expected):
   global test_command
   test_command = command_
   got = lc.command_int(command_)
-  expect_equal(str(got), str(expected))                                                                  
+  _expect_equal(str(got), str(expected))                                                                  
 
 def expect_offset(command_, expected, positive=True):
   global test_command
@@ -405,9 +405,9 @@ def expect_offset(command_, expected, positive=True):
   lc.command_str(command_)
   got = lc.get_offset()
   if positive:
-    expect_equal(str(got), str(expected))
+    _expect_equal(str(got), str(expected))
   else:
-    expect_not_equal(str(got), str(expected))
+    _expect_not_equal(str(got), str(expected))
 
 def expect_window(command_, expected, positive=True):
   global test_command
@@ -415,9 +415,9 @@ def expect_window(command_, expected, positive=True):
   lc.command_str(command_)
   got = lc.get_window()
   if positive:
-    expect_equal(str(got), str(expected))
+    _expect_equal(str(got), str(expected))
   else:
-    expect_not_equal(str(got), str(expected))
+    _expect_not_equal(str(got), str(expected))
 
 def expect_empty_buffer(command_, start, count):
   global test_command
@@ -427,7 +427,7 @@ def expect_empty_buffer(command_, start, count):
     expected += "0,0,0,"
   lc.command(command_)
   str_ = lc.get_buffer(start, count, True)
-  expect_equal(str_[:-1], expected[:-1])
+  _expect_equal(str_[:-1], expected[:-1])
 
 def expect_empty_render(command_, start, count):
   global test_command
@@ -437,7 +437,7 @@ def expect_empty_render(command_, start, count):
     expected += "0,0,0,"
   lc.command(command_)
   str_ = lc.get_render(start, count, True)
-  expect_equal(str_[:-1], expected[:-1])
+  _expect_equal(str_[:-1], expected[:-1])
 
 def expect_accumulators(command_, expected, flush = True, positive = True):
   global test_command
@@ -447,9 +447,18 @@ def expect_accumulators(command_, expected, flush = True, positive = True):
   lc.command(command_)
   str_ = lc.get_accumulator()
   if positive:
-    expect_equal(str_[:-1], expected)
+    _expect_equal(str_[:-1], expected)
   else:
-    expect_not_equal(str_[:-1], expected)
+    _expect_not_equal(str_[:-1], expected)
+
+def expect_match(description, got, expected, positive = True):
+  global test_command
+  test_command = description
+  if positive:
+    _expect_equal(got, expected)
+  else:
+    _expect_not_equal(got, expected)
+
 
 def get_accums():
   str_ = lc.get_accumulator()
@@ -487,17 +496,17 @@ def expect_sequence(setup_command, advance_command, expected_accum0_values, expe
     got_accum2_values.append(accum2)
 
   if positive:
-    expect_equal(str(got_accum0_values), str(expected_accum0_values))
+    _expect_equal(str(got_accum0_values), str(expected_accum0_values))
     if expected_accum1_values != None:
-      expect_equal(str(got_accum1_values), str(expected_accum1_values))
+      _expect_equal(str(got_accum1_values), str(expected_accum1_values))
     if expected_accum2_values != None:
-      expect_equal(str(got_accum2_values), str(expected_accum2_values))
+      _expect_equal(str(got_accum2_values), str(expected_accum2_values))
   else:
-    expect_not_equal(str(got_accum0_values), str(expected_accum0_values))
+    _expect_not_equal(str(got_accum0_values), str(expected_accum0_values))
     if expected_accum1_values != None:
-      expect_not_equal(str(got_accum1_values), str(expected_accum1_values))
+      _expect_not_equal(str(got_accum1_values), str(expected_accum1_values))
     if expected_accum2_values != None:
-      expect_not_equal(str(got_accum2_values), str(expected_accum2_values))
+      _expect_not_equal(str(got_accum2_values), str(expected_accum2_values))
 
 # -----------------------------------------------------------------------------
 # --- helper functions ---
@@ -618,6 +627,17 @@ def specs():
     if test("app command resets the palette"):
       expect_palette("yel:shf:app", 0, palette_size, standard_palette)
 
+    if test("app command resets the fade rate"):
+      default_fade_rate = lc.get_default_fade_rate()
+      lc.command("2,100:cfg")
+      fade_rate = lc.get_fade_rate()
+      expect_match("fade rate", fade_rate, 100)
+      lc.command("app")      
+      fade_rate = lc.get_fade_rate()
+      expect_match("fade rate", fade_rate, default_fade_rate)
+
+    if test("app command resets the draw mode to DRAW_MODE_WRITE"):
+      expect_buffer("1:drw:app:red:0:pos:grn:pau", 0, 1, "0,20,0")
 
 ########################################################################
 # PUSHING COLORS
