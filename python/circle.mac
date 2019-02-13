@@ -6,7 +6,6 @@
 %include symbols
 %include hsl-sequencer
 
-$draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time 120
 $fade-type sfd
@@ -27,12 +26,6 @@ $timing-offset 5
 [circle-app 10]
     start-application
  
-    # set the preset draw mode
-    <draw-mode>
-    set-draw-mode
-
-    <CONFIG-FADE-RATE> = <fade-rate>
-
     # set the preset brightness level
     <brightness>
     set-brightness
@@ -40,6 +33,9 @@ $timing-offset 5
     # start up the palette color sequencer
     (hsl-sequencer-start)
 
+    (circle-app-startup)
+
+[circle-app-startup]
     # start up the circle processing
     (((circle-init 2)))
 
@@ -55,31 +51,39 @@ $timing-offset 5
 
 [[circle INSTANCE MARGIN FACTOR TIMEX TIMEY TIMES
 
+    [circle-schedule-INSTANCE]
+        (circle-advance-x-INSTANCE TIMEX)
+        (circle-advance-y-INSTANCE TIMEY)
+        (circle-step-INSTANCE TIMES)
+
     [circle-init-INSTANCE]
         # set up the sequencers
         (circle-setup-INSTANCE)
 
         # schedule the sequencer advance and draw
-        (circle-advance-x-INSTANCE TIMEX)
-        (circle-advance-y-INSTANCE TIMEY)
-        (circle-step-INSTANCE TIMES)
+        (circle-schedule-INSTANCE)
 
-    [circle-setup-INSTANCE]
+    [circle-setup-x-INSTANCE]
         # allocate a sequencer for X
         {seq-x-INSTANCE},`(<max>-MARGIN)*FACTOR`,`MARGIN*FACTOR`
         wheel-cosine-sequencer
-
-        # allocate a sequencer for Y
-        {seq-y-INSTANCE},`(<max>-MARGIN)*FACTOR`,`MARGIN*FACTOR`
-        wheel-sine-sequencer
 
         # allocate a sequencer for drawing X
         {seq-step-x-INSTANCE},`(<max>-MARGIN)*FACTOR`
         wheel-sequencer
 
+    [circle-setup-y-INSTANCE]
+        # allocate a sequencer for Y
+        {seq-y-INSTANCE},`(<max>-MARGIN)*FACTOR`,`MARGIN*FACTOR`
+        wheel-sine-sequencer
+
         # allocate a sequencer for drawing Y
         {seq-step-y-INSTANCE},`(<max>-MARGIN)*FACTOR`
         wheel-sequencer
+
+    [circle-setup-INSTANCE]
+        (circle-setup-x-INSTANCE)
+        (circle-setup-y-INSTANCE) 
 
     [circle-advance-x-INSTANCE]
         <seq-x-INSTANCE>,<GET-NEXT>
@@ -110,10 +114,7 @@ $timing-offset 5
         add-palette-color
         <fade-type>
 
-    [circle-step-INSTANCE]
-        <circle-draw-INSTANCE>
-        push
-
+    [circle-advance-INSTANCE]
         <seq-step-x-INSTANCE>,<MACRO-SEQ>,<circle-math-x-INSTANCE>
         advance-sequence
         push
@@ -122,9 +123,11 @@ $timing-offset 5
         advance-sequence
         push
 
-#        <seq-step-x-INSTANCE>,<MACRO-SEQ>,<circle-math-x-INSTANCE>
-#        sequence
-#        push
+    [circle-step-INSTANCE]
+        <circle-draw-INSTANCE>
+        push
+
+        (circle-advance-INSTANCE)
 
         recall
         set-xy-position
