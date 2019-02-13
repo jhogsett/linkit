@@ -1,13 +1,99 @@
-// some way to make this automatic, so extra templates don't have to be created just to call the template instance macros multiple times
-//[[advance-all-temp INSTANCE
-//    (advance-INSTANCE)
-//]]
-// maybe overload (( ))
-// ((advance-INSTANCE <num-instances>)) bad idea, (( )) already has arguments
-// maybe [[[ ]]]
+// optimize erase with memset or something
+
+// directive to spit out a message
+
+// pm command to dump out overridable variabvles from a script
+
+// if a variable value is a string, it needs to be surrounded by quotes when being evaluated by python
 
 
-// directive to allow mutability
+// app should do these
+//    <CONFIG-FADE-RATE> = <fade-rate>
+//
+//    # set the preset brightness level
+//    <brightness>
+//    set-brightness
+
+// new sequence advance types
+// advance, unless on low limit  (and run a macro if supplied)
+// advance, unless on high limit (and run a macro if supplied)
+
+// a standard macro like this is 15 bytes + terminator
+//50:set:2,75:swc:56:run:150,59:sch
+//51:set:
+
+// need somelike like [[[ ]]] that does multiple expansion with fill-invariables (that can replicate meta-templates)
+//
+//
+//
+//multi expander
+//
+//# when like this over multiple lines, it's a multi expander
+//[[[ <num-instances> ABC DEF GHI
+//
+//whatever goes here
+//
+//those all get replaced with the incoming arguments
+//
+//automatic variable name INSTANCE replace with which one
+//
+//]]]
+//
+//
+//multi-macro
+//
+//# when like this on one line, it's a multi-macro 
+//[[[box-render <num-boxes>]]]
+//
+//
+//
+//
+//
+//$num-instances 3
+//[[[ <num-instances> `<RED>+INSTANCE` 
+//        VAR1
+//        add-palette-color
+//]]]
+//
+//would become
+//
+//0
+//add-palette-color
+//1
+//add-palette-color
+//2
+//add-palette-color
+//
+//
+//
+//0:pal:1:pal:2:pal
+//
+
+// clean out spaces before macro sizing
+
+// <<< `python expression`
+//   do something if it evaluates to True
+// >>>
+//
+// <<< variable-name
+//   do something 
+// >>>
+
+
+// magic zoom (-1?) zooms to fill the current width
+
+//         {seq-X}, `X*(<NUM-LEDS>/6)+(<NUM-LEDS>/6)`, `X*(<NUM-LEDS>/6)`
+// in place macros?
+//
+//         &
+//         {seq-X}, `X*(<NUM-LEDS>/6)+(<NUM-LEDS>/6)`, `X*(<NUM-LEDS>/6)`
+
+// sequencer for drawing and erasing objects
+
+// could make upper case only variables always mutable
+
+// some way to mark a block, after it auto resets
+// ---> maybe if certain commands are used in a macro, a reset is added to the end
 
 // something like snw but makes it easy to erase before drawing next segment
 
@@ -84,24 +170,69 @@
 // when seen, add to a list of init macro names
 
 // a simple way to invoke a sequencer that uses a macro for math
+// {seq-hsl hsl-macro}
 
-// ununused brackets || <<>> [[[]]] <<<>>> '' "" // \\ 
-// unused operators = - _ ~
+// # requires use of pre-defined variables
+//
+// <<< `<NUM-LEDS>>=72`
+//   $num-instances 6
+// >>>
+//
+// <<< `<NUM-LEDS><72`
+//   $num-instances 4
+// >>>
 
+// <<< DEVICE-NAME apollo
+//   $num-instances 6
+// >>>
+
+
+
+// ununused brackets || << >> <<< >>> "" // \\ {{ }} {{{ }}}
+// unused operators - _ ~
+
+// {{
+//   1,10
+//   set-position
+//   red
+// }} 
+
+// <<
+//   1,10
+//   set-position
+//   red
+// >> 
+
+// |>
+//   1,10
+//   set-position
+//   red
+// <| 
+
+// //
+//   1,10
+//   set-position
+//   red
+// \\ 
+
+
+// set-position 
+// {{
 //
-//[[[<fast-mode> 1 (args equal)
-//...
-//]]]
+//   do stuff
 //
-//[[[<slow-mode> (arg non-zero)
-//    [drawit]
-//        red
-//        slow-fade
-//]]]
-//
-//[[[`ZONE==1`
-//
-//]]]
+// }}
+
+// the {{ is stripped and ignored
+// the }} is replaced with 'reset-buffer'
+
+
+replaced by "reset-buffer"
+
+
+
+
+
 
 // conditionals would need to be held onto and handled for each macro expansion
 
@@ -121,7 +252,6 @@
 
 // idea: if acc0 == acc1 exit macro
 //       
-
 // specs
   // math, mirroring
 

@@ -231,17 +231,17 @@ def pre_process_script(script_lines):
     report_verbose_script(new_lines, "script after processing directives")
     ingest_directives()
 
-    new_lines = process_blocks(new_lines)
-    report_verbose_script(new_lines, "script after processing blocks")
-
     new_lines = process_set_variables(new_lines)
     report_verbose_script(new_lines, "script after capturing variables")
 
+    new_lines = process_conditionals(new_lines)
+    report_verbose_script(new_lines, "script after processing conditionals")
+
+    new_lines = process_blocks(new_lines)
+    report_verbose_script(new_lines, "script after processing blocks")
+
     new_lines = process_get_variables(new_lines)
     report_verbose_script(new_lines, "script after replacing variables")
-
-#    new_lines = capture_templates(new_lines)
-#    report_verbose_script(new_lines, "script after capturing templates")
 
     new_lines = expand_multi_macros(new_lines)
     report_verbose_script(new_lines, "script after expanding multi macros")
@@ -254,9 +254,6 @@ def pre_process_script(script_lines):
 
     new_lines = expand_templates(new_lines)
     report_verbose_script(new_lines, "script after expanding templates")
-
-#    new_lines = expand_multi_macros(new_lines)
-#    report_verbose_script(new_lines, "script after expanding multi macros pass #2")
 
     new_lines = expand_meta_templates(new_lines)
     report_verbose_script(new_lines, "script after expanding meta templates pass #2")
@@ -350,6 +347,54 @@ def ingest_directives():
     global allow_mutability
     if "%allow-mutability" in resolved:
         allow_mutability = True
+
+## ----------------------------------------------------
+
+def process_conditionals(script_lines):
+    new_lines = []
+    builder = []
+    capture_mode = False
+    bypass_mode = False
+    expression = None
+
+    for line in script_lines:
+        line = line.strip()
+        line = replace_all_variables(line)
+
+        if capture_mode:
+            if line.startswith(">>>"):
+                capture_mode = False
+                if not bypass_mode:
+                    new_lines += builder
+                bypass_mode = False
+                builder = []
+            else:
+                builder.append(line)
+        else:
+            if "<<<" in line:
+                capture_mode = True
+
+                expression = get_key_contents(line, "<<<")
+                expression = replace_all_variables(expression)
+
+                python_expression = extract_contents(expression, "`", "`", True)
+                if len(python_expression) > 0:
+                    # evaluate python expression as provided
+                    expression = python_expression
+                else:
+                    # turn into a python expression expected to evaluate to True
+                    expression = "bool( " + expression + " ) == True"
+
+                ui.report_verbose("evaluating conditional expression: " + expression)
+                result = eval(expression)
+                ui.report_verbose_alt("conditional expression result: " + str(result))
+
+                if result != True:
+                    bypass_mode = True
+            else:
+                new_lines.append(line)
+    return new_lines
+
 
 ## ----------------------------------------------------
 

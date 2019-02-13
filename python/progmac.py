@@ -140,7 +140,7 @@ def get_command_line_presets():
 def validate_options():
     errors = False
     if not print_macros:
-      print program
+#      print program
       if len(program) == 0:
         ui.report_error("Must specify a progam to upload")
         errors = True

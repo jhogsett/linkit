@@ -1650,16 +1650,12 @@ void Commands::do_fan(bool fan_on, bool auto_set)
 }
 
 void Commands::do_app_setup(){
-  // stop all schedules
-  // reset palette
-  // pause effects; start processing
-  // erase; flush
-  // reset
   scheduler.reset_all_schedules();
   clear();                                                            
   pause(PAUSE_EFFECTS);                                                            
   resume(RESUME_SCHEDULES);
   Colors::reset_palette();
+  fade_effects->set_fade_rate(FADE_RATE);
 }
 
 #define COORDIINATE_POSITION 0

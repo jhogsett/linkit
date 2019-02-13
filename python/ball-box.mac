@@ -1,6 +1,8 @@
 # ----------------------------------------------------------------
-# 
+# Boxes of Balls animation v0.0 2-0-19 
 # ----------------------------------------------------------------
+
+#  num-boxes=5 balls-per-box=1 box-width=45 background-type=0 box-step=1 refresh-time=50 ball-time=50 box-sequencer=sqs ball-sequencer=swc ball-step=1 use-computed-value=True
 
 %include symbols
 %include hsl-sequencer
@@ -9,18 +11,32 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <ball-time>
 $fade-rate 9000
-$ball-time 50
+$ball-time 60
 $box-width 15
-$box-time 100
+$box-time 120
 $num-boxes 3
-$balls-per-box 3
+$balls-per-box 2
 $box-instance-time 30
 $ball-instance-time 10
+$refresh-time 80
+$box-sequencer swing-sequencer
+$ball-sequencer swing-sequencer
+$box-step 0
+$ball-step 0
+$bgtype-none 0
+$bgtype-line 1
+$bgtype-points 2
+$background-type <bgtype-line>
+$use-computed-value False
 
-#%allow-mutability
-#$HSL-ANGLE `int(360/<num-boxes>)`
+%allow-mutability
+$HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
 %play-macro app
+
+# ------------------------------------------
+# main app macro
+# ------------------------------------------
 
 [app 10]
     start-application
@@ -35,42 +51,193 @@ $ball-instance-time 10
     <brightness>
     set-brightness
 
+    # multi macro replaced with a macro run to a 
+    # new macro that will run each start-up macro
     [[[box-start <num-boxes>]]]
 
-    (app-render <render-time>)
+    # schedule animation rendering
+    (boxes-render <render-time>)
 
+    # schuedule display refreshing
+    (render <refresh-time>)
+
+    # start the color palette cycling
     (hsl-sequencer-start)
 
-[app-render]
-    {{{
-        erase-buffer
-        [[[box-render <num-boxes>]]]
-    }}}
 
-(((box <num-boxes> `<box-instance-time>*INSTANCE+<box-time>` <box-width> `<NUM-LEDS>-<box-width>` swing-sequencer)))
+# ------------------------------------------
+# main app animation rendering
+# ------------------------------------------
 
-(((ball <balls-per-box> 0 `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<RED>+INSTANCE`)))
-(((ball <balls-per-box> 1 `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<YELLOW>+INSTANCE`)))
-(((ball <balls-per-box> 2 `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> swing-sequencer `<BLUE>+INSTANCE`)))
+[boxes-render]
+    erase-buffer
 
+    # multi macro replaced with a macro run to a 
+    # new macro that will run each render macro
+    [[[box-render <num-boxes>]]]
+
+
+# ------------------------------------------
+# create animation objects
+# ------------------------------------------
+
+# expand box template per number of boxes
+(((box <num-boxes> `<box-instance-time>*INSTANCE+<box-time>` <box-width> `<NUM-LEDS>-<box-width>` <box-sequencer>)))
+
+# expand template to place ball-creating meta templates for each box
+(((create-balls-for-box <num-boxes>)))
+
+
+# template for adding ball-creating meta templates
+[[create-balls-for-box BOX
+    # meta template to create ball(s) for a box
+    (((ball <balls-per-box> BOX `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> <ball-sequencer> `BOX+INSTANCE+<RED>`)))
+]]
+
+
+# ------------------------------------------
+# box template - manages a moving region
+# object that has child objects
+# ------------------------------------------
+
+[[box INSTANCE SCHEDULE WIDTH MAX SEQ-TYPE
+
+    # expand meta template to run all ball start macros
+    [box-start-balls-INSTANCE]
+        (((ball-start-all <balls-per-box> INSTANCE)))
+
+    # start this box instance
+    [box-start-INSTANCE]
+        # create this box's position sequencer
+        {seq-box-INSTANCE}, MAX
+        SEQ-TYPE
+
+        # run the ball start macros
+        (box-start-balls-INSTANCE)
+
+        # schedule this box's animation rendering
+        (box-step-INSTANCE SCHEDULE)
+
+    # advance this box forwar one animation step
+    [box-step-INSTANCE]
+        {seq-box-INSTANCE},<GET-NEXT>,<box-step>
+        advance-sequence
+
+<<< <background-type> != <bgtype-none>
+    # macro to draw the box background
+    [box-background-INSTANCE]
+#        # set the viewport to the box bounds
+#        (box-set-window-INSTANCE) # would this be better in the render macro?
+
+        # push the instance as a palette color onto the stack
+        INSTANCE
+        push
+
+        # run the background drawing macro
+        (box-draw-background)
+>>>
+
+    # render this box instance and its child objects        
+    [box-render-INSTANCE]
+        # set the viewport to the box bounds
+        (box-set-window-INSTANCE)
+
+<<< <background-type> != <bgtype-none>
+        # render the background
+        (box-background-INSTANCE)
+>>>
+	# render the foreground
+        # meta template expands to run each ball render macro
+        (((ball-render-each <balls-per-box> INSTANCE)))
+
+    # set the viewport to only this box
+    [box-set-window-INSTANCE]
+        # put the sequencer arguments on the stack
+        {seq-box-INSTANCE}, <GET-CURRENT>
+        store
+
+        # run the helper macro to set the viewport
+        (box-set-viewport)
+]]
+
+# ------------------------------------------
+# box helper macros
+# ------------------------------------------
+
+<<< <background-type> != <bgtype-none>
+# multiple types of box backgrounds
+# accum0: background palette color
+[box-draw-background]
+>>>
+
+# draw dark gray points at the box bounds
+<<< <background-type> == <bgtype-points>
+    dark-gray
+
+    <box-width>
+    set-position
+    {{
+        dark-gray
+    }}
+>>>
+
+# fill the box background with a darkened palette color
+<<< <background-type> == <bgtype-line>
+    pop
+    add-palette-color
+    darken
+    darken
+    darken
+    fill
+>>>
+
+## no background
+#<<< <background-type> == <bgtype-none>
+#    0
+#>>>
+
+# set the offset and window to cover the box's current position
+# accum0-3: sequence get current value arguments
+[box-set-viewport]
+    # get the passed sequencer arguments
+    recall
+
+    # get the sequence current value
+    # this is the box viewport lower bounds
+    get-sequence
+
+    # save the lower bounds
+    push
+
+    # get the saved lower bounds 
+    # and set the viewport offset
+    recall
+    set-offset
+
+    # push the box width onto the stack
+    <box-width>
+    push
+
+    # add it to the saved lower bounds
+    # to get the upper bounds
+    add-equals
+
+    # set the viewport upper bounds
+    set-window
+
+
+# ------------------------------------------
+# box helper templates
+# ------------------------------------------
+
+# template to place macro runs of the 
+# ball start macro for each of a box's balls
 [[ball-start-all BALL BOX
     (ball-start-BOX-BALL)
 ]]
 
-[set-box-window]
-    recall
-    get-sequence
-    push    
-
-    recall
-    set-offset
-
-    <box-width>
-    push
-    add-equals
-
-    set-window
-
+# template to place macro runs of the 
+# ball render macro for each of a box's balls
 [[ball-render-each BALL BOX
     {{
         (box-set-window-BOX)
@@ -78,53 +245,38 @@ $ball-instance-time 10
     }}
 ]]
 
-[[box INSTANCE SCHEDULE WIDTH MAX SEQ-TYPE
 
-    [box-start-INSTANCE]
-        {seq-box-INSTANCE}, MAX
+# ------------------------------------------
+# ball template - manages a single
+# animated pixel
+# ------------------------------------------
+
+[[ball INSTANCE PARENT SCHEDULE WIDTH SEQ-TYPE COLOR
+
+    # start the a specific ball instance
+    # for a specific box instance
+    [ball-start-PARENT-INSTANCE]
+        {seq-ball-PARENT-INSTANCE}, WIDTH
         SEQ-TYPE
 
-        (((ball-start-all <balls-per-box> INSTANCE)))
+        # schedle the ball position updating
+        # for a ball instance of a box instance
+        (ball-step-PARENT-INSTANCE SCHEDULE)
 
-        (box-step-INSTANCE SCHEDULE)
-
-    [box-step-INSTANCE]
-        {seq-box-INSTANCE}
+    # advance to the next ball animation step
+    [ball-step-PARENT-INSTANCE]
+        {seq-ball-PARENT-INSTANCE},<GET-NEXT>,<ball-step>
         advance-sequence
 
-    [box-erase-INSTANCE]
-        (box-set-window-INSTANCE)
-        INSTANCE
-        add-palette-color
-        darken
-        darken
-        darken
-        fill
-        
-    [box-render-INSTANCE]
-        (box-erase-INSTANCE)
-        (((ball-render-each <balls-per-box> INSTANCE)))
-
-    [box-set-window-INSTANCE]
-        {seq-box-INSTANCE}, <GET-CURRENT>
-        store
-        (set-box-window)
-]]
-
-[[ball INSTANCE BOX SCHEDULE WIDTH SEQ-TYPE COLOR
-
-    [ball-start-BOX-INSTANCE]
-        {seq-ball-BOX-INSTANCE}, WIDTH
-        SEQ-TYPE
-
-        (ball-step-BOX-INSTANCE SCHEDULE)
-
-    [ball-step-BOX-INSTANCE]
-        {seq-ball-BOX-INSTANCE}
-        advance-sequence
-
-    [ball-render-BOX-INSTANCE]
-        {seq-ball-BOX-INSTANCE}, <GET-CURRENT>
+    # render a specific ball instance of 
+    # a specific box instance
+    [ball-render-PARENT-INSTANCE]
+<<< <use-computed-value> == True
+        {seq-ball-PARENT-INSTANCE}, <GET-COMPUTED>
+>>>
+<<< <use-computed-value> == False
+        {seq-ball-PARENT-INSTANCE}, <GET-CURRENT>
+>>>        
         get-sequence
 
         set-position
@@ -133,4 +285,5 @@ $ball-instance-time 10
             add-palette-color
         }}
 ]]
+
 

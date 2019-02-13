@@ -1,0 +1,4 @@
+4:set:red
+5:set:grn
+6:set:cyn
+
