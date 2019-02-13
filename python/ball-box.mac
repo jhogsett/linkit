@@ -2,6 +2,8 @@
 # Boxes of Balls animation v0.0 2-0-19 
 # ----------------------------------------------------------------
 
+#  num-boxes=5 balls-per-box=1 box-width=45 background-type=0 box-step=1 refresh-time=50 ball-time=50 box-sequencer=sqs ball-sequencer=swc ball-step=1 use-computed-value=True
+
 %include symbols
 %include hsl-sequencer
 
@@ -21,9 +23,11 @@ $box-sequencer swing-sequencer
 $ball-sequencer swing-sequencer
 $box-step 0
 $ball-step 0
+$bgtype-none 0
 $bgtype-line 1
 $bgtype-points 2
 $background-type <bgtype-line>
+$use-computed-value False
 
 %allow-mutability
 $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
@@ -104,7 +108,6 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
     # start this box instance
     [box-start-INSTANCE]
-
         # create this box's position sequencer
         {seq-box-INSTANCE}, MAX
         SEQ-TYPE
@@ -120,11 +123,11 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
         {seq-box-INSTANCE},<GET-NEXT>,<box-step>
         advance-sequence
 
+<<< <background-type> != <bgtype-none>
     # macro to draw the box background
     [box-background-INSTANCE]
-
-        # set the viewport to the box bounds
-        (box-set-window-INSTANCE) # would this be better in the render macro?
+#        # set the viewport to the box bounds
+#        (box-set-window-INSTANCE) # would this be better in the render macro?
 
         # push the instance as a palette color onto the stack
         INSTANCE
@@ -132,20 +135,23 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
         # run the background drawing macro
         (box-draw-background)
+>>>
 
     # render this box instance and its child objects        
     [box-render-INSTANCE]
+        # set the viewport to the box bounds
+        (box-set-window-INSTANCE)
 
+<<< <background-type> != <bgtype-none>
         # render the background
         (box-background-INSTANCE)
-
+>>>
 	# render the foreground
         # meta template expands to run each ball render macro
         (((ball-render-each <balls-per-box> INSTANCE)))
 
     # set the viewport to only this box
     [box-set-window-INSTANCE]
-
         # put the sequencer arguments on the stack
         {seq-box-INSTANCE}, <GET-CURRENT>
         store
@@ -158,13 +164,15 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # box helper macros
 # ------------------------------------------
 
+<<< <background-type> != <bgtype-none>
 # multiple types of box backgrounds
 # accum0: background palette color
 [box-draw-background]
+>>>
 
 # draw dark gray points at the box bounds
 <<< <background-type> == <bgtype-points>
-     dark-gray
+    dark-gray
 
     <box-width>
     set-position
@@ -183,10 +191,14 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     fill
 >>>
 
+## no background
+#<<< <background-type> == <bgtype-none>
+#    0
+#>>>
+
 # set the offset and window to cover the box's current position
 # accum0-3: sequence get current value arguments
 [box-set-viewport]
-
     # get the passed sequencer arguments
     recall
 
@@ -259,7 +271,12 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     # render a specific ball instance of 
     # a specific box instance
     [ball-render-PARENT-INSTANCE]
+<<< <use-computed-value> == True
+        {seq-ball-PARENT-INSTANCE}, <GET-COMPUTED>
+>>>
+<<< <use-computed-value> == False
         {seq-ball-PARENT-INSTANCE}, <GET-CURRENT>
+>>>        
         get-sequence
 
         set-position
