@@ -40,12 +40,12 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
 [app 10]
     start-application
- 
+
+<<< <draw-mode> != <DRAW-WRITE> 
     # set the preset draw mode
     <draw-mode>
     set-draw-mode
-
-    <CONFIG-FADE-RATE> = <fade-rate>
+>>>
 
     # set the preset brightness level
     <brightness>
@@ -70,6 +70,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # ------------------------------------------
 
 [boxes-render]
+    <FAST-ERASE>
     erase-buffer
 
     # multi macro replaced with a macro run to a 

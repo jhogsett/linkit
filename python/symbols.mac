@@ -80,6 +80,9 @@ $RANDOM-POSITION-FILLED -2
 # copy/paste/duplicate
 $AUTO-TIMES 0
 
+# erasing
+$FAST-ERASE 1
+
 # standard render function, consumes partial final macro
 [render !]
   refresh-display
