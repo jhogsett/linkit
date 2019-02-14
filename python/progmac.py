@@ -133,7 +133,10 @@ def get_command_line_presets():
     result = {}
     for preset in presets:
       args = preset.split("=")
-      result[args[0]] = args[1]
+      if len(args) < 2:
+        ui.report_error("command line preset '" + preset + "' is not a key=value pair - ignored")
+      else:
+        result[args[0]] = args[1]
     return result
 
 # returns True if they're valid
