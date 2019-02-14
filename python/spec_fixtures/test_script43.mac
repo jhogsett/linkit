@@ -1,0 +1,5 @@
+
+%include test_script43_include
+
+$var 2
+
