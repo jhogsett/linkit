@@ -1,12 +1,42 @@
 
-[app 10]
+$wanted-type 1
+$unwanted-type 2
 
-    <NUM-LEDS>
-    get-random-number
+$true-bool 1
+$false-bool 0
 
-    set-position 
-    {{
-        red
-        set-breathe
-    }}
+$true-bool2 '1'
+$false-bool2 ''
+
+$type <wanted-type>
+
+<<< `<type>==1`
+[A]
+  red
+>>>
+
+<<< `<type>==2`
+[B]
+  blue
+>>>
+
+<<< <true-bool>
+[C]
+  green
+>>>
+
+<<< <false-bool>
+[D]
+  white
+>>>
+
+<<< <true-bool2>
+[E]
+  cyan
+>>>
+
+<<< <false-bool2>
+[F]
+  yellow
+>>>
 

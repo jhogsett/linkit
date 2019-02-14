@@ -19,12 +19,12 @@ $HSL-ANGLE `int(360/<num-instances>)`
 
 [app 10]
     start-application
- 
+
+<<< <draw-mode> != <DRAW-WRITE>
     # set the preset draw mode
     <draw-mode>
     set-draw-mode
-
-    <CONFIG-FADE-RATE> = <fade-rate>
+>>> 
 
     # set the preset brightness level
     <brightness>

@@ -2,7 +2,11 @@
 # Boxes of Balls animation v0.0 2-0-19 
 # ----------------------------------------------------------------
 
-#  num-boxes=5 balls-per-box=1 box-width=45 background-type=0 box-step=1 refresh-time=50 ball-time=50 box-sequencer=sqs ball-sequencer=swc ball-step=1 use-computed-value=True
+# pm ball-box.mac  num-boxes=5 balls-per-box=1 box-width=20 background-type=0 box-step=1 refresh-time=50 ball-time=50 box-sequencer=sqs ball-sequencer=swc ball-step=2 use-computed-value=True
+
+# pm ball-box.mac num-boxes=3 balls-per-box=2 box-width=30 background-type=0 box-step=1 refresh-time=50 ball-time=50 box-sequencer=sqs ball-sequencer=sws ball-step=1 use-computed-value=True
+
+# background-type=2 box-width=6 num-boxes=5 balls-per-box=1
 
 %include symbols
 %include hsl-sequencer
@@ -11,14 +15,14 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <ball-time>
 $fade-rate 9000
-$ball-time 60
+$ball-time 50
 $box-width 15
-$box-time 120
+$box-time 100
 $num-boxes 3
 $balls-per-box 2
 $box-instance-time 30
 $ball-instance-time 10
-$refresh-time 80
+$refresh-time 50
 $box-sequencer swing-sequencer
 $ball-sequencer swing-sequencer
 $box-step 0
@@ -40,12 +44,12 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
 [app 10]
     start-application
- 
+
+<<< <draw-mode> != <DRAW-WRITE> 
     # set the preset draw mode
     <draw-mode>
     set-draw-mode
-
-    <CONFIG-FADE-RATE> = <fade-rate>
+>>>
 
     # set the preset brightness level
     <brightness>
@@ -70,6 +74,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # ------------------------------------------
 
 [boxes-render]
+    <FAST-ERASE-BUFFER>
     erase-buffer
 
     # multi macro replaced with a macro run to a 
@@ -153,7 +158,13 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     # set the viewport to only this box
     [box-set-window-INSTANCE]
         # put the sequencer arguments on the stack
+
+<<< <use-computed-value> == True
+        {seq-box-INSTANCE}, <GET-COMPUTED>
+>>>
+<<< <use-computed-value> == False
         {seq-box-INSTANCE}, <GET-CURRENT>
+>>>
         store
 
         # run the helper macro to set the viewport

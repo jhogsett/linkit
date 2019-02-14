@@ -747,6 +747,19 @@ def specs():
     if test("it erases when the width is one pixel"):
       expect_buffer("3:win:olv:flo:1:pos:era", 0, 3, "15,20,0,0,0,0,15,20,0")
 
+    # it erases effects
+      expect_effect("wht:bli:era", 0, 1, "0")
+
+    if test("it performs a fast erase"):
+      expect_buffer("20,20,20:sbl:1:era", 0, 1, "0,0,0")
+      expect_buffer("20,20,20:sbl:2:era", 0, 1, "0,0,0")
+
+    if test("fast erase also erases effects"):
+      expect_effect("red:bli:2:era", 0, 1, "0")
+
+    if test("fastest erase doesn't erase effects"):
+      expect_effect("grn:bli:1:era", 0, 1, "11")
+
 
 ########################################################################
 # REPEATING
