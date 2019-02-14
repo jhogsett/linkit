@@ -38,7 +38,6 @@ $time-factor 4
 [setup]
   (set-schedules)
   (setup-rings)
-#  (hsl-sequencer `<color-sequence-time>*<time-factor>`)
 
 [set-schedules]
   (rotate-outerl `<outer-rotate-time>*<time-factor>`)
@@ -95,8 +94,9 @@ $time-factor 4
     ZONE
     set-zone
     {{
-      do-animated-rotation
-      refresh-display
+      {{{
+        do-animated-rotation
+      }}}
     }}
 ]]
 

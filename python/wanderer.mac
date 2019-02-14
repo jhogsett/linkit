@@ -45,8 +45,9 @@ $wanderer-max-half <wanderer-max>
 
 # use a custom rendering
 [wanderer-render]
-    mirror
-    refresh-display
+    {{{
+        mirror
+    }}}
 
 # create 5 meta-templates for wander processing
 (((wanderer 5)))
@@ -73,8 +74,8 @@ $wanderer-max-half <wanderer-max>
 
         # set the pixel position from the sequencer value
         set-position
+
         {{
-            # use the template value as the palette index
             X
             add-palette-color
 

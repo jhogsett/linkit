@@ -19,16 +19,9 @@ $swinger-max-half <swinger-max>
 
 [swinger-app 10]
     start-application
-
-    <DRAW-WRITE>
-    set-draw-mode
-
     <CONFIG-FADE-RATE> = <swinger-fade-rate>
-
     (hsl-sequencer-start)
-
     [[[setup-swinger 6]]]
-
     (render <swinger-render-time>)
 
 (((swinger 6)))
@@ -38,7 +31,6 @@ $swinger-max-half <swinger-max>
     [setup-swinger-X]
         {seq-X}, `X*(<NUM-LEDS>/6)+(<NUM-LEDS>/6)`, `X*(<NUM-LEDS>/6)`
         <swinger-sequencer-type>
-
         (swinger-X `<swinger-base-timing>+(<seq-X>*<swinger-timing-gap>)`)
 
     [swinger-X]

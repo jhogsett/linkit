@@ -11,11 +11,13 @@ $render-time 100
 $draw-time 1000
 $the-color <RED>
 
+%allow-mutability
+$HSL-TIME <draw-time>
+
 [colors-app 10]
   start-application
   (color-draw <draw-time>)
   (hsl-sequencer-start)
-  (hsl-sequencer <draw-time>)
   (render <render-time>)
 
 [color-draw]

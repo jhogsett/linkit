@@ -10,8 +10,6 @@ $fade-type ffd
 
 [rgbswing-app 4]
 	start-application
-	<DRAW-WRITE>
-	set-draw-mode
 	(this-render <render-time>)
 	(init)
 
@@ -19,8 +17,9 @@ $fade-type ffd
 	(((start 3)))
 
 [this-render]
-	mirror
-	refresh-display
+        {{{
+	    mirror
+	}}}
 
 [[start X
 	(start-X)

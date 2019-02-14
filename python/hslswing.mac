@@ -17,10 +17,6 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 
 [hslswing-app 10]				# start a macro called `hslswing-app` and pre-assign macro #4
 	start-application			# mark this macro as an 'application' to clear and reset the device
-
-	<DRAW-WRITE>				# set the draw mode to overwrite (replace)
-	set-draw-mode
-
 	(hslrender <render-time>)		# schedule the render macro to run periodically
 	(init)					# call 'init' macro to set up swingers
 
@@ -35,8 +31,9 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 # --------------------------------------------
 
 [hslrender]					# define macro 'render' in the last (truncated) macro # to update the display
-	mirror					# duplicate the first half of the LED colors to the second half, reversed
-	refresh-display				# push the display buffer to the LEDs
+        {{{
+	    mirror				# duplicate the first half of the LED colors to the second half, reversed
+	}}}	        			# push the display buffer to the LEDs
 
 # --------------------------------------------
 
@@ -51,7 +48,6 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 	[start-X]				# define templated macro 'start-X' to start up a circulr swinger
 		{seq-X},<max-width-half>	# allocate a new unique sequencer number; push it along with half the display width
 	        TYPE				# create a sequencer per the above pushed arguments
-
 	        (render-X <cycle-time>) 	# schedule the the swinger to advance and draw periodically
 
 	[render-X]				# define a templated macro 'render-X' to handle advancing and drawing the swinger
@@ -63,8 +59,7 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 		        COLOR			# push the passed-in color value (palette color index) to the argument stack
 		        add-palette-color	# insert a palette color per the above color index argument
 		        set-fast-fade		# apply a fast-to-compute fade to the pixel (uses bit shift for division)
-
-		       fill			# flood the set up region with the inserted palette color and fade effect
+		        fill			# flood the set up region with the inserted palette color and fade effect
                 }}
 ]]						# close the template definition
 
@@ -75,21 +70,18 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 [average-swinger]				# define a macro to set up a third swinger that averages the values of the first two
 	{seq-a},<NUM-LEDS>			# allocate a unique sequencer number and push it along with the device LED count
         start-wheel-sequence			# create a 'wheel sequencer' per the pushed arguments (repeats numbers 0, 1, 2, 3, 0, 1, 2, 3)
-
         (render-a <cycle-time>)			# schedule the swinger to periodically advance and draw
 
 # --------------------------------------------
 
 [render-a]					# define a macro to advance and draw the swinger
-	{seq-a},<MACRO-SEQ>,<math-a>	# push avove sequence number with option to compute macro and macro number 
+	{seq-a},<MACRO-SEQ>,<math-a>		# push avove sequence number with option to compute macro and macro number 
 	sequence-next-window			# get the next contiguous draw region
-
 	set-position				# set the fill region per the pushed arguments
         {{
 	        <BLUE>					# push the palette color index for the color blue
 	        add-palette-color			# insert a palette color per the above color index argument
                 set-fast-fade				# apply a fast-to-compute fade to the pixel (uses bit shift for division)
-
                 fill                           		# flood the set up region with the inserted palette color and fade effect
         }}
 

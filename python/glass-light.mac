@@ -41,9 +41,10 @@ $lenses-only 5
 
 [[light-setting FRONT-COLOR SIDE-COLOR
   [light-set-FRONT-COLOR]
-    (light-sides-FRONT-COLOR)
-    (light-front-FRONT-COLOR)
-    refresh-display
+    {{{
+      (light-sides-FRONT-COLOR)
+      (light-front-FRONT-COLOR)
+    }}}
 
   [light-sides-FRONT-COLOR]
     <right-strip>
@@ -58,7 +59,6 @@ $lenses-only 5
     dim
     dim
     dim
-#    blink
     set-breathe
     flood
 

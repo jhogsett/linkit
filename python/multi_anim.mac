@@ -4,12 +4,11 @@
 
 %include symbols
 %include hsl-sequencer
-%allow-mutability
 %play-macro bars-app
 
 $num-instances 3
 $width 8
-$HSL-ANGLE 4
+#$HSL-ANGLE 4
 $background-width 4
 $background-time 140
 $background-sat 63
@@ -25,6 +24,7 @@ $low-limit `<width>/2`
 $high-limit `<NUM-LEDS>-<low-limit>`
 $add-time 3
 
+%allow-mutability
 $HSL-TIME 1000
 
 [bars-app 10]
@@ -52,9 +52,10 @@ $HSL-TIME 1000
     (background-start)
 
 [render-all]
-    (erase-all)
-    [[[draw <num-instances>]]]
-    refresh-display
+    {{{
+        (erase-all)
+        [[[draw <num-instances>]]]
+    }}}
 
 [background-start]
     {seq-bg},<background-width>
@@ -105,7 +106,6 @@ $HSL-TIME 1000
     [start-INSTANCE]
         {seq-INSTANCE},<high-limit>,<low-limit>
         wheel-cosine-sequencer
-
         (advance-INSTANCE TIME)
 
     [advance-INSTANCE]
@@ -129,7 +129,6 @@ $HSL-TIME 1000
             PALETTE
             add-palette-color
             darken
-
             fill
         }}
 ]]

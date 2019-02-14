@@ -70,8 +70,9 @@ $color3 <BLUE>
     ZONE
     set-zone
     {{
-      do-animated-rotation
-      refresh-display
+      {{{
+        do-animated-rotation
+      }}}
     }}
 ]]
 

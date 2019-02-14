@@ -58,10 +58,11 @@ $add-time 3
   advance-sequence
 
 [render-all]
-    <FAST-ERASE-BUFFER>
-    erase-buffer
-    [[[draw <num-instances>]]]
-    refresh-display
+    {{{
+        <FAST-ERASE-BUFFER>
+        erase-buffer
+        [[[draw <num-instances>]]]
+    }}}
 
 (((bar <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
 
