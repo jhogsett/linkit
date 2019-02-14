@@ -88,8 +88,8 @@ $bar-step 1
         {{
             PALETTE
             add-palette-color
-            darken
-            darken
+#            darken
+#            darken
             fill
         }}
 ]]
