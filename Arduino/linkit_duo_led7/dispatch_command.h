@@ -17,12 +17,15 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_FLUSH: 
       flush(true); 
       break;
-      
+
+#define ERASE_SLOW_ALL 0
+#define ERASE_FAST_BUFFER 1
+#define ERASE_FAST_ALL 2      
     case CMD_ERASE:
-      if(arg0 != 0)
-        buffer->fast_erase();
-      else
+      if(arg0 == ERASE_SLOW_ALL)
         buffer->erase(false); 
+      else
+        buffer->fast_erase(arg0 == ERASE_FAST_ALL ? true : false);
       break;
   
     case CMD_ROTATE: 

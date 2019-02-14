@@ -22,7 +22,7 @@ class Buffer
 
   void display_buffer(rgb_color * pbuffer);
   void render_display();
-  void fast_erase();
+  void fast_erase(bool erase_effects = false);
   void erase(bool display);
   void push_color(rgb_color color, int times, bool display, byte effect, byte max, byte start, bool color_correction);
   void push_rgb_color(byte red, byte green, byte blue);
@@ -135,12 +135,16 @@ void Buffer::render_display()
   display_buffer(render);
 }
 
-void Buffer::fast_erase()
+void Buffer::fast_erase(bool erase_effects)
 {
-  rgb_color * buf = buffers[current_display];
-  byte * effects = effects_buffers[current_display];
+  void * buf = (void*)buffers[current_display];
   memset(buf, 0, visible_led_count * 3);
-  memset(effects, 0, visible_led_count);
+
+  if(erase_effects)
+  {
+    void * effects = (void*)effects_buffers[current_display];
+    memset(effects, 0, visible_led_count);
+  }
 }
 
 void Buffer::erase(bool display = false)
