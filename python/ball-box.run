@@ -1,0 +1,66 @@
+progmac.py -o
+ball-box
+10
+
+num-boxes          1-5
+balls-per-box      1-4 
+box-width          6-30
+background-type    0-2
+box-step           1-2
+refresh-time       40-120 10
+ball-time          40-80 10
+box-sequencer      seq sqs sws swc
+ball-sequencer     seq sqs sws swc
+ball-step          1-3
+use-computed-value True False
+
+-------
+
+rules:
+
+line 1 is executable name including any up front command line switches
+line 2 is program name
+line 3 is seconds to wait for next round
+line 4 is blank
+lines 5.. are pluggable values
+
+types:
+
+key value 
+(always set to the value)
+(value can be any type)
+
+key low_value-high_value 
+(set from a range of integer values, inclusive)
+(first argument must have "-" and integer values)
+
+key low_value-high_value quantization
+(set from a range of values, quantized to the quantization)
+(first argument must have "-" and integer values)
+(second argyment must be integer)
+
+key value1 value2
+(set to either value)
+(first argument must NOT have "-")
+(values can be any type)
+
+key value1 value2
+(set to either value)
+(first argument must NOT have "-")
+(values can be any type)
+
+key value1 value2 value3... value4...
+(set to any of the values)
+(first argument must NOT have "-")
+(values can be any type)
+
+
+to operate
+- assemble front arguments
+- process pluggable values
+- assemble to argument
+- display them
+- run the program
+
+
+
