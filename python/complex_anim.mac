@@ -58,7 +58,7 @@ $add-time 3
   advance-sequence
 
 [render-all]
-    <FAST-ERASE>
+    <FAST-ERASE-BUFFER>
     erase-buffer
     [[[draw <num-instances>]]]
     refresh-display

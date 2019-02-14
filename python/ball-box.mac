@@ -2,7 +2,7 @@
 # Boxes of Balls animation v0.0 2-0-19 
 # ----------------------------------------------------------------
 
-#  num-boxes=5 balls-per-box=1 box-width=45 background-type=0 box-step=1 refresh-time=50 ball-time=50 box-sequencer=sqs ball-sequencer=swc ball-step=1 use-computed-value=True
+# pm ball-box.mac  num-boxes=5 balls-per-box=1 box-width=20 background-type=0 box-step=1 refresh-time=50 ball-time=50 box-sequencer=sqs ball-sequencer=swc ball-step=2 use-computed-value=True
 
 %include symbols
 %include hsl-sequencer
@@ -70,7 +70,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # ------------------------------------------
 
 [boxes-render]
-    <FAST-ERASE>
+    <FAST-ERASE-BUFFER>
     erase-buffer
 
     # multi macro replaced with a macro run to a 

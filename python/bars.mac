@@ -6,14 +6,16 @@
 %include hsl-sequencer
 %play-macro bars-app
 
-$num-instances 4
-$instance-width `int(<NUM-LEDS>/10)`
+$num-instances 5
+#$instance-width `int(<NUM-LEDS>/10)`
+#$instance-width `<NUM-LEDS>/6`
+$instance-width 12
 
 %allow-mutability
 $HSL-ANGLE `int(360/<num-instances>)`
 $HSL-TIME 1000
 
-$base-next-time 70
+$base-next-time 50
 $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <base-next-time>
@@ -21,6 +23,8 @@ $fade-rate 9000
 $low-limit `int(<instance-width>/2)`
 $high-limit `<NUM-LEDS>-<low-limit>`
 $add-time 3
+$refresh-time 50
+$bar-step 1
 
 [bars-app 10]
     start-application
@@ -44,11 +48,15 @@ $add-time 3
     # schedule the display rendering
     (render-all <render-time>)
 
+    (refresh <refresh-time>)
+
+[refresh]
+    refresh-display
+
 [render-all]
-    <FAST-ERASE>
+    <FAST-ERASE-BUFFER>
     erase-buffer
     [[[draw <num-instances>]]]
-    refresh-display
 
 (((bar <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
 
@@ -61,7 +69,7 @@ $add-time 3
         (advance-INSTANCE TIME)
 
     [advance-INSTANCE]
-        {seq-INSTANCE},<GET-NEXT>
+        {seq-INSTANCE},<GET-NEXT>,<bar-step>
         advance-sequence
 
     [draw-INSTANCE]
