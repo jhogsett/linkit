@@ -127,15 +127,28 @@ def run_program(command_line):
   ui.report_info("running: " + command_line)
   utils.run_command(command_line)
 
-def round_delay():
-  ui.report_info_alt("waiting for " + str(round_time) + " seconds")
-  time.sleep(round_time)
+def round_delay(command_line):
+  ui.report_info("Press a key to Vote:")
+  choice = utils.get_input(round_time)
+  if choice == " ":
+    choice = "liked"
+  elif choice == None:
+    choice = "no vote"
+  else:
+    choice = "pressed: " + choice
+  ui.report_info_alt(choice)
+  add_to_log(choice)
+
+def add_to_log(line):
+  with open('runner.log', 'a') as file:
+    file.write(line + '\n')
 
 def do_round():
   arguments = create_round()
   command_line = assemble_command_line(arguments)
+  add_to_log(command_line)
   run_program(command_line)
-  round_delay()
+  round_delay(command_line)
 
 ############################################################
 ############################################################
