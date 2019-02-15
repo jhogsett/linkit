@@ -10,7 +10,7 @@ import app_ui as ui
 import macro_compiler as mc
 import math
 
-global app_description, verbose_mode, debug_mode, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, show_tables, quiet_mode, allow_mutability
+global app_description, verbose_mode, debug_mode, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, show_tables, quiet_mode, allow_mutability, no_led_show
 app_description = None
 verbose_mode = None
 debug_mode = None
@@ -24,6 +24,7 @@ show_output = None
 show_tables = None
 quiet_mode = None
 allow_mutability = None
+no_led_show = None
 
 global device_profile, num_leds, starting_macro, num_macro_bytes, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
 device_profile = None
@@ -40,7 +41,7 @@ print_macros = None
 
 def get_options():
     global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, show_tables, num_macro_bytes_override, starting_macro_override, ending_macro_override, char_buffer_override, quiet_mode, allow_mutability
-    global print_macros
+    global print_macros, no_led_show
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
@@ -55,6 +56,7 @@ def get_options():
     parser.add_argument("-p", "--print-macros", dest="print_macros", action="store_true", help="print current macros on device (False)")
     parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
     parser.add_argument("-a", "--allow-mutability", dest="mutability", action="store_true", help="allow variable values to be changed (False)")
+    parser.add_argument("-n", "--no-led-show", dest="no_led_show", action="store_true", help="don't write to the display while programming (False)")
     parser.add_argument("program", nargs="?", help="program to transmit")
     parser.add_argument("presets", nargs=argparse.REMAINDER, help="resolved=value presets (None)")
 
@@ -74,6 +76,7 @@ def get_options():
     show_tables = args.show_tables
     print_macros = args.print_macros
     allow_mutability = args.mutability
+    no_led_show = args.no_led_show
 
 def initialize():
     global app_description, bytes_programmed
@@ -155,8 +158,9 @@ def set_script(script_text):
         bytes = lc.command_int(script_text);
         bytes_programmed += bytes
         ui.report_verbose("programmed: " + script_text)
-        ui.report_verbose_alt("bytes: " + str(bytes))
-        lc.command_str(str(bytes % number_of_colors) + ":pal:mir:flu")
+        ui.report_verbose_alt("bytes: " + str(bytes)
+        if not no_led_show:)
+            lc.command_str(str(bytes % number_of_colors) + ":pal:mir:flu")
         macro_count += 1
         if not debug_mode:
             if not verbose_mode:
