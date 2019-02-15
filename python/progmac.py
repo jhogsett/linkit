@@ -159,7 +159,7 @@ def set_script(script_text):
         bytes_programmed += bytes
         ui.report_verbose("programmed: " + script_text)
         ui.report_verbose_alt("bytes: " + str(bytes)
-        if not no_led_show:)
+        if not no_led_show:
             lc.command_str(str(bytes % number_of_colors) + ":pal:mir:flu")
         macro_count += 1
         if not debug_mode:
