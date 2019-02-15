@@ -21,49 +21,60 @@ def ingest_file(filename):
   return utils.load_file(filename, ".run")
 
 def preprocess(lines):
-  # strip each line
-  # remove from each line anything to the right of a command mark
-  # leave line out completely if empty
-  return lines
+  return utils.strip_comments(lines)
 
 def extract_settings(lines):
-  # first line is command line prior to placement of random key=value pairs
-  # second line is command line after placement of random pairs (can be blank)
-  # third line is time in seconds to wait before going to the next round
-  # remaining lines are type-specific arguments
-  return lines
-
-#num-boxes          1-5
-#balls-per-box      1-4
-#box-width          6-30
-#background-type    0-2
-#box-step           1 2 4
-#refresh-time       40-120 10
-#ball-time          40-80 10
-#box-sequencer      seq sqs sws swc
-#ball-sequencer     seq sqs sws swc
-#ball-step          1-3
-#use-computed-value True False
-
-# types:
-# 
-# 1) integer range (second arg has a '-' that splits into two valid integers)
-# 2) integer range with quantization (+ third arg has an int)
-# 3) series of values if the above two are not met
+  global pre_command_line, post_command_line, round_time
+  pre_command_line = lines[0]
+  post_command_line = lines[1]
+  round_time = int(lines[2])
+  return lines[3:]
 
 def parse(script):
-  # process each line
-  # hand off to parsing handlers to process line
-  # add returned plan to plan list 
-  return [{}]
+  plans = []
+  for line in script:
+    result = parsing_handler1(line)
+    if not result:
+      result = parsing_handler1(line)
+    if not result:
+      result = parsing_handler3(line)
+    if result:
+      plans.append(result)
+  return plans
 
+#num-boxes 1-5
+# 1) integer range (second arg has a '-' that splits into two valid integers)
 def parsing_handler1(line):
-  # determine if this line should be processed; return None if not
-  # process line
-  # return line processed into a handler-specific dictionary
-    # all need to have a 'type'
-    # the type determines how to randomize later
-  return {}
+  parts = line.split()
+  if len(parts) == 2:
+    name = parts[0]
+    range = parts[1].split("-")
+    if len(range) == 2:
+      return {"type" : 1, "name" : name, "low" : range[0], "high" : range[1]}
+  return None
+
+#refresh-time 40-120 10
+# 2) integer range with quantization (+ third arg has an int)
+def parsing_handler2(line):
+  parts = line.split()
+  if len(parts) == 3:
+    name = parts[0]
+    range = parts[1].split("-")
+    quant = parts[2]
+    if len(range) == 2:
+      return {"type" : 2, "name" : name, "low" : range[0], "high" : range[1], "quant" : quant}
+  return None
+
+#ball-sequencer seq sqs sws swc
+# 3) series of values if the above two are not met
+def parsing_handler3(line):
+  parts = line.split()
+  if len(parts) > 1:
+    name = parts[0]
+    choices = parts[1:]
+    if len(choices) > 0:
+      return {"type" : 3, "name" : name, "choices" : choices}    
+  return None
 
 def get_plan(runner_file):
   global plans
@@ -143,6 +154,7 @@ def initialize():
     ui.begin(verbose_mode, quiet_mode)
     introduction()
     get_plan(runner_file)
+    print plans
 
 def loop():
     do_round()
