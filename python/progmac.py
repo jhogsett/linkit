@@ -146,7 +146,6 @@ def get_command_line_presets():
 def validate_options():
     errors = False
     if not print_macros:
-#      print program
       if len(program) == 0:
         ui.report_error("Must specify a progam to upload")
         errors = True
@@ -158,7 +157,7 @@ def set_script(script_text):
         bytes = lc.command_int(script_text);
         bytes_programmed += bytes
         ui.report_verbose("programmed: " + script_text)
-        ui.report_verbose_alt("bytes: " + str(bytes)
+        ui.report_verbose_alt("bytes: " + str(bytes))
         if not no_led_show:
             lc.command_str(str(bytes % number_of_colors) + ":pal:mir:flu")
         macro_count += 1
