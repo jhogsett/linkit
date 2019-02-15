@@ -4,9 +4,9 @@ import sys
 import argparse
 import terminal_colors as tc
 import app_ui as ui
+import os
 
 #import time
-#import os
 #import datetime
 
 global app_description, verbose_mode, quiet_mode
@@ -30,7 +30,6 @@ def validate_options():
 
 def introduction():
     ui.app_description(app_description)
-
     ui.report_verbose("verbose mode")
     ui.report_verbose()
 
