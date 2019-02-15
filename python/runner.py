@@ -7,6 +7,7 @@ import app_ui as ui
 import os
 import utils
 import time
+import random
 #import datetime
 
 global plans, pre_command_line, post_command_line, round_time
@@ -35,7 +36,7 @@ def parse(script):
   for line in script:
     result = parsing_handler1(line)
     if not result:
-      result = parsing_handler1(line)
+      result = parsing_handler2(line)
     if not result:
       result = parsing_handler3(line)
     if result:
@@ -50,7 +51,7 @@ def parsing_handler1(line):
     name = parts[0]
     range = parts[1].split("-")
     if len(range) == 2:
-      return {"type" : 1, "name" : name, "low" : range[0], "high" : range[1]}
+      return {"type" : 1, "name" : name, "low" : int(range[0]), "high" : int(range[1])}
   return None
 
 #refresh-time 40-120 10
@@ -62,7 +63,7 @@ def parsing_handler2(line):
     range = parts[1].split("-")
     quant = parts[2]
     if len(range) == 2:
-      return {"type" : 2, "name" : name, "low" : range[0], "high" : range[1], "quant" : quant}
+      return {"type" : 2, "name" : name, "low" : int(range[0]), "high" : int(range[1]), "quant" : int(quant)}
   return None
 
 #ball-sequencer seq sqs sws swc
@@ -86,27 +87,48 @@ def get_plan(runner_file):
 ############################################################
 
 def create_round():
-  # go through each plan, expected to have a 'type'
-  # depending on type, call a randomization handler
-  # add the received string to the arguments array
-  # return the arguments joined with whitespace
-  return ""
+  all_arguments = ""
+  for plan in plans:
+    type = plan["type"]
+    if type == 1:
+      arguments = randomization_handler1(plan)
+    elif type == 2:
+      arguments = randomization_handler2(plan)
+    elif type == 3:
+      arguments = randomization_handler3(plan)
+    all_arguments = all_arguments + " " + arguments
+  return all_arguments
+  
+def assemble_argument(name, value):
+  return name + "=" + str(value)
 
 def randomization_handler1(plan):
-  # use the type-specific diction values to create an argument
-  # return the argument key=value string
-  return ""
+  value = random.randint(plan["low"], plan["high"])
+  return assemble_argument(plan["name"], value)
+
+def quantize_value(value, quant):
+  return int(value/quant) * quant
+
+def randomization_handler2(plan):
+  value = random.randint(plan["low"], plan["high"])
+  value = quantize_value(value, plan["quant"])
+  return assemble_argument(plan["name"], value)
+
+def randomization_handler3(plan):
+  choices = plan["choices"]
+  count = len(choices)
+  choice = random.randint(0, count-1)
+  return assemble_argument(plan["name"], choices[choice])
 
 def assemble_command_line(arguments):
-  # return a string with the pre, arguments, and post parts
-  return ""
+  return pre_command_line + " " + arguments + " " + post_command_line
 
 def run_program(command_line):
-  # launch the program (capture output for verbose display)
-  pass
+  ui.report_info("running: " + command_line)
+  utils.run_command(command_line)
 
 def round_delay():
-  # wait the specified seconds
+  ui.report_info_alt("waiting for " + str(round_time) + " seconds")
   time.sleep(round_time)
 
 def do_round():
@@ -114,8 +136,6 @@ def do_round():
   command_line = assemble_command_line(arguments)
   run_program(command_line)
   round_delay()
-  
-
 
 ############################################################
 ############################################################
@@ -154,7 +174,6 @@ def initialize():
     ui.begin(verbose_mode, quiet_mode)
     introduction()
     get_plan(runner_file)
-    print plans
 
 def loop():
     do_round()
