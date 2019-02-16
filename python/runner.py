@@ -11,10 +11,9 @@ import random
 import led_command as lc
 import macro_compiler as mc
 
-global plans, program, round_time
+global plans, program
 plans = []
 program = ""
-round_time = 0
 
 ############################################################
 
@@ -25,10 +24,9 @@ def preprocess(lines):
   return utils.strip_comments(lines)
 
 def extract_settings(lines):
-  global program, round_time
+  global program
   program = lines[0]
-  round_time = int(lines[1])
-  return lines[2:]
+  return lines[1:]
 
 def parse(script):
   plans = []
@@ -92,8 +90,8 @@ def permutations():
 def plan_entry(name, value):
   return tc.cyan(name) + " " + tc.green(str(value))
 
-def plan_header(name):
-  return tc.yellow(name)
+def plan_header(type, name):
+  return tc.blue("[ " + type + " ]") + " " + tc.yellow(name + ":")
 
 def plan_choices(choices):
   return " ".join(choices)
@@ -106,12 +104,12 @@ def report_plan():
   if show_plan:
     for plan in plans:
       if plan["type"] == 1:
-        ui.write_line(plan_header("[INTEGER RANGE]") + " " + plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"]))
+        ui.write_line(plan_header("INTEGER RANGE", plan["name"]) + " " + plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"]))
       if plan["type"] == 2:
-        ui.write_line(plan_header("[QUANTIZED RANGE]") + " " +plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"]) + " " + plan_entry("quantized to:", str(plan["quant"]) + "'s"))
+        ui.write_line(plan_header("QUANTIZED RANGE", plan["name"]) + " " +plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"]) + " " + plan_entry("quantized to:", str(plan["quant"]) + "'s"))
       if plan["type"] == 3:
         choices = plan_choices(plan["choices"])
-        ui.write_line(plan_header("[SELECTED CHOICE]") + " " +plan_entry("choices:", choices))
+        ui.write_line(plan_header("SELECTED CHOICE", plan["name"]) + " " +plan_entry("choices:", choices))
     ui.report_separator()
 
 def get_plan(runner_file):
@@ -181,6 +179,7 @@ def set_script(script_text):
       set_script(script_text)
 
 def program_script(presets):
+    global compiler_error
     compiled_script = ""
     compilation_succeeded = True
     mc.reset(presets)
@@ -194,6 +193,7 @@ def program_script(presets):
         ui.report_separator()
         ui.report_error("Fatal error compiling script. Reported error: ")
         ui.report_error_alt(str(e))
+        compiler_error = str(e)
         compilation_succeeded = False
 
     if verbose_mode:
@@ -214,6 +214,7 @@ def program_script(presets):
                 ui.write(tc.yellow('*'))
             if no_verify:
               script_ok = True
+              ui.report_separator()
             else:
               script_ok = verify_programming(compiled_script)
     return script_ok
@@ -232,7 +233,7 @@ def verify_programming(compiled_script):
       ui.report_separator()
     if not verbose_mode:
       ui.write(tc.magenta('@'))
-  print
+  ui.report_separator()
   return script_ok
 
 def run_program(arguments):
@@ -270,28 +271,46 @@ def add_to_log(line):
   with open(log_filename(), 'a') as file:
     file.write(line + '\n')
 
+def format_argument(name, value):
+  return tc.cyan(name + ":") + tc.yellow("[" + str(value) + "]")
+
 def format_arguments(arguments):
+  line = ""
+  for name in arguments.keys():
+    line += format_argument(name, arguments[name]) + " "
+  return line
+
+def list_arguments(arguments):
   line = ""
   for name in arguments.keys():
     line += name + "=" + str(arguments[name]) + " "
   return line
 
+def log_arguments(arguments): 
+  listed_arguments = list_arguments(arguments)
+  add_to_log(program + " " + listed_arguments)
+
+def display_arguments(arguments):
+  formatted_arguments = format_arguments(arguments)
+  ui.write_line(formatted_arguments)
+
 def do_round():
   arguments = create_round()
-  formatted_arguments = format_arguments(arguments)
-  add_to_log(program + " " + formatted_arguments)
-  ui.report_info(formatted_arguments)
+  log_arguments(arguments)
+  display_arguments(arguments)
+
   if run_program(arguments):
     vote = round_delay()
     lc.command(":::stp")
+    lc.command(":::stp")
     add_to_log(vote)
   else:
-    add_to_log("failed")
+    add_to_log("error: " + compiler_error)
 
 ############################################################
 ############################################################
 
-global app_description, verbose_mode, quiet_mode, runner_file, device_presets
+global app_description, verbose_mode, quiet_mode, runner_file, device_presets, show_plan, show_script, no_verify, round_time, extra_verbose_mode, compiler_error
 app_description = None
 verbose_mode = None
 quiet_mode = None
@@ -300,25 +319,32 @@ device_presets = None
 show_plan = None
 show_script = None
 no_verify = None
+round_time = None
+extra_verbose_mode = None
+compiler_error = ""
 
 def get_options():
-    global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify
+    global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify, round_time, extra_verbose_mode
     app_description = "Auto Program Runner - Apollo Lighting System v.0.0 2-0-2019"
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("runner", help="runner script filename")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
-    parser.add_argument("-p", "--show-plan", dest="show_plan", action="store_true", help="show the randomization plan (False)")
+    parser.add_argument("-p", "--dont-show-plan", dest="dont_show_plan", action="store_true", help="don't show the randomization plan (False)")
     parser.add_argument("-s", "--show-script", dest="show_script", action="store_true", help="show the compiled script (False)")
     parser.add_argument("-n", "--no-verify", dest="no_verify", action="store_true", help="skip the programming verification step (False)")
+    parser.add_argument("-w", "--wait-time", type=int, dest="wait_time", default=30, help="wait time between rounds in seconds (30)")
+    parser.add_argument("-x", "--extra-verbose", dest="extra_verbose", action="store_true", help="display extra verbose info (False)")
     args = parser.parse_args()
     verbose_mode = args.verbose
     quiet_mode = args.quiet
     runner_file = args.runner
-    show_plan = args.show_plan
+    show_plan = not args.dont_show_plan
     show_script = args.show_script
     no_verify = args.no_verify
+    round_time = args.wait_time
+    extra_verbose_mode = args.extra_verbose
 
 def validate_options():
     pass
@@ -336,8 +362,7 @@ def initialize():
     ui.begin(verbose_mode, quiet_mode)
     introduction()
 
-    led_verbose_mode = False
-    lc.begin(led_verbose_mode)
+    lc.begin(extra_verbose_mode)
     lc.stop_all()
 
     device_presets = lc.get_device_profile()
@@ -353,8 +378,7 @@ def initialize():
     total_macro_bytes = device_presets["TOTAL-MACRO-BYTES"]
     last_macro_bytes = device_presets["LAST-MACRO-BYTES"]
 
-    compiler_verbose_mode = False
-    mc.begin(lc, compiler_verbose_mode, quiet_mode, device_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
+    mc.begin(lc, extra_verbose_mode, quiet_mode, device_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
 
 def loop():
     do_round()
