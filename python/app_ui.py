@@ -27,8 +27,14 @@ def report_info_header(message):
 def report_info_alt(message):
     print tc.green(message)
 
+def report_info_alt2(message):
+    print tc.yellow(message)
+
 def report_warn(message):
     print tc.yellow(message)
+
+def report_separator():
+    print
 
 def report_verbose(message=""):
     if verbose_mode:
@@ -45,6 +51,9 @@ def report_verbose_alt2(message=""):
 def verbose_entry(key, value):
     if verbose_mode:
         print tc.green(key) + ": " + tc.white(str(value))        
+
+def write_line(text):
+    print text
 
 def write(text):
     sys.stdout.write(text)

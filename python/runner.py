@@ -83,11 +83,36 @@ def parsing_handler3(line):
       return {"type" : 3, "name" : name, "count" : len(choices), "choices" : choices}    
   return None
 
-def report_stats():
+def permutations():
   permutations = 1
   for plan in plans:
     permutations *= plan["count"]
-  ui.report_info("permutations: " + str(permutations))
+  return permutations
+
+def plan_entry(name, value):
+  return tc.cyan(name) + " " + tc.green(str(value))
+
+def plan_header(name):
+  return tc.yellow(name)
+
+def plan_choices(choices):
+  return " ".join(choices)
+
+def report_plan():
+  perm = "{:,}".format(permutations())
+  ui.report_info("permutations: " + tc.green(str(perm)))
+  ui.report_separator()
+
+  if show_plan:
+    for plan in plans:
+      if plan["type"] == 1:
+        ui.write_line(plan_header("[INTEGER RANGE]") + " " + plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"]))
+      if plan["type"] == 2:
+        ui.write_line(plan_header("[QUANTIZED RANGE]") + " " +plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"]) + " " + plan_entry("quantized to:", str(plan["quant"]) + "'s"))
+      if plan["type"] == 3:
+        choices = plan_choices(plan["choices"])
+        ui.write_line(plan_header("[SELECTED CHOICE]") + " " +plan_entry("choices:", choices))
+    ui.report_separator()
 
 def get_plan(runner_file):
   global plans
@@ -95,7 +120,7 @@ def get_plan(runner_file):
   script = preprocess(script)
   script = extract_settings(script)
   plans = parse(script)
-  report_stats()
+  report_plan()
 
 ############################################################
 
@@ -161,6 +186,10 @@ def program_script(presets):
     mc.reset(presets)
     try:
         compiled_script = mc.compile_file(program)
+        if show_script:
+          ui.report_separator()
+          for line in compiled_script:
+            ui.report_info_alt(line)
     except ValueError, e:
         print
         ui.report_error("Fatal error compiling script. Reported error: ")
@@ -181,6 +210,7 @@ def program_script(presets):
         if compilation_valid:
             for script_text in compiled_script:
               set_script(script_text)
+              ui.write(tc.green('.'))
             script_ok = verify_programming(compiled_script)
     return script_ok
 
@@ -221,7 +251,7 @@ def round_delay():
   return choice
 
 def add_to_log(line):
-  with open('runner.log', 'a') as file:
+  with open(program + '.log', 'a') as file:
     file.write(line + '\n')
 
 def format_arguments(arguments):
@@ -237,6 +267,7 @@ def do_round():
   ui.report_info(formatted_arguments)
   if run_program(arguments):
     vote = round_delay()
+    lc.command(":::stp")
     add_to_log(vote)
   else:
     add_to_log("failed")
@@ -250,19 +281,25 @@ verbose_mode = None
 quiet_mode = None
 runner_file = ""
 device_presets = None
+show_plan = None
+show_script = None
 
 def get_options():
-    global app_description, verbose_mode, runner_file
-    app_description = "Application Runner - Apollo Lighting System v.0.0 2-0-2019"
+    global app_description, verbose_mode, runner_file, show_plan, show_script
+    app_description = "Auto Program Runner - Apollo Lighting System v.0.0 2-0-2019"
 
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
+    parser.add_argument("-p", "--show-plan", dest="show_plan", action="store_true", help="show the randomization plan (False)")
+    parser.add_argument("-s", "--show-script", dest="show_script", action="store_true", help="show the compiled script (False)")
     parser.add_argument("runner", help="runner script filename")
     args = parser.parse_args()
     verbose_mode = args.verbose
     quiet_mode = args.quiet
     runner_file = args.runner
+    show_plan = args.show_plan
+    show_script = args.show_script
 
 def validate_options():
     pass
