@@ -51,7 +51,10 @@ def parsing_handler1(line):
     name = parts[0]
     range = parts[1].split("-")
     if len(range) == 2:
-      return {"type" : 1, "name" : name, "low" : int(range[0]), "high" : int(range[1])}
+      low = int(range[0])
+      high = int(range[1])
+      count = (high - low) + 1
+      return {"type" : 1, "name" : name, "count" : count, "low" : low, "high" : high}
   return None
 
 #refresh-time 40-120 10
@@ -61,9 +64,13 @@ def parsing_handler2(line):
   if len(parts) == 3:
     name = parts[0]
     range = parts[1].split("-")
-    quant = parts[2]
     if len(range) == 2:
-      return {"type" : 2, "name" : name, "low" : int(range[0]), "high" : int(range[1]), "quant" : int(quant)}
+      low = int(range[0])
+      high = int(range[1])
+      quant = int(parts[2])
+      diff = high - low
+      count = (diff / quant) + 1
+      return {"type" : 2, "name" : name, "count" : count, "low" : low, "high" : high, "quant" : quant}
   return None
 
 #ball-sequencer seq sqs sws swc
@@ -74,8 +81,14 @@ def parsing_handler3(line):
     name = parts[0]
     choices = parts[1:]
     if len(choices) > 0:
-      return {"type" : 3, "name" : name, "choices" : choices}    
+      return {"type" : 3, "name" : name, "count" : len(choices), "choices" : choices}    
   return None
+
+def report_stats():
+  permutations = 1
+  for plan in plans:
+    permutations *= plan["count"]
+  ui.report_info("permutations: " + str(permutations))
 
 def get_plan(runner_file):
   global plans
@@ -83,6 +96,7 @@ def get_plan(runner_file):
   script = preprocess(script)
   script = extract_settings(script)
   plans = parse(script)
+  report_stats()
 
 ############################################################
 
