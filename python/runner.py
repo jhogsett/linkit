@@ -244,9 +244,20 @@ def run_program(arguments):
     lc.command("10:run")
   return script_ok
 
+def enter_pause_loop():
+  ui.report_info_alt2("Paused - press a key to continue...")
+  while True:
+    if utils.get_input(1) != None:
+      return
+
 def round_delay():
-  ui.report_info_alt2("Press a key to Vote:")
+  ui.report_info_alt2("Press X to exit, P to pause, any other key to Vote:")
   choice = utils.get_input(round_time)
+  if choice == "x" or choice == "X":
+    raise KeyboardInterrupt
+  elif choice == "p" or choice == "P":
+    enter_pause_loop()
+    return round_delay()
   if choice == " ":
     choice = "liked"
   elif choice == None:
