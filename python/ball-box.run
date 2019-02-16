@@ -1,5 +1,4 @@
-./progmac.py -n ball-box
-None=None
+./ball-box.mac
 30
 num-boxes          1-4
 balls-per-box      1-3 

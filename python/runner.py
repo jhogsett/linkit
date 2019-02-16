@@ -8,12 +8,12 @@ import os
 import utils
 import time
 import random
-#import datetime
+import led_command as lc
+import macro_compiler as mc
 
-global plans, pre_command_line, post_command_line, round_time
+global plans, program, round_time
 plans = []
-pre_command_line = None
-post_command_line = None
+program = ""
 round_time = 0
 
 ############################################################
@@ -25,11 +25,10 @@ def preprocess(lines):
   return utils.strip_comments(lines)
 
 def extract_settings(lines):
-  global pre_command_line, post_command_line, round_time
-  pre_command_line = lines[0]
-  post_command_line = lines[1]
-  round_time = int(lines[2])
-  return lines[3:]
+  global program, round_time
+  program = lines[0]
+  round_time = int(lines[1])
+  return lines[2:]
 
 def parse(script):
   plans = []
@@ -101,7 +100,7 @@ def get_plan(runner_file):
 ############################################################
 
 def create_round():
-  all_arguments = ""
+  all_arguments = {}
   for plan in plans:
     type = plan["type"]
     if type == 1:
@@ -110,7 +109,7 @@ def create_round():
       arguments = randomization_handler2(plan)
     elif type == 3:
       arguments = randomization_handler3(plan)
-    all_arguments = all_arguments + " " + arguments
+    all_arguments = utils.merge_dicts(all_arguments, arguments)
   return all_arguments
   
 def assemble_argument(name, value):
@@ -118,7 +117,7 @@ def assemble_argument(name, value):
 
 def randomization_handler1(plan):
   value = random.randint(plan["low"], plan["high"])
-  return assemble_argument(plan["name"], value)
+  return { plan["name"] : value }
 
 def quantize_value(value, quant):
   return int(value/quant) * quant
@@ -126,22 +125,90 @@ def quantize_value(value, quant):
 def randomization_handler2(plan):
   value = random.randint(plan["low"], plan["high"])
   value = quantize_value(value, plan["quant"])
-  return assemble_argument(plan["name"], value)
+  return { plan["name"] : value }
 
 def randomization_handler3(plan):
   choices = plan["choices"]
   count = len(choices)
   choice = random.randint(0, count-1)
-  return assemble_argument(plan["name"], choices[choice])
+  return { plan["name"] : choices[choice] }
 
-def assemble_command_line(arguments):
-  return pre_command_line + " " + arguments + " " + post_command_line
+#def assemble_command_line(arguments):
+#  return pre_command_line + " " + arguments + " " + post_command_line
 
-def run_program(command_line):
-  ui.report_info("running: " + command_line)
-  utils.run_command(command_line)
+#def run_program(command_line):
+#  ui.report_info("running: " + command_line)
+#  utils.run_command(command_line)
 
-def round_delay(command_line):
+
+def set_script(script_text):
+    global macro_count, bytes_programmed
+    macro_count = 0
+    bytes_programmed = 0
+    try:
+        bytes = lc.command_int(script_text);
+        bytes_programmed += bytes
+        ui.report_verbose("programmed: " + script_text)
+        ui.report_verbose_alt("bytes: " + str(bytes))
+        macro_count += 1
+    except ValueError as e:
+      print str(e) + " - retrying"
+      set_script(script_text)
+
+def program_script(presets):
+    compiled_script = ""
+    compilation_succeeded = True
+    mc.reset(presets)
+    try:
+        compiled_script = mc.compile_file(program)
+    except ValueError, e:
+        print
+        ui.report_error("Fatal error compiling script. Reported error: ")
+        ui.report_error_alt(str(e))
+        compilation_succeeded = False
+
+    if verbose_mode:
+        print
+        ui.report_verbose("compiled script:")
+        for script_text in compiled_script:
+            ui.report_verbose_alt(script_text)
+    script_ok = False
+    if compilation_succeeded:
+        compilation_valid = mc.compilation_valid(compiled_script)
+        if not mc.compilation_valid(compiled_script):
+          ui.report_error("Compilation failed!")
+        script_ok = compilation_valid
+        if compilation_valid:
+            for script_text in compiled_script:
+              set_script(script_text)
+            script_ok = verify_programming(compiled_script)
+    return script_ok
+
+def verify_programming(compiled_script):
+  script_ok = True
+  for compiled_line in compiled_script:
+    macro_number = int(compiled_line.split(":")[0])
+    programmed_line = lc.get_macro(macro_number)
+    if programmed_line != compiled_line:
+      script_ok = False
+      print
+      ui.report_error("Macro doesn't match:")
+      print tc.green("Expected: " + compiled_line)
+      print tc.red("     Got: " + programmed_line)
+      print
+    ui.write(tc.green('.'))
+  print
+  return script_ok
+
+def run_program(arguments):
+  presets = utils.merge_dicts(device_presets, arguments)
+  script_ok = program_script(presets)
+  if script_ok:
+    lc.command(":::stp")
+    lc.command("10:run")
+  return script_ok
+
+def round_delay():
   ui.report_info("Press a key to Vote:")
   choice = utils.get_input(round_time)
   if choice == " ":
@@ -151,27 +218,38 @@ def round_delay(command_line):
   else:
     choice = "pressed: " + choice
   ui.report_info_alt(choice)
-  add_to_log(choice)
+  return choice
 
 def add_to_log(line):
   with open('runner.log', 'a') as file:
     file.write(line + '\n')
 
+def format_arguments(arguments):
+  line = ""
+  for name in arguments.keys():
+    line += name + "=" + str(arguments[name]) + " "
+  return line
+
 def do_round():
   arguments = create_round()
-  command_line = assemble_command_line(arguments)
-  add_to_log(command_line)
-  run_program(command_line)
-  round_delay(command_line)
+  formatted_arguments = format_arguments(arguments)
+  add_to_log(program + " " + formatted_arguments)
+  ui.report_info(formatted_arguments)
+  if run_program(arguments):
+    vote = round_delay()
+    add_to_log(vote)
+  else:
+    add_to_log("failed")
 
 ############################################################
 ############################################################
 
-global app_description, verbose_mode, quiet_mode, runner_file
+global app_description, verbose_mode, quiet_mode, runner_file, device_presets
 app_description = None
 verbose_mode = None
 quiet_mode = None
 runner_file = ""
+device_presets = None
 
 def get_options():
     global app_description, verbose_mode, runner_file
@@ -195,12 +273,30 @@ def introduction():
     ui.report_verbose()
 
 def initialize():
+    global device_presets
     get_options()
     validate_options()
     tc.begin(quiet_mode)
     ui.begin(verbose_mode, quiet_mode)
     introduction()
-    get_plan(runner_file)
+
+    lc.begin(verbose_mode)
+    lc.stop_all()
+
+    device_presets = lc.get_device_profile()
+    num_leds = device_presets["NUM-LEDS"]
+    starting_macro = device_presets["START-MACRO"]
+    num_macro_chars = device_presets["NUM-MACRO-BYTES"]
+    ending_macro = device_presets["END-MACRO"]
+    number_of_macros = device_presets["NUM-MACROS"]
+    char_buffer_size = device_presets["CHAR-BUFFER-SIZE"]
+    number_of_fine_zones = device_presets["NUM-FINE-ZONES"]
+    number_of_colors = device_presets["NUM-PALETTE-COLORS"]
+    number_of_sequencers = device_presets["NUM-SEQUENCERS"]
+    total_macro_bytes = device_presets["TOTAL-MACRO-BYTES"]
+    last_macro_bytes = device_presets["LAST-MACRO-BYTES"]
+
+    mc.begin(lc, verbose_mode, quiet_mode, device_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
 
 def loop():
     do_round()
@@ -210,6 +306,7 @@ def loop():
 
 if __name__ == '__main__':
     initialize()
+    get_plan(runner_file)
     while True:
         try:
             loop()
