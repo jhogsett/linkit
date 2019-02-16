@@ -1,4 +1,4 @@
-./ball-box.mac
+ball-box
 30
 num-boxes          1-4
 balls-per-box      1-3 

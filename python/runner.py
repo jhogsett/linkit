@@ -177,7 +177,7 @@ def set_script(script_text):
         ui.report_verbose_alt("bytes: " + str(bytes))
         macro_count += 1
     except ValueError as e:
-      print str(e) + " - retrying"
+      ui.report_error(str(e) + " - retrying")
       set_script(script_text)
 
 def program_script(presets):
@@ -191,13 +191,13 @@ def program_script(presets):
           for line in compiled_script:
             ui.report_info_alt(line)
     except ValueError, e:
-        print
+        ui.report_separator()
         ui.report_error("Fatal error compiling script. Reported error: ")
         ui.report_error_alt(str(e))
         compilation_succeeded = False
 
     if verbose_mode:
-        print
+        ui.report_separator()
         ui.report_verbose("compiled script:")
         for script_text in compiled_script:
             ui.report_verbose_alt(script_text)
@@ -210,8 +210,12 @@ def program_script(presets):
         if compilation_valid:
             for script_text in compiled_script:
               set_script(script_text)
-              ui.write(tc.green('.'))
-            script_ok = verify_programming(compiled_script)
+              if not verbose_mode:
+                ui.write(tc.yellow('*'))
+            if no_verify:
+              script_ok = True
+            else:
+              script_ok = verify_programming(compiled_script)
     return script_ok
 
 def verify_programming(compiled_script):
@@ -221,12 +225,13 @@ def verify_programming(compiled_script):
     programmed_line = lc.get_macro(macro_number)
     if programmed_line != compiled_line:
       script_ok = False
-      print
+      ui.report_separator()
       ui.report_error("Macro doesn't match:")
-      print tc.green("Expected: " + compiled_line)
-      print tc.red("     Got: " + programmed_line)
-      print
-    ui.write(tc.green('.'))
+      ui.write_line(tc.green("Expected: " + compiled_line))
+      ui.write_line(tc.red("     Got: " + programmed_line))
+      ui.report_separator()
+    if not verbose_mode:
+      ui.write(tc.magenta('@'))
   print
   return script_ok
 
@@ -239,7 +244,7 @@ def run_program(arguments):
   return script_ok
 
 def round_delay():
-  ui.report_info("Press a key to Vote:")
+  ui.report_info_alt2("Press a key to Vote:")
   choice = utils.get_input(round_time)
   if choice == " ":
     choice = "liked"
@@ -250,8 +255,19 @@ def round_delay():
   ui.report_info_alt(choice)
   return choice
 
+def log_filename():
+  global program
+  filename = program
+  if not filename.endswith(".mac"):
+    filename = filename + ".mac"
+  file_path = os.getcwd()
+  full_path = os.path.join(file_path, filename)
+  ui.report_verbose("full program path: " + full_path)
+  filename, file_extension = os.path.splitext(filename)
+  return program + ".runlog"
+
 def add_to_log(line):
-  with open(program + '.log', 'a') as file:
+  with open(log_filename(), 'a') as file:
     file.write(line + '\n')
 
 def format_arguments(arguments):
@@ -283,23 +299,26 @@ runner_file = ""
 device_presets = None
 show_plan = None
 show_script = None
+no_verify = None
 
 def get_options():
-    global app_description, verbose_mode, runner_file, show_plan, show_script
+    global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify
     app_description = "Auto Program Runner - Apollo Lighting System v.0.0 2-0-2019"
 
     parser = argparse.ArgumentParser(description=app_description)
+    parser.add_argument("runner", help="runner script filename")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
     parser.add_argument("-p", "--show-plan", dest="show_plan", action="store_true", help="show the randomization plan (False)")
     parser.add_argument("-s", "--show-script", dest="show_script", action="store_true", help="show the compiled script (False)")
-    parser.add_argument("runner", help="runner script filename")
+    parser.add_argument("-n", "--no-verify", dest="no_verify", action="store_true", help="skip the programming verification step (False)")
     args = parser.parse_args()
     verbose_mode = args.verbose
     quiet_mode = args.quiet
     runner_file = args.runner
     show_plan = args.show_plan
     show_script = args.show_script
+    no_verify = args.no_verify
 
 def validate_options():
     pass
@@ -317,7 +336,8 @@ def initialize():
     ui.begin(verbose_mode, quiet_mode)
     introduction()
 
-    lc.begin(verbose_mode)
+    led_verbose_mode = False
+    lc.begin(led_verbose_mode)
     lc.stop_all()
 
     device_presets = lc.get_device_profile()
@@ -333,7 +353,8 @@ def initialize():
     total_macro_bytes = device_presets["TOTAL-MACRO-BYTES"]
     last_macro_bytes = device_presets["LAST-MACRO-BYTES"]
 
-    mc.begin(lc, verbose_mode, quiet_mode, device_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
+    compiler_verbose_mode = False
+    mc.begin(lc, compiler_verbose_mode, quiet_mode, device_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
 
 def loop():
     do_round()
