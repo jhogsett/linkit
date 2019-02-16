@@ -72,9 +72,9 @@ def remaining_sequencers():
 ## global state management
 ########################################################################
 
-def reset():
+def reset(presets_={}):
     global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, allow_mutability
-    global final_macro_numbers, includes
+    global final_macro_numbers, includes, presets
     macros = {}
     macro_commands = {}
     resolved = {}
@@ -85,6 +85,8 @@ def reset():
     passes = 0
     next_available_macro_number = starting_macro_number
     next_available_sequencer_number = 0
+    if len(presets_):
+      presets = presets_
     resolve_presets(presets)
     allow_mutability = False
 
