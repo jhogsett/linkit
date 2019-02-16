@@ -3,6 +3,11 @@
 
 import os
 from subprocess import call
+import sys
+import select
+import tty
+import termios
+import time
 
 def load_file(filename, default_ext=".???"):
     file_lines = []
@@ -42,4 +47,23 @@ def strip_comments(lines, comment_marker="#"):
 
 def run_command(command_line):
       call(command_line, shell=True)
+
+def input_waiting():
+  return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
+
+def get_input(wait_seconds):
+  char = None
+  start_time = time.time()
+  target_time = start_time + wait_seconds
+  old_settings = termios.tcgetattr(sys.stdin)
+  try:
+    tty.setcbreak(sys.stdin.fileno())
+    while time.time() < target_time and char == None:
+      if input_waiting():
+        char = sys.stdin.read(1)
+        #if c == '\x1b': # x1b is ESC
+        #  break
+  finally:
+    termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+  return char
 
