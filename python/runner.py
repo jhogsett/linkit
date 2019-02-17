@@ -96,21 +96,47 @@ def plan_header(type, name):
 def plan_choices(choices):
   return " ".join(choices)
 
+def show_plan1(plan):
+  return plan_header("INTEGER RANGE", plan["name"]) + " " + plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"])
+
+def show_plan2(plan):
+  return plan_header("QUANTIZED RANGE", plan["name"]) + " " +plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"]) + " " + plan_entry("quantized to:", str(plan["quant"]) + "'s")
+
+def show_plan3(plan):
+  choices = plan_choices(plan["choices"])
+  return plan_header("SELECTED CHOICE", plan["name"]) + " " +plan_entry("choices:", choices)
+
+def formatted_permutations():
+  return "{:,}".format(permutations())
+
+def formatted_plan():
+  formatted_plan_ = []
+  for plan in plans:
+    line = ""
+    for key in plan.keys():
+      line = line + key + ":" + str(plan[key]) + " "
+    formatted_plan_.append(line)
+  return "\n".join(formatted_plan_)
+
 def report_plan():
-  perm = "{:,}".format(permutations())
-  ui.report_info("permutations: " + tc.green(str(perm)))
+  ui.report_info("permutations: " + tc.green(formatted_permutations()))
   ui.report_separator()
 
   if show_plan:
     for plan in plans:
       if plan["type"] == 1:
-        ui.write_line(plan_header("INTEGER RANGE", plan["name"]) + " " + plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"]))
+        ui.write_line(show_plan1(plan))
       if plan["type"] == 2:
-        ui.write_line(plan_header("QUANTIZED RANGE", plan["name"]) + " " +plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"]) + " " + plan_entry("quantized to:", str(plan["quant"]) + "'s"))
+        ui.write_line(show_plan2(plan))
       if plan["type"] == 3:
-        choices = plan_choices(plan["choices"])
-        ui.write_line(plan_header("SELECTED CHOICE", plan["name"]) + " " +plan_entry("choices:", choices))
+        ui.write_line(show_plan3(plan))
     ui.report_separator()
+
+def log_plan():
+  add_to_log("")
+  add_to_log("program: " + program)
+  add_to_log("permutations: " + formatted_permutations())
+  add_to_log(formatted_plan())
 
 def get_plan(runner_file):
   global plans
@@ -119,6 +145,7 @@ def get_plan(runner_file):
   script = extract_settings(script)
   plans = parse(script)
   report_plan()
+  log_plan()
 
 ############################################################
 
@@ -211,7 +238,7 @@ def program_script(presets):
             for script_text in compiled_script:
               set_script(script_text)
               if not verbose_mode:
-                ui.write(tc.yellow('*'))
+                ui.write(tc.yellow('.'))
             if no_verify:
               script_ok = True
               ui.report_separator()
@@ -232,7 +259,7 @@ def verify_programming(compiled_script):
       ui.write_line(tc.red("     Got: " + programmed_line))
       ui.report_separator()
     if not verbose_mode:
-      ui.write(tc.magenta('@'))
+      ui.write(tc.cyan('.'))
   ui.report_separator()
   return script_ok
 
