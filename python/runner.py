@@ -132,11 +132,19 @@ def report_plan():
         ui.write_line(show_plan3(plan))
     ui.report_separator()
 
+def formatted_device_info():
+  formatted_info_ = []
+  for key in device_presets:
+    line = key + ":" + str(device_presets[key])
+    formatted_info_.append(line)
+  return "\n".join(formatted_info_)
+
 def log_plan():
   add_to_log("")
   add_to_log("program: " + program)
-  add_to_log("permutations: " + formatted_permutations())
+  add_to_log(formatted_device_info())
   add_to_log(formatted_plan())
+  add_to_log("permutations: " + formatted_permutations())
 
 def get_plan(runner_file):
   global plans
