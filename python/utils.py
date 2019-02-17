@@ -67,3 +67,8 @@ def get_input(wait_seconds):
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
   return char
 
+def merge_dicts(x, y):
+    z = x.copy() 
+    z.update(y)
+    return z
+

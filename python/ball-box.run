@@ -1,6 +1,4 @@
-./progmac.py -n ball-box
-None=None
-30
+ball-box
 num-boxes          1-4
 balls-per-box      1-3 
 box-width          6-30
