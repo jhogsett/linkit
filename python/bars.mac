@@ -25,6 +25,8 @@ $high-limit `<NUM-LEDS>-<low-limit>`
 $add-time 3
 $refresh-time 50
 $bar-step 1
+$use-computed-value True
+$bar-sequencer cosine-sequencer
 
 [bars-app 10]
     start-application
@@ -64,7 +66,7 @@ $bar-step 1
 
     [start-INSTANCE]
         {seq-INSTANCE},<high-limit>,<low-limit>
-        start-cosine-sequence
+        <bar-sequencer>
 
         (advance-INSTANCE TIME)
 
@@ -76,8 +78,13 @@ $bar-step 1
         <low-limit>
         push
 
-        {seq-INSTANCE},<GET-COMPUTED>
-        advance-sequence
+<<< <use-computed-value> == True
+        {seq-INSTANCE}, <GET-COMPUTED>
+>>>
+<<< <use-computed-value> == False
+        {seq-INSTANCE}, <GET-CURRENT>
+>>>
+        get-sequence
         push
 	sub-equals
 
