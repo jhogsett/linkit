@@ -2,11 +2,10 @@
 # Boxes of Balls animation v0.0 2-0-19 
 # ----------------------------------------------------------------
 
-# pm ball-box.mac  num-boxes=5 balls-per-box=1 box-width=20 background-type=0 box-step=1 refresh-time=50 ball-time=50 box-sequencer=sqs ball-sequencer=swc ball-step=2 use-computed-value=True
+# background types: dotted white, dotted color, dotted colors
 
-# pm ball-box.mac num-boxes=3 balls-per-box=2 box-width=30 background-type=0 box-step=1 refresh-time=50 ball-time=50 box-sequencer=sqs ball-sequencer=sws ball-step=1 use-computed-value=True
+# ball types: white, two dots, three dots, black, three dots black in the middle, three dots rotating, carry color, static
 
-# background-type=2 box-width=6 num-boxes=5 balls-per-box=1
 
 %include symbols
 %include hsl-sequencer
@@ -30,8 +29,13 @@ $ball-step 0
 $bgtype-none 0
 $bgtype-line 1
 $bgtype-points 2
+$bgtype-rotate 3
+$bgtype-mirror 4
+$bgtype-darkgray 5
+$bgtype-palette 6
 $background-type <bgtype-line>
 $use-computed-value False
+$palette-bg-zoom 3
 
 %allow-mutability
 $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
@@ -89,6 +93,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # expand box template per number of boxes
 (((box <num-boxes> `<box-instance-time>*INSTANCE+<box-time>` <box-width> `<NUM-LEDS>-<box-width>` <box-sequencer>)))
 
+<<< <balls-per-box> > 0
 # expand template to place ball-creating meta templates for each box
 (((create-balls-for-box <num-boxes>)))
 
@@ -98,7 +103,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     # meta template to create ball(s) for a box
     (((ball <balls-per-box> BOX `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> <ball-sequencer> `BOX+INSTANCE+<RED>`)))
 ]]
-
+>>>
 
 # ------------------------------------------
 # box template - manages a moving region
@@ -107,18 +112,21 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
 [[box INSTANCE SCHEDULE WIDTH MAX SEQ-TYPE
 
+<<< <balls-per-box> > 0
     # expand meta template to run all ball start macros
     [box-start-balls-INSTANCE]
         (((ball-start-all <balls-per-box> INSTANCE)))
-
+>>>
     # start this box instance
     [box-start-INSTANCE]
         # create this box's position sequencer
         {seq-box-INSTANCE}, MAX
         SEQ-TYPE
 
+<<< <balls-per-box> > 0
         # run the ball start macros
         (box-start-balls-INSTANCE)
+>>>
 
         # schedule this box's animation rendering
         (box-step-INSTANCE SCHEDULE)
@@ -151,9 +159,12 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
         # render the background
         (box-background-INSTANCE)
 >>>
+
+<<< <balls-per-box> > 0
 	# render the foreground
         # meta template expands to run each ball render macro
         (((ball-render-each <balls-per-box> INSTANCE)))
+>>>
 
     # set the viewport to only this box
     [box-set-window-INSTANCE]
@@ -200,6 +211,29 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     darken
     darken
     fill
+>>>
+
+<<< <background-type> == <bgtype-rotate>
+    2
+    rng
+    set-reverse
+    rotate
+    disable
+    set-reverse
+>>>
+
+<<< <background-type> == <bgtype-mirror>
+    mirror
+>>>
+
+<<< <background-type> == <bgtype-darkgray>
+    dark-gray
+    fill
+>>>
+
+<<< <background-type> == <bgtype-palette>
+    <NUM-PALETTE-COLORS>,<PASTE>,<palette-bg-zoom>
+    duplicate
 >>>
 
 ## no background
