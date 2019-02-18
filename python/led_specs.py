@@ -1237,8 +1237,20 @@ def specs():
     if test("it boosts the brightness level"):
       expect_buffer("wht:brt", 0, 1, "40,40,40")
 
+    if test("it boosts the brightness level twice"):
+      expect_buffer("wht:2:brt", 0, 1, "80,80,80")
+
+    if test("it boosts the brightness level thrice"):
+      expect_buffer("wht:3:brt", 0, 1, "160,160,160")
+
     if test("it reduces the brightness level"):
       expect_buffer("wht:dim", 0, 1, "10,10,10")
+
+    if test("it reduces the brightness level twice"):
+      expect_buffer("wht:2:dim", 0, 1, "5,5,5")
+
+    if test("it reduces the brightness level thrice"):
+      expect_buffer("wht:3:dim", 0, 1, "2,2,2")
 
     if test("it maxxes out the brightness level"):
       if default_brightness == 20:
