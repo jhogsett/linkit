@@ -21,7 +21,7 @@ class Render
   public:
   void begin(BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects * fade_effects, byte default_brightness, byte minimum_brightness);
   rgb_color render(rgb_color * color, byte effect, byte * cache = NULL, float breathe_scale = 0.0, rgb_color* color_cache = NULL);
-  rgb_color fast_render(rgb_color color, byte _effect);
+  rgb_color fast_render(rgb_color color);
   void render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, byte count, byte *effects);
   void set_default_brightness(byte brightness);
   void set_minimum_brightness(byte brightness);
@@ -41,7 +41,7 @@ class Render
   rgb_color get_blink(rgb_color color, rgb_color render_color, byte effect, byte * cache = NULL);
   rgb_color get_breathe(rgb_color color, float scale, byte effect, rgb_color orig_color, rgb_color* color_cache);
   rgb_color get_static();
-  rgb_color get_default(rgb_color, byte effect = NO_EFFECT);
+  rgb_color get_default(rgb_color);
   rgb_color get_fade(rgb_color * color, byte effect);
 };
 
@@ -121,7 +121,7 @@ rgb_color Render::get_static()
 }
 
 // default_brightness_scale is 0.0 - 1.0
-rgb_color Render::get_default(rgb_color color, byte effect)
+rgb_color Render::get_default(rgb_color color)
 {
   return ColorMath::scale_color(color, default_brightness_scale);
 }
@@ -147,10 +147,10 @@ rgb_color Render::render(rgb_color *color, byte effect, byte *blink_cache, float
   if(breathe_effects->is_handled_effect(effect_only))
     return get_breathe(render_color, breathe_scale, effect, *color, color_cache);
 
-  return get_default(render_color, effect);
+  return get_default(render_color);
 }
 
-rgb_color Render::fast_render(rgb_color color, byte _effect)
+rgb_color Render::fast_render(rgb_color color)
 {
     return get_default(color);
 }

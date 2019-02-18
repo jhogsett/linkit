@@ -1,3 +1,51 @@
+// backgrounds
+// rainbow
+// white
+// black/white
+// a few random dots
+
+// effect to dim by varing amounts
+
+// objects
+// 3 pixels center color, outer color
+// white pixel
+// static pixel
+
+// vary
+// draw mode
+
+
+
+// combine refresh and reset somehow maybe {{{{ }}}}
+//    {{
+//      {{{
+//        do-animated-rotation
+//      }}}
+//    }}
+
+// a way to use ((( ))) with a list of arguments
+//((light-setting wht red))
+//((light-setting red red))
+//((light-setting tun sod))
+//((light-setting neo neo))
+//
+// (((light-setting (wht,red,run,neo) (red,red,sod.neo) )))
+
+// %include hsl-sequencer
+//   (hsl-sequencer-start)
+// could assume that there's a (include name)-start method in included programs
+
+// fast mirror, flood
+
+// box sequencer or sequence next box command
+// needs:
+// position
+// width
+// spill over edges (internally keeps illegal buffer value, but returns a safe value
+// 
+
+// new math: min, max
+
 // optimize erase with memset or something
 
 // directive to spit out a message

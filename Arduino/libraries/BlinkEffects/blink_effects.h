@@ -32,7 +32,7 @@ class BlinkEffects
   bool process();
   static bool is_handled_effect(byte effect);
   void set_blink_period(int blink_period);
-  bool begin_render(byte* cache);
+  void begin_render(byte* cache);
   bool blink_on_cached(byte * cache, byte effect);
 
   private:
@@ -121,7 +121,7 @@ bool BlinkEffects::blink_a_b_test(byte effect)
 
 // cache the blink state ahead of rendering
 // pass in a byte array at least
-bool BlinkEffects::begin_render(byte* cache)
+void BlinkEffects::begin_render(byte* cache)
 {
   cache[0] = blink_test();
 

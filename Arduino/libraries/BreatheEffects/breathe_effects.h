@@ -118,7 +118,7 @@ bool BreatheEffects::process()
   if(breathe_counter == 0)
   {
     byte next_breathe_step = breathe_step + breathe_direction;
-    if(next_breathe_step < 0 || next_breathe_step >= BREATHE_MAX_STEP)
+    if(next_breathe_step >= BREATHE_MAX_STEP)
       breathe_direction *= -1;
 
     breathe_step = breathe_step + breathe_direction;
