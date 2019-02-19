@@ -48,10 +48,13 @@ def parsing_handler1(line):
     name = parts[0]
     range = parts[1].split("-")
     if len(range) == 2:
-      low = int(range[0])
-      high = int(range[1])
-      count = (high - low) + 1
-      return {"type" : 1, "name" : name, "count" : count, "low" : low, "high" : high}
+      try:
+        low = int(range[0])
+        high = int(range[1])
+        count = (high - low) + 1
+        return {"type" : 1, "name" : name, "count" : count, "low" : low, "high" : high}
+      except ValueError:
+        return None
   return None
 
 #refresh-time 40-120 10
@@ -294,7 +297,7 @@ def round_delay():
     enter_pause_loop()
     return round_delay()
   if choice == " ":
-    choice = "liked"
+    choice = default_choice
   elif choice == None:
     choice = "no vote"
   else:
@@ -368,9 +371,10 @@ no_verify = None
 round_time = None
 extra_verbose_mode = None
 compiler_error = ""
+default_choice = None
 
 def get_options():
-    global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify, round_time, extra_verbose_mode
+    global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify, round_time, extra_verbose_mode, default_choice
     app_description = "Auto Program Runner - Apollo Lighting System v.0.0 2-0-2019"
 
     parser = argparse.ArgumentParser(description=app_description)
@@ -382,6 +386,8 @@ def get_options():
     parser.add_argument("-n", "--no-verify", dest="no_verify", action="store_true", help="skip the programming verification step (False)")
     parser.add_argument("-w", "--wait-time", type=int, dest="wait_time", default=30, help="wait time between rounds in seconds (30)")
     parser.add_argument("-x", "--extra-verbose", dest="extra_verbose", action="store_true", help="display extra verbose info (False)")
+    parser.add_argument("-d", "--default-choice", dest="default_choice", default="skipped", help="vote log entry when hitting space bar (skipped)")
+
     args = parser.parse_args()
     verbose_mode = args.verbose
     quiet_mode = args.quiet
@@ -391,6 +397,7 @@ def get_options():
     no_verify = args.no_verify
     round_time = args.wait_time
     extra_verbose_mode = args.extra_verbose
+    default_choice = args.default_choice
 
 def validate_options():
     pass
