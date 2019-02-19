@@ -278,6 +278,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> == <bgtype-dotted>
     dark-gray
     2
+    darken
     black
     -2
     duplicate
