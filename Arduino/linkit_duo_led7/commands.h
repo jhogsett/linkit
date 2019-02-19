@@ -75,7 +75,7 @@ class Commands
   void do_random(byte type, int times);
   void do_mirror();
   void draw_mirror_step(rgb_color * buf_back, rgb_color * buf_front);
-  void do_copy(byte size, int times, byte zoom);
+  void do_copy(int size, int times, byte zoom);
   void do_repeat(byte times);
 
 #ifdef USE_ELASTIC_SHIFT
@@ -638,23 +638,38 @@ void Commands::do_mirror()
 // to do: copy only copies from position zero
 
 // copies pixels starting at the current offset (normally zero)
+
 // size - how many pixels to copy
+//        if less than zero, forces use of render buffer to preserve palette, 
+//        skips copying the effects to save time, and copies the positive count         
+
 // times - how many times to duplicate it, 
 //         0 = repeat and fill the current window
 //        -1 = copy the pattern to the palette buffer but don't duplicate
 //        -2 = duplicate the pattern in the palette buffer but don't copy first
+
 // zoom - how many pixels to draw per source pixel
 
 // this won't clobber dynamic effect marker becauwe this is a copy operation
-void Commands::do_copy(byte size, int times, byte zoom)
+void Commands::do_copy(int size, int times, byte zoom)
 {
-  size = max(1, size);
   zoom = max(1, zoom);
+
+  bool force_render_buffer = false;
+  if(size < 0)
+  {
+    size = size * -1;
+    force_render_buffer = true;
+  }
+  else if(size == 0)
+  {
+    size = 1;
+  }
 
   byte effective_size = size * zoom;
 
   bool use_palette_buffer = false;
-  if(size <= NUM_PALETTE_COLORS)
+  if(!force_render_buffer && size <= NUM_PALETTE_COLORS)
     // use the palette to store the color/effects data if it will fit
     // this allows the render buffer to be used for crossfading
     use_palette_buffer = true;
@@ -689,7 +704,7 @@ void Commands::do_copy(byte size, int times, byte zoom)
   if(use_palette_buffer)
     palette = Colors::get_palette();
 
-  if(!copy_only && !dupe_only)
+  if(!copy_only && !dupe_only && !force_render_buffer)
   {
     // copy the effects pattern to the buffer temporarily
     byte * peffects = &effects[offset];

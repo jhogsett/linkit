@@ -1,3 +1,7 @@
+// new runner type: one int = set it to that always
+
+// macro compiler substitutes macro numbers with single digits, but could require double digits when programming
+
 // backgrounds
 // rainbow
 // white
