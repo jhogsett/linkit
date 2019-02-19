@@ -801,6 +801,16 @@ def specs():
       expected_buffer = ("20,15,0," * num_leds)[:-1]                                                                                                                                                           
       expect_buffer("1:rev:amb:flo", 0, num_leds, expected_buffer, True, True)  
 
+    if test("it floods effects too"):
+      expect_effect("3:win:red:bli:flo", 0, 4, "11,11,11,0")
+
+    if test("it floods colors in colors-only mode"):
+      expect_buffer("3:win:blu:bre:1:flo", 0, 4, "0,0,20,0,0,20,0,0,20,0,0,0")
+
+    if test("it doesn't flood effects in colors-only mode"):
+      expect_effect("3:win:blu:bre:1:flo", 0, 4, "21,0,0,0")
+
+
 
 ########################################################################
 # MIRRORING
