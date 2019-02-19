@@ -11,9 +11,10 @@ import random
 import led_command as lc
 import macro_compiler as mc
 
-global plans, program
+global plans, program, anti_plans
 plans = []
 program = ""
+anti_plans=[]
 
 ############################################################
 
@@ -21,6 +22,7 @@ def ingest_file(filename):
   return utils.load_file(filename, ".run")
 
 def preprocess(lines):
+  lines = utils.strip_whitespace(lines)
   return utils.strip_comments(lines)
 
 def extract_settings(lines):
@@ -29,8 +31,16 @@ def extract_settings(lines):
   return lines[1:]
 
 def parse(script):
+  global plans, anti_plans
   plans = []
+  anti_plans=[]
+  print script
   for line in script:
+    if line[0] == "~":
+      line = line[1:]
+      result = parse_anti_plan(line)
+      anti_plans.append(result)
+      continue
     result = parsing_handler1(line)
     if not result:
       result = parsing_handler2(line)
@@ -38,7 +48,6 @@ def parse(script):
       result = parsing_handler3(line)
     if result:
       plans.append(result)
-  return plans
 
 #num-boxes 1-5
 # 1) integer range (second arg has a '-' that splits into two valid integers)
@@ -84,6 +93,15 @@ def parsing_handler3(line):
       return {"type" : 3, "name" : name, "count" : len(choices), "choices" : choices}    
   return None
 
+def parse_anti_plan(line):
+  parts = line.split()
+  if len(parts) > 1:
+    name = parts[0]
+    matches = parts[1:]
+    if len(matches) > 0:
+      return {"type" : 0, "name" : name, "matches" : matches}
+  return None
+
 def permutations():
   permutations = 1
   for plan in plans:
@@ -96,8 +114,14 @@ def plan_entry(name, value):
 def plan_header(type, name):
   return tc.blue("[ " + type + " ]") + " " + tc.yellow(name + ":")
 
+def anti_plan_header(type, name):
+  return tc.red("[ " + type + " ]") + " " + tc.yellow(name + ":")
+
 def plan_choices(choices):
   return " ".join(choices)
+
+def anti_plan_matches(matches):
+  return " ".join(matches)
 
 def show_plan1(plan):
   return plan_header("INTEGER RANGE", plan["name"]) + " " + plan_entry("low:", plan["low"]) + " " + plan_entry("high:", plan["high"])
@@ -108,6 +132,10 @@ def show_plan2(plan):
 def show_plan3(plan):
   choices = plan_choices(plan["choices"])
   return plan_header("SELECTED CHOICE", plan["name"]) + " " +plan_entry("choices:", choices)
+
+def show_anti_plan(anti_plan):
+  matches = anti_plan_matches(anti_plan["matches"])
+  return anti_plan_header("ANTI PLAN", anti_plan["name"]) + " " + plan_entry("matches:", matches)
 
 def formatted_permutations():
   return "{:,}".format(permutations())
@@ -121,6 +149,15 @@ def formatted_plan():
     formatted_plan_.append(line)
   return "\n".join(formatted_plan_)
 
+def formatted_anti_plan():
+  formatted_anti_plan_ = []
+  for anti_plan in anti_plans:
+    line = ""
+    for key in anti_plan.keys():
+      line = line + key + ":" + str(anti_plan[key]) + " "
+    formatted_anti_plan_.append(line)
+  return "\n".join(formatted_anti_plan_)
+
 def report_plan():
   ui.report_info("permutations: " + tc.green(formatted_permutations()))
   ui.report_separator()
@@ -133,6 +170,8 @@ def report_plan():
         ui.write_line(show_plan2(plan))
       if plan["type"] == 3:
         ui.write_line(show_plan3(plan))
+    for anti_plan in anti_plans:
+      ui.write_line(show_anti_plan(anti_plan))
     ui.report_separator()
 
 def formatted_device_info():
@@ -147,14 +186,14 @@ def log_plan():
   add_to_log("program: " + program)
   add_to_log(formatted_device_info())
   add_to_log(formatted_plan())
+  add_to_log(formatted_anti_plan())
   add_to_log("permutations: " + formatted_permutations())
 
 def get_plan(runner_file):
-  global plans
   script = ingest_file(runner_file)
   script = preprocess(script)
   script = extract_settings(script)
-  plans = parse(script)
+  parse(script)
   report_plan()
   log_plan()
 
@@ -343,18 +382,37 @@ def display_arguments(arguments):
   formatted_arguments = format_arguments(arguments)
   ui.write_line(formatted_arguments)
 
+def passes_anti_plan(arguments):
+  if len(anti_plans) == 0:
+    return True
+  listed_arguments = list_arguments(arguments)
+  for anti_plan in anti_plans:
+    matches = anti_plan["matches"]
+    allowed = False
+    for match in matches:
+      if not match in listed_arguments:
+        allowed = True
+        break
+    if not allowed:
+      ui.report_error("plan skipped due to anti plan: " + anti_plan["name"])
+      add_to_log("skipped by anti plan: " + anti_plan["name"])
+      return False
+  return True
+
 def do_round():
   arguments = create_round()
   log_arguments(arguments)
   display_arguments(arguments)
 
-  if run_program(arguments):
-    vote = round_delay()
-    lc.command(":::stp")
-    lc.command(":::stp")
-    add_to_log(vote)
-  else:
-    add_to_log("error: " + compiler_error)
+  if  passes_anti_plan(arguments):
+    if run_program(arguments):
+      vote = round_delay()
+      lc.command(":::stp")
+      lc.command(":::stp")
+      add_to_log(vote)
+    else:
+      add_to_log("error: " + compiler_error)
+
 
 ############################################################
 ############################################################

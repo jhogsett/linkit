@@ -45,6 +45,14 @@ def strip_comments(lines, comment_marker="#"):
       new_lines.append(line)
   return new_lines
 
+def strip_whitespace(lines):
+  new_lines = []
+  for line in lines:
+    line = line.strip()
+    if len(line) > 0:
+      new_lines.append(line)
+  return new_lines
+
 def run_command(command_line):
       call(command_line, shell=True)
 
