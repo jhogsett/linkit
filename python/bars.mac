@@ -97,6 +97,7 @@ $bar-sequencer cosine-sequencer
             add-palette-color
 #            darken
 #            darken
+            <FILL-COLORS>
             fill
         }}
 ]]

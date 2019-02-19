@@ -97,6 +97,7 @@ $add-time 3
             add-palette-color
             darken
             darken
+            <FILL-COLORS>
             fill
         }}
 ]]

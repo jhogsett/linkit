@@ -91,8 +91,8 @@ $HSL-TIME 1000
     `<NUM-LEDS>/2`
     set-window
     {{
-        <background-width>
-        copy
+        `<background-width>*-1`
+        duplicate
     }}
 
     mirror
@@ -129,6 +129,7 @@ $HSL-TIME 1000
             PALETTE
             add-palette-color
             darken
+            <FILL-COLORS>
             fill
         }}
 ]]

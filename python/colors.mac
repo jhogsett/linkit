@@ -23,5 +23,6 @@ $HSL-TIME <draw-time>
 [color-draw]
   <the-color>
   add-palette-color
+  <FILL-COLORS>
   fill
  

@@ -87,6 +87,10 @@ $AUTO-TIMES 0
 $FAST-ERASE-BUFFER 1
 $FAST-ERASE-ALL 2
 
+# flood/fill types
+$FILL-ALL 0
+$FILL-COLORS 1
+
 # standard render function, consumes partial final macro
 [render !]
   refresh-display

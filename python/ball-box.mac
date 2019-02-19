@@ -34,7 +34,6 @@ $bgtype-darkgray 3
 $bgtype-color-points 4
 $bgtype-dotted 5
 $bgtype-color-dotted 6
-
 $bgtype-palette 7
 $bgtype-rotate 8
 $bgtype-mirror 9
@@ -157,7 +156,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
         # push the instance as a palette color onto the stack
         INSTANCE
-        push
+        store
 
         # run the background drawing macro
         (box-draw-background)
@@ -222,6 +221,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     add-palette-color
     3
     darken    
+    <FILL-COLORS>
     fill
 >>>
 
@@ -242,6 +242,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     dark-gray
     2
     darken
+    <FILL-COLORS>
     fill
 >>>
 
@@ -267,7 +268,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> == <bgtype-color-dotted>
     pop
     add-palette-color
-    3
+    2
     darken
     black
     -2
@@ -277,8 +278,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # fill the box background with a dotted dark gray
 <<< <background-type> == <bgtype-dotted>
     dark-gray
-    2
-    darken
+#    darken
     black
     -2
     duplicate
