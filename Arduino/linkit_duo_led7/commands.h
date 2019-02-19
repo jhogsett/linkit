@@ -454,8 +454,9 @@ void Commands::do_crossfade()
   }
 }
 
-#define FLOOD_TYPE_WRITE 0
-#define FLOOD_TYPE_ADD   1
+#define FLOOD_TYPE_ALL 0
+#define FLOOD_TYPE_COLORS 1
+// #define FLOOD_TYPE_EFFECTS 2
 
 void Commands::do_flood(byte type)
 {
@@ -492,16 +493,13 @@ void Commands::do_flood(byte type)
 
   for(byte i = start; i < end_; i++)
   {
-    if(type == 1){
-      buf->red += color.red;
-      buf->green += color.green;
-      buf->blue += color.blue;
-    } else {
-      *buf = color;
-    }
-    *effects = effect;    
+    *buf = color;
     buf++;
-    effects++;
+    if(type == FLOOD_TYPE_ALL)
+    {
+      *effects = effect;    
+      effects++;
+    }
   }
 }
 
