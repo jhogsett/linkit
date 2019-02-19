@@ -919,9 +919,20 @@ def specs():
     if test("effects are not set on a duplicate-only operation"):
       expect_effect("lgr:bl1:1,-1:cpy:flu:era:1,-2:cpy", 0, 1, "0")
 
-    if test("it copies without changing the palette when forced to use the render buffer"):
+    if test("it doesn't affect the palette when forced to use the render buffer"):
       expect_palette("1:shf:neo:sod:tun:flu:-3,1:cpy", 0, palette_size, standard_palette)
+
+    if test("it successfully copies when forced to use the render buffer"):
       expect_buffer("era:neo:sod:tun:flu:-3,1:cpy", 0, 4, "20,11,2,20,10,4,20,5,0,0,0,0")
+
+    if test("it copies the pattern twice when forced to use the render buffer"):
+      expect_buffer("neo:sod:tun:flu:-3,2:cpy", 0, 7, "20,11,2,20,10,4,20,5,0,20,11,2,20,10,4,20,5,0,0,0,0")
+
+    if test("it zooms the pattern to twice as big when forced to use the render buffer"):
+      expect_buffer("neo:sod:tun:flu:-3,1,2:cpy", 0, 7, "20,11,2,20,11,2,20,10,4,20,10,4,20,5,0,20,5,0,0,0,0")
+
+    if test("effects are not set when forced to use the render buffer"):
+      expect_effect("neo:bl1:sod:bl2:tun:bl3:flu:-3,2:cpy", 0, 6, "14,13,12,0,0,0")
 
 
 ########################################################################
