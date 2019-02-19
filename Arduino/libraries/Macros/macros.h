@@ -75,7 +75,7 @@ void Macros::begin(CommandProcessor *command_processor, DispatchFunction dispatc
 
 bool Macros::is_memory_macro(byte macro)
 {
-  return macro >= 0 && macro <= MAX_MEMORY_MACRO;
+  return macro <= MAX_MEMORY_MACRO;
 }
 
 bool Macros::is_eeprom_macro(byte macro)
@@ -86,7 +86,7 @@ bool Macros::is_eeprom_macro(byte macro)
 // get a read/write pointer to a memory macro slot
 byte * Macros::get_memory_macro(byte macro)
 {
-  if(macro < 0 || macro > MAX_MEMORY_MACRO)
+  if(macro > MAX_MEMORY_MACRO)
     return NULL;
   return macros[macro];
 }

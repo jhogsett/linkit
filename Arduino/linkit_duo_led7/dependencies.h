@@ -40,26 +40,26 @@ class Dependencies
   static Config config;
 
   // input display buffer
-  static rgb_color colors[config.led_count];
+  static rgb_color colors[config.visible_led_count];
 #if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)  
-  static rgb_color colors2[config.led_count];
+  static rgb_color colors2[config.visible_led_count];
 #endif
 #if defined(USE_3_DISPLAYS)  
-  static rgb_color colors3[config.led_count];
+  static rgb_color colors3[config.visible_led_count];
 #endif
 
   static rgb_color *color_buffers[];
 
   // rendered output buffer
-  static rgb_color render[config.led_count];
+  static rgb_color render[config.visible_led_count];
 
   // effect styling per LED position
-  static byte effects[config.led_count];
+  static byte effects[config.visible_led_count];
 #if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS) 
-  static byte effects2[config.led_count];
+  static byte effects2[config.visible_led_count];
 #endif
 #if defined(USE_3_DISPLAYS)  
-  static byte effects3[config.led_count];
+  static byte effects3[config.visible_led_count];
 #endif
 
   static byte *effects_buffers[];
@@ -118,12 +118,12 @@ class Dependencies
 Config Dependencies::config;
 
 // input display buffer
-rgb_color Dependencies::colors[config.led_count];
+rgb_color Dependencies::colors[config.visible_led_count];
 #if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS)  
-rgb_color Dependencies::colors2[config.led_count];
+rgb_color Dependencies::colors2[config.visible_led_count];
 #endif
 #if defined(USE_3_DISPLAYS)  
-rgb_color Dependencies::colors3[config.led_count];
+rgb_color Dependencies::colors3[config.visible_led_count];
 #endif
 
 rgb_color *Dependencies::color_buffers[] = 
@@ -137,15 +137,15 @@ rgb_color *Dependencies::color_buffers[] =
 };
 
 // rendered output buffer
-rgb_color Dependencies::render[config.led_count];
+rgb_color Dependencies::render[config.visible_led_count];
 
 // effect styling per LED position
-byte Dependencies::effects[config.led_count];
+byte Dependencies::effects[config.visible_led_count];
 #if defined(USE_2_DISPLAYS) || defined(USE_3_DISPLAYS) 
-byte Dependencies::effects2[config.led_count];
+byte Dependencies::effects2[config.visible_led_count];
 #endif
 #if defined(USE_3_DISPLAYS)  
-byte Dependencies::effects3[config.led_count];
+byte Dependencies::effects3[config.visible_led_count];
 #endif
 
 byte *Dependencies::effects_buffers[] = 
@@ -245,7 +245,6 @@ void Dependencies::begin()
   buffer.begin(
     this->ledStrips, 
     DEFAULT_BRIGHTNESS_PERCENT, 
-    config.led_count, 
     config.visible_led_count, 
     &this->renderer, 
     color_buffers, 
@@ -323,4 +322,3 @@ void Dependencies::begin()
 }
 
 #endif
-

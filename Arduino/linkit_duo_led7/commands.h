@@ -66,8 +66,8 @@ class Commands
   #endif
 
   void do_max();
-  void do_dim();
-  void do_bright();
+  void do_dim(byte times);
+  void do_bright(byte times);
   void do_fade();
   void do_crossfade();
   void do_math(int arg0);
@@ -102,12 +102,12 @@ class Commands
   int do_set_sequence(byte type, int arg0, int arg1, int arg2);
   int do_next_sequence(int arg0, int arg1, int arg2);
   void do_next_window(int arg0, int arg1, int arg2);
-  void do_configure(int arg0, int arg1, int arg2);
+  void do_configure(int arg0, int arg1);
   bool do_set_macro(byte macro, byte * dispatch_data);
   void do_color_sequence(byte type, int arg0, int arg1, int arg2);
   void do_random_number(int arg0, int arg1, int arg2);
   void do_stop();
-  void do_palette(byte arg0, byte arg1, byte arg2);
+  void do_palette(byte arg0, byte arg1);
   void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
   void do_push(int arg0, int arg1, int arg2);
@@ -124,7 +124,7 @@ class Commands
   void do_fan(bool fan_on, bool auto_set=false);
   void do_app_setup();
 
-  void do_test_inquiry(byte type, int arg2);
+  void do_test_inquiry(byte type);
   void do_test(int type, int arg1, int arg2);
 //  void do_test_process(int times, bool schedules);
 
@@ -417,20 +417,20 @@ void Commands::do_max()
   *buf = ColorMath::scale_color(*buf, MAX_BRIGHTNESS_PERCENT / 100.0);
 }
 
-// todo: optional
-void Commands::do_dim(){
+void Commands::do_dim(byte times){
+  times = min(7, max(1, times));
   rgb_color * buf = offset_buffer();
-  buf->red = buf->red >> 1;
-  buf->green = buf->green >> 1;
-  buf->blue = buf->blue >> 1;
+  buf->red = buf->red >> times;
+  buf->green = buf->green >> times;
+  buf->blue = buf->blue >> times;
 }
 
-// todo: optional
-void Commands::do_bright(){
+void Commands::do_bright(byte times){
+  times = min(7, max(1, times));
   rgb_color * buf = offset_buffer();
-  buf->red = buf->red << 1;
-  buf->green = buf->green << 1;
-  buf->blue = buf->blue << 1;
+  buf->red = buf->red << times;
+  buf->green = buf->green << times;
+  buf->blue = buf->blue << times;
 }
 
 // todo: optional
@@ -1293,7 +1293,7 @@ void Commands::do_next_window(int arg0, int arg1, int arg2)
 
 // arg0 setting to configure
 // arg1 value to set (0 = default)
-void Commands::do_configure(int arg0, int arg1, int arg2)
+void Commands::do_configure(int arg0, int arg1)
 {
   switch(arg0){
     case CONFIG_SET_BLINK_PERIOD:
@@ -1440,7 +1440,7 @@ void Commands::do_stop()
 //                in this case arg[0] is the stopping point when counting down
 // arg[2] 
 // for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
-void Commands::do_palette(byte arg0, byte arg1, byte arg2)
+void Commands::do_palette(byte arg0, byte arg1)
 {
   rgb_color * palette = Colors::get_palette();
 

@@ -35,7 +35,7 @@
 #define TEST_INQUIRY_NUM_SEQUENCERS 20
 #define TEST_INQUIRY_NUM_FINE_ZONES 21
 
-void Commands::do_test_inquiry(byte type, int arg2)
+void Commands::do_test_inquiry(byte type)
 {
   int result = 0;
   switch(type)
@@ -143,7 +143,7 @@ void Commands::do_test(int type, int arg1, int arg2)
     case TEST_TYPE_INQUIRY:
       // arg1 - inquiry type
       // arg2 - (depends on inquiry)
-      do_test_inquiry(arg1, arg2);
+      do_test_inquiry(arg1);
       break;
 #ifdef USE_TEST_FRAMEWORK
     case TEST_TYPE_DUMP_MACRO:
@@ -317,4 +317,3 @@ void Commands::do_test_accumulators(){
 
 #endif
 #endif
-

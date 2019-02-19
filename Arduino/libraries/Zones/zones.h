@@ -27,7 +27,7 @@ class Zones
 
 void Zones::begin(byte num_zones, byte num_fine_zones, const byte *zone_offsets, const byte *zone_windows){
   this->num_zones = num_zones;
-  this->fine_zones = fine_zones;
+  this->fine_zones = num_fine_zones;
   this->zone_offsets = zone_offsets;
   this->zone_windows = zone_windows;
 }

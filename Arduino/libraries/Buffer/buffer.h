@@ -18,7 +18,7 @@
 class Buffer
 {
   public:
-  void begin(PololuLedStripBase **ledStrips, byte default_brightness, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones);
+  void begin(PololuLedStripBase **ledStrips, byte default_brightness, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones);
 
   void display_buffer(rgb_color * pbuffer);
   void render_display();
@@ -91,7 +91,7 @@ class Buffer
 
 rgb_color *Buffer::render;
 
-void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte safety_led_count, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones){
+void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte visible_led_count, Render *renderer, rgb_color **buffers, rgb_color *render, byte **effects_buffers, Zones * zones){
   this->black = Render::black;
   this->ledStrips = ledStrips;
   this->current_display = 0;

@@ -126,11 +126,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_DIM: 
-      do_dim(); 
+      do_dim(arg0); 
       break;
     
     case CMD_BRIGHT: 
-      do_bright(); 
+      do_bright(arg0); 
       break;
 
     case CMD_STATIC: 
@@ -216,7 +216,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_CONFIGURE: 
-      do_configure(arg0, arg1, arg2); 
+      do_configure(arg0, arg1); 
       break;
     
     case CMD_PIN: 
@@ -261,7 +261,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_PALETTE: 
-      do_palette(arg0, arg1, arg2); 
+      do_palette(arg0, arg1); 
       break;
     
     case CMD_SHUFFLE: 

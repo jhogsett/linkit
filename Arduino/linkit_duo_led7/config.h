@@ -465,7 +465,7 @@ class Config
     static const byte minimum_brightness_percent = MINIMUM_BRIGHTNESS_PERCENT;
     static const byte visible_led_count = ANIM_LED_COUNT;
     static const byte ease_anim_margin = EASE_ANIM_MARGIN;
-    static const byte led_count = visible_led_count + ease_anim_margin;
+    //static const byte led_count = visible_led_count + ease_anim_margin;
     static const int blink_period = BLINK_PERIOD;
     static const int breathe_period = BREATHE_PERIOD;
     static constexpr float fade_rate = FADE_RATE;
