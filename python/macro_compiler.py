@@ -211,6 +211,9 @@ def resolve_script(script_lines):
             # no more resolving needed/possible
             break
         proxy_macro_numbers()
+
+    # remove excess spaces
+    new_lines = do_clean_ups(new_lines, {" " : ""})
     return new_lines
 
 
@@ -1059,6 +1062,7 @@ def assign_final_macro_number(line):
 
     while bytes_used == 0 and tries > 0:
         ui.report_verbose("assign_final_macro_number measuring proxy macro #" + str(proxy_macro_number) + " on device")
+        ui.report_verbose_alt2("macro being tested: " + test_macro)
         bytes_used = led_command.command_int(test_macro)
         ui.report_verbose_alt("assign_final_macro_number reported size: " + str(bytes_used) + " bytes")
         tries -= 1
