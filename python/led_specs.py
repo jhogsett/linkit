@@ -919,6 +919,10 @@ def specs():
     if test("effects are not set on a duplicate-only operation"):
       expect_effect("lgr:bl1:1,-1:cpy:flu:era:1,-2:cpy", 0, 1, "0")
 
+    if test("it copies without changing the palette when forced to use the render buffer"):
+      expect_palette("1:shf:neo:sod:tun:flu:-3,1:cpy", 0, palette_size, standard_palette)
+      expect_buffer("era:neo:sod:tun:flu:-3,1:cpy", 0, 4, "20,11,2,20,10,4,20,5,0,0,0,0")
+
 
 ########################################################################
 # PALETTE SHUFFING
