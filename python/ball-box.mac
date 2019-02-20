@@ -34,9 +34,19 @@ $bgtype-darkgray 3
 $bgtype-color-points 4
 $bgtype-dotted 5
 $bgtype-color-dotted 6
-$bgtype-palette 7
-$bgtype-rotate 8
-$bgtype-mirror 9
+$bgtype-color-dotted-dual 7
+
+# this is too loud and not pretty
+$bgtype-palette 8
+
+# these aren't compatible with frame animation because 
+# the rendered output keeps being put back where it belongs
+$bgtype-rotate 9
+$bgtype-mirror 10
+
+# these are too slow
+$bgtype-points-alt 11
+$bgtype-color-points-alt 12
 
 $background-type <bgtype-line>
 $use-computed-value False
@@ -207,12 +217,22 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # draw white points at the box bounds
 <<< <background-type> == <bgtype-points>
     white
-
     <box-width>
     set-position
     {{
         white
     }}
+>>>
+
+# draw white points at the box bounds
+<<< <background-type> == <bgtype-points-alt>
+    white
+    black
+    <ENABLE>
+    set-reverse
+    white
+    <DISABLE>
+    set-reverse
 >>>
 
 # fill the box background with a darkened palette color
@@ -255,7 +275,6 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> == <bgtype-color-points>
     recall
     add-palette-color
-
     <box-width>
     set-position
     {{
@@ -264,13 +283,38 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     }}
 >>>
 
+# draw palette color points at the box bounds
+<<< <background-type> == <bgtype-color-points-alt>
+    recall
+    add-palette-color
+    black
+    <ENABLE>
+    set-reverse
+    recall
+    add-palette-color
+    <DISABLE>
+    set-reverse
+>>>
+
 # fill the box background with a dotted darkened palette color
 <<< <background-type> == <bgtype-color-dotted>
     pop
     add-palette-color
-    2
+    3
     darken
     black
+    -2
+    duplicate
+>>>
+
+# fill the box background with a dotted darkened palette color
+<<< <background-type> == <bgtype-color-dotted-dual>
+    pop
+    add-palette-color
+    3
+    darken
+    repeat
+    darken
     -2
     duplicate
 >>>
@@ -278,7 +322,6 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # fill the box background with a dotted dark gray
 <<< <background-type> == <bgtype-dotted>
     dark-gray
-#    darken
     black
     -2
     duplicate

@@ -91,6 +91,10 @@ $FAST-ERASE-ALL 2
 $FILL-ALL 0
 $FILL-COLORS 1
 
+# enablemen t
+$ENABLE 1
+$DISABLE 0
+
 # standard render function, consumes partial final macro
 [render !]
   refresh-display

@@ -35,6 +35,8 @@ def parse(script):
   plans = []
   anti_plans=[]
   for line in script:
+    if len(line) == 0:
+      continue
     if line[0] == "~":
       line = line[1:]
       result = parse_anti_plan(line)
