@@ -268,9 +268,10 @@ def program_script(presets):
           for line in compiled_script:
             ui.report_info_alt(line)
     except ValueError, e:
-        ui.report_separator()
-        ui.report_error("Fatal error compiling script. Reported error: ")
-        ui.report_error_alt(str(e))
+        if verbose_mode:
+          ui.report_separator()
+          ui.report_error("Fatal error compiling script. Reported error: ")
+          ui.report_error_alt(str(e))
         compiler_error = str(e)
         compilation_succeeded = False
 
@@ -314,13 +315,18 @@ def verify_programming(compiled_script):
   ui.report_separator()
   return script_ok
 
-def run_program(arguments):
+def record_program(arguments):
   presets = utils.merge_dicts(device_presets, arguments)
   script_ok = program_script(presets)
-  if script_ok:
+  return script_ok
+
+def run_program():
     lc.command(":::stp")
     lc.command("10:run")
-  return script_ok
+
+def stop_program():
+    lc.command(":::stp")
+    lc.command(":::stp")
 
 def enter_pause_loop():
   ui.report_info_alt2("Paused - press a key to continue...")
@@ -395,7 +401,7 @@ def passes_anti_plan(arguments):
         allowed = True
         break
     if not allowed:
-      ui.report_error("plan skipped due to anti plan: " + anti_plan["name"])
+      ui.report_verbose_alt2("plan skipped due to anti plan: " + anti_plan["name"])
       add_to_log("skipped by anti plan: " + anti_plan["name"])
       return False
   return True
@@ -403,13 +409,13 @@ def passes_anti_plan(arguments):
 def do_round():
   arguments = create_round()
   log_arguments(arguments)
-  display_arguments(arguments)
 
   if  passes_anti_plan(arguments):
-    if run_program(arguments):
+    if record_program(arguments):
+      display_arguments(arguments)
+      run_program()
       vote = round_delay()
-      lc.command(":::stp")
-      lc.command(":::stp")
+      stop_program()
       add_to_log(vote)
     else:
       add_to_log("error: " + compiler_error)

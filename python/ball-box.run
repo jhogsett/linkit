@@ -25,4 +25,6 @@ brightness         0
 ~all-white         background-type=2 foreground-type=1
 ~all-white         background-type=3 foreground-type=1
 ~all-white         background-type=5 foreground-type=1
+~wheel-bias        use-computed-value=False =sws
+~wheel-bias        use-computed-value=False =swc
 
