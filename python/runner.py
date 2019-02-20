@@ -335,20 +335,25 @@ def enter_pause_loop():
       return
 
 def round_delay():
-  ui.report_info_alt2("Press X to exit, P to pause, any other key to Vote:")
-  choice = utils.get_input(round_time)
-  if choice == "x" or choice == "X":
-    raise KeyboardInterrupt
-  elif choice == "p" or choice == "P":
-    enter_pause_loop()
-    return round_delay()
-  if choice == " ":
-    choice = default_choice
-  elif choice == None:
-    choice = "no vote"
+  if not no_rating:
+    ui.report_info_alt2("Press X to exit, P to pause, any other key to Vote:")
+    choice = utils.get_input(round_time)
+    if choice == "x" or choice == "X":
+      raise KeyboardInterrupt
+    elif choice == "p" or choice == "P":
+      enter_pause_loop()
+      return round_delay()
+    if choice == " ":
+      choice = default_choice
+    elif choice == None:
+      choice = "no vote"
+    else:
+      choice = "pressed: " + choice
+      ui.report_info_alt(choice)
   else:
-    choice = "pressed: " + choice
-  ui.report_info_alt(choice)
+    ui.report_info_alt2("Displaying for " + str(round_time) + " seconds...")
+    time.sleep(round_time)
+    choice = "rating disabled"
   return choice
 
 def log_filename():
@@ -424,7 +429,7 @@ def do_round():
 ############################################################
 ############################################################
 
-global app_description, verbose_mode, quiet_mode, runner_file, device_presets, show_plan, show_script, no_verify, round_time, extra_verbose_mode, compiler_error
+global app_description, verbose_mode, quiet_mode, runner_file, device_presets, show_plan, show_script, no_verify, round_time, extra_verbose_mode, compiler_error, no_rating
 app_description = None
 verbose_mode = None
 quiet_mode = None
@@ -437,9 +442,11 @@ round_time = None
 extra_verbose_mode = None
 compiler_error = ""
 default_choice = None
+no_rating = None
 
 def get_options():
-    global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify, round_time, extra_verbose_mode, default_choice
+    global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify, round_time, extra_verbose_mode, default_choice, no_rating
+
     app_description = "Auto Program Runner - Apollo Lighting System v.0.0 2-0-2019"
 
     parser = argparse.ArgumentParser(description=app_description)
@@ -452,6 +459,7 @@ def get_options():
     parser.add_argument("-w", "--wait-time", type=int, dest="wait_time", default=30, help="wait time between rounds in seconds (30)")
     parser.add_argument("-x", "--extra-verbose", dest="extra_verbose", action="store_true", help="display extra verbose info (False)")
     parser.add_argument("-d", "--default-choice", dest="default_choice", default="skipped", help="vote log entry when hitting space bar (skipped)")
+    parser.add_argument("-r", "--no-rating", dest="no_rating", action="store_true", help="don't prompt user for a rating vote (False)")
 
     args = parser.parse_args()
     verbose_mode = args.verbose
@@ -463,6 +471,7 @@ def get_options():
     round_time = args.wait_time
     extra_verbose_mode = args.extra_verbose
     default_choice = args.default_choice
+    no_rating = args.no_rating   
 
 def validate_options():
     pass
