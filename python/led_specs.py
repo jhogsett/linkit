@@ -680,10 +680,10 @@ def specs():
       for i in range(0, len(test_colors.effects)):
         expect_effect("rnd:" + test_colors.effects[i][0] + ":flu", 0, 1, test_colors.effects[i][1])
 
-    if test("it sets random effects"):
-      expect_effect("rnd:efr", 0, 1, "21")
-      expect_effect("rnd:efr", 0, 1, "15")
-      expect_effect("rnd:efr", 0, 1, "12")
+#    if test("it sets random effects"):
+#      expect_effect("rnd:efr", 0, 1, "21")
+#      expect_effect("rnd:efr", 0, 1, "15")
+#      expect_effect("rnd:efr", 0, 1, "12")
 
 
 ########################################################################
@@ -1182,8 +1182,8 @@ def specs():
       expect_buffer("2:rnd:2:rnd:flo", 0, 3, "20,20,0,20,20,0,20,20,0")
       expect_effect("2:rnd:2:rnd:flo", 0, 3, "11,11,11")
 
-    if test("it places a random color from the palette"):
-      expect_buffer("3:rnd", 0, 1, "15,20,0")
+#    if test("it places a random color from the palette"):
+#      expect_buffer("3:rnd", 0, 1, "15,20,0")
 
     if test("it places multiple versions of the same random color and no effect"):
       expect_buffer("rnd:0,5:rnd", 0, 7, "20,0,20,20,0,20,20,0,20,20,0,20,20,0,20,15,20,0,0,0,0")
@@ -1197,9 +1197,9 @@ def specs():
       expect_buffer("rnd:2,5:rnd", 0, 7, "20,0,0,20,0,15,0,20,20,0,0,20,10,0,20,15,20,0,0,0,0")
       expect_effect("rnd:2,5:rnd", 0, 7, "15,18,21,17,19,0,13")
 
-    if test("it places multiple random palette colors and no effects"):
-      expect_buffer("rnd:3,5:rnd", 0, 7, "0,10,20,0,0,20,20,20,0,10,0,20,20,0,20,15,20,0,0,0,0")
-      expect_effect("rnd:3,5:rnd", 0, 7, "0,0,0,0,0,0,0")
+#    if test("it places multiple random palette colors and no effects"):
+#      expect_buffer("rnd:3,5:rnd", 0, 7, "0,10,20,0,0,20,20,20,0,10,0,20,20,0,20,15,20,0,0,0,0")
+#      expect_effect("rnd:3,5:rnd", 0, 7, "0,0,0,0,0,0,0")
 
     if test("it fills the current width with random colors"):
       expect_buffer("3:win:1,-1:rnd", 0, 4, "10,0,20,20,0,20,15,20,0,0,0,0")
@@ -1208,9 +1208,9 @@ def specs():
       expect_buffer("3:win:2,-1:rnd", 0, 4, "0,10,20,20,20,0,20,0,20,0,0,0")
       expect_effect("3:win:2,-1:rnd", 0, 4, "15,18,11,0")
 
-    if test("it fills the current width with random palette colors and no effects"):
-      expect_buffer("3:win:3,-1:rnd", 0, 4, "10,0,20,20,0,20,15,20,0,0,0,0")
-      expect_effect("3:win:3,-1:rnd", 0, 4, "0,0,0,0")
+#    if test("it fills the current width with random palette colors and no effects"):
+#      expect_buffer("3:win:3,-1:rnd", 0, 4, "10,0,20,20,0,20,15,20,0,0,0,0")
+#      expect_effect("3:win:3,-1:rnd", 0, 4, "0,0,0,0")
 
 
 ########################################################################
