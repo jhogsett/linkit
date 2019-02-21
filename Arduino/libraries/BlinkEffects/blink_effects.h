@@ -40,7 +40,6 @@ class BlinkEffects
   bool blink_test();
   bool blink_1_6_test(byte effect);
   bool blink_a_test();
-  bool blink_a_b_test(byte effect);
 
   int blink_period = DEFAULT_BLINK_PERIOD;
   int blink_counter = 0;
@@ -107,18 +106,6 @@ bool BlinkEffects::blink_a_test()
   return this->half_counter < this->quarter_period;
 }
 
-bool BlinkEffects::blink_a_b_test(byte effect)
-{
-  switch(effect)
-  {
-    case BLINK_ON_A:
-      return blink_a_test();
-
-    case BLINK_ON_B:
-      return !blink_a_test();
-  }
-}
-
 // cache the blink state ahead of rendering
 // pass in a byte array at least
 void BlinkEffects::begin_render(byte* cache)
@@ -128,7 +115,7 @@ void BlinkEffects::begin_render(byte* cache)
   for(byte i = 1; i < 7; i++)
     cache[i] = blink_1_6_test(BLINK_ON + i);
 
-  cache[7] = blink_a_b_test(BLINK_ON_A);
+  cache[7] = blink_a_test();
   cache[8] = !cache[7];
 
   cache[9] = cache[7];

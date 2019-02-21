@@ -122,7 +122,6 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_MAX: 
-      do_max(); 
       break;
     
     case CMD_DIM: 
@@ -204,11 +203,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_BLINKR: 
-      effects_processor->start_blinking_r(); 
       break;
     
     case CMD_EFFECTR: 
-      effects_processor->start_effect_r(); 
       break;
     
     case CMD_TEST: 

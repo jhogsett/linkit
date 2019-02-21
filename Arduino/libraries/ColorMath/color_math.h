@@ -935,7 +935,7 @@ rgb_color ColorMath::correct_color(rgb_color color)
     color.red = color.green;
     color.green = swap;
   }
-    return color;
+  return color;
 }
 
 // needed in renderer
