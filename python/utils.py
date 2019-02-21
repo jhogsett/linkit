@@ -8,6 +8,7 @@ import select
 import tty
 import termios
 import time
+import random
 
 def load_file(filename, default_ext=".???"):
     file_lines = []
@@ -79,4 +80,10 @@ def merge_dicts(x, y):
     z = x.copy() 
     z.update(y)
     return z
+
+def randomize(seed=0, max=65535):
+    if seed == 0:
+        seed = random.randint(1, max)
+    random.seed(seed)
+    return seed
 

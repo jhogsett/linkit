@@ -188,6 +188,7 @@ def log_plan():
   add_to_log(formatted_device_info())
   add_to_log(formatted_plan())
   add_to_log(formatted_anti_plan())
+  add_to_log("random seed: " + str(random_seed))
   add_to_log("permutations: " + formatted_permutations())
 
 def get_plan(runner_file):
@@ -335,20 +336,25 @@ def enter_pause_loop():
       return
 
 def round_delay():
-  ui.report_info_alt2("Press X to exit, P to pause, any other key to Vote:")
-  choice = utils.get_input(round_time)
-  if choice == "x" or choice == "X":
-    raise KeyboardInterrupt
-  elif choice == "p" or choice == "P":
-    enter_pause_loop()
-    return round_delay()
-  if choice == " ":
-    choice = default_choice
-  elif choice == None:
-    choice = "no vote"
+  if not no_rating:
+    ui.report_info_alt2("Press X to exit, P to pause, any other key to Vote:")
+    choice = utils.get_input(round_time)
+    if choice == "x" or choice == "X":
+      raise KeyboardInterrupt
+    elif choice == "p" or choice == "P":
+      enter_pause_loop()
+      return round_delay()
+    if choice == " ":
+      choice = default_choice
+    elif choice == None:
+      choice = "no vote"
+    else:
+      choice = "pressed: " + choice
+    ui.report_info_alt(choice)
   else:
-    choice = "pressed: " + choice
-  ui.report_info_alt(choice)
+    ui.report_info_alt2("Displaying for " + str(round_time) + " seconds...")
+    time.sleep(round_time)
+    choice = "rating disabled"
   return choice
 
 def log_filename():
@@ -424,7 +430,7 @@ def do_round():
 ############################################################
 ############################################################
 
-global app_description, verbose_mode, quiet_mode, runner_file, device_presets, show_plan, show_script, no_verify, round_time, extra_verbose_mode, compiler_error
+global app_description, verbose_mode, quiet_mode, runner_file, device_presets, show_plan, show_script, no_verify, round_time, extra_verbose_mode, compiler_error, no_rating, random_seed
 app_description = None
 verbose_mode = None
 quiet_mode = None
@@ -437,9 +443,12 @@ round_time = None
 extra_verbose_mode = None
 compiler_error = ""
 default_choice = None
+no_rating = None
+random_seed = None
 
 def get_options():
-    global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify, round_time, extra_verbose_mode, default_choice
+    global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify, round_time, extra_verbose_mode, default_choice, no_rating, random_seed
+
     app_description = "Auto Program Runner - Apollo Lighting System v.0.0 2-0-2019"
 
     parser = argparse.ArgumentParser(description=app_description)
@@ -447,11 +456,13 @@ def get_options():
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
     parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
     parser.add_argument("-p", "--dont-show-plan", dest="dont_show_plan", action="store_true", help="don't show the randomization plan (False)")
-    parser.add_argument("-s", "--show-script", dest="show_script", action="store_true", help="show the compiled script (False)")
+    parser.add_argument("-o", "--show-script", dest="show_script", action="store_true", help="show the compiled script (False)")
     parser.add_argument("-n", "--no-verify", dest="no_verify", action="store_true", help="skip the programming verification step (False)")
     parser.add_argument("-w", "--wait-time", type=int, dest="wait_time", default=30, help="wait time between rounds in seconds (30)")
     parser.add_argument("-x", "--extra-verbose", dest="extra_verbose", action="store_true", help="display extra verbose info (False)")
     parser.add_argument("-d", "--default-choice", dest="default_choice", default="skipped", help="vote log entry when hitting space bar (skipped)")
+    parser.add_argument("-r", "--no-rating", dest="no_rating", action="store_true", help="don't prompt user for a rating vote (False)")
+    parser.add_argument("-s", "--seed", type=int, dest="seed", default=0, help="random number generator seed value (random")
 
     args = parser.parse_args()
     verbose_mode = args.verbose
@@ -463,6 +474,8 @@ def get_options():
     round_time = args.wait_time
     extra_verbose_mode = args.extra_verbose
     default_choice = args.default_choice
+    no_rating = args.no_rating   
+    random_seed = args.seed
 
 def validate_options():
     pass
@@ -473,12 +486,15 @@ def introduction():
     ui.report_verbose()
 
 def initialize():
-    global device_presets
+    global device_presets, random_seed
     get_options()
     validate_options()
     tc.begin(quiet_mode)
     ui.begin(verbose_mode, quiet_mode)
     introduction()
+
+    random_seed = utils.randomize(random_seed)
+    ui.report_info("random seed: " + tc.green(str(random_seed)))
 
     lc.begin(extra_verbose_mode)
     lc.stop_all()
