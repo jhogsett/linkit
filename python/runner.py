@@ -499,6 +499,8 @@ def initialize():
     lc.begin(extra_verbose_mode)
     lc.stop_all()
 
+    utils.begin(not no_rating)
+
     device_presets = lc.get_device_profile()
     num_leds = device_presets["NUM-LEDS"]
     starting_macro = device_presets["START-MACRO"]
