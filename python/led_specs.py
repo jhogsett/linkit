@@ -2301,14 +2301,6 @@ def specs():
 
 
 ########################################################################
-# STATIC EFFECT
-########################################################################
-  if group("static effect"):
-
-    pending_test("static effect")
-
-
-########################################################################
 # SCHEDULING
 ########################################################################
   if group("scheduling"):
@@ -2328,7 +2320,14 @@ def specs():
 ########################################################################
   if group("draw modes"):
 
-    pending_test("draw modes")
+    if test("it overwrites an existing color"):
+      expect_buffer("0:drw:tun:0:pos:wht", 0, 1, "20,20,20")
+
+    if test("it adds to an existing color"):
+      expect_buffer("1:drw:cyn:0:pos:red", 0, 1, "20,20,20")
+
+    if test("it mixes with an existing color"):
+      expect_buffer("2:drw:blk:0:pos:wht", 0, 1, "10,10,10")
 
 
 ########################################################################
@@ -2336,7 +2335,26 @@ def specs():
 ########################################################################
   if group("push and pop"):
 
-    pending_test("draw modes")
+    if test("it pushes an argument on the accumulator stack"):
+      expect_accumulators("neo:sto:5:psh", "5,0,0")      
+
+    if test("it pushes 2 arguments on the accumulator stack"):
+      expect_accumulators("neo:sto:5:psh:8:psh", "8,5,0")
+
+    if test("it pushes 3 arguments on the accumulator stack"):
+      expect_accumulators("neo:sto:5:psh:8:psh:13:psh", "13,8,5")
+
+    if test("it pops accum0 off the accumulator stack"):
+      expect_accumulators("sod:2,3,5:sto:0:pop:sto", "2,0,0")
+
+    if test("it pops accum0 off the accumulator stack"):
+      expect_accumulators("sod:2,3,5:sto:1:pop:sto", "2,0,0")
+
+    if test("it pops accum1 off the accumulator stack"):
+      expect_accumulators("sod:2,3,5:sto:2:pop:sto", "3,0,0")
+
+    if test("it pops accum2 off the accumulator stack"):
+      expect_accumulators("sod:2,3,5:sto:3:pop:sto", "5,0,0")
 
 
 ########################################################################
