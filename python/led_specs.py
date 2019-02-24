@@ -1142,8 +1142,8 @@ def specs():
     if test("erases using the custom black level"):
       expect_buffer("2,3,4:sbl:era", 0, 1, "2,3,4")
 
-    pending_test("more custom black level tests")
-# default carry color
+    # there aren't any other behaviors
+    #pending_test("more custom black level tests")
 
 
 ########################################################################
@@ -1496,6 +1496,9 @@ def specs():
     if test("it carries the correct color to the insertion point in reverse"):
       expect_buffer("0:off:10:win:1:rev:red:grn:blu:6:blk:wht:rot", 0, 10, "0,20,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,20,20,20,0,0")
 
+    pending_test("it rotates effects too")
+
+
 
 ########################################################################
 # POWER SHIFT
@@ -1577,8 +1580,17 @@ def specs():
 ########################################################################
   if group("carry color"):                                                                                                            
 
-    skip_test("2:win:red:blu:flu:rot:flu:car", "carry color")                                                                                                                                                                                                           
-    # expect_buffer("2:win:red:blu:flu:rot:flu:car", 0, 2, "20,0,0,20,0,0")
+    if test("pushing a color sets carry color"):
+      expect_buffer("3:win:red:org:yel:blu:car", 0, 4, "20,0,0,0,0,20,20,20,0,0,0,0") 
+
+    if test("pushing a color in reverse sets carry color"):
+      expect_buffer("3:win:1:rev:red:org:yel:blu:car", 0, 4, "20,20,0,0,0,20,20,0,0,0,0,0")
+
+    if test("rotating sets carry color"):
+      expect_buffer("3:win:red:grn:blu:rot:car", 0, 4, "20,0,0,20,0,0,0,0,20,0,0,0")
+
+    if test("rotating in reverse sets carry color"):
+      expect_buffer("3:win:1:rev:red:grn:blu:rot:car", 0, 4, "0,0,20,20,0,0,20,0,0,0,0,0")
 
 
 ########################################################################
