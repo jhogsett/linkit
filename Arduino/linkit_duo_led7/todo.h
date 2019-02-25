@@ -1,3 +1,5 @@
+// copy/paste - option to now overwrite with black
+
 // snf set-next-frame
 //animation needs
 //

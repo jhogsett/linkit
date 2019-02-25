@@ -1,14 +1,17 @@
 
-
-
 import os
 from subprocess import call
 import sys
-import select
-import tty
-import termios
 import time
 import random
+#import select
+#import tty
+#import termios
+
+def begin(use_tty = True):
+    import select
+    import tty
+    import termios
 
 def load_file(filename, default_ext=".???"):
     file_lines = []

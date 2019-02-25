@@ -21,12 +21,15 @@
 // #define MONUMENT
 
 // single 144-LED strip
+// weather2
 // #define LED_STRIP_144
+// #define WEATHER2
 
 // single 72-LED strip
 // #define LED_STRIP_72
 
 // single 50-LED strand
+// sphere2
 // #define LED_STRAND_50
 
 // single 50-LED strand on original wearable
@@ -56,7 +59,7 @@
 // #define WEARABLE_AND_GLASSES_TYPE2
 
 // 200-LED display/overhead
-// need to reduce char buffer to 60 to avoid memory corruption
+// need to reduce char buffer to 50 to avoid memory corruption
 // #define RADIUS8
 
 // 44-LED Hard Hat
@@ -79,8 +82,11 @@
 // 93-led proector on original wearable
 // #define WEARABLE_AND_PROJECTOR
 
-// 57-LED three part monument 2
-// #define MONUMENT2
+// 57-LED three part monument3
+// #define MONUMENT3
+
+// 2 50-led strands
+//#define LED_STRAND_100
 
 //////////////////////////////
 // devices profile definitions
@@ -142,6 +148,23 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #define BLINK_PERIOD 1500
 #define BREATHE_PERIOD 100
+#define MAX_BRIGHTNESS_PERCENT     30 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    20
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
+#endif
+
+#ifdef WEATHER2
+#define USE_1_DISPLAYS
+#define ANIM_LED_COUNT 144
+#define ZONES_144_LEDS
+#define DEFAULT_BRIGHTNESS_PERCENT 25
+#define BLINK_PERIOD 1500
+#define BREATHE_PERIOD 100
+#define MAX_BRIGHTNESS_PERCENT     40 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    30
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
 #endif
 
 #ifdef APOLLO_DISPLAY
@@ -278,7 +301,23 @@
 #define SWAP_REDGREEN
 #define ANIM_LED_COUNT 50
 #define ZONES_STRAND_50
-#define DEFAULT_BRIGHTNESS_PERCENT 33
+#define DEFAULT_BRIGHTNESS_PERCENT 25
+#define MAX_BRIGHTNESS_PERCENT     40 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    30
+#define LOW_BRIGHTNESS_PERCENT     10
+#define MIN_BRIGHTNESS_PERCENT     2
+#endif
+
+#ifdef LED_STRAND_100
+#define SWAP_REDGREEN
+#define ANIM_LED_COUNT 100
+#define ZONES_STRAND_100
+#define DEFAULT_BRIGHTNESS_PERCENT 25
+#define MAX_BRIGHTNESS_PERCENT     40 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    30
+#define LOW_BRIGHTNESS_PERCENT     10
+#define MIN_BRIGHTNESS_PERCENT     2
+
 #endif
 
 #ifdef WEARABLE_AND_STRAND_50
@@ -389,7 +428,7 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #endif
 
-#ifdef MONUMENT2
+#ifdef MONUMENT3
 #define ANIM_LED_COUNT 57
 #define ZONES_3_X_19_LEDS
 #define BLINK_PERIOD 3000
@@ -424,6 +463,8 @@
 #define DISPLAY_PIN2 11
 #define DISPLAY_PIN3 10
 #endif
+
+////////////////////////////////////////////////////////////////////////////////////////
 
 // set number of displays and buffers based on number of configured displays
 #if defined(USE_3_DISPLAYS)
