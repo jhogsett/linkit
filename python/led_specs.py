@@ -944,6 +944,15 @@ def specs():
     if test("effects are not set when forced to use the render buffer"):
       expect_effect("neo:bl1:sod:bl2:tun:bl3:flu:-3,2:cpy", 0, 6, "14,13,12,0,0,0")
 
+    if test("it copies colors on a spread zoom"):
+      expect_buffer("olv:1,0,-2:cpy", 0, 4, "15,20,0,0,0,0,15,20,0,0,0,0")
+
+    if test("it copies effects on a spread zoom"):
+      expect_effect("ros:bli:1,0,-2:cpy", 0, 4, "11,0,11,0")
+
+    if test("it handles a wider spread zoom"):
+      expect_buffer("lav:1,0,-3:cpy", 0, 6, "15,0,20,0,0,0,0,0,0,15,0,20,0,0,0,0,0,0")
+
 
 ########################################################################
 # PALETTE SHUFFING
