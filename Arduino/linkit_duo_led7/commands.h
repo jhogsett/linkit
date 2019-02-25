@@ -75,7 +75,7 @@ class Commands
   void do_random(byte type, int times);
   void do_mirror();
   void draw_mirror_step(rgb_color * buf_back, rgb_color * buf_front);
-  void do_copy(int size, int times, byte zoom);
+  void do_copy(int size, int times, int zoom);
   void do_repeat(byte times);
 
 #ifdef USE_ELASTIC_SHIFT
@@ -647,10 +647,17 @@ void Commands::do_mirror()
 //        -2 = duplicate the pattern in the palette buffer but don't copy first
 
 // zoom - how many pixels to draw per source pixel
+//        if less than zero, spreads out at zoom size, skipping other pixels
 
 // this won't clobber dynamic effect marker becauwe this is a copy operation
-void Commands::do_copy(int size, int times, byte zoom)
+void Commands::do_copy(int size, int times, int zoom)
 {
+  bool spread_mode = false;
+  if(zoom < 0)
+  {
+    zoom = zoom * -1;  
+    spread_mode = true;
+  }  
   zoom = max(1, zoom);
 
   bool force_render_buffer = false;
@@ -727,11 +734,14 @@ void Commands::do_copy(int size, int times, byte zoom)
           byte dest = size_factor + zoom_factor + k;
           if(dest < window) // prevent buffer overrun
           { 
-            byte * effect = &effects[dest];
-            if(use_palette_buffer)
-              *effect = palette[j].red;
-            else
-              *effect = render_buffer[j].red;
+            if(!spread_mode || k == 0)
+            {  
+              byte * effect = &effects[dest];
+              if(use_palette_buffer)
+                *effect = palette[j].red;
+              else
+                *effect = render_buffer[j].red;
+            }
           }
         }
       }
@@ -765,14 +775,17 @@ void Commands::do_copy(int size, int times, byte zoom)
         for(byte k = 0; k < zoom; k++)
         {
           byte dest = size_factor + zoom_factor + k;
-          if(dest < window)
-          { // prevent buffer overrun
-            rgb_color * buff = &buf[dest];
-            if(use_palette_buffer)
-              // correct the uncorrected color in the palette
-              *buff = ColorMath::correct_color(palette[j]);
-            else
-              *buff = render_buffer[j];
+          if(dest < window) // prevent buffer overrun
+          {             
+            if(!spread_mode || k == 0)
+            {
+              rgb_color * buff = &buf[dest];
+              if(use_palette_buffer)
+                // correct the uncorrected color in the palette
+                *buff = ColorMath::correct_color(palette[j]);
+              else
+                *buff = render_buffer[j];
+            }
           }
         }
       }

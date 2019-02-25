@@ -13,6 +13,12 @@
 const byte PROGMEM zone_offsets[NUM_ZONES]= {   0,    0, 10, 20, 30, 40 };
 const byte PROGMEM zone_windows[NUM_ZONES] = { 50,   10, 20, 30, 40, 50 };
 
+#elif defined(ZONES_STRAND_100)
+#define NUM_ZONES 11
+#define FINE_ZONES 10 //                              10 zones of 10
+const byte PROGMEM zone_offsets[NUM_ZONES]= {    0,    0, 10, 20, 30, 40, 50, 60, 70, 80,  90 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 100,   10, 20, 30, 40, 50, 60, 70, 80, 90, 100 };
+
 #elif defined(ZONES_ANNUNCIATOR)
 #define NUM_ZONES 10
 #define FINE_ZONES 3 //                              3 zones of 12    6 zones of 6

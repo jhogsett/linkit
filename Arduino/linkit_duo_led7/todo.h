@@ -1,4 +1,57 @@
-// transaranet black for animation purposes
+// copy/paste - option to now overwrite with black
+
+// snf set-next-frame
+//animation needs
+//
+//parent-child relationship
+//position
+//size
+//
+//------------------
+//
+//get next object position
+//
+//need to set the viewport to cover it
+//
+//
+//pass in: seq #, object width, parent object seq #
+//
+//advance sequence to next object position
+//push
+//get parent sequencer current position
+//push
+//add them
+//set offset
+//add object width
+//set window
+//
+//-------------------
+//
+//arg0 - seq #
+//arg1 - parent seq #
+//arg2 - object width
+//
+//advance sequence arg0 and save it
+//get sequence arg1 and add
+//set this as offset
+//add width arg2
+//set this as window
+
+
+
+
+
+// test: pop takes argument
+
+// rebuild blink cache as it changes rather than on every render
+
+// add symbols for dim/brt levels 1-7
+
+// random color each draw (won't look pretty)
+
+// flooding should overwrite the origin position (otherwise ?)
+
+// transparent black for animation purposes
 // transparent mode for copying
 // new runner type: one int = set it to that always
 
