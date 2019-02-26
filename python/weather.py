@@ -380,11 +380,11 @@ def render_forecast_wind_speed():
             else:
                 wind_speed = int(wind_speed)
                 if 0 <= wind_speed <= 1:
-                    week_slots[x][y] = "grn"
+                    week_slots[x][y] = "grn:1:dim"
                 elif 0 <= wind_speed <= 2:
-                    week_slots[x][y] = "lgr"
+                    week_slots[x][y] = "lgr:1:dim"
                 elif 0 <= wind_speed <= 3:
-                    week_slots[x][y] = "olv"
+                    week_slots[x][y] = "olv:1:dim"
                 elif 0 <= wind_speed <= 5:
                     week_slots[x][y] = "yel"
                 elif 0 <= wind_speed <= 7:
@@ -396,11 +396,11 @@ def render_forecast_wind_speed():
                 elif 0 <= wind_speed <= 15:
                     week_slots[x][y] = "red"
                 elif 0 <= wind_speed <= 17:
-                    week_slots[x][y] = "red:brt"
+                    week_slots[x][y] = "red:1:brt"
                 elif 0 <= wind_speed <= 20:
-                    week_slots[x][y] = "red:brt:bla"
+                    week_slots[x][y] = "red:1:brt:bla"
                 elif 0 <= wind_speed <= 99:
-                    week_slots[x][y] = "red:brt:brt:bla"
+                    week_slots[x][y] = "red:2:brt:bla"
                 else:
                     week_slots[x][y] = filler_data
 
