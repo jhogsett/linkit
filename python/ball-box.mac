@@ -302,8 +302,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     add-palette-color
     3
     darken
-    black
-    -2
+    -1,<AUTO-FILL>,-2
     duplicate
 >>>
 
@@ -322,8 +321,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # fill the box background with a dotted dark gray
 <<< <background-type> == <bgtype-dotted>
     dark-gray
-    black
-    -2
+    -1,<AUTO-FILL>,-2
     duplicate
 >>>
 

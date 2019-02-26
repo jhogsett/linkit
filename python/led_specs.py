@@ -944,6 +944,15 @@ def specs():
     if test("effects are not set when forced to use the render buffer"):
       expect_effect("neo:bl1:sod:bl2:tun:bl3:flu:-3,2:cpy", 0, 6, "14,13,12,0,0,0")
 
+    if test("it copies colors on a spread zoom"):
+      expect_buffer("olv:1,0,-2:cpy", 0, 4, "15,20,0,0,0,0,15,20,0,0,0,0")
+
+    if test("it copies effects on a spread zoom"):
+      expect_effect("ros:bli:1,0,-2:cpy", 0, 4, "11,0,11,0")
+
+    if test("it handles a wider spread zoom"):
+      expect_buffer("lav:1,0,-3:cpy", 0, 6, "15,0,20,0,0,0,0,0,0,15,0,20,0,0,0,0,0,0")
+
 
 ########################################################################
 # PALETTE SHUFFING
@@ -1142,8 +1151,8 @@ def specs():
     if test("erases using the custom black level"):
       expect_buffer("2,3,4:sbl:era", 0, 1, "2,3,4")
 
-    pending_test("more custom black level tests")
-# default carry color
+    # there aren't any other behaviors
+    #pending_test("more custom black level tests")
 
 
 ########################################################################
@@ -1496,6 +1505,9 @@ def specs():
     if test("it carries the correct color to the insertion point in reverse"):
       expect_buffer("0:off:10:win:1:rev:red:grn:blu:6:blk:wht:rot", 0, 10, "0,20,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,20,20,20,0,0")
 
+    pending_test("it rotates effects too")
+
+
 
 ########################################################################
 # POWER SHIFT
@@ -1577,8 +1589,17 @@ def specs():
 ########################################################################
   if group("carry color"):                                                                                                            
 
-    skip_test("2:win:red:blu:flu:rot:flu:car", "carry color")                                                                                                                                                                                                           
-    # expect_buffer("2:win:red:blu:flu:rot:flu:car", 0, 2, "20,0,0,20,0,0")
+    if test("pushing a color sets carry color"):
+      expect_buffer("3:win:red:org:yel:blu:car", 0, 4, "20,0,0,0,0,20,20,20,0,0,0,0") 
+
+    if test("pushing a color in reverse sets carry color"):
+      expect_buffer("3:win:1:rev:red:org:yel:blu:car", 0, 4, "20,20,0,0,0,20,20,0,0,0,0,0")
+
+    if test("rotating sets carry color"):
+      expect_buffer("3:win:red:grn:blu:rot:car", 0, 4, "20,0,0,20,0,0,0,0,20,0,0,0")
+
+    if test("rotating in reverse sets carry color"):
+      expect_buffer("3:win:1:rev:red:grn:blu:rot:car", 0, 4, "0,0,20,20,0,0,20,0,0,0,0,0")
 
 
 ########################################################################
@@ -2301,14 +2322,6 @@ def specs():
 
 
 ########################################################################
-# STATIC EFFECT
-########################################################################
-  if group("static effect"):
-
-    pending_test("static effect")
-
-
-########################################################################
 # SCHEDULING
 ########################################################################
   if group("scheduling"):
@@ -2328,7 +2341,14 @@ def specs():
 ########################################################################
   if group("draw modes"):
 
-    pending_test("draw modes")
+    if test("it overwrites an existing color"):
+      expect_buffer("0:drw:tun:0:pos:wht", 0, 1, "20,20,20")
+
+    if test("it adds to an existing color"):
+      expect_buffer("1:drw:cyn:0:pos:red", 0, 1, "20,20,20")
+
+    if test("it mixes with an existing color"):
+      expect_buffer("2:drw:blk:0:pos:wht", 0, 1, "10,10,10")
 
 
 ########################################################################
@@ -2336,7 +2356,26 @@ def specs():
 ########################################################################
   if group("push and pop"):
 
-    pending_test("draw modes")
+    if test("it pushes an argument on the accumulator stack"):
+      expect_accumulators("neo:sto:5:psh", "5,0,0")      
+
+    if test("it pushes 2 arguments on the accumulator stack"):
+      expect_accumulators("neo:sto:5:psh:8:psh", "8,5,0")
+
+    if test("it pushes 3 arguments on the accumulator stack"):
+      expect_accumulators("neo:sto:5:psh:8:psh:13:psh", "13,8,5")
+
+    if test("it pops accum0 off the accumulator stack"):
+      expect_accumulators("sod:2,3,5:sto:0:pop:sto", "2,0,0")
+
+    if test("it pops accum0 off the accumulator stack"):
+      expect_accumulators("sod:2,3,5:sto:1:pop:sto", "2,0,0")
+
+    if test("it pops accum1 off the accumulator stack"):
+      expect_accumulators("sod:2,3,5:sto:2:pop:sto", "3,0,0")
+
+    if test("it pops accum2 off the accumulator stack"):
+      expect_accumulators("sod:2,3,5:sto:3:pop:sto", "5,0,0")
 
 
 ########################################################################
