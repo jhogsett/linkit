@@ -173,10 +173,10 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
     # render this box instance and its child objects        
     [box-render-INSTANCE]
+<<< <background-type> != <bgtype-none>
         # set the viewport to the box bounds
         (box-set-window-INSTANCE)
 
-<<< <background-type> != <bgtype-none>
         # render the background
         (box-background-INSTANCE)
 >>>
@@ -355,10 +355,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # template to place macro runs of the 
 # ball render macro for each of a box's balls
 [[ball-render-each BALL BOX
-    {{
-        (box-set-window-BOX)
         (ball-render-BOX-BALL)
-    }}
 ]]
 
 
@@ -387,6 +384,8 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     # render a specific ball instance of 
     # a specific box instance
     [ball-render-PARENT-INSTANCE]
+        (box-set-window-PARENT)
+
 <<< <use-computed-value> == True
         {seq-ball-PARENT-INSTANCE}, <GET-COMPUTED>
 >>>
