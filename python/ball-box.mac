@@ -59,6 +59,8 @@ $fgtype-brighten 4
 
 $foreground-type <fgtype-palette>
 
+$background-darkening `<balls-per-box> == 0 and 1 or 3` # same as `<background-type> == <bgtype-none> ? 0 : 3` but avoid colon removal
+
 %allow-mutability
 $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
@@ -236,7 +238,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> == <bgtype-line>
     pop
     add-palette-color
-    3
+    <background-darkening>
     darken    
     <FILL-COLORS>
     fill
@@ -256,8 +258,8 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 >>>
 
 <<< <background-type> == <bgtype-darkgray>
-    dark-gray
-    2
+    white
+    <background-darkening>
     darken
     <FILL-COLORS>
     fill
@@ -295,7 +297,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> == <bgtype-color-dotted>
     pop
     add-palette-color
-    3
+    <background-darkening>
     darken
     -1,<AUTO-FILL>,-2
     duplicate
