@@ -161,15 +161,14 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> != <bgtype-none>
     # macro to draw the box background
     [box-background-INSTANCE]
-#        # set the viewport to the box bounds
-#        (box-set-window-INSTANCE) # would this be better in the render macro?
-
         # push the instance as a palette color onto the stack
         INSTANCE
         store
 
         # run the background drawing macro
-        (box-draw-background)
+        {{
+          (box-draw-background)
+        }}
 >>>
 
     # render this box instance and its child objects        
@@ -219,9 +218,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     white
     <box-width>
     set-position
-    {{
-        white
-    }}
+    white
 >>>
 
 # draw white points at the box bounds
@@ -277,10 +274,8 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     add-palette-color
     <box-width>
     set-position
-    {{
-      recall
-      add-palette-color
-    }}
+    recall
+    add-palette-color
 >>>
 
 # draw palette color points at the box bounds
@@ -336,24 +331,15 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     # this is the box viewport lower bounds
     get-sequence
 
-    # save the lower bounds
-    push
+    # push the lower bounds onto the stack
+    store
 
-    # get the saved lower bounds 
-    # and set the viewport offset
-    recall
-    set-offset
-
-    # push the box width onto the stack
+    # recall the lower bounds as arg0 and the width as arg1
     <box-width>
-    push
+    recall
 
-    # add it to the saved lower bounds
-    # to get the upper bounds
-    add-equals
-
-    # set the viewport upper bounds
-    set-window
+    # set both position and width at once
+    set-position
 
 
 # ------------------------------------------
