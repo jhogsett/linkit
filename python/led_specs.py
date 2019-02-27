@@ -1699,11 +1699,27 @@ def specs():
       expect_buffer("1:run", 0, 3, "0,0,0,0,0,0,0,0,0")
       expect_buffer("2:run", 0, 3, "20,0,20,20,20,0,0,20,20")
 
-    pending_test("more general macro tests")
-    # a macro can be run a numnber of times
-    # a macro can be run a number of times with a delay
-    # a macro can overwrite itself
+    if test("a macro can be run multiple times"):
+      lc.command("0:set:red")
+      expect_buffer("0,2:run", 0, 3, "20,0,0,20,0,0,0,0,0")
 
+# wip
+#    if test("a macro can be run multiple times with a delay"):
+#      lc.command("0:set:blu")
+#      lc.command("1:set:0,4,500:run")
+#      lc.command("100,1:sch:2:cnt")
+#      time.sleep(1)
+#      expect_buffer("", 0, 4, "")
+
+    if test("a macro can overwrite itself"):
+      lc.command("0:set:red:grn:blu:0:set:cyn:yel:mag")
+      expect_buffer("0:run", 0, 4, "0,0,20,0,20,0,20,0,0,0,0,0")
+      expect_buffer("era:0:run", 0, 4, "20,0,20,20,20,0,0,20,20,0,0,0")
+
+# wip
+#    if test("sub arguments left at end of macro are usable by caller"):
+#      lc.command("0:set:3,5,8")
+#      expect_accumulators("0:run:sto", "")
 
 
 ########################################################################
