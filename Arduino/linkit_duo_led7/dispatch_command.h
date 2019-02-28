@@ -35,7 +35,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       case CMD_PALETTE: 
       do_palette(arg0, arg1); 
       break;
-    
+
+      case CMD_POSITION: 
+      set_position(arg0, arg1); 
+      break;
+
     case CMD_ROTATE: 
       do_rotate(arg0, arg1, false); 
       break;
@@ -237,10 +241,6 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     case CMD_RANDOM_NUM: 
       do_random_number(arg0, arg1, arg2); 
       reset_args = false; 
-      break;
-    
-    case CMD_POSITION: 
-      set_position(arg0, arg1); 
       break;
     
     case CMD_RPOSITION: 
