@@ -65,10 +65,9 @@ class Commands
   void do_blend(byte strength);
   #endif
 
-  void do_max();
   void do_dim(byte times);
   void do_bright(byte times);
-  void do_fade();
+//  void do_fade();
   void do_crossfade();
   void do_math(int arg0);
   void do_flood(byte type);
@@ -409,14 +408,6 @@ rgb_color * Commands::offset_buffer()
   return &buffer->get_buffer()[buffer->get_offset()];
 }
 
-// todo: optional
-// only works properly when used immediately after placing a standard color
-void Commands::do_max()
-{
-  rgb_color * buf = offset_buffer();
-  *buf = ColorMath::scale_color(*buf, MAX_BRIGHTNESS_PERCENT / 100.0);
-}
-
 void Commands::do_dim(byte times){
   times = min(7, max(1, times));
   rgb_color * buf = offset_buffer();
@@ -433,12 +424,12 @@ void Commands::do_bright(byte times){
   buf->blue = buf->blue << times;
 }
 
-// todo: optional
-void Commands::do_fade()
-{
-  buffer->erase();
-  do_crossfade();
-}
+//// todo: optional
+//void Commands::do_fade()
+//{
+//  buffer->erase();
+//  do_crossfade();
+//}
 
 // todo: move delay to the color math class
 void Commands::do_crossfade()
@@ -506,8 +497,6 @@ void Commands::do_flood(byte type)
 #define RANDOM_COLOR_TYPE_SAME_COLOR_REPEAT     0
 #define RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT     1
 #define RANDOM_COLOR_TYPE_DIFF_PLUS_EFFECTS     2
-#define RANDOM_COLOR_TYPE_PALETTE               3
-#define RANDOM_COLOR_TYPE_DYNAMIC_COLOR_EFFECTS 4
 
 // types 
 // 0: random color with no effect
@@ -530,19 +519,6 @@ void Commands::do_random(byte type, int times)
     return;
   }
 
-// todo: optional
-  if(type == RANDOM_COLOR_TYPE_DYNAMIC_COLOR_EFFECTS)
-  {
-    for(int i = 0; i < times; i++)
-    {
-      byte color1 = random(0, NUM_PALETTE_COLORS);
-      byte color2 = random(0, NUM_PALETTE_COLORS);
-      byte effect = random(0, 2) == 0 ? BLINK_ON_D : BREATHE_ON_D;
-      do_dynamic_color(color1, color2, 0, effect);
-    }
-    return;
-  }
-
   for(int i = 0; i < times; i++)
   {
     rgb_color color;
@@ -554,45 +530,9 @@ void Commands::do_random(byte type, int times)
       case RANDOM_COLOR_TYPE_DIFF_COLOR_REPEAT: 
         color = ColorMath::random_color();
         break;
-
-// todo: optional
-      case RANDOM_COLOR_TYPE_PALETTE:
-        color = Colors::random_palette_color();
-        break;
     }
-    
     buffer->push_color(color, 1, false, effect);  
   }
-}
-
-void Commands::draw_mirror_step(rgb_color * buf_back, rgb_color * buf_front)
-{
-  switch(buffer->get_draw_mode()){
-    case DRAW_MODE_WRITE:
-    default:
-      *buf_back = *buf_front;
-      break;
-    case DRAW_MODE_PLUS:
-      buf_back->red += buf_front->red;
-      buf_back->green += buf_front->green;
-      buf_back->blue += buf_front->blue;
-      break;
-    case DRAW_MODE_MINUS:
-      buf_back->red -= buf_front->red;
-      buf_back->green -= buf_front->green;
-      buf_back->blue -= buf_front->blue;
-      break;
-    case DRAW_MODE_MIX:
-      buf_back->red = (buf_back->red + buf_front->red) / 2;
-      buf_back->green = (buf_back->green + buf_front->green) / 2;
-      buf_back->blue = (buf_back->blue + buf_front->blue) / 2;
-      break;
-    case DRAW_MODE_DIFF:
-      buf_back->red = abs(buf_back->red - buf_front->red);
-      buf_back->green = abs(buf_back->green - buf_front->green);
-      buf_back->blue = abs(buf_back->blue - buf_front->blue);
-      break;
-  } 
 }
 
 // arg0: number of cuts, 0: defaults to 1 
@@ -619,14 +559,12 @@ void Commands::do_mirror()
   {
     if(reverse)
     {
-       draw_mirror_step(buf_front + i, buf_back - i);
-//      *(buf_front + i) = *(buf_back - i);
+      *(buf_front + i) = *(buf_back - i);
       *(effects_front + i) = *(effects_back - i);
     } 
     else 
     {
-       draw_mirror_step(buf_back - i, buf_front + i); 
-//      *(buf_back - i) = *(buf_front + i);
+      *(buf_back - i) = *(buf_front + i);
       *(effects_back - i) = *(effects_front + i);
     }
   }

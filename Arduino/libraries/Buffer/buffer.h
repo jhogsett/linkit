@@ -11,9 +11,7 @@
 
 #define DRAW_MODE_WRITE 0
 #define DRAW_MODE_PLUS  1
-#define DRAW_MODE_MINUS 2
-#define DRAW_MODE_MIX   3
-#define DRAW_MODE_DIFF  4
+#define DRAW_MODE_MIX   2
 
 class Buffer
 {
@@ -281,14 +279,6 @@ void Buffer::push_color(rgb_color color, int times = 1, bool display = false, by
   {
     shift_buffer(buffer, effects, max, start, this->reverse);
 
-//    if(mode == PUSH_COLOR_MODE_ADD){
-//      buf-> red += color.red;
-//      buf-> green += color.green;
-//      buf-> blue += color.blue;
-//    } else {
-//      *buf = color;
-//    }
-
     switch(draw_mode){
       case DRAW_MODE_WRITE:
       default:
@@ -299,20 +289,10 @@ void Buffer::push_color(rgb_color color, int times = 1, bool display = false, by
         buf-> green += color.green;
         buf-> blue += color.blue;
         break;
-      case DRAW_MODE_MINUS:
-        buf-> red -= color.red;
-        buf-> green -= color.green;
-        buf-> blue -= color.blue;
-        break;
       case DRAW_MODE_MIX:
         buf-> red = (buf->red + color.red) / 2;
         buf-> green = (buf->green + color.green) / 2;
         buf-> blue = (buf->blue + color.blue) / 2;
-        break;
-      case DRAW_MODE_DIFF:
-        buf-> red = abs(buf->red - color.red);
-        buf-> green = abs(buf->green - color.green);
-        buf-> blue = abs(buf->blue - color.blue);
         break;
     }
 

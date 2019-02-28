@@ -191,7 +191,8 @@ void Macros::determine_arg_marker(byte &arg_marker, byte &num_args)
     {
       arg_marker = MACRO_ARG2_MARKER;
       num_args = 1;
-    } else
+    } 
+    else
     {
       num_args = 0;
     }
@@ -328,6 +329,7 @@ void Macros::run_macro(byte macro, int times, int delay_){
   command_processor->reset_args();
 
   byte * macro_buffer = cached_macro_buffer;
+ 
   if(!from_eeprom && (macro_buffer == NULL || *macro_buffer == '\0'))
     // not a valid macro location or macro is empty
     return;

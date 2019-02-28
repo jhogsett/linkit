@@ -86,7 +86,7 @@
 // #define MONUMENT3
 
 // 2 50-led strands
-//#define LED_STRAND_100
+// #define LED_STRAND_100
 
 //////////////////////////////
 // devices profile definitions
@@ -108,7 +108,7 @@
 #define FADE_PERIOD 100
 #define BLINK_PERIOD 6000
 #define BREATHE_PERIOD 300
-#define NUM_SEQUENCERS 13
+#define NUM_SEQUENCERS 16
 #define FAN_PIN 13
 #define FAN_AUTO_ON_BRIGHTNESS 50
 #define NUM_MACRO_CHARS 15
@@ -158,13 +158,8 @@
 #define USE_1_DISPLAYS
 #define ANIM_LED_COUNT 144
 #define ZONES_144_LEDS
-#define DEFAULT_BRIGHTNESS_PERCENT 25
 #define BLINK_PERIOD 1500
 #define BREATHE_PERIOD 100
-#define MAX_BRIGHTNESS_PERCENT     40 // symbolized auto brightness levels
-#define HIGH_BRIGHTNESS_PERCENT    30
-#define LOW_BRIGHTNESS_PERCENT     5
-#define MIN_BRIGHTNESS_PERCENT     2
 #endif
 
 #ifdef APOLLO_DISPLAY

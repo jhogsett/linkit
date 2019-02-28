@@ -13,7 +13,6 @@ class Scheduler
   void set_schedule(unsigned int schedule_period_, byte schedule_number);
   void process_schedules();
   void reset_all_schedules();
-  void reset_schedule(byte schedule_number);
 
   private:
 
@@ -36,11 +35,11 @@ void Scheduler::process_schedules()
   for(byte i = 0; i < NUM_SCHEDULES; i++)
   {
     int sch_period = schedule_period[i];
-    unsigned int *sch_counter = &schedule_counter[i];
 
     // skip disabled schedules
     if(sch_period > 0)
     {
+      unsigned int *sch_counter = &schedule_counter[i];
       *sch_counter = (*sch_counter + 1) % sch_period;
 
       if(*sch_counter == 0)
@@ -60,7 +59,6 @@ void Scheduler::set_schedule(unsigned int schedule_period_, byte schedule_number
     return;
   }
 
-  reset_schedule(schedule_number);
   schedule_period[schedule_number]  = schedule_period_;
 
   // set to zero for a complete schedule period to pass before it runs the macro (probably best)
@@ -68,16 +66,13 @@ void Scheduler::set_schedule(unsigned int schedule_period_, byte schedule_number
   schedule_counter[schedule_number] = 0;
 }
 
-void Scheduler::reset_schedule(byte schedule_number)
-{
-  schedule_period[schedule_number]  = 0;
-  schedule_counter[schedule_number] = 0;
-}
-
 void Scheduler::reset_all_schedules()
 {
   for(byte i = 0; i < NUM_SCHEDULES; i++)
-    reset_schedule(i);
+  {
+    schedule_period[i]  = 0;
+    schedule_counter[i] = 0;
+  }
 }
 
 #endif

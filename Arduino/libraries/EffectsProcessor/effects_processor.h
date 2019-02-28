@@ -2,7 +2,8 @@
 #define EFFECTS_PROCESSOR_H
 
 // built-in simple effects
-#define STATIC_ON  10
+// #define STATIC_ON  10
+#define FIRST_EFFECT 11
 
 #include <buffer.h>
 #include <blink_effects.h>
@@ -31,8 +32,6 @@ class EffectsProcessor
 
   void begin(Buffer *buffer, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects * fade_effects);
   void start_effect(byte effect);
-  void start_blinking_r();
-  void start_effect_r();
   void reset_effects();
   bool process_effects();
 };
@@ -54,20 +53,9 @@ void EffectsProcessor::start_effect(byte effect)
   *existing = (*existing & DYNAMIC_COLOR) | (effect & NOT_DYNAMIC_COLOR);
 }
 
-void EffectsProcessor::start_blinking_r()
-{
-  byte effect = BLINK_ON_1 + random((BLINK_ON_6 - BLINK_ON_1) + 1);
-  start_effect(effect);
-}
-
 byte EffectsProcessor::random_effect()
 {
   return random_effects[random(RANDOM_EFFECTS)];
-}
-
-void EffectsProcessor::start_effect_r()
-{
-  buffer->get_effects_buffer()[buffer->get_offset()] = random_effect();
 }
 
 // reset the effects to reduce jarring when an update occurs

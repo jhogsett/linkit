@@ -27,7 +27,19 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       else
         buffer->fast_erase(arg0 == ERASE_FAST_ALL ? true : false);
       break;
-  
+
+      case CMD_RUN_MACRO: 
+      do_run_macro(arg0, arg1, arg2);
+      break;
+
+      case CMD_PALETTE: 
+      do_palette(arg0, arg1); 
+      break;
+
+      case CMD_POSITION: 
+      set_position(arg0, arg1); 
+      break;
+
     case CMD_ROTATE: 
       do_rotate(arg0, arg1, false); 
       break;
@@ -121,10 +133,6 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
 #endif
       break;
     
-    case CMD_MAX: 
-      do_max(); 
-      break;
-    
     case CMD_DIM: 
       do_dim(arg0); 
       break;
@@ -133,7 +141,6 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       do_bright(arg0); 
       break;
 
-    case CMD_STATIC: 
     case CMD_BLINK: 
     case CMD_BLINK1: 
     case CMD_BLINK2: 
@@ -185,10 +192,6 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       set_brightness_level(arg0, arg1); 
       break;
     
-    case CMD_FADE: 
-      do_fade(); 
-      break;
-    
     case CMD_ANIM_ROTATE: 
       do_rotate(arg0, arg1, true); 
       break;
@@ -201,14 +204,6 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
   
     case CMD_CFADE: 
       do_crossfade(); 
-      break;
-    
-    case CMD_BLINKR: 
-      effects_processor->start_blinking_r(); 
-      break;
-    
-    case CMD_EFFECTR: 
-      effects_processor->start_effect_r(); 
       break;
     
     case CMD_TEST: 
@@ -235,10 +230,6 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       continue_dispatching = do_set_macro(arg0, dispatch_data); 
       break;
     
-    case CMD_RUN_MACRO: 
-      do_run_macro(arg0, arg1, arg2);
-      break;
-    
     case CMD_DELAY: 
       do_delay(arg0); 
       break;
@@ -252,16 +243,8 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       reset_args = false; 
       break;
     
-    case CMD_POSITION: 
-      set_position(arg0, arg1); 
-      break;
-    
     case CMD_RPOSITION: 
       random_position(arg0); 
-      break;
-    
-    case CMD_PALETTE: 
-      do_palette(arg0, arg1); 
       break;
     
     case CMD_SHUFFLE: 
@@ -335,7 +318,7 @@ void Commands::dispatch_color(byte cmd, int arg0, int arg1){
 }
 
 void Commands::dispatch_effect(byte cmd){
-  effects_processor->start_effect((cmd - CMD_STATIC) + STATIC_ON); 
+  effects_processor->start_effect((cmd - CMD_FIRST_EFFECT) + FIRST_EFFECT); 
 }
 
 void Commands::dispatch_math(byte cmd){
