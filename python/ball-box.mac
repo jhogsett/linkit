@@ -59,6 +59,10 @@ $fgtype-brighten 4
 
 $foreground-type <fgtype-palette>
 
+$background-darkening-heavy 3
+$background-darkening-light 1
+$background-darkening `<background-darkening-light> if <balls-per-box> == 0 else <background-darkening-heavy>`
+
 %allow-mutability
 $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
@@ -161,23 +165,22 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> != <bgtype-none>
     # macro to draw the box background
     [box-background-INSTANCE]
-#        # set the viewport to the box bounds
-#        (box-set-window-INSTANCE) # would this be better in the render macro?
-
         # push the instance as a palette color onto the stack
         INSTANCE
         store
 
         # run the background drawing macro
-        (box-draw-background)
+        {{
+          (box-draw-background)
+        }}
 >>>
 
     # render this box instance and its child objects        
     [box-render-INSTANCE]
+<<< <background-type> != <bgtype-none>
         # set the viewport to the box bounds
         (box-set-window-INSTANCE)
 
-<<< <background-type> != <bgtype-none>
         # render the background
         (box-background-INSTANCE)
 >>>
@@ -219,9 +222,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     white
     <box-width>
     set-position
-    {{
-        white
-    }}
+    white
 >>>
 
 # draw white points at the box bounds
@@ -239,7 +240,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> == <bgtype-line>
     pop
     add-palette-color
-    3
+    <background-darkening>
     darken    
     <FILL-COLORS>
     fill
@@ -259,8 +260,8 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 >>>
 
 <<< <background-type> == <bgtype-darkgray>
-    dark-gray
-    2
+    gray
+    <background-darkening>
     darken
     <FILL-COLORS>
     fill
@@ -277,10 +278,8 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     add-palette-color
     <box-width>
     set-position
-    {{
-      recall
-      add-palette-color
-    }}
+    recall
+    add-palette-color
 >>>
 
 # draw palette color points at the box bounds
@@ -300,10 +299,9 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> == <bgtype-color-dotted>
     pop
     add-palette-color
-    3
+    <background-darkening>
     darken
-    black
-    -2
+    -1,<AUTO-FILL>,-2
     duplicate
 >>>
 
@@ -322,8 +320,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # fill the box background with a dotted dark gray
 <<< <background-type> == <bgtype-dotted>
     dark-gray
-    black
-    -2
+    -1,<AUTO-FILL>,-2
     duplicate
 >>>
 
@@ -338,24 +335,15 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     # this is the box viewport lower bounds
     get-sequence
 
-    # save the lower bounds
-    push
+    # push the lower bounds onto the stack
+    store
 
-    # get the saved lower bounds 
-    # and set the viewport offset
-    recall
-    set-offset
-
-    # push the box width onto the stack
+    # recall the lower bounds as arg0 and the width as arg1
     <box-width>
-    push
+    recall
 
-    # add it to the saved lower bounds
-    # to get the upper bounds
-    add-equals
-
-    # set the viewport upper bounds
-    set-window
+    # set both position and width at once
+    set-position
 
 
 # ------------------------------------------
@@ -371,10 +359,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # template to place macro runs of the 
 # ball render macro for each of a box's balls
 [[ball-render-each BALL BOX
-    {{
-        (box-set-window-BOX)
         (ball-render-BOX-BALL)
-    }}
 ]]
 
 
@@ -403,6 +388,8 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     # render a specific ball instance of 
     # a specific box instance
     [ball-render-PARENT-INSTANCE]
+        (box-set-window-PARENT)
+
 <<< <use-computed-value> == True
         {seq-ball-PARENT-INSTANCE}, <GET-COMPUTED>
 >>>
