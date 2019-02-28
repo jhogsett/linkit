@@ -5,6 +5,14 @@
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
+#define CMD_FIRST_EFFECT 48
+
+//      #define CMD_MAX          44
+//      #define CMD_STATIC       47
+//      #define CMD_FADE         69
+//      #define CMD_BLINKR       72
+//      #define CMD_EFFECTR      73
+
 
 #define CMD_FLUSH         1
 #define CMD_RESET         2 
@@ -21,6 +29,7 @@
 #define CMD_REVERSE      13
 #define CMD_RGBCOLOR     14
 #define CMD_HSLCOLOR     15
+
 #define CMD_RED          16
 #define CMD_ORANGE       17
 #define CMD_YELLOW       18
@@ -46,16 +55,18 @@
 #define CMD_NEON         38
 #define CMD_SODIUM       39
 #define CMD_BLACK        40
+
 #define CMD_RANDOM       41
 #define CMD_DYN_COLOR    42
 #define CMD_BLEND        43
 
-// not used nuch
-#define CMD_MAX          44
+      #define CMD_MAX          44
 
 #define CMD_DIM          45
 #define CMD_BRIGHT       46
-#define CMD_STATIC       47
+
+      #define CMD_STATIC       47
+
 #define CMD_BLINK        48
 #define CMD_BLINK1       49
 #define CMD_BLINK2       50
@@ -70,41 +81,50 @@
 #define CMD_BREATHE_D    59
 #define CMD_SLOW_FADE    60
 #define CMD_FAST_FADE    61
+
 #define CMD_STORE        62 
 #define CMD_RECALL       63
 #define CMD_PUSH         64
-#define CMD_PAUSE        65
+
+#define CMD_PAUSE        65 // move down
 #define CMD_CONTINUE     66
-#define CMD_CLEAR        67
+
+#define CMD_CLEAR        67 // move down
 #define CMD_LEVEL        68
 
-// maybe not needed since it can be done with crossfade; haven't used recently
-#define CMD_FADE         69
+      #define CMD_FADE         69
 
-#define CMD_ANIM_ROTATE  70
+#define CMD_ANIM_ROTATE  70 // move down
 #define CMD_CFADE        71
 
-// not needed
-#define CMD_BLINKR       72
-#define CMD_EFFECTR      73
+      #define CMD_BLINKR       72
+      #define CMD_EFFECTR      73
 
-#define CMD_TEST         74
+#define CMD_TEST         74 // move down
 #define CMD_CONFIGURE    75
-#define CMD_PIN          76
+#define CMD_PIN          76 
 #define CMD_SCHEDULE     77
-#define CMD_CARRY        78
+#define CMD_CARRY        78 // move near colors
+
 #define CMD_SET_MACRO    79
-#define CMD_RUN_MACRO    80
+
+#define CMD_RUN_MACRO    80 // move higher up
+
 #define CMD_DELAY        81
 #define CMD_STOP         82
-#define CMD_RANDOM_NUM   83
+
+#define CMD_RANDOM_NUM   83 // move down
+
 #define CMD_POSITION     84
 #define CMD_RPOSITION    85
 #define CMD_XYPOSITION   86
-#define CMD_PALETTE      87
-#define CMD_SHUFFLE      88
+
+#define CMD_PALETTE      87 // move up
+
+#define CMD_SHUFFLE      88 // move down
 #define CMD_SETBLACK     89
-#define CMD_SEQ_WHEEL    90
+
+#define CMD_SEQ_WHEEL    90 // move up
 #define CMD_SEQ_SWING    91
 #define CMD_SEQ_WHLCO    92
 #define CMD_SEQ_WHLSN    93
@@ -112,17 +132,22 @@
 #define CMD_CLR_SEQ_HUE  95
 #define CMD_CLR_SEQ_SAT  96
 #define CMD_CLR_SEQ_LIT  97
-#define CMD_FAN          98
+
+#define CMD_FAN          98 // move down
+
 #define CMD_APP          99
-#define CMD_ADD         100
+
+#define CMD_ADD         100 // move math ones up
 #define CMD_SUB         101
 #define CMD_MUL         102
 #define CMD_DIV         103
 #define CMD_MOD         104
 #define CMD_DIF         105
 #define CMD_AVG         106
-#define CMD_DRAW_MODE   107
-#define CMD_POP         108
+
+#define CMD_DRAW_MODE   107 // move up a bit
+
+#define CMD_POP         108 // MOVE up
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "rst";

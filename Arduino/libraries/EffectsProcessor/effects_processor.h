@@ -2,7 +2,8 @@
 #define EFFECTS_PROCESSOR_H
 
 // built-in simple effects
-#define STATIC_ON  10
+// #define STATIC_ON  10
+#define FIRST_EFFECT 11
 
 #include <buffer.h>
 #include <blink_effects.h>

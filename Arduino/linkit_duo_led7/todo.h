@@ -1,6 +1,77 @@
-// copy/paste - option to now overwrite with black
+// move this to progmem const byte EffectsProcessor::random_effects
+
+
+
+
+
+/// blank
+//balls-per-box:[0] ball-time:[95]  box-time:[64] draw-mode:[0] brightness:[0] foreground-type:[0] box-step:[2] num-boxes:[4] box-width:[6]  ball-step:[2] ball-sequencer:[sqs] refresh-time:[69] use-computed-value:[True] background-type:[7] box-sequencer:[seq]
+//balls-per-box:[0] ball-time:[104] box-time:[73] draw-mode:[2] brightness:[0] foreground-type:[0] box-step:[1] num-boxes:[2] box-width:[12] ball-step:[2] ball-sequencer:[sqs] refresh-time:[73] use-computed-value:[True] background-type:[7] box-sequencer:[sws]
+//balls-per-box:[0] ball-time:[101] box-time:[66] draw-mode:[2] brightness:[0] foreground-type:[0] box-step:[3] num-boxes:[3] box-width:[11] ball-step:[1] ball-sequencer:[sqs] refresh-time:[40] use-computed-value:[True] background-type:[3] box-sequencer:[seq]
+//balls-per-box:[0] ball-time:[107] box-time:[96] draw-mode:[2] brightness:[0] foreground-type:[0] box-step:[2] num-boxes:[5] box-width:[6]  ball-step:[1] ball-sequencer:[sqs] refresh-time:[49] use-computed-value:[True] background-type:[3] box-sequencer:[swc]
+
+
+
+
+// dot stayed in one place
+//balls-per-box:[0] ball-time:[101] box-time:[66] draw-mode:[2] brightness:[0] foreground-type:[0] box-step:[2] num-boxes:[1] box-width:[7]  ball-step:[1] ball-sequencer:[seq] refresh-time:[64] use-computed-value:[True] background-type:[1] box-sequencer:[swc]
+//balls-per-box:[0] ball-time:[98]  box-time:[51] draw-mode:[0] brightness:[0] foreground-type:[0] box-step:[3] num-boxes:[3] box-width:[14] ball-step:[2] ball-sequencer:[swc] refresh-time:[73] use-computed-value:[True] background-type:[3] box-sequencer:[sws]
+//balls-per-box:[0] ball-time:[68]  box-time:[54] draw-mode:[2] brightness:[0] foreground-type:[1] box-step:[2] num-boxes:[5] box-width:[10] ball-step:[1] ball-sequencer:[seq] refresh-time:[47] use-computed-value:[True] background-type:[6] box-sequencer:[sqs]
+//balls-per-box:[0] ball-time:[67]  box-time:[62] draw-mode:[0] brightness:[0] foreground-type:[0] box-step:[2] num-boxes:[1] box-width:[16] ball-step:[1] ball-sequencer:[swc] refresh-time:[68] use-computed-value:[True] background-type:[6] box-sequencer:[sqs]
+//balls-per-box:[0] ball-time:[62]  box-time:[69] draw-mode:[0] brightness:[0] foreground-type:[0] box-step:[2] num-boxes:[4] box-width:[10] ball-step:[2] ball-sequencer:[sqs] refresh-time:[54] use-computed-value:[True] background-type:[5] box-sequencer:[seq]
+//balls-per-box:[0] ball-time:[68]  box-time:[82] draw-mode:[0] brightness:[0] foreground-type:[0] box-step:[3] num-boxes:[2] box-width:[14] ball-step:[1] ball-sequencer:[sqs] refresh-time:[53] use-computed-value:[True] background-type:[7] box-sequencer:[sqs]
+//balls-per-box:[0] ball-time:[81]  box-time:[70] draw-mode:[2] brightness:[0] foreground-type:[0] box-step:[1] num-boxes:[5] box-width:[9]  ball-step:[1] ball-sequencer:[seq] refresh-time:[57] use-computed-value:[True] background-type:[5] box-sequencer:[sqs]
+
+
+
+
+// ball-box: a wandering mode (needs dampening)
+
+// test 0:dim, 0:brt
 
 // snf set-next-frame
+// take sequencer arguments
+// get the sequencer value
+// 
+
+
+//# set the offset and window to cover the box's current position
+//# accum0-3: sequence get current value arguments
+//[box-set-viewport]
+//    # get the passed sequencer arguments
+//    recall
+//
+//    # get the sequence current value
+//    # this is the box viewport lower bounds
+//    get-sequence
+//
+//    # save the lower bounds
+//    push
+//
+//    # get the saved lower bounds
+//    # and set the viewport offset
+//    recall
+//    set-offset
+//
+//    # push the box width onto the stack
+//    <box-width>
+//    push
+//
+//    # add it to the saved lower bounds
+//    # to get the upper bounds
+//    add-equals
+//
+//    # set the viewport upper bounds
+//    set-window
+    
+// push width, get sequence, push, position
+
+
+
+
+
+
+
 //animation needs
 //
 //parent-child relationship

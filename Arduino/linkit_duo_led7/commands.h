@@ -67,7 +67,7 @@ class Commands
 
   void do_dim(byte times);
   void do_bright(byte times);
-  void do_fade();
+//  void do_fade();
   void do_crossfade();
   void do_math(int arg0);
   void do_flood(byte type);
@@ -424,12 +424,12 @@ void Commands::do_bright(byte times){
   buf->blue = buf->blue << times;
 }
 
-// todo: optional
-void Commands::do_fade()
-{
-  buffer->erase();
-  do_crossfade();
-}
+//// todo: optional
+//void Commands::do_fade()
+//{
+//  buffer->erase();
+//  do_crossfade();
+//}
 
 // todo: move delay to the color math class
 void Commands::do_crossfade()

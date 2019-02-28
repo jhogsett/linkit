@@ -121,8 +121,8 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
 #endif
       break;
     
-    case CMD_MAX: 
-      break;
+//    case CMD_MAX: 
+//      break;
     
     case CMD_DIM: 
       do_dim(arg0); 
@@ -132,7 +132,8 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       do_bright(arg0); 
       break;
 
-    case CMD_STATIC: 
+//    case CMD_STATIC: 
+    
     case CMD_BLINK: 
     case CMD_BLINK1: 
     case CMD_BLINK2: 
@@ -184,9 +185,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       set_brightness_level(arg0, arg1); 
       break;
     
-    case CMD_FADE: 
-      do_fade(); 
-      break;
+//    case CMD_FADE: 
+//      do_fade(); 
+//      break;
     
     case CMD_ANIM_ROTATE: 
       do_rotate(arg0, arg1, true); 
@@ -202,11 +203,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       do_crossfade(); 
       break;
     
-    case CMD_BLINKR: 
-      break;
-    
-    case CMD_EFFECTR: 
-      break;
+//    case CMD_BLINKR: 
+//      break;
+//    
+//    case CMD_EFFECTR: 
+//      break;
     
     case CMD_TEST: 
       do_test(arg0, arg1, arg2); 
@@ -332,7 +333,7 @@ void Commands::dispatch_color(byte cmd, int arg0, int arg1){
 }
 
 void Commands::dispatch_effect(byte cmd){
-  effects_processor->start_effect((cmd - CMD_STATIC) + STATIC_ON); 
+  effects_processor->start_effect((cmd - CMD_FIRST_EFFECT) + FIRST_EFFECT); 
 }
 
 void Commands::dispatch_math(byte cmd){
