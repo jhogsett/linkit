@@ -795,7 +795,7 @@ def specs():
       expect_buffer("2:off:4:win:ros:flo", 0, 6, "0,0,0,0,0,0,20,0,15,20,0,15,0,0,0,0,0,0", True, True)
 
     # not sure how to test this
-    # pending_test("it does no flooding if there's no room")
+    # "it does no flooding if there's no room"
 
     if test("it floods properly in reverse mode"):
       expected_buffer = ("20,15,0," * num_leds)[:-1]                                                                                                                                                           
@@ -943,6 +943,15 @@ def specs():
 
     if test("effects are not set when forced to use the render buffer"):
       expect_effect("neo:bl1:sod:bl2:tun:bl3:flu:-3,2:cpy", 0, 6, "14,13,12,0,0,0")
+
+    if test("it copies colors on a spread zoom"):
+      expect_buffer("olv:1,0,-2:cpy", 0, 4, "15,20,0,0,0,0,15,20,0,0,0,0")
+
+    if test("it copies effects on a spread zoom"):
+      expect_effect("ros:bli:1,0,-2:cpy", 0, 4, "11,0,11,0")
+
+    if test("it handles a wider spread zoom"):
+      expect_buffer("lav:1,0,-3:cpy", 0, 6, "15,0,20,0,0,0,0,0,0,15,0,20,0,0,0,0,0,0")
 
 
 ########################################################################
@@ -1143,7 +1152,7 @@ def specs():
       expect_buffer("2,3,4:sbl:era", 0, 1, "2,3,4")
 
     # there aren't any other behaviors
-    #pending_test("more custom black level tests")
+    # "more custom black level tests"
 
 
 ########################################################################
@@ -1470,7 +1479,7 @@ def specs():
     if test("animated rotation"):
      expect_render("lbl:art", 0, 2, "0,0,0,0,25,51", False)
 
-    pending_test("additional animated rotation tests")
+    # "additional animated rotation tests"
 
 
 ########################################################################
@@ -1478,10 +1487,10 @@ def specs():
 ########################################################################
   if group("rotation"):                                                             
 
-    if test("it rotates within the current window"):
+    if test("it rotates colors within the current window"):
       expect_buffer("0:off:5:win:red:rot", 0, 5, "0,0,0,20,0,0,0,0,0,0,0,0,0,0,0")
 
-    if test("it rotates in reverse in the current window"):
+    if test("it rotates colors in reverse in the current window"):
       expect_buffer("0:off:5:win:blu:1:rev:rot", 0, 5, "0,0,0,0,0,0,0,0,0,0,0,0,0,0,20")
 
     if test("it rotates multiple times within the current window"):
@@ -1496,8 +1505,24 @@ def specs():
     if test("it carries the correct color to the insertion point in reverse"):
       expect_buffer("0:off:10:win:1:rev:red:grn:blu:6:blk:wht:rot", 0, 10, "0,20,0,0,0,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,20,20,20,0,0")
 
-    pending_test("it rotates effects too")
 
+    if test("it rotates effects within the current window"):
+      expect_effect("0:off:5:win:org:bli:rot", 0, 5, "0,11,0,0,0")
+
+    if test("it rotates effects in reverse in the current window"):
+      expect_effect("0:off:5:win:cyn:bli:1:rev:rot", 0, 5, "0,0,0,0,11")
+
+    if test("it rotates multiple times within the current window"):
+      expect_effect("0:off:5:win:mag:bli:2:rot", 0, 5, "0,0,11,0,0")
+
+    if test("it rotates multiple times in reverse in the current window"):
+      expect_effect("0:off:5:win:lgr:bli:1:rev:2:rot", 0, 5, "0,0,0,11,0")
+
+    if test("it carries the correct effect to the insertion point"):
+      expect_effect("0:off:10:win:red:bli:grn:bla:wht:blb:6:blk:wht:bre:rot", 0, 10, "11,21,0,0,0,0,0,0,19,18")
+
+    if test("it carries the correct effect to the insertion point in reverse"):
+      expect_effect("0:off:10:win:1:rev:red:bli:grn:bla:blu:blb:6:blk:wht:bre:rot", 0, 10, "0,0,0,0,0,0,0,0,0,21")
 
 
 ########################################################################
@@ -1674,7 +1699,27 @@ def specs():
       expect_buffer("1:run", 0, 3, "0,0,0,0,0,0,0,0,0")
       expect_buffer("2:run", 0, 3, "20,0,20,20,20,0,0,20,20")
 
-    pending_test("more general macro tests")
+    if test("a macro can be run multiple times"):
+      lc.command("0:set:red")
+      expect_buffer("0,2:run", 0, 3, "20,0,0,20,0,0,0,0,0")
+
+# wip
+#    if test("a macro can be run multiple times with a delay"):
+#      lc.command("0:set:blu")
+#      lc.command("1:set:0,4,500:run")
+#      lc.command("100,1:sch:2:cnt")
+#      time.sleep(1)
+#      expect_buffer("", 0, 4, "")
+
+    if test("a macro can overwrite itself"):
+      lc.command("0:set:red:grn:blu:0:set:cyn:yel:mag")
+      expect_buffer("0:run", 0, 4, "0,0,20,0,20,0,20,0,0,0,0,0")
+      expect_buffer("era:0:run", 0, 4, "20,0,20,20,20,0,0,20,20,0,0,0")
+
+# wip
+#    if test("sub arguments left at end of macro are usable by caller"):
+#      lc.command("0:set:3,5,8")
+#      expect_accumulators("0:run:sto", "")
 
 
 ########################################################################
@@ -1728,14 +1773,6 @@ def specs():
 
     if test("it passes arg2 through to arg1"):
       expect_accumulators("4,1,99:rng:sto", "2,99,0")
-
-
-########################################################################
-# POSITION
-########################################################################
-  if group("position"):                                                                                                            
-
-    pending_test("position")                                                                                                                                                                                                           
 
 
 ########################################################################
@@ -2073,6 +2110,81 @@ def specs():
   if group("testing"):                                                                                                            
 
     pending_test("test testing")
+    # test each inquiry type
+
+#define TEST_INQUIRY_NUM_LEDS           0
+#define TEST_INQUIRY_PALETTE_SIZE       1
+#define TEST_INQUIRY_OFFSET             2
+#define TEST_INQUIRY_WINDOW             3
+#define TEST_INQUIRY_DEFAULT_BRIGHTNESS 4
+#define TEST_INQUIRY_MINIMUM_BRIGHTNESS 5 
+#define TEST_INQUIRY_REVERSE            6
+#define TEST_INQUIRY_DEFAULT_FADE_RATE  7
+#define TEST_INQUIRY_FADE_RATE          8
+#define TEST_INQUIRY_MAPPING_ENABLED    9
+#define TEST_INQUIRY_DEFAULT_LIGHTNESS 10
+#define TEST_INQUIRY_MINIMUM_LIGHTNESS 11
+#define TEST_INQUIRY_MAX_STRING_LENGTH 12
+#define TEST_INQUIRY_TEST_FRAMEWORK_ENABLED 13
+#define TEST_INQUIRY_EXTRA_SHUFFLES_ENABLED 14
+#define TEST_INQUIRY_BLEND_ENABLED     15
+#define TEST_INQUIRY_NUM_MACRO_CHARS   16
+#define TEST_INQUIRY_NUM_MEMORY_MACROS 17
+#define TEST_INQUIRY_NUM_EEPROM_MACROS 18
+#define TEST_INQUIRY_FIRST_EEPROM_MACRO 19
+#define TEST_INQUIRY_NUM_SEQUENCERS 20
+#define TEST_INQUIRY_NUM_FINE_ZONES 21
+
+
+    # it dumps macro contents
+    # it dumps buffer contents
+    # it dumps render contents
+    # it dumps effects contents
+    # it dumps palette contents
+    # it dumps accumulators
+    
+
+#    case TEST_TYPE_DUMP_MACRO:
+#      // arg1 - macro number
+#      do_test_macro(arg1);
+#      break;
+#    case TEST_TYPE_DUMP_BUFFER:
+#      // arg1 - start
+#      // arg2 - count
+#      do_test_buffer(arg1, arg2);
+#      break;
+#    case TEST_TYPE_DUMP_RENDER:
+#      // arg1 - start
+#      // arg2 - count
+#      do_test_render(arg1, arg2);
+#      break;
+#    case TEST_TYPE_DUMP_EFFECTS:
+#      // arg1 - start
+#      // arg2 - count
+#      do_test_effects(arg1, arg2);
+#      break;
+#    case TEST_TYPE_DUMP_PALETTE:
+#      do_test_palette(arg1, arg2);
+#      break;
+#    case TEST_TYPE_FUNCTION:
+#      // arg1 - function type
+#      // arg2 - (depends on function)
+#      do_test_function(arg1, arg2);
+#      break;
+#    case TEST_TYPE_DUMP_ACCUMS:
+#      do_test_accumulators();
+
+
+    # it processes effects
+    # it processes schedules
+    # it times a macro
+    # it sets a random seed
+
+#define TEST_FUNCTION_PROCESS_EFFECTS   0 // arg2 = number of times to run
+#define TEST_FUNCTION_PROCESS_SCHEDULES 1 // arg2 = number of times to run
+#define TEST_FUNCTION_TIME_MACRO        2 // arg2 = macro to run and return the time in milliseconds
+#define TEST_FUNCTION_RANDOM_SEED       3 // arg2 > 0 = a specific random seed for testing random features (0 = random seed)
+
 
 
 ########################################################################
@@ -2228,6 +2340,11 @@ def specs():
       expect_effect("red:flu", 0, 1, "20")
 
     pending_test("more configuration tests")
+    # a blink period can be set
+    # a breathe time can be set
+
+#define CONFIG_SET_BLINK_PERIOD   0
+#define CONFIG_SET_BREATHE_TIME   1
 
 
 ########################################################################
@@ -2318,6 +2435,10 @@ def specs():
   if group("scheduling"):
 
     pending_test("scheduling")
+    # a macro can be scheduled to run
+    # a macro can be stopped from running
+    # all macros can be stopped from running
+
 
 ########################################################################
 # MAPPING
