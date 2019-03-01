@@ -875,7 +875,7 @@ void Commands::flush(bool force_display = false)
   if(force_display || !effects_paused)
   {
     rgb_color * render_buffer = buffer->get_render_buffer();
-    renderer->render_buffer(render_buffer, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
+    renderer->render_buffer(render_buffer, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer(), !effects_paused);
     buffer->display_buffer(render_buffer);
   }
 }

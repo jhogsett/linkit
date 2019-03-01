@@ -129,7 +129,7 @@ void Buffer::display_buffer(rgb_color * pbuffer)
 // todo might want choice of slow or fast render
 void Buffer::render_display()
 {
-  renderer->render_buffer(render, this->buffers[current_display], visible_led_count, this->effects_buffers[current_display]);
+  renderer->render_buffer(render, this->buffers[current_display], visible_led_count, this->effects_buffers[current_display], true);
   display_buffer(render);
 }
 
@@ -182,7 +182,8 @@ void Buffer::cross_fade(byte step)
   for(byte i = offset; i < window; i++){
     rgb_color *pb = buffer + i;
     rgb_color *pr = render + i;
-    rgb_color rendered_color = renderer->render(pb, effects[i]);
+    rgb_color rendered_color = renderer->render(pb, effects[i], 0.0, NULL, true);
+    // rgb_color rendered_color = renderer->get_default(*pb);
     *pr = ColorMath::crossfade_colors(step, *pr, rendered_color);
    }
 }

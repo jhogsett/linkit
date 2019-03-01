@@ -54,7 +54,7 @@
 // #define PROJECTOR
 
 // 64-LED Glasses
-//#define WEARABLE_AND_GLASSES
+// #define WEARABLE_AND_GLASSES
 // spy:
 // #define WEARABLE_AND_GLASSES_TYPE2
 

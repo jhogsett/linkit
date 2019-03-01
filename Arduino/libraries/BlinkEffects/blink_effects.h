@@ -23,6 +23,8 @@
 #define MAX_BLINK_SEGMENTS 6
 #define DEFAULT_BLINK_PERIOD 1500
 
+#define BLINK_CACHE 10
+
 class BlinkEffects
 {
   public:
@@ -32,8 +34,8 @@ class BlinkEffects
   bool process();
   static bool is_handled_effect(byte effect);
   void set_blink_period(int blink_period);
-  void begin_render(byte* cache);
-  bool blink_on_cached(byte * cache, byte effect);
+  void rebuild_cache();
+  bool blink_on(byte effect);
 
   private:
 
@@ -47,7 +49,10 @@ class BlinkEffects
   int half_period;
   int quarter_period;
   int half_counter;
+  static byte blink_cache[BLINK_CACHE];
 };
+
+byte BlinkEffects::blink_cache[BLINK_CACHE];
 
 void BlinkEffects::begin(int blink_period = DEFAULT_BLINK_PERIOD)
 {
@@ -59,6 +64,7 @@ void BlinkEffects::reset()
 {
   this->blink_counter = 0;
   this->half_counter = 0;
+  rebuild_cache();
 }
 
 void BlinkEffects::set_blink_period(int blink_period)
@@ -81,7 +87,14 @@ bool BlinkEffects::process()
 {
   this->blink_counter = (this->blink_counter + 1) % this->blink_period;
   this->half_counter = this->blink_counter % this->half_period;
-  return this->blink_counter % this->interval == 0;
+
+  if(this->blink_counter % this->interval == 0)
+  {
+    rebuild_cache();
+    return true;
+  }
+
+  return false;
 }
 
 bool BlinkEffects::is_handled_effect(byte effect)
@@ -106,23 +119,21 @@ bool BlinkEffects::blink_a_test()
   return this->half_counter < this->quarter_period;
 }
 
-// cache the blink state ahead of rendering
-// pass in a byte array at least
-void BlinkEffects::begin_render(byte* cache)
+void BlinkEffects::rebuild_cache()
 {
-  cache[0] = blink_test();
+  this->blink_cache[0] = blink_test();
 
   for(byte i = 1; i < 7; i++)
-    cache[i] = blink_1_6_test(BLINK_ON + i);
+    this->blink_cache[i] = blink_1_6_test(BLINK_ON + i);
 
-  cache[7] = blink_a_test();
-  cache[8] = !cache[7];
+  this->blink_cache[7] = blink_a_test();
+  this->blink_cache[8] = !this->blink_cache[7];
 
-  cache[9] = cache[7];
+  this->blink_cache[9] = this->blink_cache[7];
 }
 
-bool BlinkEffects::blink_on_cached(byte * cache, byte effect)
+bool BlinkEffects::blink_on(byte effect)
 {
-  return cache[effect - BLINK_MIN];
+  return this->blink_cache[effect - BLINK_MIN];
 }
 #endif
