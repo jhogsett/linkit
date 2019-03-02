@@ -182,7 +182,13 @@ void Buffer::cross_fade(byte step)
   for(byte i = offset; i < window; i++){
     rgb_color *pb = buffer + i;
     rgb_color *pr = render + i;
+
+#ifdef USE_COLOR_CACHE
     rgb_color rendered_color = renderer->render(pb, effects[i], 0.0, NULL, true);
+#else
+    rgb_color rendered_color = renderer->render(pb, effects[i], 0.0, NULL);
+#endif
+
     // rgb_color rendered_color = renderer->get_default(*pb);
     *pr = ColorMath::crossfade_colors(step, *pr, rendered_color);
    }

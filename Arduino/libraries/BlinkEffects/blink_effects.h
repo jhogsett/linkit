@@ -88,13 +88,14 @@ bool BlinkEffects::process()
   this->blink_counter = (this->blink_counter + 1) % this->blink_period;
   this->half_counter = this->blink_counter % this->half_period;
 
-  if(this->blink_counter % this->interval == 0)
+  bool flush = false;
+  if(this->half_counter % this->interval == 0)
   {
     rebuild_cache();
-    return true;
+    flush = true;
   }
 
-  return false;
+  return flush;
 }
 
 bool BlinkEffects::is_handled_effect(byte effect)
@@ -110,8 +111,8 @@ bool BlinkEffects::blink_test()
 bool BlinkEffects::blink_1_6_test(byte effect)
 {
   int start = (effect - BLINK_ON_1) * this->interval;
-  int end = start + this->interval;
-  return this->half_counter >= start && half_counter < end;
+  int end = start + this->interval - 1;
+  return this->half_counter >= start && half_counter <= end;
 }
 
 bool BlinkEffects::blink_a_test()
@@ -123,8 +124,8 @@ void BlinkEffects::rebuild_cache()
 {
   this->blink_cache[0] = blink_test();
 
-  for(byte i = 1; i < 7; i++)
-    this->blink_cache[i] = blink_1_6_test(BLINK_ON + i);
+  for(byte i = 1; i <= MAX_BLINK_SEGMENTS; i++)
+    this->blink_cache[i] = blink_1_6_test(BLINK_MIN + i);
 
   this->blink_cache[7] = blink_a_test();
   this->blink_cache[8] = !this->blink_cache[7];
