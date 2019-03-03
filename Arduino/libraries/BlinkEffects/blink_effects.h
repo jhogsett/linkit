@@ -45,12 +45,13 @@ class BlinkEffects
 
   int fast_counter = 0;
   int fast_period;
-
   int slow_counter = 0;
   int slow_period;
+
+  static bool blink_cache[BLINK_CACHE];
 };
 
-// bool BlinkEffects::blink_cache[BLINK_CACHE];
+bool BlinkEffects::blink_cache[BLINK_CACHE];
 
 void BlinkEffects::begin(int blink_period = DEFAULT_BLINK_PERIOD)
 {
@@ -81,7 +82,7 @@ bool BlinkEffects::process()
   int sixth_fast = this->fast_period / MAX_BLINK_SEGMENTS;
   if(this->fast_counter % half_fast == 0 || this->fast_counter % sixth_fast == 0)
   {
-    // rebuild_cache();
+    rebuild_cache();
     flush = true;
   }
 
@@ -115,28 +116,29 @@ bool BlinkEffects::blink_a_test()
 
 void BlinkEffects::rebuild_cache()
 {
-  // this->blink_cache[0] = blink_test();
+  this->blink_cache[0] = blink_test();
 
-  // for(byte i = 1; i <= MAX_BLINK_SEGMENTS; i++)
-  //   this->blink_cache[i] = blink_1_6_test(BLINK_MIN + i);
+  for(byte i = 1; i <= MAX_BLINK_SEGMENTS; i++)
+    this->blink_cache[i] = blink_1_6_test(BLINK_MIN + i);
 
-  // this->blink_cache[7] = blink_a_test();
-  // this->blink_cache[8] = !this->blink_cache[7];
+  this->blink_cache[7] = blink_a_test();
+  this->blink_cache[8] = !this->blink_cache[7];
 
-  // this->blink_cache[9] = this->blink_cache[7];
+  this->blink_cache[9] = this->blink_cache[7];
 }
 
 bool BlinkEffects::blink_on(byte effect)
 {
-  if (effect == BLINK_ON)
-    return this->blink_test();
-  else if(effect == BLINK_ON_A)
-    return this->blink_a_test();
-  else if(effect == BLINK_ON_B)
-    return !this->blink_a_test();
-  else if (effect == BLINK_ON_D)
-    return this->blink_a_test();
-  else
-    return this->blink_1_6_test(effect);
+  // if (effect == BLINK_ON)
+  //   return this->blink_test();
+  // else if(effect == BLINK_ON_A)
+  //   return this->blink_a_test();
+  // else if(effect == BLINK_ON_B)
+  //   return !this->blink_a_test();
+  // else if (effect == BLINK_ON_D)
+  //   return this->blink_a_test();
+  // else
+  //   return this->blink_1_6_test(effect);
+  return this->blink_cache[effect - BLINK_MIN];
 }
 #endif
