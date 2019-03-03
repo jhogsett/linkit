@@ -22,7 +22,11 @@ $swinger-max-half <swinger-max>
     <CONFIG-FADE-RATE> = <swinger-fade-rate>
     (hsl-sequencer-start)
     [[[setup-swinger 6]]]
-    (render <swinger-render-time>)
+    (swinger-render <swinger-render-time>)
+
+[swinger-render]
+    <EFFECTS-PROCESSING>
+    refresh-display
 
 (((swinger 6)))
 

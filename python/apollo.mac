@@ -1,25 +1,41 @@
 
 %include symbols
 
-%include swinger
 %include inchworm
 %include hsl-sequencer
-%include colors
-%include hslswing
+%include bars
 
-$rotate-time 30000
+$lamp-render-time 200
+$lamp-colors 6
+$demo-time 15000
 
 [fancy 10]
   (inchworm-app)
 
 [mellow 11]
-  (swinger-app)
+  (bars-app)
 
-[lamp 13]
-  (colors-app)
+[lamp 12]
+  start-application
+  (hsl-sequencer-start)
+  (lamp-render <lamp-render-time>)
 
-[demo 12]
-  (hslswing-app)
+[lamp-render]
+  0,<lamp-colors>
+  add-palette-colors
+  <lamp-colors>,<AUTO-FILL>,`<NUM-LEDS>/<lamp-colors>`
+  duplicate
+  refresh-display
+
+[demo 13]
+  (demo-choose)
+  (demo-choose <demo-time>)
+
+[demo-choose]
+  13,10
+  get-random-number 
+  run-macro
+  (demo-choose <demo-time>)
 
 %play-macro demo
 

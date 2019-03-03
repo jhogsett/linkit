@@ -9,6 +9,7 @@ import random
 #import termios
 
 def begin(use_tty = True):
+    global select, tty, termios
     import select
     import tty
     import termios

@@ -14,14 +14,14 @@ $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <ball-time>
 $fade-rate 9000
-$ball-time 50
+$ball-time 25
 $box-width 15
-$box-time 100
+$box-time 50
 $num-boxes 3
-$balls-per-box 2
+$balls-per-box 1
 $box-instance-time 30
 $ball-instance-time 10
-$refresh-time 50
+$refresh-time 25
 $box-sequencer swing-sequencer
 $ball-sequencer swing-sequencer
 $box-step 0
@@ -52,12 +52,13 @@ $background-type <bgtype-line>
 $use-computed-value False
 $palette-bg-zoom 3
 $fgtype-palette 0
-$fgtype-white 1
-$fgtype-black 2
-$fgtype-darken 3
-$fgtype-brighten 4
+$fgtype-palette2 1
+$fgtype-white 2
+$fgtype-black 3
+$fgtype-darken 4
+$fgtype-brighten 5
 
-$foreground-type <fgtype-palette>
+$foreground-type <fgtype-palette2>
 
 $background-darkening-heavy 3
 $background-darkening-light 1
@@ -406,6 +407,10 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 >>>
 <<< <foreground-type> == <fgtype-white>
             dark-gray
+>>>
+<<< <foreground-type> == <fgtype-palette2>
+            `COLOR+3`
+            add-palette-color
 >>>
 <<< <foreground-type> == <fgtype-black>
             black

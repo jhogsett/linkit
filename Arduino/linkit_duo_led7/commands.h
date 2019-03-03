@@ -86,7 +86,7 @@ class Commands
   void do_power_shift_object(byte width, byte shift, bool fast_render);
 #endif
 
-  void flush(bool force_display);
+  void flush(bool force_display = false, bool force_effects_processing = false);
   void set_display(byte display);
   void set_buffer(byte nbuffer);
   void set_pin(byte pin, byte mode);
@@ -870,12 +870,16 @@ void Commands::do_rotate(byte times, byte steps, bool flush)
   }
 }
 
-void Commands::flush(bool force_display = false)
+void Commands::flush(bool force_display, bool force_effects_processing)
 {
   if(force_display || !effects_paused)
   {
     rgb_color * render_buffer = buffer->get_render_buffer();
-    renderer->render_buffer(render_buffer, buffer->get_buffer(), visible_led_count, buffer->get_effects_buffer());
+    renderer->render_buffer(render_buffer, 
+                            buffer->get_buffer(), 
+                            visible_led_count, 
+                            buffer->get_effects_buffer(), 
+                            !effects_paused || force_effects_processing);
     buffer->display_buffer(render_buffer);
   }
 }

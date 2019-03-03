@@ -10,22 +10,31 @@
 #define DYNAMIC_COLOR 0x80
 #define NOT_DYNAMIC_COLOR 0x7f
 
-// cache blink states while rendering
-#define BLINK_CACHE 10
-
+#ifdef USE_COLOR_CACHE
 // cache rendered forms of dynamic color pairs while rendering
 #define COLOR_CACHE_SIZE 6
+#endif
 
 class Render
 {
   public:
   void begin(BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects * fade_effects, byte default_brightness, byte minimum_brightness);
-  rgb_color render(rgb_color * color, byte effect, byte * cache = NULL, float breathe_scale = 0.0, rgb_color* color_cache = NULL);
-  void render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, byte count, byte *effects);
+
+#ifdef USE_COLOR_CACHE
+  rgb_color render(rgb_color * color, byte effect, float breathe_scale, rgb_color* color_cache, bool effects_enabled);
+#else
+  rgb_color render(rgb_color * color, byte effect, float breathe_scale, bool effects_enabled);
+#endif
+
+  void render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, byte count, byte *effects, bool effects_enabled);
   void set_default_brightness(byte brightness);
   void set_minimum_brightness(byte brightness);
   byte get_minimum_brightness();
+
+#ifdef USE_COLOR_CACHE
   rgb_color compute_dynamic_breathe(rgb_color color);
+#endif
+rgb_color get_dynamic_breathe(rgb_color color);
 
   static rgb_color black;
 
@@ -38,7 +47,12 @@ class Render
   float minimum_brightness_scale;
 
   rgb_color get_blink(rgb_color color, rgb_color render_color, byte effect, byte * cache = NULL);
+
+#ifdef USE_COLOR_CACHE
   rgb_color get_breathe(rgb_color color, float scale, byte effect, rgb_color orig_color, rgb_color* color_cache);
+#else
+  rgb_color get_breathe(rgb_color color, float scale, byte effect, rgb_color orig_color);
+#endif
   rgb_color get_default(rgb_color);
   rgb_color get_fade(rgb_color * color, byte effect);
 };
@@ -62,48 +76,77 @@ rgb_color Render::get_blink(rgb_color color, rgb_color render_color, byte effect
     float scale;
 
     if(effect_only == BLINK_ON_D){
-      byte color_index = min((blink_effects->blink_on_cached(cache, effect_only) ? color.red : color.green), NUM_PALETTE_COLORS-1);
+      byte color_index = min((blink_effects->blink_on(effect_only) ? color.red : color.green), NUM_PALETTE_COLORS-1);
       render_color = Colors::get_palette()[color_index];
       scale = default_brightness_scale;
     } else {
-      scale = blink_effects->blink_on_cached(cache, effect_only) ? default_brightness_scale : minimum_brightness_scale;
+      scale = blink_effects->blink_on(effect_only) ? default_brightness_scale : minimum_brightness_scale;
     }
     return ColorMath::scale_color(render_color, scale);
 }
 
+#ifdef USE_COLOR_CACHE
 rgb_color Render::compute_dynamic_breathe(rgb_color color)
 {
   rgb_color color1 = Colors::get_palette()[color.red];
   rgb_color color2 = Colors::get_palette()[color.green];
   return this->breathe_effects->breathe_crossfade(color1, color2);
 }
+#endif
 
+rgb_color Render::get_dynamic_breathe(rgb_color color)
+{
+  byte color_index = this->breathe_effects->alt_breathe() ? color.green : color.red;
+  return Colors::get_palette()[color_index];
+}
+
+#ifdef USE_COLOR_CACHE
 rgb_color Render::get_breathe(rgb_color color, float scale, byte effect, rgb_color orig_color, rgb_color* color_cache)
+#else
+rgb_color Render::get_breathe(rgb_color color, float scale, byte effect, rgb_color orig_color)
+#endif
 {
     rgb_color result;
     byte effect_only = effect & NOT_DYNAMIC_COLOR;
+    result = (effect_only == BREATHE_ON_D) ? get_dynamic_breathe(orig_color) : color;
+    return ColorMath::scale_color(result, scale);
 
-    if(effect_only == BREATHE_ON_D){
-      // dynamic breathe
+//     if(effect_only == BREATHE_ON_D){
+//       // dynamic breathe
 
-      if(orig_color.red < COLOR_CACHE_SIZE && orig_color.green < COLOR_CACHE_SIZE){
-        // eligible for cache
+// #ifdef USE_COLOR_CACHE
+//       if(orig_color.red < COLOR_CACHE_SIZE && orig_color.green < COLOR_CACHE_SIZE){
+//         // eligible for cache
 
-        byte index = orig_color.green * COLOR_CACHE_SIZE + orig_color.red;
+//         byte index = orig_color.green * COLOR_CACHE_SIZE + orig_color.red;
 
-        if(ColorMath::equal(black, color_cache[index]))
-          color_cache[index] = ColorMath::scale_color(compute_dynamic_breathe(orig_color), default_brightness_scale);
+//         if(ColorMath::equal(black, color_cache[index]))
+//           color_cache[index] = ColorMath::scale_color(compute_dynamic_breathe(orig_color), default_brightness_scale);
 
-        result = color_cache[index];
-      } else {
-        // not eligible for cache
-        result = ColorMath::scale_color(compute_dynamic_breathe(orig_color), default_brightness_scale);
-      }
-    } else {
-      result = ColorMath::scale_color(color, scale);
-    }
+//         result = color_cache[index];
+//       } else {
+//         // not eligible for cache
+//         result = ColorMath::scale_color(compute_dynamic_breathe(orig_color), default_brightness_scale);
+//       }
+// #endif
 
-    return result;
+//         result = ColorMath::scale_color(get_dynamic_breathe(orig_color), default_brightness_scale);
+
+
+
+//     } else {
+//       result = ColorMath::scale_color(color, scale);
+//     }
+
+    // if(effect_only == BREATHE_ON_D)
+    // {
+    //   result = get_dynamic_breathe(orig_color);
+    // }
+    // else
+    // {
+    //   result = color;
+    // }
+    
 }
 
 // this is a destructive rendering: the original color value is reduced
@@ -119,38 +162,59 @@ rgb_color Render::get_default(rgb_color color)
   return ColorMath::scale_color(color, default_brightness_scale);
 }
 
-rgb_color Render::render(rgb_color *color, byte effect, byte *blink_cache, float breathe_scale, rgb_color* color_cache)
+#ifdef USE_COLOR_CACHE
+rgb_color Render::render(rgb_color *color, byte effect, float breathe_scale, rgb_color* color_cache, bool effects_enabled)
+#else
+rgb_color Render::render(rgb_color *color, byte effect, float breathe_scale, bool effects_enabled)
+#endif
 {
-  byte effect_only = effect & NOT_DYNAMIC_COLOR;
-
-  if(fade_effects->is_handled_effect(effect_only))
-    return get_fade(color, effect);
-
   rgb_color render_color;
   if(effect & DYNAMIC_COLOR)
     render_color = ColorMath::correct_color(Colors::get_palette()[min(color->red, NUM_PALETTE_COLORS-1)]);
   else
     render_color = *color;
 
-  if(blink_effects->is_handled_effect(effect_only))
-    return get_blink(*color, render_color, effect, blink_cache);
+  if(effects_enabled)
+  {
+    byte effect_only = effect & NOT_DYNAMIC_COLOR;
 
-  if(breathe_effects->is_handled_effect(effect_only))
-    return get_breathe(render_color, breathe_scale, effect, *color, color_cache);
+    if(fade_effects->is_handled_effect(effect_only))
+      return get_fade(color, effect);
+
+    if(blink_effects->is_handled_effect(effect_only))
+      return get_blink(*color, render_color, effect);
+
+    if(breathe_effects->is_handled_effect(effect_only))
+#ifdef USE_COLOR_CACHE
+      return get_breathe(render_color, breathe_scale, effect, *color, color_cache);
+#else
+      return get_breathe(render_color, breathe_scale, effect, *color);
+#endif
+  }
 
   return get_default(render_color);
 }
 
-void Render::render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, byte count, byte *effects)
+void Render::render_buffer(rgb_color *dest_buffer, rgb_color *src_buffer, byte count, byte *effects, bool effects_enabled)
 {
-  byte blink_cache[10];
-  blink_effects->begin_render(blink_cache);
-  float breathe_scale = breathe_effects->breathe_ratio() * default_brightness_scale;
+  float breathe_scale;
+#ifdef USE_COLOR_CACHE  
   rgb_color color_cache_data[COLOR_CACHE_SIZE * COLOR_CACHE_SIZE];
-  memset(color_cache_data, 0, sizeof(color_cache_data));
+#endif
+  if(effects_enabled)
+  {
+    breathe_scale = breathe_effects->breathe_ratio() * default_brightness_scale;
+#ifdef USE_COLOR_CACHE  
+    memset(color_cache_data, 0, sizeof(color_cache_data));
+#endif
+  }
 
   for(byte i = 0; i < count; i++)
-    dest_buffer[i] = render(&src_buffer[i], effects[i], blink_cache, breathe_scale, color_cache_data);
+#ifdef USE_COLOR_CACHE  
+    dest_buffer[i] = render(&src_buffer[i], effects[i], breathe_scale, color_cache_data, effects_enabled);
+#else
+    dest_buffer[i] = render(&src_buffer[i], effects[i], breathe_scale, effects_enabled);
+#endif
 }
 
 #define RESTRICT_TO_0_100(n) (max(0, min(100, n)))
