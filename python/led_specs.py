@@ -586,7 +586,7 @@ def specs():
     if test("stopping pauses effects"):
       lc.command("stp:red:cyn:ffd")
       time.sleep(0.5)
-      expect_buffer("", 0, 2, "0,10,10,20,0,0")
+      expect_buffer("", 0, 2, "0,20,20,20,0,0")
 
     if test("stopping pauses schedules"):
       lc.command("0:set:red:-1:sch")
@@ -1307,7 +1307,7 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:1:flu")
 
       # place a blinking red
       lc.command_str("red:bli")
@@ -1322,7 +1322,7 @@ def specs():
 
     if test("a/b blink effects"):
       lc.command_str("0,6:cfg")
-      lc.command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:1:flu")
 
       # set one of each effect
       lc.command_str("grn:bla:blu:blb")
@@ -1335,7 +1335,7 @@ def specs():
 
     if test("1/2/3/4/5/6 blink effects"):
       lc.command_str("0,6:cfg")
-      lc.command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:1:flu")
 
       # set one of each effect
       lc.command_str("red:bl1:org:bl2:yel:bl3:grn:bl4:blu:bl5:pur:bl6")
@@ -1371,7 +1371,7 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:1:flu")
 
       # place a breathing greenn
       lc.command_str("grn:bre")
@@ -1395,36 +1395,36 @@ def specs():
   if group("fade effects"):                                                             
         
     if test("it modifies the display color with slow fades on flushing"):
-      expect_buffer("red:sfd:flu", 0, 1, "19,0,0", False)
-      expect_buffer("flu", 0, 1, "18,0,0", False)
-      expect_buffer("flu", 0, 1, "17,0,0", False)
+      expect_buffer("red:sfd:1:flu", 0, 1, "19,0,0", False)
+      expect_buffer("1:flu", 0, 1, "18,0,0", False)
+      expect_buffer("1:flu", 0, 1, "17,0,0", False)
 
     if test("it renders the fading color with slow fades on flushing"):
-      expect_render("red:sfd:flu", 0, 1, "48,0,0", False)
-      expect_render("flu", 0, 1, "45,0,0", False)
-      expect_render("flu", 0, 1, "43,0,0", False)
+      expect_render("red:sfd:1:flu", 0, 1, "48,0,0", False)
+      expect_render("1:flu", 0, 1, "45,0,0", False)
+      expect_render("1:flu", 0, 1, "43,0,0", False)
 
     if test("a custom slow fade rate modifies the display buffer properly"):
       lc.command_str("2,7500:cfg")
-      expect_buffer("red:sfd:flu", 0, 1, "15,0,0", False)
-      expect_buffer("flu", 0, 1, "11,0,0", False)
-      expect_buffer("flu", 0, 1, "8,0,0", False)
+      expect_buffer("red:sfd:1:flu", 0, 1, "15,0,0", False)
+      expect_buffer("1:flu", 0, 1, "11,0,0", False)
+      expect_buffer("1:flu", 0, 1, "8,0,0", False)
 
     if test("a custom slow fade rate renders properly"):
       lc.command_str("2,7500:cfg")
-      expect_render("red:sfd:flu", 0, 1, "38,0,0", False)
-      expect_render("flu", 0, 1, "28,0,0", False)
-      expect_render("flu", 0, 1, "20,0,0", False)
+      expect_render("red:sfd:1:flu", 0, 1, "38,0,0", False)
+      expect_render("1:flu", 0, 1, "28,0,0", False)
+      expect_render("1:flu", 0, 1, "20,0,0", False)
 
     if test("it modifies the display color with fast fades on flushing"):
-      expect_buffer("red:ffd:flu", 0, 1, "10,0,0", False)
-      expect_buffer("flu", 0, 1, "5,0,0", False)
-      expect_buffer("flu", 0, 1, "2,0,0", False)
+      expect_buffer("red:ffd:1:flu", 0, 1, "10,0,0", False)
+      expect_buffer("1:flu", 0, 1, "5,0,0", False)
+      expect_buffer("1:flu", 0, 1, "2,0,0", False)
 
     if test("it renders the fading color with fast fades on flushing"):
-      expect_render("red:ffd:flu", 0, 1, "25,0,0", False)
-      expect_render("flu", 0, 1, "12,0,0", False)
-      expect_render("flu", 0, 1, "5,0,0", False)
+      expect_render("red:ffd:1:flu", 0, 1, "25,0,0", False)
+      expect_render("1:flu", 0, 1, "12,0,0", False)
+      expect_render("1:flu", 0, 1, "5,0,0", False)
 
                                                                                                                                                                                                          
 ########################################################################
@@ -1462,13 +1462,13 @@ def specs():
 
 # FADE ANIMATION
 ########################################################################
-  if group("fade animation"):                                                             
-
-    if test("it leaves the buffer empty (black) after done"):
-      expect_empty_buffer("amb:flo:flu:fad", 0, num_leds)                                                                                                                                                                                                           
-
-    if test("it leaves the display empty (black) after done"):
-      expect_empty_render("olv:flo:flu:fad", 0, num_leds)
+#  if group("fade animation"):                                                             
+#
+#    if test("it leaves the buffer empty (black) after done"):
+#      expect_empty_buffer("amb:flo:flu:fad", 0, num_leds)                                                                                                                                                                                                           
+#
+#    if test("it leaves the display empty (black) after done"):
+#      expect_empty_render("olv:flo:flu:fad", 0, num_leds)
 
 
 ########################################################################
@@ -1546,7 +1546,7 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:1:flu")
 
       # place a blinking orange
       lc.command_str("org:bli")
@@ -1574,7 +1574,7 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:1:flu")
 
       # place a blinking rose
       lc.command_str("ros:bli")
@@ -1630,7 +1630,7 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:1:flu")
 
       # place a breathing blue
       lc.command_str("blu:bre")
@@ -1659,7 +1659,7 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:1:flu")
 
       # place a breathing blue
       lc.command_str("blu:bre")
@@ -2393,7 +2393,7 @@ def specs():
       lc.command_str("0,6:cfg")
 
       # set a macro to advance the blink period
-      lc.command_str("0:set:6:tst:flu")
+      lc.command_str("0:set:6:tst:1:flu")
 
       # place alternating dynamic colors
       lc.command_str("0,4:dyn:bld")

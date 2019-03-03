@@ -31,9 +31,9 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 # --------------------------------------------
 
 [hslrender]					# define macro 'render' in the last (truncated) macro # to update the display
-        {{{
-	    mirror				# duplicate the first half of the LED colors to the second half, reversed
-	}}}	        			# push the display buffer to the LEDs
+	mirror		    	 	        # duplicate the first half of the LED colors to the second half, reversed
+        <EFFECTS-PROCESSING>
+	refresh-display	         		# push the display buffer to the LEDs
 
 # --------------------------------------------
 

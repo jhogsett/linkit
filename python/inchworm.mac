@@ -32,7 +32,14 @@ $num-worms 5
   (hsl-sequencer-start)
 
   # schedule the renderer
-  (render <render-time>)
+  (inchworm-render <render-time>)
+
+#  <EFFECTS-PROCESSING>
+#  continue
+
+[inchworm-render]
+  <EFFECTS-PROCESSING>
+  refresh-display
 
 # expand 5 meta-templates for worms, computing the various values
 (((worm <num-worms> `<time1>-(INSTANCE*5)` `<time2>-(INSTANCE*5)` INSTANCE `INSTANCE+1` INSTANCE `INSTANCE+5`)))
