@@ -1,6 +1,11 @@
-// add arg to flush to force effects processing on
+// have a special language construction that uses memory macros 0 and 1 to perform a loop
+// command: 0:set:0:seq:dyn
+// command: 1:set:0,18:seq:0,18:run
+//
+// 
 
-// stp should reset the default effect
+
+// need better error message when a macro ends up blank
 
 // move this to progmem const byte EffectsProcessor::random_effects
 

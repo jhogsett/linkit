@@ -1398,7 +1398,8 @@ void Commands::do_stop()
 {
   scheduler.reset_all_schedules();
   clear();                                                            
-  pause();                                                            
+  pause();    
+  buffer->set_default_effect(NO_EFFECT);
 }
 
 // TODO: it's inefficient to insert the colors one at a time; would be better to shift the buffer then overwrite the colors
