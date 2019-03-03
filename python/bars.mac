@@ -11,15 +11,14 @@ $num-instances 5
 #$instance-width `<NUM-LEDS>/6`
 $instance-width 12
 
-%allow-mutability
-$HSL-ANGLE `int(360/<num-instances>)`
-$HSL-TIME 1000
+#%allow-mutability
+#$HSL-ANGLE `int(360/<num-instances>)`
+#$HSL-TIME 1000
 
 $base-next-time 50
 $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <base-next-time>
-$fade-rate 9000
 $low-limit `int(<instance-width>/2)`
 $high-limit `<NUM-LEDS>-<low-limit>`
 $add-time 3

@@ -118,6 +118,7 @@ long_commands = {
  "set-random-position" : "rps",
  "set-xy-position" : "xyp",
  "add-palette-color" : "pal",
+ "add-palette-colors" : "pal", 
  "shuffle-palette" : "shf",
  "reset-palette" : "1:shf",
  "set-black-level" : "sbl",
