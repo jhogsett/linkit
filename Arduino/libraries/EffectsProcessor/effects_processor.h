@@ -18,11 +18,18 @@
 #define DYNAMIC_COLOR 0x80
 #define NOT_DYNAMIC_COLOR 0x7f
 
+#define RANDOM_EFFECTS_IN_PROGMEM
+
 class EffectsProcessor
 {
   public:
 
+#ifdef RANDOM_EFFECTS_IN_PROGMEM
+  static const byte PROGMEM random_effects[RANDOM_EFFECTS];
+#else
   const static byte random_effects[RANDOM_EFFECTS];
+#endif
+
   Buffer *buffer;
   BlinkEffects *blink_effects;
   BreatheEffects *breathe_effects;
@@ -36,8 +43,37 @@ class EffectsProcessor
   bool process_effects();
 };
 
-// todo: move to progmem
-const byte EffectsProcessor::random_effects[] = { NO_EFFECT, BREATHE_ON, BLINK_ON, BLINK_ON_1, BLINK_ON_2, BLINK_ON_3, BLINK_ON_4, BLINK_ON_5, BLINK_ON_6, BLINK_ON_A, BLINK_ON_B }; //, BLINK_ON_P };
+#ifdef RANDOM_EFFECTS_IN_PROGMEM
+const byte PROGMEM EffectsProcessor::random_effects[] = 
+{
+  NO_EFFECT, 
+  BREATHE_ON, 
+  BLINK_ON, 
+  BLINK_ON_1, 
+  BLINK_ON_2, 
+  BLINK_ON_3, 
+  BLINK_ON_4, 
+  BLINK_ON_5, 
+  BLINK_ON_6, 
+  BLINK_ON_A, 
+  BLINK_ON_B
+};
+#else
+const byte EffectsProcessor::random_effects[] = 
+{ 
+  NO_EFFECT, 
+  BREATHE_ON, 
+  BLINK_ON, 
+  BLINK_ON_1, 
+  BLINK_ON_2, 
+  BLINK_ON_3, 
+  BLINK_ON_4, 
+  BLINK_ON_5, 
+  BLINK_ON_6, 
+  BLINK_ON_A, 
+  BLINK_ON_B 
+};
+#endif
 
 void EffectsProcessor::begin(Buffer *buffer, BlinkEffects *blink_effects, BreatheEffects *breathe_effects, FadeEffects *fade_effects)
 {
@@ -55,7 +91,11 @@ void EffectsProcessor::start_effect(byte effect)
 
 byte EffectsProcessor::random_effect()
 {
-  return random_effects[random(RANDOM_EFFECTS)];
+#ifdef RANDOM_EFFECTS_IN_PROGMEM
+    return pgm_read_byte(&random_effects[random(RANDOM_EFFECTS)]);
+#else
+    return random_effects[random(RANDOM_EFFECTS)];
+#endif
 }
 
 // reset the effects to reduce jarring when an update occurs
