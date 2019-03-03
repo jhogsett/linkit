@@ -70,8 +70,8 @@ bool EffectsProcessor::process_effects()
 {
   bool should_flush;
   should_flush = blink_effects->process();
-  should_flush = breathe_effects->process() ? true : should_flush;
-  should_flush = fade_effects->process() ? true : should_flush;
+  // should_flush = breathe_effects->process() ? true : should_flush;
+  // should_flush = fade_effects->process() ? true : should_flush;
   return should_flush;
 }
 

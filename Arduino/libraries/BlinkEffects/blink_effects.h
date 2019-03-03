@@ -34,25 +34,23 @@ class BlinkEffects
   bool process();
   static bool is_handled_effect(byte effect);
   void set_blink_period(int blink_period);
-  void rebuild_cache();
   bool blink_on(byte effect);
 
   private:
 
+  void rebuild_cache();
   bool blink_test();
   bool blink_1_6_test(byte effect);
   bool blink_a_test();
 
-  int blink_period = DEFAULT_BLINK_PERIOD;
-  int blink_counter = 0;
-  int interval;
-  int half_period;
-  int quarter_period;
-  int half_counter;
-  static byte blink_cache[BLINK_CACHE];
+  int fast_counter = 0;
+  int fast_period;
+
+  int slow_counter = 0;
+  int slow_period;
 };
 
-byte BlinkEffects::blink_cache[BLINK_CACHE];
+// bool BlinkEffects::blink_cache[BLINK_CACHE];
 
 void BlinkEffects::begin(int blink_period = DEFAULT_BLINK_PERIOD)
 {
@@ -62,36 +60,28 @@ void BlinkEffects::begin(int blink_period = DEFAULT_BLINK_PERIOD)
 
 void BlinkEffects::reset()
 {
-  this->blink_counter = 0;
-  this->half_counter = 0;
+  this->fast_counter = 0;
+  this->slow_counter = 0;
   rebuild_cache();
 }
 
 void BlinkEffects::set_blink_period(int blink_period)
 {
-  if(blink_period < MAX_BLINK_SEGMENTS)
-    this->half_period = DEFAULT_BLINK_PERIOD;
-  else
-    this->half_period = blink_period;
-
-  this->quarter_period = this->half_period / 2;
-
-  // for testing 1-6 blink
-  this->interval = this->half_period / MAX_BLINK_SEGMENTS;
-
-  // double the blink period internally for toggling the main blink on and off
-  this->blink_period = this->half_period * 2;
+  this->fast_period = blink_period;
+  this->slow_period = blink_period * 2;
 }
 
 bool BlinkEffects::process()
 {
-  this->blink_counter = (this->blink_counter + 1) % this->blink_period;
-  this->half_counter = this->blink_counter % this->half_period;
-
   bool flush = false;
-  if(this->half_counter % this->interval == 0)
+  this->fast_counter = (this->fast_counter + 1) % this->fast_period;
+  this->slow_counter = (this->slow_counter + 1) % this->slow_period;
+
+  int half_fast = this->fast_period / 2;
+  int sixth_fast = this->fast_period / MAX_BLINK_SEGMENTS;
+  if(this->fast_counter % half_fast == 0 || this->fast_counter % sixth_fast == 0)
   {
-    rebuild_cache();
+    // rebuild_cache();
     flush = true;
   }
 
@@ -105,36 +95,48 @@ bool BlinkEffects::is_handled_effect(byte effect)
 
 bool BlinkEffects::blink_test()
 {
-  return this->blink_counter < this->half_period;
+  int half_slow = this->slow_period / 2;
+  return this->slow_counter < half_slow;
 }
 
 bool BlinkEffects::blink_1_6_test(byte effect)
 {
-  int start = (effect - BLINK_ON_1) * this->interval;
-  int end = start + this->interval - 1;
-  return this->half_counter >= start && half_counter <= end;
+  int sixth_fast = this->fast_period / MAX_BLINK_SEGMENTS;
+  int start = (effect - BLINK_ON_1) * sixth_fast;
+  int end = start + sixth_fast;
+  return this->fast_counter >= start && this->fast_counter < end;
 }
 
 bool BlinkEffects::blink_a_test()
 {
-  return this->half_counter < this->quarter_period;
+  int half_fast = this->fast_period / 2;
+  return this->fast_counter < half_fast;
 }
 
 void BlinkEffects::rebuild_cache()
 {
-  this->blink_cache[0] = blink_test();
+  // this->blink_cache[0] = blink_test();
 
-  for(byte i = 1; i <= MAX_BLINK_SEGMENTS; i++)
-    this->blink_cache[i] = blink_1_6_test(BLINK_MIN + i);
+  // for(byte i = 1; i <= MAX_BLINK_SEGMENTS; i++)
+  //   this->blink_cache[i] = blink_1_6_test(BLINK_MIN + i);
 
-  this->blink_cache[7] = blink_a_test();
-  this->blink_cache[8] = !this->blink_cache[7];
+  // this->blink_cache[7] = blink_a_test();
+  // this->blink_cache[8] = !this->blink_cache[7];
 
-  this->blink_cache[9] = this->blink_cache[7];
+  // this->blink_cache[9] = this->blink_cache[7];
 }
 
 bool BlinkEffects::blink_on(byte effect)
 {
-  return this->blink_cache[effect - BLINK_MIN];
+  if (effect == BLINK_ON)
+    return this->blink_test();
+  else if(effect == BLINK_ON_A)
+    return this->blink_a_test();
+  else if(effect == BLINK_ON_B)
+    return !this->blink_a_test();
+  else if (effect == BLINK_ON_D)
+    return this->blink_a_test();
+  else
+    return this->blink_1_6_test(effect);
 }
 #endif

@@ -1,3 +1,5 @@
+// stp should reset the default effect
+
 // move this to progmem const byte EffectsProcessor::random_effects
 
 
