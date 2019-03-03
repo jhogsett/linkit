@@ -6,16 +6,16 @@
 %include hsl-sequencer
 %play-macro bars-app
 
-$num-instances 3
+$num-instances 4
 $width 8
 #$HSL-ANGLE 4
 $background-width 4
-$background-time 140
+$background-time 45
 $background-sat 63
-$background-level 2
-$background-step -1
+$background-level 4
+$background-step 1
 
-$base-next-time 70
+$base-next-time 20
 $draw-mode <DRAW-WRITE>
 $brightness <BRIGHTNESS-AUTO>
 $render-time <base-next-time>
@@ -97,7 +97,7 @@ $HSL-TIME 1000
 
     mirror
 
-    (hsl-sequencer)
+#    (hsl-sequencer)
 
 (((bar <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
 
