@@ -533,8 +533,8 @@ def specs():
 ########################################################################
 # RESET CLEAR AND STOP
 ########################################################################
-  if group("reset, clear and stop"):
 
+  if group("reset"):
     if test("resetting resets the zone to zone 0"):
       # there's a requirement for a minimum of 2 fine zones, each guaranteed not to be equal to the whole display
       expect_offset("2:zon:mag:rst", 0)
@@ -543,6 +543,8 @@ def specs():
     if test("resetting turns reverse mode off"):
       expect_int("1:rev:rst:0,6:tst", 0)
 
+
+  if group("clear"):
     if test("clear does a reset"):
       expect_offset("2:zon:mag:clr:pau", 0)
       expect_window("1:zon:mag:clr:pau", num_leds)
@@ -572,6 +574,8 @@ def specs():
     #if test("clearing turns off the fan")
     # don't have a way to test this in hardware
 
+
+  if group("stop"):
     if test("stopping halts all schedules"):
       lc.command("0:set:tur:-1:sch")
       lc.command("10,0:sch:stp")
@@ -593,6 +597,10 @@ def specs():
       lc.command("2:cnt:stp:10,0:sch")
       time.sleep(0.2)
       expect_buffer("", 0, 1, "0,0,0")
+
+    if test("stopping resets default effect"):
+      lc.command_str("3,20:cfg")
+      expect_effect("stp:red:flu", 0, 1, "0")
 
 
 ########################################################################
