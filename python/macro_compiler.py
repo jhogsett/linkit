@@ -947,10 +947,14 @@ def consolidate_macros(script_lines):
     for line in script_lines:
         if line.endswith(":set"):
             if len(building_commands) > 0:
+                #ui.report_verbose("consolidate_macros built line1: " + building_commands)
+                if building_commands.endswith(":set:"):
+                    raise ValueError("Empty macro is not allowed: " + building_commands)
                 new_lines.append(building_commands[:-1])
                 building_commands = ""
         building_commands += line + ":"
     if len(building_commands) > 0:
+        #ui.report_verbose("consolidate_macros built line2: " + building_commands)
         new_lines.append(building_commands[:-1])
     return new_lines
 

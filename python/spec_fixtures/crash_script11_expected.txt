@@ -1,0 +1,2 @@
+Empty macro is not allowed: '04':set:
+
