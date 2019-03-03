@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #define USE_TEST_FRAMEWORK // 3%
-#define USE_EXTRA_SHUFFLES // 1%
+// #define USE_EXTRA_SHUFFLES // 1%
 // #define USE_BLEND          // 2%
 
 // #define REAL_ARDUINO
