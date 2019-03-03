@@ -15,7 +15,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
 
     case CMD_FLUSH: 
-      flush(true); 
+      flush(true, (bool)arg0); 
       break;
 
 #define ERASE_SLOW_ALL 0

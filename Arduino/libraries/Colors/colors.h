@@ -2,6 +2,7 @@
 #define COLORS_H
 
 #include <PololuLedStrip.h>
+#include <common.h>
 
 #define NUM_COLORS 25
 #define NPRETTY_COLORS 18
