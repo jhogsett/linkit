@@ -171,7 +171,7 @@ def begin_display_sequence():
     lc.flush_output()
 
 def end_display_sequence():
-    lc.command("flu:cnt")
+    lc.command("cnt:flu")
     lc.flush_output()
 
 def count_filled(array):
