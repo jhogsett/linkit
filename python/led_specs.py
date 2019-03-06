@@ -342,7 +342,7 @@ def expect_macro(command_, macro, expected):
   test_command = command_
   lc.command(command_)
   str_ = lc.get_macro_raw(macro)
-  count = len(expected)
+  count = len(expected) or 20
   _expect_equal(str_[:count], expected)
 
 def expect_buffer(command_, start, count, expected, flush = True, slow = False, positive = True):
@@ -393,11 +393,14 @@ def expect_palette(command_, start, count, expected, positive=True):
   else:
     _expect_not_equal(str_[:-1], expected)
 
-def expect_int(command_, expected):
+def expect_int(command_, expected, positive=True):
   global test_command
   test_command = command_
   got = lc.command_int(command_)
-  _expect_equal(str(got), str(expected))                                                                  
+  if positive:
+    _expect_equal(str(got), str(expected))                                                                  
+  else:
+    _expect_not_equal(str(got), str(expected))
 
 def expect_offset(command_, expected, positive=True):
   global test_command
@@ -2117,76 +2120,38 @@ def specs():
 ########################################################################
   if group("testing"):                                                                                                            
 
-    pending_test("test testing")
-    # test each inquiry type
+    if test("inquiries"):
+      # test each inquiry type
+      usually_zero = [2, 6, 9, 14, 15]
+      for i in range(0, 22):
+        positive = i in usually_zero
+        expect_int("0," + str(i) + ":tst", 0, positive)
 
-#define TEST_INQUIRY_NUM_LEDS           0
-#define TEST_INQUIRY_PALETTE_SIZE       1
-#define TEST_INQUIRY_OFFSET             2
-#define TEST_INQUIRY_WINDOW             3
-#define TEST_INQUIRY_DEFAULT_BRIGHTNESS 4
-#define TEST_INQUIRY_MINIMUM_BRIGHTNESS 5 
-#define TEST_INQUIRY_REVERSE            6
-#define TEST_INQUIRY_DEFAULT_FADE_RATE  7
-#define TEST_INQUIRY_FADE_RATE          8
-#define TEST_INQUIRY_MAPPING_ENABLED    9
-#define TEST_INQUIRY_DEFAULT_LIGHTNESS 10
-#define TEST_INQUIRY_MINIMUM_LIGHTNESS 11
-#define TEST_INQUIRY_MAX_STRING_LENGTH 12
-#define TEST_INQUIRY_TEST_FRAMEWORK_ENABLED 13
-#define TEST_INQUIRY_EXTRA_SHUFFLES_ENABLED 14
-#define TEST_INQUIRY_BLEND_ENABLED     15
-#define TEST_INQUIRY_NUM_MACRO_CHARS   16
-#define TEST_INQUIRY_NUM_MEMORY_MACROS 17
-#define TEST_INQUIRY_NUM_EEPROM_MACROS 18
-#define TEST_INQUIRY_FIRST_EEPROM_MACRO 19
-#define TEST_INQUIRY_NUM_SEQUENCERS 20
-#define TEST_INQUIRY_NUM_FINE_ZONES 21
+    if test("dumping macro"):
+      expect_macro("0:set:5,10,15:rgb", 0, "254,5,0,10,0,15,0,17")
 
+    if test("dumping buffer contents"):
+      expect_buffer("red:grn:blu", 0, 3, "0,0,20,0,20,0,20,0,0")
 
-    # it dumps macro contents
-    # it dumps buffer contents
-    # it dumps render contents
-    # it dumps effects contents
-    # it dumps palette contents
-    # it dumps accumulators
-    
+    if test("dumping render buffer contents"):
+      expect_render("red:grn:blu", 0, 3, "0,0,51,0,51,0,51,0,0")
 
-#    case TEST_TYPE_DUMP_MACRO:
-#      // arg1 - macro number
-#      do_test_macro(arg1);
-#      break;
-#    case TEST_TYPE_DUMP_BUFFER:
-#      // arg1 - start
-#      // arg2 - count
-#      do_test_buffer(arg1, arg2);
-#      break;
-#    case TEST_TYPE_DUMP_RENDER:
-#      // arg1 - start
-#      // arg2 - count
-#      do_test_render(arg1, arg2);
-#      break;
-#    case TEST_TYPE_DUMP_EFFECTS:
-#      // arg1 - start
-#      // arg2 - count
-#      do_test_effects(arg1, arg2);
-#      break;
-#    case TEST_TYPE_DUMP_PALETTE:
-#      do_test_palette(arg1, arg2);
-#      break;
-#    case TEST_TYPE_FUNCTION:
-#      // arg1 - function type
-#      // arg2 - (depends on function)
-#      do_test_function(arg1, arg2);
-#      break;
-#    case TEST_TYPE_DUMP_ACCUMS:
-#      do_test_accumulators();
+    if test("dumping effects buffer contents"):
+      expect_effect("red:bli:grn:bla:blu:blb", 0, 3, "19,18,11")
 
+    if test("dumping palette contents"):
+      expect_palette("1:shf", 0, palette_size, standard_palette)
 
-    # it processes effects
-    # it processes schedules
-    # it times a macro
-    # it sets a random seed
+    if test("dump accumulators"):
+      expect_accumulators("1,2,3:sto", "1,2,3")
+
+    pending_test("it processes effects")
+      
+    pending_test("it processes schedules")
+
+    pending_test("it times a macro")
+
+    pending_test("it sets a random seed")
 
 #define TEST_FUNCTION_PROCESS_EFFECTS   0 // arg2 = number of times to run
 #define TEST_FUNCTION_PROCESS_SCHEDULES 1 // arg2 = number of times to run
