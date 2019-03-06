@@ -6,6 +6,7 @@
 %include symbols
 %include hsl-sequencer
 
+$num-instances 2
 $brightness <BRIGHTNESS-AUTO>
 $render-time 120
 $fade-type sfd
@@ -37,24 +38,19 @@ $timing-offset 5
 
 [circle-app-startup]
     # start up the circle processing
-    (((circle-init 2)))
+    [[[circle-init <num-instances>]]]
 
     # schedule the display rendering
-    (render <render-time>)
+    (circle-render <render-time>)
+
+[circle-render]
+  <EFFECTS-PROCESSING>
+  refresh-display
 
 ((circle 0 2 <factor> `<base-timing>+<timing-offset>` <base-timing> <base-timing>))
 ((circle 1 3 <factor> `<base-timing>-<timing-offset>` <base-timing> <base-timing>))
 
-[[circle-init INSTANCE
-  (circle-init-INSTANCE)
-]]
-
 [[circle INSTANCE MARGIN FACTOR TIMEX TIMEY TIMES
-
-    [circle-schedule-INSTANCE]
-        (circle-advance-x-INSTANCE TIMEX)
-        (circle-advance-y-INSTANCE TIMEY)
-        (circle-step-INSTANCE TIMES)
 
     [circle-init-INSTANCE]
         # set up the sequencers
@@ -63,27 +59,32 @@ $timing-offset 5
         # schedule the sequencer advance and draw
         (circle-schedule-INSTANCE)
 
+    [circle-schedule-INSTANCE]
+        (circle-advance-x-INSTANCE TIMEX)
+        (circle-advance-y-INSTANCE TIMEY)
+        (circle-step-INSTANCE TIMES)
+
+    [circle-setup-INSTANCE]
+        (circle-setup-x-INSTANCE)
+        (circle-setup-y-INSTANCE)
+
     [circle-setup-x-INSTANCE]
         # allocate a sequencer for X
         {seq-x-INSTANCE},`(<max>-MARGIN)*FACTOR`,`MARGIN*FACTOR`
-        wheel-cosine-sequencer
+        start-cosine-sequence
 
         # allocate a sequencer for drawing X
         {seq-step-x-INSTANCE},`(<max>-MARGIN)*FACTOR`
-        wheel-sequencer
+        start-wheel-sequence
 
     [circle-setup-y-INSTANCE]
         # allocate a sequencer for Y
         {seq-y-INSTANCE},`(<max>-MARGIN)*FACTOR`,`MARGIN*FACTOR`
-        wheel-sine-sequencer
+        start-sine-sequence
 
         # allocate a sequencer for drawing Y
         {seq-step-y-INSTANCE},`(<max>-MARGIN)*FACTOR`
-        wheel-sequencer
-
-    [circle-setup-INSTANCE]
-        (circle-setup-x-INSTANCE)
-        (circle-setup-y-INSTANCE) 
+        start-wheel-sequence
 
     [circle-advance-x-INSTANCE]
         <seq-x-INSTANCE>,<GET-NEXT>
@@ -99,7 +100,7 @@ $timing-offset 5
         push
         FACTOR
         push
-        div
+        div-equals
 
     [circle-math-y-INSTANCE]
         <seq-y-INSTANCE>,<GET-COMPUTED>
@@ -107,13 +108,14 @@ $timing-offset 5
         push
         FACTOR
         push
-        div
+        div-equals
 
     [circle-draw-INSTANCE]
         `INSTANCE*3`
         add-palette-color
         <fade-type>
 
+    # push the X and Y position 
     [circle-advance-INSTANCE]
         <seq-step-x-INSTANCE>,<MACRO-SEQ>,<circle-math-x-INSTANCE>
         advance-sequence
@@ -124,14 +126,16 @@ $timing-offset 5
         push
 
     [circle-step-INSTANCE]
+        # push macro for drawing
         <circle-draw-INSTANCE>
         push
 
+        # push X,Y position
         (circle-advance-INSTANCE)
 
         recall
-        set-xy-position
-
-        reset-buffer
+        {{
+            set-xy-position
+        }}
 ]]
 

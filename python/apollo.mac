@@ -7,7 +7,7 @@
 
 $lamp-render-time 200
 $lamp-colors 6
-$demo-time 15000
+$demo-time 30000
 
 [fancy 10]
   (inchworm-app)
