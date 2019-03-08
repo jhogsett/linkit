@@ -61,7 +61,7 @@ $fgtype-brighten 5
 $foreground-type <fgtype-palette2>
 
 $background-darkening-heavy 3
-$background-darkening-light 1
+$background-darkening-light 0
 $background-darkening `<background-darkening-light> if <balls-per-box> == 0 else <background-darkening-heavy>`
 
 %allow-mutability

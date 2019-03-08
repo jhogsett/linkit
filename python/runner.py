@@ -347,7 +347,7 @@ def round_delay():
     if choice == " ":
       choice = default_choice
     elif choice == None:
-      choice = "no vote"
+      choice = "no rating"
     else:
       choice = "pressed: " + choice
     ui.report_info_alt(choice)
