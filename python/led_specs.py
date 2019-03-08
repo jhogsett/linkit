@@ -1162,9 +1162,6 @@ def specs():
     if test("erases using the custom black level"):
       expect_buffer("2,3,4:sbl:era", 0, 1, "2,3,4")
 
-    # there aren't any other behaviors
-    # "more custom black level tests"
-
 
 ########################################################################
 # PUSHING RANDOM COLORS
@@ -1279,8 +1276,11 @@ def specs():
 ########################################################################
   if group("max, dim and bright"):                                                                          
 
+    if test("it does not boost the brightness level"):
+      expect_buffer("wht:0:brt", 0, 1, "20,20,20")
+
     if test("it boosts the brightness level"):
-      expect_buffer("wht:brt", 0, 1, "40,40,40")
+      expect_buffer("wht:1:brt", 0, 1, "40,40,40")
 
     if test("it boosts the brightness level twice"):
       expect_buffer("wht:2:brt", 0, 1, "80,80,80")
@@ -1288,8 +1288,24 @@ def specs():
     if test("it boosts the brightness level thrice"):
       expect_buffer("wht:3:brt", 0, 1, "160,160,160")
 
+    if test("it boosts the brightness level 4x"):
+      expect_buffer("wht:1:dim:4:brt", 0, 1, "160,160,160")
+
+    if test("it boosts the brightness level 5x"):
+      expect_buffer("wht:2:dim:5:brt", 0, 1, "160,160,160")
+
+    if test("it boosts the brightness level 6x"):
+      expect_buffer("wht:3:dim:6:brt", 0, 1, "128,128,128")
+
+    if test("it boosts the brightness level 7x"):
+      expect_buffer("wht:4:dim:7:brt", 0, 1, "128,128,128")
+
+
+    if test("it does not reduce the brightness level"):
+      expect_buffer("wht:0:dim", 0, 1, "20,20,20")
+
     if test("it reduces the brightness level"):
-      expect_buffer("wht:dim", 0, 1, "10,10,10")
+      expect_buffer("wht:1:dim", 0, 1, "10,10,10")
 
     if test("it reduces the brightness level twice"):
       expect_buffer("wht:2:dim", 0, 1, "5,5,5")
@@ -1297,13 +1313,18 @@ def specs():
     if test("it reduces the brightness level thrice"):
       expect_buffer("wht:3:dim", 0, 1, "2,2,2")
 
-    if test("it maxxes out the brightness level"):
-      if default_brightness == 20:
-        expect_buffer("wht:max", 0, 1, "204,204,204")                                                                                                                                                                                                           
-      elif default_brightness == 25:
-        expect_buffer("wht:max", 0, 1, "255,255,255")
-      elif default_brightness == 10:
-        expect_buffer("wht:max", 0, 1, "102,102,102")
+    if test("it reduces the brightness level 4x"):
+      expect_buffer("wht:1:brt:4:dim", 0, 1, "2,2,2")
+
+    if test("it reduces the brightness level 5x"):
+      expect_buffer("wht:2:brt:5:dim", 0, 1, "2,2,2")
+
+    if test("it reduces the brightness level 6x"):
+      expect_buffer("wht:3:brt:6:dim", 0, 1, "2,2,2")
+
+    if test("it reduces the brightness level 7x"):
+      expect_buffer("wht:4:brt:7:dim", 0, 1, "0,0,0")
+
 
 
 ########################################################################
@@ -1731,6 +1752,10 @@ def specs():
 #    if test("sub arguments left at end of macro are usable by caller"):
 #      lc.command("0:set:3,5,8")
 #      expect_accumulators("0:run:sto", "")
+
+    if test("an argument can be passed to a macro"):
+      lc.command("0:set:sto")
+      expect_accumulators("0,-1,5:run", "5,0,0")
 
 
 ########################################################################
