@@ -82,9 +82,8 @@ $num-worms 5
     set-position
     {{
         # place the palette color
-        COLOR
-        push
-	(worm-draw)
+        <worm-draw>,<PASS-ARGUMENT>,COLOR
+        run-macro
     }}
 
   # macro to sequence the 5/6 sequencer at a variable rate
@@ -94,7 +93,6 @@ $num-worms 5
 ]]
 
 [worm-draw]
-  pop
   add-palette-color
 
   # set the fade type
