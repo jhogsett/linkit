@@ -90,9 +90,22 @@ $FAST-ERASE-ALL 2
 $FILL-ALL 0
 $FILL-COLORS 1
 
-# enablemen t
+# enablement
 $ENABLE 1
 $DISABLE 0
+
+# macros
+$PASS-ARGUMENT -1
+
+# dimming/brightening
+$NONE 0
+$LIGHT-LIGHT 1
+$LIGH-NORMAL 2
+$NORMAL 3
+$NORMAL-HEAVY 4
+$HEAVY 5
+$HEAVY-HEAVY 6
+$EXTREME 7
 
 # standard render function, consumes partial final macro
 [render !]

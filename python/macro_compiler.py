@@ -5,6 +5,8 @@ import app_ui as ui
 import terminal_colors as tc
 import long_commands as lc
 import code
+import utils
+import re
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
 global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
@@ -745,6 +747,9 @@ def process_set_macro(line):
     if len(args) > 0:
         macro_name = args[0]
 
+        if is_known_unresolved(macro_name):
+            raise ValueError("Macro '" + macro_name + "' cannot be reassigned.")
+
         if len(args) > 1:
             macro_number = args[1]
 
@@ -939,6 +944,11 @@ def process_configure(line):
 ## main processing helpers
 ########################################################################
 
+
+def is_command(_str):
+    pattern = re.compile("^[a-zA-Z-]*$")
+    return pattern.match(_str) != None
+
 # join macros that span multiple lines
 # into a single line
 def consolidate_macros(script_lines):
@@ -952,6 +962,9 @@ def consolidate_macros(script_lines):
                     raise ValueError("Empty macro is not allowed: " + building_commands)
                 new_lines.append(building_commands[:-1])
                 building_commands = ""
+        if is_command(line):
+          if(len(line) > 3):
+            raise ValueError("Unknown command '" + line + "' cannot be programmed")
         building_commands += line + ":"
     if len(building_commands) > 0:
         #ui.report_verbose("consolidate_macros built line2: " + building_commands)
@@ -1382,6 +1395,10 @@ def remove_resolved():
             #ui.report_verbose("removing resolved unresolved name: {} value: {}".format(name, unresolved[name]))
             pass
     unresolved = new_dict
+
+def is_known_unresolved(name):
+    name = name.strip()
+    return name in unresolved
 
 # return true if resolved value is a mutable preset and can be changed
 # raise ValueError if resolved value is immutable value being changed

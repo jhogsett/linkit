@@ -1,2 +1,2 @@
-line!:line@:line:linea:lineb:linec:line1:line2:line3
+red:org:yel:grn:blu:pur:cyn:mag:tur
 

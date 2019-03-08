@@ -53,7 +53,7 @@ long_commands = {
  "amber" : "amb",
  "olive" : "olv",
  "sky-blue" : "sky",
- "tuquoise" : "tur",
+ "turquoise" : "tur",
  "lavender" : "lav",
  "rose" : "ros",
  "dark-gray" : "dgr",
