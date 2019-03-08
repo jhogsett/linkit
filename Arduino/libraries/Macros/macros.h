@@ -325,8 +325,8 @@ void Macros::run_macro(byte macro, int times, int delay_){
   byte * cached_macro_buffer;
   bool from_eeprom = get_macro_ptr(macro, &cached_macro_buffer);
 
-  // don't pass in this macro running's arguments
-  command_processor->reset_args();
+  // how supporting passing an arg0 as arg2
+  // command_processor->reset_args();
 
   byte * macro_buffer = cached_macro_buffer;
  
