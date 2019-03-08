@@ -409,7 +409,7 @@ rgb_color * Commands::offset_buffer()
 }
 
 void Commands::do_dim(byte times){
-  times = min(7, max(1, times));
+  times = min(7, times);
   rgb_color * buf = offset_buffer();
   buf->red = buf->red >> times;
   buf->green = buf->green >> times;
@@ -417,7 +417,7 @@ void Commands::do_dim(byte times){
 }
 
 void Commands::do_bright(byte times){
-  times = min(7, max(1, times));
+  times = min(7, times);
   rgb_color * buf = offset_buffer();
   buf->red = buf->red << times;
   buf->green = buf->green << times;
@@ -476,12 +476,17 @@ void Commands::do_flood(byte type)
   }
 
   rgb_color * buf = buffer->get_buffer();
-  byte * effects = buffer->get_effects_buffer();
   rgb_color color = buf[source];
-  byte effect = effects[source];
   buf += start;
-  effects += start;
+  byte * effects;
+  byte effect;
 
+  if(type == FLOOD_TYPE_ALL){
+    effects = buffer->get_effects_buffer();
+    effect = effects[source];
+    effects += start;
+  }
+  
   for(byte i = start; i < end_; i++)
   {
     *buf = color;
@@ -536,7 +541,6 @@ void Commands::do_random(byte type, int times)
 }
 
 // arg0: number of cuts, 0: defaults to 1 
-// arg1: 0: draw mode, 0: defaults to 0=replace, 1=add
 void Commands::do_mirror()
 {
   bool reverse = buffer->get_reverse();
@@ -1302,8 +1306,24 @@ bool Commands::do_set_macro(byte macro, byte * dispatch_data)
   return true;
 }
 
+// arg0 - macro number to run
+// arg1 - >=0 - number of times to run, default=1
+//         <0 - means arg2 is an incoming arg0
+// arg2 - delay in ms between runs, or incoming arg0
 void Commands::do_run_macro(byte macro, int times, int delay_)
 {
+  if(times < 0){
+    command_processor->sub_args[0] = delay_;
+    times = 1;
+    delay_ = 0;
+  } else {
+  command_processor->sub_args[0] = 0;
+  }
+
+  // don't pass in this macro running's arguments
+  command_processor->sub_args[1] = 0;
+  command_processor->sub_args[2] = 0;
+
   macros.run_macro(macro, times, delay_); 
 }
 

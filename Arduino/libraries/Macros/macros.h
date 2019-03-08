@@ -166,6 +166,194 @@ void Macros::set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom){
   write_byte(macro_data, to_eeprom, MACRO_END_MARKER);
 }
 
+
+// assume number of commands won't exceed 127 (currently 103)
+// the 128-255 space of commands can be reserved for marking
+// 255 = end of macro marker
+// reserve 240-254 (15 values) to mark argument data
+// reserve 128-239 for specially optimized arguments
+
+// optimizing
+// 128-239 has 2^6 bits useful
+// 00 = -1
+// 01 = 1
+// 10 = 2
+// 11 = -2
+
+// complicated parsing will slow things down
+
+// special values:
+// small numbers
+// small negative numbers
+// 
+
+// cases
+// 0,          0, 0 - ignore and do nothing
+// 1,          0, 0 - 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+
+// simpler idea
+// 1-byte marker
+// 0-6 bytes data
+
+// data types
+// positive 8-bit value
+// negative 8-bit value
+// 16-bit signed value
+
+// 127 marker positions
+
+// 48 cases
+// 1, 0, 0
+// -1, 0, 0
+// 1000, 0, 0
+// 1, 1, 0
+// -1, 1, 0
+// 1000, 1, 0
+// 1, -1, 0
+// -1, -1, 0
+// 1000, -1, 0
+// 1, 1000, 0
+// -1, 1000, 0
+// 1000, 1000, 0
+// 1, 0, 1
+// -1, 0, 1
+// 1000, 0, 1
+// 1, 1, 1
+// -1, 1, 1
+// 1000, 1, 1
+// 1, -1, 1
+// -1, -1, 1
+// 1000, -1, 1
+// 1, 1000, 1
+// -1, 1000, 1
+// 1000, 1000, 1
+// 1, 0, -1
+// -1, 0, -1
+// 1000, 0, -1
+// 1, 1, -1
+// -1, 1, -1
+// 1000, 1, -1
+// 1, -1, -1
+// -1, -1, -1
+// 1000, -1, -1
+// 1, 1000, -1
+// -1, 1000, -1
+// 1000, 1000, -1
+// 1, 0, 1000
+// -1, 0, 1000
+// 1000, 0, 1000
+// 1, 1, 1000
+// -1, 1, 1000
+// 1000, 1, 1000
+// 1, -1, 1000
+// -1, -1, 1000
+// 1000, -1, 1000
+// 1, 1000, 1000
+// -1, 1000, 1000
+// 1000, 1000, 1000
+
+// each position can be
+// 0 to 255
+// -1 to -255
+// 16 bit signed
+
+// types
+// 0) no data
+// 1) single 8-bit positive
+// 2) single 8-bit negative
+// 3) single 16-bit signed
+
+// 39 useful combos + 000
+
+// 000
+
+// 100 01 00 00
+
+// 110 01 01 00
+// 111 01 01 01
+// 112 01 01 10
+// 113 01 01 11
+
+// 120
+// 121
+// 122
+// 123
+
+// 130
+// 131
+// 132
+// 133
+
+// 200
+
+// 210
+// 211
+// 212
+// 213
+
+// 220
+// 221
+// 222
+// 223
+
+// 230
+// 231
+// 232
+// 233
+
+// 300
+
+// 310
+// 311
+// 312
+// 313
+
+// 320
+// 321
+// 322
+// 323
+
+// 330
+// 331
+// 332
+// 333
+
+// each position can be 0-4, or 2 bits x 3 = 6 bits w/ 64 values
+
+// simpler, use 8-bit and 16-bit signed values always
+// then marker just has to specify size
+// 8-bit values would be -127 to + 127
+// numeric values are often in that range
+
+// 14 cases
+
+// one argument
+// 1 byte - char
+// 2 bytes - int
+
+// two arguments
+// 2 bytes - char, char
+// 3 bytes - char, int
+// 3 bytes - int, char
+// 4 bytes - int, int
+
+// three arguments
+// 3 bytes - char, char, char
+// 4 bytes - char, char, int
+// 4 bytes - char, int, char
+// 4 bytes - int, char, char
+// 5 bytes - char, int, int
+// 5 bytes - int, char, int
+// 5 bytes - int, int, char
+// 6 bytes - int, int, int
+
 void Macros::determine_arg_marker(byte &arg_marker, byte &num_args)
 {
   int * sub_args = command_processor->sub_args;
@@ -325,8 +513,8 @@ void Macros::run_macro(byte macro, int times, int delay_){
   byte * cached_macro_buffer;
   bool from_eeprom = get_macro_ptr(macro, &cached_macro_buffer);
 
-  // don't pass in this macro running's arguments
-  command_processor->reset_args();
+  // how supporting passing an arg0 as arg2
+  // command_processor->reset_args();
 
   byte * macro_buffer = cached_macro_buffer;
  

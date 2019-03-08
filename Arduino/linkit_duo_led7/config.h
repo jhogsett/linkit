@@ -11,41 +11,34 @@
 // device profile selection
 ///////////////////////////
 
-// single 90-LED strip in Apollo
-// #define APOLLO_DISPLAY
-
-// single 90-LED strip for dev
-#define LED_STRIP_90
-
-// 19-LED Mini Disc
-// #define MONUMENT
-
-// single 144-LED strip
-// weather2
-// #define LED_STRIP_144
-// #define WEATHER2
-
-// single 72-LED strip
-// #define LED_STRIP_72
-
-// single 50-LED strand
-// sphere2
-// #define LED_STRAND_50
-
-// single 50-LED strand on original wearable
-// #define WEARABLE_AND_STRAND_50
-
-// 72-LED weather display
-// #define WEATHER_72
-
 // 36-LED annunciator
 // #define ANNUNCIATOR
 
 // 54-LED annunciator #2
 // #define ANNUNCIATOR2
 
-// 100-LED sphere
-// #define SPHERE
+// single 90-LED strip in Apollo
+// #define APOLLO_DISPLAY
+
+// single 90-LED strip for dev
+// blinkit
+#define LED_STRIP_90
+
+// 2 50-led strands
+// decoration3
+// #define LED_STRAND_100
+
+// 44-LED Hard Hat
+// decoration4
+// #define HARDHAT
+// 44-LED Wearable and Hard Hat
+// #define WEARABLE_AND_HARDHAT
+
+// 19-LED Mini Disc
+// #define MONUMENT
+
+// 57-LED three part monument3
+// #define MONUMENT3
 
 // 93-LED platform
 // #define PLATFORM
@@ -53,19 +46,37 @@
 // 93-LED projector
 // #define PROJECTOR
 
+// 200-LED display/overhead
+// need to reduce char buffer to 50 to avoid memory corruption
+// #define RADIUS8
+
+// 100-LED sphere
+// #define SPHERE
+
+// single 50-LED strand
+// sphere2
+//#define LED_STRAND_50
+
 // 64-LED Glasses
 // #define WEARABLE_AND_GLASSES
 // spy:
 // #define WEARABLE_AND_GLASSES_TYPE2
 
-// 200-LED display/overhead
-// need to reduce char buffer to 50 to avoid memory corruption
-// #define RADIUS8
+// 72-LED weather display
+// #define WEATHER_72
 
-// 44-LED Hard Hat
-// #define HARDHAT
-// 44-LED Wearable and Hard Hat
-// #define WEARABLE_AND_HARDHAT
+// single 144-LED strip
+// weather2
+// #define LED_STRIP_144
+// #define WEATHER2
+
+
+
+// single 50-LED strand on original wearable
+// #define WEARABLE_AND_STRAND_50
+
+// single 72-LED strip
+// #define LED_STRIP_72
 
 // wearable and 36-LED annunciator
 // #define WEARABLE_AND_ANNUNCIATOR
@@ -82,11 +93,8 @@
 // 93-led proector on original wearable
 // #define WEARABLE_AND_PROJECTOR
 
-// 57-LED three part monument3
-// #define MONUMENT3
 
-// 2 50-led strands
-// #define LED_STRAND_100
+
 
 //////////////////////////////
 // devices profile definitions
