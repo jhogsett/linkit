@@ -1,9 +1,70 @@
+// allow a list of items used with meta-template parceled out to each expansion
+// (((meta-template <num> 5 15 <RED>,<GREEN>,<BLUE> 0,2,3 
+
+//>>> t = eval("1,2,3")
+//>>> t
+//(1, 2, 3)
+//>>> l = list(t)
+//>>> l
+//[1, 2, 3]
+
+// how to make it easy to add a bouncing ball within width bounds with least effort
+// %include ball
+// [[[ball-start 2]]]
+// (ball-render time)
+// $zone-left 6
+// $zone-right 8
+// ((ball-by-zone 0 <zone-left> <RED>))
+// ((ball-by-zone 1 <zone-right> <RED>))  
+// ((ball-by-window 0 10 20 <BLUE>))
+
+// [[ball-by-zone INSTANCE GROUP ZONE WIDTH COLOR TIME
+//   [ball-start-GROUP-INSTANCE]
+//     {seq-GROUP-INSTANCE}, <WIDTH>
+//     start-swing-sequence
+//     (ball-render-GROUP-INSTANCE TIME)
+//
+//   [ball-render-GROUP-INSTANCE]
+//     ZONE
+//     set-zone
+//     {{
+//       {seq-GROUP-INSTANCE}, <GET-CURRENT>
+//       get-sequence
+//       set-position
+//       COLOR
+//     }}
+
+//// needed specs:
+//
+//    pending_test("it processes effects")
+//
+//    pending_test("it processes schedules")
+//
+//    pending_test("it times a macro")
+//
+//    pending_test("it sets a random seed")
+//
+//    pending_test("more configuration tests")
+//    # a blink period can be set
+//    # a breathe time can be set
+//
+//    pending_test("scheduling")
+//    # a macro can be scheduled to run
+//    # a macro can be stopped from running
+//    # all macros can be stopped from running
+//
+//     pending_test("mapping")
+//
+
+
+// should be able to override the default [render !] so a custom render can go in the short space
+
 // have a special language construction that uses memory macros 0 and 1 to perform a loop
+// useful if needing to do something N times with an index
 // command: 0:set:0:seq:dyn
 // command: 1:set:0,18:seq:0,18:run
 //
 // 
-
 
 // ball-box: a wandering mode (needs dampening)
 
@@ -89,26 +150,11 @@
 //set this as window
 
 
-
-
-
-// test: pop takes argument
-
-// rebuild blink cache as it changes rather than on every render
-
 // add symbols for dim/brt levels 1-7
-
-// random color each draw (won't look pretty)
 
 // flooding should overwrite the origin position (otherwise ?)
 
-// transparent black for animation purposes
-// transparent mode for copying
-// also a permanently off blink for easy drawing of dim backgrounds
-
-// new runner type: one int = set it to that always
-
-// macro compiler substitutes macro numbers with single digits, but could require double digits when programming
+// macro compiler substitutes macro numbers with single digits, but could require double digits when programming (command string length risk)
 
 // backgrounds
 // rainbow
@@ -116,7 +162,7 @@
 // black/white
 // a few random dots
 
-// effect to dim by varing amounts
+// effect to dim by varing amounts dynamically (could be like soft fade but fade ratio the wanders)
 
 // objects
 // 3 pixels center color, outer color
@@ -158,11 +204,9 @@
 
 // new math: min, max
 
-// optimize erase with memset or something
-
 // directive to spit out a message
 
-// pm command to dump out overridable variabvles from a script
+// pm command to dump out overridable variables from a script
 
 // if a variable value is a string, it needs to be surrounded by quotes when being evaluated by python
 
@@ -210,9 +254,11 @@
 //
 //
 //$num-instances 3
-//[[[ <num-instances> `<RED>+INSTANCE` 
-//        VAR1
+//[[[ <num-instances> INSTANCE COLOR `<RED>+INSTANCE` REPEATS `INSTANCE`
+//        COLOR
 //        add-palette-color
+          INSTANCE
+          repeat
 //]]]
 //
 //would become
@@ -277,7 +323,13 @@
 
 // something like 100:red or 500:red can cause the device to lock up
 
-// needed specs:
+
+
+
+
+
+
+ 
 // carry
 // crossfade
 // "more general macro tests"
