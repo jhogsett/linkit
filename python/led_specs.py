@@ -111,7 +111,7 @@ def introduction():
 # --- device handling ---
 
 def reset_device():
-  return ":::stp:stp:20:lev:2,0:cfg"
+  return ":::stp:20:lev:2,0:cfg"
 
 def reset_standard_fade_rate():
   return "2,9995:cfg"
@@ -125,6 +125,12 @@ def reset_default_effect():
 def reset_standard_seed():
   return "6,3," + str(standard_seed) + ":tst"
 
+def reset_blink_period():
+  return "0,0:cfg"
+
+def reset_breathe_period():
+  return "1,0:cfg"
+
 def set_alternate_seed():
   return "6,3," + str(alternate_seed) + ":tst"
 
@@ -134,7 +140,10 @@ def pre_test_reset():
   command += reset_standard_seed() + ":"
   command += reset_standard_fade_rate() + ":"
   command += reset_standard_palette() + ":"
-  command += reset_default_effect()
+  command += reset_default_effect() #+ ":" 
+# slows way down with both added for some reason
+#  command += reset_blink_period() + ":"
+#  command += reset_breathe_period()
   lc.command_str(command)
 
 def do_reset_device():
@@ -145,7 +154,13 @@ def set_minimum_blink_period():
 
 def set_minimum_breathe_period():
   lc.command_str("1,1:cfg")
+
+def set_default_blink_period():
+  lc.command(reset_blink_period())
   
+def set_default_breathe_period():
+  lc.command(reset_breathe_period())
+
 def set_effect_processing_macro():
   lc.command_str("0:set:6:tst:1:flu")
   return "0:run"
@@ -587,11 +602,9 @@ def specs():
 
     if test("it processes effects"):
       # set blink period to minimum value
-#      lc.command_str("0,6:cfg")
       set_minimum_blink_period()
 
       # set a macro to advance the blink period
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # place alternating blinks
@@ -603,9 +616,10 @@ def specs():
       # simulate a fill blink period
       expect_render("0,6:run", 0, 2, "51,0,0,0,0,2", False)
 
+      set_default_blink_period()
+
     if test("it processes effects multiple times"): 
       # set blink period to minimum value
-#      lc.command_str("0,6:cfg")
       set_minimum_blink_period()
 
       # set a macro to advance half a blink period
@@ -622,6 +636,8 @@ def specs():
 
       # simulate a full blink period
       expect_render("0:run", 0, 2, "51,0,0,0,0,2", False)
+
+      set_default_blink_period()
  
     if test("it processes schedules"):
       lc.command("0:set:red")
@@ -1442,12 +1458,10 @@ def specs():
     if test("main blink effect"):
 
       # set the blink period to the minimum possible value 
-#      lc.command_str("0,6:cfg")
       set_minimum_blink_period()
       
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # place a blinking red
@@ -1461,11 +1475,11 @@ def specs():
       # this will leave the render buffer in the normal/blinked state
       expect_render("0,12:run", 0, 1, "51,0,0", False)
 
+      set_default_blink_period()
+
     if test("a/b blink effects"):
-#      lc.command_str("0,6:cfg")
       set_minimum_blink_period()
       
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # set one of each effect
@@ -1477,11 +1491,11 @@ def specs():
       # simulate a full blink period
       expect_render("0,6:run", 0, 2, "0,0,2,0,51,0", False)
 
+      set_default_blink_period()
+
     if test("1/2/3/4/5/6 blink effects"):
-#      lc.command_str("0,6:cfg")
       set_minimum_blink_period()
       
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # set one of each effect
@@ -1505,6 +1519,8 @@ def specs():
       # simulate 6/6 blink period
       expect_render("0,6:run", 0, 6, "1,0,2,0,0,2,0,2,0,2,2,0,2,1,0,51,0,0", False)
 
+      set_default_blink_period()
+
 
 ########################################################################
 # BREATHE EFFECT
@@ -1514,12 +1530,10 @@ def specs():
     if test("the breathe effect renders properly"):
 
       # set the breate period to the minimum possible value
-#      lc.command_str("1,1:cfg")
       set_minimum_breathe_period()
       
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # place a breathing greenn
@@ -1537,6 +1551,7 @@ def specs():
       for n in range(0, len(expected_render_values)):
         expect_render("0," + str(n) + ":run", 0, 1, "0," + str(expected_render_values[n]) + ",0", False)
 
+      set_default_breathe_period()
 
 ########################################################################
 # FADING EFFECTS
@@ -1679,14 +1694,12 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # place a blinking orange
       lc.command_str("org:bli")
 
       # set the blink period to the minimum possible value
-#      lc.command_str("0,6:cfg")
       set_minimum_blink_period()
 
       # the main blink is on for the first half of the cycle
@@ -1705,11 +1718,12 @@ def specs():
       # this will leave the render buffer in the dim/unblinked state
       expect_render("0,24:run", 0, 1, "51,25,0", False)
 
+      set_default_blink_period()
+
     if test("a different custom blink period can be set"):
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # place a blinking rose
@@ -1734,6 +1748,8 @@ def specs():
       # simulate a full blink period
       # this will leave the render buffer in the normal/blinked state
       expect_render("0,24:run", 0, 1, "51,0,38", False)
+
+      set_default_blink_period()
 
 
 ########################################################################
@@ -1762,12 +1778,10 @@ def specs():
     if test("setting a custom breathe time"):                                                                                                                                                                                                           
 
       # set the breate period to the minimum possible value
-#      lc.command_str("1,1:cfg")
       set_minimum_breathe_period()
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # place a breathing blue
@@ -1790,14 +1804,15 @@ def specs():
       expect_render("0,12:run", 0, 1, "0,0,36", False)
       expect_render("0,13:run", 0, 1, "0,0,39", False)
 
-      test("setting an alternate custom breathe time")
+      set_default_breathe_period()
+
+    if test("setting an alternate custom breathe time"):
 
       # set the breathe time to twice the previous value
       lc.command_str("1,2:cfg")
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # place a breathing blue
@@ -1807,6 +1822,8 @@ def specs():
       expect_render("0,11:run", 0, 1, "0,0,8", False)
       expect_render("0,12:run", 0, 1, "0,0,13", False)
       expect_render("0,13:run", 0, 1, "0,0,13", False)
+
+      set_default_breathe_period()
 
 
 ########################################################################
@@ -2453,11 +2470,9 @@ def specs():
     if test("dynamic blink"):
 
       # set blink period to minimum value
-#      lc.command_str("0,6:cfg")
       set_minimum_blink_period()
 
       # set a macro to advance the blink period
-#      lc.command_str("0:set:6:tst:1:flu")
       set_effect_processing_macro()
 
       # place alternating dynamic colors
@@ -2468,6 +2483,8 @@ def specs():
 
       # simulate a full blink period
       expect_render("0,6:run", 0, 1, "51,0,0", False)
+
+      set_default_blink_period()
 
     # @@@
     pending_test("dynamic breathe")
