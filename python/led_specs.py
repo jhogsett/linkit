@@ -1629,10 +1629,17 @@ def specs():
 ########################################################################
   if group("animated rotation"):
 
-    if test("animated rotation"):
+    if test("it does an animated rotation"):
      expect_render("lbl:art", 0, 2, "0,0,0,0,25,51", False)
 
-    # "additional animated rotation tests" @@@
+    if test("it does multiple rotations"):
+     expect_render("lbl:2:art", 0, 3, "0,0,0,0,0,0,0,25,51", False)
+
+    if test("it does animated rotation in reverse"):
+     expect_render("4:win:1:rev:lbl:art", 0, 5, "0,0,0,0,0,0,0,25,51,0,0,0,0,0,0", False)
+
+    if test("it does multiple rotations in reverse"):
+     expect_render("4:win:1:rev:lbl:2:art", 0, 5, "0,0,0,0,25,51,0,0,0,0,0,0,0,0,0", False)
 
 
 ########################################################################
