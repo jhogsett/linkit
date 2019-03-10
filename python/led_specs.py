@@ -402,6 +402,18 @@ def expect_int(command_, expected, positive=True):
   else:
     _expect_not_equal(str(got), str(expected))
 
+def expect_int_range(command_, expected_min, expected_max, positive=True):
+  global test_command
+  test_command = command_
+  got = lc.command_int(command_)
+  expected = ">= " + str(expected_min) + " and <= " + str(expected_max)
+  if positive:
+    if got < expected_min or got > expected_max:
+      _expect_equal(str(got), str(expected))
+  else:
+    if got >= expected_min or got <= expected_max:
+      _expect_not_equal(str(got), str(expected))
+
 def expect_offset(command_, expected, positive=True):
   global test_command
   test_command = command_
@@ -2170,18 +2182,60 @@ def specs():
     if test("dump accumulators"):
       expect_accumulators("1,2,3:sto", "1,2,3")
 
-    pending_test("it processes effects")
-      
-    pending_test("it processes schedules")
+    if test("it processes effects"):
+      # set blink period to minimum value
+      lc.command_str("0,6:cfg")
 
-    pending_test("it times a macro")
+      # set a macro to advance the blink period
+      lc.command_str("0:set:6:tst:1:flu")
 
-    pending_test("it sets a random seed")
+      # place alternating blinks
+      lc.command_str("blu:blb:red:bla")
 
-#define TEST_FUNCTION_PROCESS_EFFECTS   0 // arg2 = number of times to run
-#define TEST_FUNCTION_PROCESS_SCHEDULES 1 // arg2 = number of times to run
-#define TEST_FUNCTION_TIME_MACRO        2 // arg2 = macro to run and return the time in milliseconds
-#define TEST_FUNCTION_RANDOM_SEED       3 // arg2 > 0 = a specific random seed for testing random features (0 = random seed)
+      # simulate a half blink period
+      expect_render("0,3:run", 0, 2, "2,0,0,0,0,51", False)
+
+      # simulate a fill blink period
+      expect_render("0,6:run", 0, 2, "51,0,0,0,0,2", False)
+
+    if test("it processes effects multiple times"): 
+      # set blink period to minimum value
+      lc.command_str("0,6:cfg")
+
+      # set a macro to advance half a blink period
+      lc.command_str("0:set:6,0,3:tst:1:flu")
+
+      # place alternating blinks
+      lc.command_str("blu:blb:red:bla")
+
+      # simulate a half blink period
+      expect_render("0:run", 0, 2, "2,0,0,0,0,51", False)
+
+      # set a macro to advance a full blink period
+      lc.command_str("0:set:6,0,6:tst:1:flu")
+
+      # simulate a full blink period
+      expect_render("0:run", 0, 2, "51,0,0,0,0,2", False)
+ 
+    if test("it processes schedules"):
+      lc.command("0:set:red")
+      expect_buffer("1,0:sch:6,1:tst", 0, 1, "20,0,0")
+
+    if test("it processes schedules multiple times"):
+      lc.command("0:set:grn")
+      expect_buffer("2,0:sch:6,1,2:tst", 0, 1, "0,20,0")
+
+    if test("it times a macro"):
+      lc.command("0:set:blu:flu:500:del:red")
+      expect_int_range("6,2,0:tst", 500, 1000)
+
+    if test("it sets a specific random seed"):
+      expect_buffer("6,3,12345:tst:rnd", 0, 1, "0,20,15")
+      expect_buffer("6,3,12345:tst:rnd", 0, 1, "0,20,15")
+
+    if test("it sets an automatic random seed"):
+      expect_buffer("6,3,0:tst:rnd", 0, 1, "15,20,0")
+      expect_buffer("6,3,0:tst:rnd", 0, 1, "20,0,20")
 
 
 
