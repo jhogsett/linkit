@@ -140,6 +140,16 @@ def pre_test_reset():
 def do_reset_device():
   lc.command_str(reset_device())
 
+def set_minimum_blink_period():  
+  lc.command_str("0,6:cfg")
+
+def set_minimum_breathe_period():
+  lc.command_str("1,1:cfg")
+  
+def set_effect_processing_macro():
+  lc.command_str("0:set:6:tst:1:flu")
+  return "0:run"
+  
 # -----------------------------------------------------------------------------
 # --- line number reporting ---
 
@@ -546,6 +556,121 @@ def rendered_color_value(buffer_color_value):
 def specs():
 
 ########################################################################
+# TESTING
+########################################################################
+  if group("testing"):                                                                                                            
+
+    if test("inquiries"):
+      # test each inquiry type
+      usually_zero = [2, 6, 9, 14, 15]
+      for i in range(0, 22):
+        positive = i in usually_zero
+        expect_int("0," + str(i) + ":tst", 0, positive)
+
+    if test("dumping macro"):
+      expect_macro("0:set:5,10,15:rgb", 0, "254,5,0,10,0,15,0,17")
+
+    if test("dumping buffer contents"):
+      expect_buffer("red:grn:blu", 0, 3, "0,0,20,0,20,0,20,0,0")
+
+    if test("dumping render buffer contents"):
+      expect_render("red:grn:blu", 0, 3, "0,0,51,0,51,0,51,0,0")
+
+    if test("dumping effects buffer contents"):
+      expect_effect("red:bli:grn:bla:blu:blb", 0, 3, "19,18,11")
+
+    if test("dumping palette contents"):
+      expect_palette("1:shf", 0, palette_size, standard_palette)
+
+    if test("dump accumulators"):
+      expect_accumulators("1,2,3:sto", "1,2,3")
+
+    if test("it processes effects"):
+      # set blink period to minimum value
+#      lc.command_str("0,6:cfg")
+      set_minimum_blink_period()
+
+      # set a macro to advance the blink period
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
+
+      # place alternating blinks
+      lc.command_str("blu:blb:red:bla")
+
+      # simulate a half blink period
+      expect_render("0,3:run", 0, 2, "2,0,0,0,0,51", False)
+
+      # simulate a fill blink period
+      expect_render("0,6:run", 0, 2, "51,0,0,0,0,2", False)
+
+    if test("it processes effects multiple times"): 
+      # set blink period to minimum value
+#      lc.command_str("0,6:cfg")
+      set_minimum_blink_period()
+
+      # set a macro to advance half a blink period
+      lc.command_str("0:set:6,0,3:tst:1:flu")
+
+      # place alternating blinks
+      lc.command_str("blu:blb:red:bla")
+
+      # simulate a half blink period
+      expect_render("0:run", 0, 2, "2,0,0,0,0,51", False)
+
+      # set a macro to advance a full blink period
+      lc.command_str("0:set:6,0,6:tst:1:flu")
+
+      # simulate a full blink period
+      expect_render("0:run", 0, 2, "51,0,0,0,0,2", False)
+ 
+    if test("it processes schedules"):
+      lc.command("0:set:red")
+      expect_buffer("1,0:sch:6,1:tst", 0, 1, "20,0,0")
+
+    if test("it processes schedules multiple times"):
+      lc.command("0:set:grn")
+      expect_buffer("2,0:sch:6,1,2:tst", 0, 1, "0,20,0")
+
+    if test("it times a macro"):
+      lc.command("0:set:blu:flu:500:del:red")
+      expect_int_range("6,2,0:tst", 500, 1000)
+
+    if test("it sets a specific random seed"):
+      expect_buffer("6,3,12345:tst:rnd", 0, 1, "0,20,15")
+      expect_buffer("6,3,12345:tst:rnd", 0, 1, "0,20,15")
+
+    if test("it sets an automatic random seed"):
+      expect_buffer("6,3,0:tst:rnd", 0, 1, "15,20,0")
+      expect_buffer("6,3,0:tst:rnd", 0, 1, "20,0,20")
+
+
+########################################################################
+# PAUSE AND CONTINUE
+########################################################################  
+  if group("pause and continue"):
+
+    if test("it doesn't render while paused"):
+      expect_render("pau:red", 0, 1, "0,0,0", False)
+
+    if test("it does render while not paused"):
+      lc.command("cnt:red")
+      time.sleep(0.1)
+      expect_render("", 0, 1, "51,0,0", False)
+
+
+########################################################################
+# RENDER BUFFER
+########################################################################
+  if group("rendering colors to the render buffer"):
+
+    if test("it renders a rendered blue value in the render buffer"):
+      expect_render("blu", 0, 1, "0,0,51")
+
+    if test("it renders an alternate orange value in the render buffer"):
+      expect_render("org", 0, 1, "51,25,0")
+
+
+########################################################################
 # RESET CLEAR AND STOP
 ########################################################################
 
@@ -686,6 +811,18 @@ def specs():
 
 
 ########################################################################
+# PUSHING MULTIPLE COLORS
+########################################################################
+  if group("pushing multiple colors"):                                                                                     
+                                                                                                                       
+    if test("it places two colors (only)"):                                                                                  
+      expect_buffer("2:yel", 0, 3, "20,20,0,20,20,0,0,0,0")                          
+
+    if test("it places multiple colors in reverse mode"):
+      expect_buffer("1:rev:2:sea", num_leds - 3, 3, "0,0,0,0,20,10,0,20,10")
+                                                                           
+
+########################################################################
 # SETTING EFFECTS
 ########################################################################
   if group("setting effects in the effects buffer"):
@@ -702,51 +839,6 @@ def specs():
     if test("all effects are set as expected"):
       for i in range(0, len(test_colors.effects)):
         expect_effect("rnd:" + test_colors.effects[i][0] + ":flu", 0, 1, test_colors.effects[i][1])
-
-#    if test("it sets random effects"):
-#      expect_effect("rnd:efr", 0, 1, "21")
-#      expect_effect("rnd:efr", 0, 1, "15")
-#      expect_effect("rnd:efr", 0, 1, "12")
-
-
-########################################################################
-# PUSHING MULTIPLE COLORS
-########################################################################
-  if group("pushing multiple colors"):                                                                                     
-                                                                                                                       
-    if test("it places two colors (only)"):                                                                                  
-      expect_buffer("2:yel", 0, 3, "20,20,0,20,20,0,0,0,0")                          
-
-    if test("it places multiple colors in reverse mode"):
-      expect_buffer("1:rev:2:sea", num_leds - 3, 3, "0,0,0,0,20,10,0,20,10")
-                                                                           
-
-########################################################################
-# PAUSE AND CONTINUE
-########################################################################  
-  if group("pause and continue"):
-
-    if test("it doesn't render while paused"):
-      expect_render("pau:red", 0, 1, "0,0,0", False)
-
-    if test("it does render while not paused"):
-      lc.command("cnt:red")
-      time.sleep(0.1)
-      expect_render("", 0, 1, "51,0,0", False)
-
-    # test pausing and resuming schedules and effects
-  
-
-########################################################################
-# RENDER BUFFER
-########################################################################
-  if group("rendering colors to the render buffer"):
-
-    if test("it renders a rendered blue value in the render buffer"):
-      expect_render("blu", 0, 1, "0,0,51")
-
-    if test("it renders an alternate orange value in the render buffer"):
-      expect_render("org", 0, 1, "51,25,0")
 
 
 ########################################################################
@@ -832,7 +924,6 @@ def specs():
 
     if test("it doesn't flood effects in colors-only mode"):
       expect_effect("3:win:blu:bre:1:flo", 0, 4, "21,0,0,0")
-
 
 
 ########################################################################
@@ -1039,6 +1130,7 @@ def specs():
     else:
       skip_test("shf", "extra palette shuffling features not enabled on this device.", 10)
 
+
 ########################################################################
 # ZONES
 ########################################################################
@@ -1102,6 +1194,7 @@ def specs():
 
     if test("on setting window > num leds, it should be set to num leds"):
       expect_window(str(num_leds + 10) + ":win", num_leds)
+
 
 ########################################################################
 # REVERSE AND FORWARD
@@ -1211,6 +1304,7 @@ def specs():
       expect_buffer("2:rnd:2:rnd:flo", 0, 3, "20,20,0,20,20,0,20,20,0")
       expect_effect("2:rnd:2:rnd:flo", 0, 3, "11,11,11")
 
+# former feature      
 #    if test("it places a random color from the palette"):
 #      expect_buffer("3:rnd", 0, 1, "15,20,0")
 
@@ -1226,6 +1320,7 @@ def specs():
       expect_buffer("rnd:2,5:rnd", 0, 7, "20,0,0,20,0,15,0,20,20,0,0,20,10,0,20,15,20,0,0,0,0")
       expect_effect("rnd:2,5:rnd", 0, 7, "15,18,21,17,19,0,13")
 
+# former feature      
 #    if test("it places multiple random palette colors and no effects"):
 #      expect_buffer("rnd:3,5:rnd", 0, 7, "0,10,20,0,0,20,20,20,0,10,0,20,20,0,20,15,20,0,0,0,0")
 #      expect_effect("rnd:3,5:rnd", 0, 7, "0,0,0,0,0,0,0")
@@ -1237,6 +1332,7 @@ def specs():
       expect_buffer("3:win:2,-1:rnd", 0, 4, "0,10,20,20,20,0,20,0,20,0,0,0")
       expect_effect("3:win:2,-1:rnd", 0, 4, "15,18,11,0")
 
+# former feature      
 #    if test("it fills the current width with random palette colors and no effects"):
 #      expect_buffer("3:win:3,-1:rnd", 0, 4, "10,0,20,20,0,20,15,20,0,0,0,0")
 #      expect_effect("3:win:3,-1:rnd", 0, 4, "0,0,0,0")
@@ -1284,9 +1380,9 @@ def specs():
 
 
 ########################################################################
-# MAX, DIM AND BRIGHT
+# DIM AND BRIGHT
 ########################################################################
-  if group("max, dim and bright"):                                                                          
+  if group("dim and bright"):                                                                          
 
     if test("it does not boost the brightness level"):
       expect_buffer("wht:0:brt", 0, 1, "20,20,20")
@@ -1338,7 +1434,6 @@ def specs():
       expect_buffer("wht:4:brt:7:dim", 0, 1, "0,0,0")
 
 
-
 ########################################################################
 # BLINK EFFECTS
 ########################################################################
@@ -1347,11 +1442,13 @@ def specs():
     if test("main blink effect"):
 
       # set the blink period to the minimum possible value 
-      lc.command_str("0,6:cfg")
-
+#      lc.command_str("0,6:cfg")
+      set_minimum_blink_period()
+      
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:1:flu")
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
 
       # place a blinking red
       lc.command_str("red:bli")
@@ -1365,8 +1462,11 @@ def specs():
       expect_render("0,12:run", 0, 1, "51,0,0", False)
 
     if test("a/b blink effects"):
-      lc.command_str("0,6:cfg")
-      lc.command_str("0:set:6:tst:1:flu")
+#      lc.command_str("0,6:cfg")
+      set_minimum_blink_period()
+      
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
 
       # set one of each effect
       lc.command_str("grn:bla:blu:blb")
@@ -1378,8 +1478,11 @@ def specs():
       expect_render("0,6:run", 0, 2, "0,0,2,0,51,0", False)
 
     if test("1/2/3/4/5/6 blink effects"):
-      lc.command_str("0,6:cfg")
-      lc.command_str("0:set:6:tst:1:flu")
+#      lc.command_str("0,6:cfg")
+      set_minimum_blink_period()
+      
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
 
       # set one of each effect
       lc.command_str("red:bl1:org:bl2:yel:bl3:grn:bl4:blu:bl5:pur:bl6")
@@ -1411,11 +1514,13 @@ def specs():
     if test("the breathe effect renders properly"):
 
       # set the breate period to the minimum possible value
-      lc.command_str("1,1:cfg")
-
+#      lc.command_str("1,1:cfg")
+      set_minimum_breathe_period()
+      
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:1:flu")
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
 
       # place a breathing greenn
       lc.command_str("grn:bre")
@@ -1504,17 +1609,6 @@ def specs():
       expect_render("-5,100:lev:sea:flu", 0, 1, "0,153,76")
 
 
-# FADE ANIMATION
-########################################################################
-#  if group("fade animation"):                                                             
-#
-#    if test("it leaves the buffer empty (black) after done"):
-#      expect_empty_buffer("amb:flo:flu:fad", 0, num_leds)                                                                                                                                                                                                           
-#
-#    if test("it leaves the display empty (black) after done"):
-#      expect_empty_render("olv:flo:flu:fad", 0, num_leds)
-
-
 ########################################################################
 # ANIMATED ROTATION
 ########################################################################
@@ -1523,7 +1617,7 @@ def specs():
     if test("animated rotation"):
      expect_render("lbl:art", 0, 2, "0,0,0,0,25,51", False)
 
-    # "additional animated rotation tests"
+    # "additional animated rotation tests" @@@
 
 
 ########################################################################
@@ -1570,16 +1664,11 @@ def specs():
 
 
 ########################################################################
-# POWER SHIFT
-########################################################################
-#  group("power shift")                                                             
-                                                                                                                                                                                                           
-
-########################################################################
 # CROSSFADE ANIMATION
 ########################################################################
 #  group("crossfade")                                                             
-                                                                                                                                                                                                           
+# how to test? timing?                                                                                                                                                                                                           
+
 
 ########################################################################
 # SETTING BLINK PERIOD
@@ -1590,13 +1679,15 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:1:flu")
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
 
       # place a blinking orange
       lc.command_str("org:bli")
 
       # set the blink period to the minimum possible value
-      lc.command_str("0,6:cfg")
+#      lc.command_str("0,6:cfg")
+      set_minimum_blink_period()
 
       # the main blink is on for the first half of the cycle
       # this will start the second half and leave the render buffer in the dim/unblinked state
@@ -1618,7 +1709,8 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:1:flu")
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
 
       # place a blinking rose
       lc.command_str("ros:bli")
@@ -1670,11 +1762,13 @@ def specs():
     if test("setting a custom breathe time"):                                                                                                                                                                                                           
 
       # set the breate period to the minimum possible value
-      lc.command_str("1,1:cfg")
+#      lc.command_str("1,1:cfg")
+      set_minimum_breathe_period()
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:1:flu")
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
 
       # place a breathing blue
       lc.command_str("blu:bre")
@@ -1703,7 +1797,8 @@ def specs():
 
       # use a macro to process the effects and update the render buffer
       # this gets around the fact effects are reset on processing commands
-      lc.command_str("0:set:6:tst:1:flu")
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
 
       # place a breathing blue
       lc.command_str("blu:bre")
@@ -1747,7 +1842,7 @@ def specs():
       lc.command("0:set:red")
       expect_buffer("0,2:run", 0, 3, "20,0,0,20,0,0,0,0,0")
 
-# wip
+# wip @@@
 #    if test("a macro can be run multiple times with a delay"):
 #      lc.command("0:set:blu")
 #      lc.command("1:set:0,4,500:run")
@@ -1760,7 +1855,7 @@ def specs():
       expect_buffer("0:run", 0, 4, "0,0,20,0,20,0,20,0,0,0,0,0")
       expect_buffer("era:0:run", 0, 4, "20,0,20,20,20,0,0,20,20,0,0,0")
 
-# wip
+# wip @@@
 #    if test("sub arguments left at end of macro are usable by caller"):
 #      lc.command("0:set:3,5,8")
 #      expect_accumulators("0:run:sto", "")
@@ -1792,7 +1887,7 @@ def specs():
 
     if test("it generates a different random number"):
       expect_accumulators("6,3,99:tst:rng:sto", "63,0,0")
-# this doesn't work:
+# this doesn't work: @@@
 #      set_alternate_seed()
 #      expect_accumulators("rng:sto", "63,0,0")
 
@@ -2152,90 +2247,6 @@ def specs():
       expect_sequence("0,10:swc:sto:pur", "0,-12:seq:0,-2:seq:sto:0,-11:seq:psh:pur", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 3, 7, 9, 10, 9, 7, 3, 1, 0, 1, 3])
 
 
-########################################################################
-# TESTING
-########################################################################
-  if group("testing"):                                                                                                            
-
-    if test("inquiries"):
-      # test each inquiry type
-      usually_zero = [2, 6, 9, 14, 15]
-      for i in range(0, 22):
-        positive = i in usually_zero
-        expect_int("0," + str(i) + ":tst", 0, positive)
-
-    if test("dumping macro"):
-      expect_macro("0:set:5,10,15:rgb", 0, "254,5,0,10,0,15,0,17")
-
-    if test("dumping buffer contents"):
-      expect_buffer("red:grn:blu", 0, 3, "0,0,20,0,20,0,20,0,0")
-
-    if test("dumping render buffer contents"):
-      expect_render("red:grn:blu", 0, 3, "0,0,51,0,51,0,51,0,0")
-
-    if test("dumping effects buffer contents"):
-      expect_effect("red:bli:grn:bla:blu:blb", 0, 3, "19,18,11")
-
-    if test("dumping palette contents"):
-      expect_palette("1:shf", 0, palette_size, standard_palette)
-
-    if test("dump accumulators"):
-      expect_accumulators("1,2,3:sto", "1,2,3")
-
-    if test("it processes effects"):
-      # set blink period to minimum value
-      lc.command_str("0,6:cfg")
-
-      # set a macro to advance the blink period
-      lc.command_str("0:set:6:tst:1:flu")
-
-      # place alternating blinks
-      lc.command_str("blu:blb:red:bla")
-
-      # simulate a half blink period
-      expect_render("0,3:run", 0, 2, "2,0,0,0,0,51", False)
-
-      # simulate a fill blink period
-      expect_render("0,6:run", 0, 2, "51,0,0,0,0,2", False)
-
-    if test("it processes effects multiple times"): 
-      # set blink period to minimum value
-      lc.command_str("0,6:cfg")
-
-      # set a macro to advance half a blink period
-      lc.command_str("0:set:6,0,3:tst:1:flu")
-
-      # place alternating blinks
-      lc.command_str("blu:blb:red:bla")
-
-      # simulate a half blink period
-      expect_render("0:run", 0, 2, "2,0,0,0,0,51", False)
-
-      # set a macro to advance a full blink period
-      lc.command_str("0:set:6,0,6:tst:1:flu")
-
-      # simulate a full blink period
-      expect_render("0:run", 0, 2, "51,0,0,0,0,2", False)
- 
-    if test("it processes schedules"):
-      lc.command("0:set:red")
-      expect_buffer("1,0:sch:6,1:tst", 0, 1, "20,0,0")
-
-    if test("it processes schedules multiple times"):
-      lc.command("0:set:grn")
-      expect_buffer("2,0:sch:6,1,2:tst", 0, 1, "0,20,0")
-
-    if test("it times a macro"):
-      lc.command("0:set:blu:flu:500:del:red")
-      expect_int_range("6,2,0:tst", 500, 1000)
-
-    if test("it sets a specific random seed"):
-      expect_buffer("6,3,12345:tst:rnd", 0, 1, "0,20,15")
-      expect_buffer("6,3,12345:tst:rnd", 0, 1, "0,20,15")
-
-    if test("it sets an automatic random seed"):
-      expect_buffer("6,3,0:tst:rnd", 0, 1, "15,20,0")
-      expect_buffer("6,3,0:tst:rnd", 0, 1, "20,0,20")
 
 
 
@@ -2358,7 +2369,7 @@ def specs():
       # shift arg0 + arg0 to arg1, arg2, fill arg0 with a value
       expect_render("25:sto:50:rcl:sto:50:rcl:rgb", 0, 1, "33,66,66")
 
-      test("stores by copying with fill of two arguments supplied")
+      test("stores by copying with fill if two arguments supplied")
       expect_accumulators("1,2,3:sto:4,5:sto", "4,5,0")
 
       test("stores by copying if three arguments supplied")
@@ -2392,7 +2403,7 @@ def specs():
       expect_effect("red:flu", 0, 1, "20")
 
     pending_test("more configuration tests")
-    # a blink period can be set
+    # a blink period can be set @@@
     # a breathe time can be set
 
 #define CONFIG_SET_BLINK_PERIOD   0
@@ -2442,10 +2453,12 @@ def specs():
     if test("dynamic blink"):
 
       # set blink period to minimum value
-      lc.command_str("0,6:cfg")
+#      lc.command_str("0,6:cfg")
+      set_minimum_blink_period()
 
       # set a macro to advance the blink period
-      lc.command_str("0:set:6:tst:1:flu")
+#      lc.command_str("0:set:6:tst:1:flu")
+      set_effect_processing_macro()
 
       # place alternating dynamic colors
       lc.command_str("0,4:dyn:bld")
@@ -2456,6 +2469,9 @@ def specs():
       # simulate a full blink period
       expect_render("0,6:run", 0, 1, "51,0,0", False)
 
+    # @@@
+    pending_test("dynamic breathe")
+      
 
 ########################################################################
 # Dynamic Color Handling
@@ -2487,7 +2503,7 @@ def specs():
   if group("scheduling"):
 
     pending_test("scheduling")
-    # a macro can be scheduled to run
+    # a macro can be scheduled to run @@@
     # a macro can be stopped from running
     # all macros can be stopped from running
 
@@ -2497,6 +2513,7 @@ def specs():
 ########################################################################
   if group("mapping"):
 
+    # @@@
     pending_test("mapping")
 
 
