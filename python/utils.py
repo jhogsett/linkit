@@ -91,3 +91,15 @@ def randomize(seed=0, max=65535):
     random.seed(seed)
     return seed
 
+def locate_file(filename, default_extension, default_directory):
+  orig_filename = filename
+  if not filename.endswith(default_extension):
+    filename = filename + default_extension
+  if not os.path.isfile(filename):
+    filename = os.path.basename(filename)
+    filename = os.path.join(default_directory, filename)
+    if not os.path.isfile(filename):
+      raise ValueError("(utils.py) File '" + orig_filename + "' cannot be found.")
+  return filename
+
+

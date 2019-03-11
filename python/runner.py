@@ -25,9 +25,17 @@ def preprocess(lines):
   lines = utils.strip_whitespace(lines)
   return utils.strip_comments(lines)
 
+def validate_program(program):
+  orig_program = program
+  program = program.strip()
+  program = utils.locate_file(program, ".mac", default_directory)
+  ui.report_verbose("program found at: " + program)
+  return program
+
 def extract_settings(lines):
   global program
-  program = lines[0]
+  program = lines[0].strip()
+  program = validate_program(program)
   return lines[1:]
 
 def parse(script):
@@ -359,14 +367,11 @@ def round_delay():
 
 def log_filename():
   global program
-  filename = program
-  if not filename.endswith(".mac"):
-    filename = filename + ".mac"
-  file_path = os.getcwd()
-  full_path = os.path.join(file_path, filename)
-  ui.report_verbose("full program path: " + full_path)
+  filename = os.path.basename(program)
   filename, file_extension = os.path.splitext(filename)
-  return program + ".runlog"
+  log_filename = os.path.join(default_directory, program + ".runlog")
+  ui.report_verbose("log path: " + log_filename)
+  return log_filename
 
 def add_to_log(line):
   with open(log_filename(), 'a') as file:
@@ -416,7 +421,7 @@ def do_round():
   arguments = create_round()
   log_arguments(arguments)
 
-  if  passes_anti_plan(arguments):
+  if passes_anti_plan(arguments):
     if record_program(arguments):
       display_arguments(arguments)
       run_program()
@@ -430,7 +435,7 @@ def do_round():
 ############################################################
 ############################################################
 
-global app_description, verbose_mode, quiet_mode, runner_file, device_presets, show_plan, show_script, no_verify, round_time, extra_verbose_mode, compiler_error, no_rating, random_seed
+global app_description, verbose_mode, quiet_mode, runner_file, device_presets, show_plan, show_script, no_verify, round_time, extra_verbose_mode, compiler_error, no_rating, random_seed, default_directory
 app_description = None
 verbose_mode = None
 quiet_mode = None
@@ -445,6 +450,7 @@ compiler_error = ""
 default_choice = None
 no_rating = None
 random_seed = None
+default_directory = None
 
 def get_options():
     global app_description, verbose_mode, runner_file, show_plan, show_script, no_verify, round_time, extra_verbose_mode, default_choice, no_rating, random_seed
@@ -486,11 +492,19 @@ def introduction():
     ui.report_verbose()
 
 def initialize():
-    global device_presets, random_seed
+    global device_presets, random_seed, runner_file
+
     get_options()
     validate_options()
+
     tc.begin(quiet_mode)
     ui.begin(verbose_mode, quiet_mode)
+
+    runner_file = runner_file.strip()
+    runner_file = utils.locate_file(runner_file, ".run", get_script_directory())
+
+    get_default_directory(runner_file)
+
     introduction()
 
     random_seed = utils.randomize(random_seed)
@@ -498,7 +512,6 @@ def initialize():
 
     lc.begin(extra_verbose_mode)
     lc.stop_all()
-
     utils.begin(not no_rating)
 
     device_presets = lc.get_device_profile()
@@ -516,6 +529,17 @@ def initialize():
 
     mc.begin(lc, extra_verbose_mode, quiet_mode, device_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
 
+def get_script_directory():
+    return os.path.dirname(os.path.abspath(__file__))
+
+def get_default_directory(run_file):
+    global default_directory
+    default_directory = os.path.dirname(os.path.abspath(run_file))
+    if len(default_directory) == 0:
+        default_directory = get_script_directory()
+    ui.report_verbose("default directory: " + default_directory)
+    return default_directory
+
 def loop():
     do_round()
 
@@ -523,8 +547,11 @@ def loop():
 ############################################################
 
 if __name__ == '__main__':
+
     initialize()
+
     get_plan(runner_file)
+
     while True:
         try:
             loop()
