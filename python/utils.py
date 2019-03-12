@@ -127,7 +127,51 @@ def get_filename_only(file_path):
 def get_path(file_path):
   return os.path.dirname(os.path.abspath(file_path))
 
+# locate the start and end positions of a delimited portion of a string
+# returns start, end
+def locate_delimiters(line, start_delimiter, end_delimiter, outer=False):
+    start = -1
+    end = -1
+    if start_delimiter in line:
+        start = line.find(start_delimiter)
+        if end_delimiter in line[start + len(start_delimiter):]:
+            if outer == False:
+                end = line.find(end_delimiter, start + 1)
+            else:
+                end = line.rfind(end_delimiter, start + 1)
+    return start, end
 
+def _cut_contents(line, start_delimiter, end_delimiter, start, end):
+    return line[start + len(start_delimiter):end].strip()
 
+# pass in line and two delimiters, get back contents within
+# delimiters specified as one or two characters
+def extract_contents(line, start_delimiter, end_delimiter, outer=False):
+    line = line.strip()
+    if len(line) == 0:
+        return ''
+    start, end = locate_delimiters(line, start_delimiter, end_delimiter, outer)
+    if start != -1 and end != -1:
+        return _cut_contents(line, start_delimiter, end_delimiter, start, end)
+    return ''
 
+# pass in line and two delimiters, get back list of arguments within
+# delimiters specified as one or two characters
+def extract_args(line, start_delimiter, end_delimiter):
+    return extract_contents(line, start_delimiter, end_delimiter).split()
+
+def get_key_contents(line, key):
+    line = line.strip()
+    if len(line) > 0 and line.startswith(key):
+        return line[len(key):].strip()
+    return ''
+
+def get_key_args(line, key):
+    return get_key_contents(line, key).split()
+
+def replace_args(line, start_delimiter, end_delimiter, replacement, outer=False):
+    start, end = locate_delimiters(line, start_delimiter, end_delimiter, outer)
+    if start != -1 and end != -1:
+        return line[0:start] + str(replacement) + line[end + 1:]
+    return line
 

@@ -8,6 +8,7 @@ import terminal_colors as tc
 import argparse
 import led_command as lc
 import math
+import utils as u
 
 global app_description, verbose_mode
 app_description = None 
@@ -161,44 +162,44 @@ def specs():
 
   if verbose_mode:
     report_test("String manipulation tests", "extract_args()")
-  expect("extract args 1", mc.extract_args("[test]", "[", "]"), ["test"])
-  expect("extract args 2", mc.extract_args(" [test] ", "[", "]"), ["test"])
-  expect("extract args 3", mc.extract_args("[ test ]", "[", "]"), ["test"])
-  expect("extract args 4", mc.extract_args("/test/", "/", "/"), ["test"])
-  expect("extract args 5", mc.extract_args("(t e s t)", "(", ")"), ["t", "e", "s", "t"])
-  expect("extract args 6", mc.extract_args("[test] abc", "[", "]"), ["test"])
-  expect("extract args 7", mc.extract_args("abc [test] def", "[", "]"), ["test"])
-  expect("extract args 8", mc.extract_args("(t  e  s  t)", "(", ")"), ["t", "e", "s", "t"])
-  expect("extract args 9", mc.extract_args("abc [test] def [test2]", "[", "]"), ["test"])
-  expect("extract args 10", mc.extract_args("( t e s t )", "(", ")"), ["t", "e", "s", "t"])
-  expect("extract args 11", mc.extract_args("[test", "[", "]"), [])
-  expect("extract args 12", mc.extract_args("test]", "[", "]"), [])
-  expect("extract args 13", mc.extract_args("test", "[", "]"), [])
-  expect("extract args 14", mc.extract_args("[test", "[", "]"), [])
-  expect("extract args 15", mc.extract_args("[]", "[", "]"), [])
-  expect("extract args 16", mc.extract_args("[[test]]", "[[", "]]"), ["test"])
-  expect("extract args 16", mc.extract_args("[[[test]]]", "[[[", "]]]"), ["test"])
-  expect("extract args 17", mc.extract_args("(((test 1 2 3)))", "(((", ")))"), ["test", '1', '2', '3'])
+  expect("extract args 1", u.extract_args("[test]", "[", "]"), ["test"])
+  expect("extract args 2", u.extract_args(" [test] ", "[", "]"), ["test"])
+  expect("extract args 3", u.extract_args("[ test ]", "[", "]"), ["test"])
+  expect("extract args 4", u.extract_args("/test/", "/", "/"), ["test"])
+  expect("extract args 5", u.extract_args("(t e s t)", "(", ")"), ["t", "e", "s", "t"])
+  expect("extract args 6", u.extract_args("[test] abc", "[", "]"), ["test"])
+  expect("extract args 7", u.extract_args("abc [test] def", "[", "]"), ["test"])
+  expect("extract args 8", u.extract_args("(t  e  s  t)", "(", ")"), ["t", "e", "s", "t"])
+  expect("extract args 9", u.extract_args("abc [test] def [test2]", "[", "]"), ["test"])
+  expect("extract args 10", u.extract_args("( t e s t )", "(", ")"), ["t", "e", "s", "t"])
+  expect("extract args 11", u.extract_args("[test", "[", "]"), [])
+  expect("extract args 12", u.extract_args("test]", "[", "]"), [])
+  expect("extract args 13", u.extract_args("test", "[", "]"), [])
+  expect("extract args 14", u.extract_args("[test", "[", "]"), [])
+  expect("extract args 15", u.extract_args("[]", "[", "]"), [])
+  expect("extract args 16", u.extract_args("[[test]]", "[[", "]]"), ["test"])
+  expect("extract args 16", u.extract_args("[[[test]]]", "[[[", "]]]"), ["test"])
+  expect("extract args 17", u.extract_args("(((test 1 2 3)))", "(((", ")))"), ["test", '1', '2', '3'])
 
   if verbose_mode:
     report_test("String manipulation tests", "replace_args()")
-  expect("replace args 1", mc.replace_args("[test]", "[", "]", "abc"), "abc")
-  expect("replace args 2", mc.replace_args(" [test] ", "[", "]", "abc"), " abc ")
-  expect("replace args 3", mc.replace_args("[test][]", "[", "]", "abc"), "abc[]")
-  expect("replace args 4", mc.replace_args("[test", "[", "]", "abc"), "[test")
-  expect("replace args 5", mc.replace_args("[]", "[", "]", "abc"), "abc")
+  expect("replace args 1", u.replace_args("[test]", "[", "]", "abc"), "abc")
+  expect("replace args 2", u.replace_args(" [test] ", "[", "]", "abc"), " abc ")
+  expect("replace args 3", u.replace_args("[test][]", "[", "]", "abc"), "abc[]")
+  expect("replace args 4", u.replace_args("[test", "[", "]", "abc"), "[test")
+  expect("replace args 5", u.replace_args("[]", "[", "]", "abc"), "abc")
 
   if verbose_mode:
     report_test("String manipulation tests", "get_key_args()")
-  expect("get key args 1", mc.get_key_args("$abc", "$"), ["abc"])
-  expect("get key args 2", mc.get_key_args(" $abc", "$"), ["abc"])
-  expect("get key args 3", mc.get_key_args("$abc ", "$"), ["abc"])
-  expect("get key args 4", mc.get_key_args(" $abc ", "$"), ["abc"])
-  expect("get key args 5", mc.get_key_args("$abc def", "$"), ["abc", "def"])
-  expect("get key args 6", mc.get_key_args("$abc  def", "$"), ["abc", "def"])
-  expect("get key args 7", mc.get_key_args("$", "$"), [])
-  expect("get key args 8", mc.get_key_args("", "$"), [])
-  expect("get key args 1", mc.get_key_args("$$abc", "$$"), ["abc"])
+  expect("get key args 1", u.get_key_args("$abc", "$"), ["abc"])
+  expect("get key args 2", u.get_key_args(" $abc", "$"), ["abc"])
+  expect("get key args 3", u.get_key_args("$abc ", "$"), ["abc"])
+  expect("get key args 4", u.get_key_args(" $abc ", "$"), ["abc"])
+  expect("get key args 5", u.get_key_args("$abc def", "$"), ["abc", "def"])
+  expect("get key args 6", u.get_key_args("$abc  def", "$"), ["abc", "def"])
+  expect("get key args 7", u.get_key_args("$", "$"), [])
+  expect("get key args 8", u.get_key_args("", "$"), [])
+  expect("get key args 1", u.get_key_args("$$abc", "$$"), ["abc"])
 
   # crash tests
   # these are expected to raise compilation errors
