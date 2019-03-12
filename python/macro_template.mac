@@ -1,6 +1,5 @@
 # ----------------------------------------------------------------
-# 
-# 
+# Macro Template v.0.0 
 # ----------------------------------------------------------------
 
 %include symbols
@@ -26,9 +25,11 @@ $HSL-ANGLE `int(360/<num-instances>)`
     set-draw-mode
 >>> 
 
+<<< <brightness> != <BRIGHTNESS-AUTO>
     # set the preset brightness level
     <brightness>
     set-brightness
+>>>
 
     (start-up)
 
@@ -36,7 +37,7 @@ $HSL-ANGLE `int(360/<num-instances>)`
     # start the macro instances
     [[[init <num-instances>]]]
 
-    <num-instances>, <AUTO-TIMES>, `int(<NUM-LEDS>/<num-instances>)`
+    <num-instances>, <AUTO-FILL>, `int(<NUM-LEDS>/<num-instances>)`
     duplicate
 
     # start up the palette color sequencer
