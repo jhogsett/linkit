@@ -200,9 +200,10 @@ def specs():
   expect("get key args 8", mc.get_key_args("", "$"), [])
   expect("get key args 1", mc.get_key_args("$$abc", "$$"), ["abc"])
 
-  # positive tests
-  fixture_filename = "spec_fixtures/test_script%d.mac"
-  expected_filename = "spec_fixtures/test_script%d_expected.txt"
+  # crash tests
+  # these are expected to raise compilation errors
+  fixture_filename = "spec_fixtures/crash_script%d.mac"
+  expected_filename = "spec_fixtures/crash_script%d_expected.txt"
   script_number = 1
   while(True):
     fixture_file = fixture_filename % script_number
@@ -210,17 +211,18 @@ def specs():
     script_number += 1
     if(os.path.exists(fixture_file)):
       if verbose_mode:
-        report_test("Positive script", fixture_file)
+        report_test("Crash script", fixture_file)
       try:
         compiled_script = mc.compile_file(fixture_file)
-      except ValueError, e:
-        ui.report_error("Compilation error in " + fixture_file + ": " + str(e))
-        break
-      if verbose_mode:
-        print_script(compiled_script)
-      expected_script = mc.load_file(expected_file, ".txt")
-      expect_script("Valid compilation of: " + fixture_file, compiled_script, expected_script)
-      mc.reset()
+        expect("Script " + fixture_file + " was expected to raise an error", "no error raised", "error raised")
+        if verbose_mode:
+          print_script(compiled_script)
+      except ValueError as error:
+        expected_error = mc.load_file(expected_file, ".txt")
+        expect("Compilation crashes with expected message - script: " + fixture_file, [str(error)], expected_error)
+        continue
+      finally:
+        mc.reset()
     else:
       break
 
@@ -247,10 +249,9 @@ def specs():
     else:
       break
 
-  # crash tests
-  # these are expected to raise compilation errors
-  fixture_filename = "spec_fixtures/crash_script%d.mac"
-  expected_filename = "spec_fixtures/crash_script%d_expected.txt"
+  # positive tests
+  fixture_filename = "spec_fixtures/test_script%d.mac"
+  expected_filename = "spec_fixtures/test_script%d_expected.txt"
   script_number = 1
   while(True):
     fixture_file = fixture_filename % script_number
@@ -258,20 +259,20 @@ def specs():
     script_number += 1
     if(os.path.exists(fixture_file)):
       if verbose_mode:
-        report_test("Crash script", fixture_file)
+        report_test("Positive script", fixture_file)
       try:
         compiled_script = mc.compile_file(fixture_file)
-        expect("Script " + fixture_file + " was expected to raise an error", "no error raised", "error raised")
-        if verbose_mode:
-          print_script(compiled_script)
-      except ValueError as error:
-        expected_error = mc.load_file(expected_file, ".txt")
-        expect("Compilation crashes with expected message - script: " + fixture_file, [str(error)], expected_error)
-        continue
-      finally:
-        mc.reset()
+      except ValueError, e:
+        ui.report_error("Compilation error in " + fixture_file + ": " + str(e))
+        break
+      if verbose_mode:
+        print_script(compiled_script)
+      expected_script = mc.load_file(expected_file, ".txt")
+      expect_script("Valid compilation of: " + fixture_file, compiled_script, expected_script)
+      mc.reset()
     else:
       break
+
 
 ############################################################################
 

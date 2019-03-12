@@ -939,7 +939,6 @@ def process_configure(line):
 ## main processing helpers
 ########################################################################
 
-
 def is_command(_str):
     pattern = re.compile("^[a-zA-Z-]*$")
     return pattern.match(_str) != None
@@ -1080,8 +1079,7 @@ def assign_final_macro_number(line):
         tries -= 1
 
     if bytes_used == 0:
-        # todo: need more appropriate error type
-        raise ValueError("Macro size measurement failed with retries")
+        raise ValueError("Unable to measure macro: '" + test_macro + "'")
 
     usable_bytes_per_macro = bytes_per_macro - 1 
     macro_slots_required = bytes_used / usable_bytes_per_macro
