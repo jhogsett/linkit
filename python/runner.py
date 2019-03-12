@@ -367,9 +367,8 @@ def round_delay():
 
 def log_filename():
   global program
-  filename = os.path.basename(program)
-  filename, file_extension = os.path.splitext(filename)
-  log_filename = os.path.join(default_directory, program + ".runlog")
+  filename_only = utils.get_filename_only(program)
+  log_filename = os.path.join(default_directory, filename_only + ".runlog")
   ui.report_verbose("log path: " + log_filename)
   return log_filename
 
@@ -501,7 +500,7 @@ def initialize():
     ui.begin(verbose_mode, quiet_mode)
 
     runner_file = runner_file.strip()
-    runner_file = utils.locate_file(runner_file, ".run", get_script_directory())
+    runner_file = utils.locate_file(runner_file, ".run")
 
     get_default_directory(runner_file)
 
@@ -512,7 +511,7 @@ def initialize():
 
     lc.begin(extra_verbose_mode)
     lc.stop_all()
-    utils.begin(not no_rating)
+    utils.begin(not no_rating, __file__)
 
     device_presets = lc.get_device_profile()
     num_leds = device_presets["NUM-LEDS"]
@@ -529,14 +528,14 @@ def initialize():
 
     mc.begin(lc, extra_verbose_mode, quiet_mode, device_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_chars, char_buffer_size, last_macro_bytes)
 
-def get_script_directory():
-    return os.path.dirname(os.path.abspath(__file__))
+#def get_script_directory():
+#    return utils.get_path(__file__)
 
 def get_default_directory(run_file):
     global default_directory
-    default_directory = os.path.dirname(os.path.abspath(run_file))
+    default_directory = utils.get_path(run_file)
     if len(default_directory) == 0:
-        default_directory = get_script_directory()
+        default_directory = utils.script_directory()
     ui.report_verbose("default directory: " + default_directory)
     return default_directory
 

@@ -8,11 +8,19 @@ import random
 #import tty
 #import termios
 
-def begin(use_tty = True):
-    global select, tty, termios
-    import select
-    import tty
-    import termios
+global script_directory
+script_directory = None
+
+def begin(use_tty = True, script_file = None):
+    global script_directory, select, tty, termios
+    script_directory = get_path(script_file)
+    if use_tty:
+        import select
+        import tty
+        import termios
+
+def get_script_directory():
+    return script_directory
 
 def load_file(filename, default_ext=".???"):
     file_lines = []
@@ -91,7 +99,9 @@ def randomize(seed=0, max=65535):
     random.seed(seed)
     return seed
 
-def locate_file(filename, default_extension, default_directory):
+def locate_file(filename, default_extension, default_directory = None):
+  if default_directory == None:
+    default_directory = script_directory
   orig_filename = filename
   if not filename.endswith(default_extension):
     filename = filename + default_extension
@@ -101,5 +111,22 @@ def locate_file(filename, default_extension, default_directory):
     if not os.path.isfile(filename):
       raise ValueError("(utils.py) File '" + orig_filename + "' cannot be found.")
   return filename
+
+def get_filename(file_path):
+  return os.path.basename(file_path)
+
+def get_extension(file_path):
+  filename, extension = os.path.splitext(filename)
+  return extension
+
+def get_filename_only(file_path):
+  filename, extension = os.path.splitext(file_path)
+  return filename
+
+def get_path(file_path):
+  return os.path.dirname(os.path.abspath(file_path))
+
+
+
 
 
