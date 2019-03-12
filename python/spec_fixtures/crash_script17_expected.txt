@@ -1,0 +1,2 @@
+Python expression '3 + "a"' raised error TypeError: unsupported operand type(s) for +: 'int' and 'str'
+

@@ -1,0 +1,2 @@
+Python expression '3 + notfound' raised error NameError: name 'notfound' is not defined
+

@@ -1,0 +1,2 @@
+Python expression '1/0' raised error ZeroDivisionError: integer division or modulo by zero
+

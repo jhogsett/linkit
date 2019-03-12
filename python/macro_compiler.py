@@ -39,6 +39,7 @@ allow_mutability = None
 def begin(led_command_, verbose_mode_, quiet_mode, presets_, starting_macro, ending_macro, number_of_sequencers_, bytes_per_macro_, max_string_length_, last_macro_bytes_, allow_mutability_=False):
     global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
     global led_command, bytes_per_macro, max_string_length, next_available_macro_number, last_macro_bytes, allow_mutability
+
     led_command = led_command_
     verbose_mode = verbose_mode_
     starting_macro_number = starting_macro
@@ -52,6 +53,8 @@ def begin(led_command_, verbose_mode_, quiet_mode, presets_, starting_macro, end
     allow_mutability = allow_mutability_
     presets = presets_
     resolve_presets(presets)
+
+    utils.begin(False, __file__)
     tc.begin(quiet_mode)
     ui.begin(verbose_mode, quiet_mode)
     ui.report_verbose("Beginning compilation engine")
@@ -136,9 +139,9 @@ def compile_script(script):
 
 def load_file(filename, default_ext=".mac"):
     file_lines = []
-    if not filename.endswith(default_ext):
-        filename = filename + default_ext
-    file_path = os.path.dirname(filename)
+    filename = utils.locate_file(filename, default_ext)
+    file_path = utils.get_path(filename)
+
     file = open(filename, "r")
     for line in file:
         line = line.strip()
@@ -273,22 +276,12 @@ def pre_process_script(script_lines):
 ## ----------------------------------------------------
 
 def remove_blank_lines(script_lines):
-    new_lines = []
-    for line in script_lines:
-        line = process_blank_line(line)
-        if len(line) > 0:
-            new_lines.append(line)
-    return new_lines
+    return utils.strip_whitespace(script_lines)
 
 ## ----------------------------------------------------
 
 def remove_comments(script_lines):
-    new_lines = []
-    for line in script_lines:
-        line = process_comment(line)
-        if len(line) > 0:
-            new_lines.append(line)
-    return new_lines
+    return utils.strip_comments(script_lines)
 
 ## ----------------------------------------------------
 
@@ -481,17 +474,22 @@ def expand_multi_macros(script_lines):
                     raise ValueError("Multi macro cannot be expanded due to unresolved non-integer argument: " + num_instance_arg);
                 except:
                     raise ValueError("Multi macro cannot be expanded due to unprocessable argument: " + num_instance_arg);
+
             # remaining argument, if any, is the optional schedule replacement
             schedule = " ".join(args[2:])
             multi_macro_name = macro_name + "-all-" + str(num_instance_max)
             template_name = multi_macro_name + "-template"
+
             # replace the multi macro expression with the call to the new macro
             new_lines.append("(" + multi_macro_name + ")")
+
             # create the lines that will be added after this set of lines is processed:
             # add the multi macro
             add_lines.append("[" + multi_macro_name + "]")
+
             # add the meta-template
             add_lines.append("  (((" + template_name + " " + str(num_instance_max) + " " + schedule + ")))")
+
             # add the template
             add_lines.append("[[" + template_name + " INSTANCE SCHEDULE")
             add_lines.append("(" + macro_name + "-INSTANCE SCHEDULE)")
@@ -500,6 +498,7 @@ def expand_multi_macros(script_lines):
             new_lines.append(line)
     return new_lines + add_lines
 
+## ----------------------------------------------------
 
 def expand_meta_templates(script_lines):
     new_lines = []
@@ -632,19 +631,13 @@ def process_comment(line):
     line = line.strip()
     if len(line) == 0:
         return ''
-
     if line[0] == "#":
         return ''
-
     if "#" in line:
         return line.split("#")[0]
-
     return line
 
 ## ----------------------------------------------------
-
-# how to process a line like:
-# ``3*3`*2`
 
 def process_evaluate_python(line):
     line = line.strip()
@@ -667,12 +660,14 @@ def process_evaluate_python(line):
 
             if len(expression) > 0:
                 # can only process python expression if there are no unresolves values
-                #iif not line_has_unresolved_variables(expression):
-                #if not line_has_unresolved(expression):
 		if not line_has_unresolved_for_python_evaluation(expression):
                     #ui.report_verbose_alt2("-evaluating Python: " + expression)
-                    result = eval(expression)
-#todo-catch error
+                    try:
+                        result = eval(expression)
+                    except (StandardError) as err:
+                        error_message = "Python expression '" + expression + "' raised error " + type(err).__name__ + ": " + str(err)
+                        #ui.report_error(error_message)
+                        raise ValueError(error_message)
                     #ui.report_verbose_alt2("=evaluated result: " + str(result))
                     #ui.report_verbose_alt2("process_evaluate_python replacing python expression '{}' with '{}'".format(expression, result))
                     new_line.append(replace_args(segment, "`", "`", str(result), True))

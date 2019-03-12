@@ -38,15 +38,23 @@ def load_file(filename, default_ext=".???"):
 
     return file_lines
 
-def get_pair(line, joiner="-"):
+def get_pair(line, split_on="-"):
   line = line.strip()
-  args = line.split(joiner)
+  args = line.split(split_on)
   if len(args) == 0:
     return [None, None]
   elif len(args) == 1:
     return [args[0].strip(), None]
   elif len(args) == 2:
     return [args[0].strip(), args[1].strip()]
+
+def strip_whitespace(lines):
+  new_lines = []
+  for line in lines:
+    line = line.strip()
+    if len(line) > 0:
+      new_lines.append(line)
+  return new_lines
 
 def strip_comments(lines, comment_marker="#"):
   new_lines = []
@@ -58,16 +66,8 @@ def strip_comments(lines, comment_marker="#"):
       new_lines.append(line)
   return new_lines
 
-def strip_whitespace(lines):
-  new_lines = []
-  for line in lines:
-    line = line.strip()
-    if len(line) > 0:
-      new_lines.append(line)
-  return new_lines
-
 def run_command(command_line):
-      call(command_line, shell=True)
+  call(command_line, shell=True)
 
 def input_waiting():
   return select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], [])
@@ -99,6 +99,7 @@ def randomize(seed=0, max=65535):
     random.seed(seed)
     return seed
 
+# todo: also look in the current directory if nothing else works
 def locate_file(filename, default_extension, default_directory = None):
   if default_directory == None:
     default_directory = script_directory
