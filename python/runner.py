@@ -496,6 +496,7 @@ def initialize():
     get_options()
     validate_options()
 
+    utils.begin(not no_rating, __file__)
     tc.begin(quiet_mode)
     ui.begin(verbose_mode, quiet_mode)
 
@@ -511,7 +512,6 @@ def initialize():
 
     lc.begin(extra_verbose_mode)
     lc.stop_all()
-    utils.begin(not no_rating, __file__)
 
     device_presets = lc.get_device_profile()
     num_leds = device_presets["NUM-LEDS"]
