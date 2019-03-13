@@ -2,7 +2,7 @@ ball-box
 num-boxes          2-6
 balls-per-box      0-2
 box-width          8-14
-box-time           30-50
+box-time           25-45
 background-type    0-7
 box-step           1 2 -1 -2
 box-sequencer      seq sqs sws swc
@@ -13,7 +13,7 @@ foreground-type    0-2
 use-computed-value True False
 draw-mode          0 2
 brightness         0
-refresh-time       30
+refresh-time       25
 box-instance-time  5-10
 ball-instance-time 5-10
 ~blank             background-type=0 balls-per-box=0
