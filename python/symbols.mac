@@ -98,12 +98,12 @@ $PASS-ARGUMENT -1
 
 # dimming/brightening
 $NONE 0
-$LIGHT-LIGHT 1
-$LIGH-NORMAL 2
-$NORMAL 3
-$NORMAL-HEAVY 4
+$VERY-LIGHT 1
+$LIGHT 2
+$MEDIUM 3
+$MEDIUM-HEAVY 4
 $HEAVY 5
-$HEAVY-HEAVY 6
+$VERY-HEAVY 6
 $EXTREME 7
 
 # standard render function, consumes partial final macro

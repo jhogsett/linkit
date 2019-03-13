@@ -60,9 +60,11 @@ $fgtype-brighten 5
 
 $foreground-type <fgtype-palette2>
 
-$background-darkening-heavy 3
-$background-darkening-light 0
-$background-darkening `<background-darkening-light> if <balls-per-box> == 0 else <background-darkening-heavy>`
+#$background-darkening-heavy <MEDIUM>
+#$background-darkening-light <LIGHT>
+#$background-darkening-none <NONE>
+$background-darkening  `<NONE> if <balls-per-box> == 0 else <VERY-LIGHT>`
+$background-darkening2 `<VERY-LIGHT> if <balls-per-box> == 0 else <LIGHT>`
 
 %allow-mutability
 $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
@@ -128,7 +130,8 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 # template for adding ball-creating meta templates
 [[create-balls-for-box BOX
     # meta template to create ball(s) for a box
-    (((ball <balls-per-box> BOX `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> <ball-sequencer> `BOX+INSTANCE+<RED>`)))
+    (((ball <balls-per-box> BOX `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>*INSTANCE` <box-width> <ball-sequencer> `BOX+INSTANCE+<RED>`)))
+#    (((ball <balls-per-box> BOX `<num-boxes>*INSTANCE*<ball-instance-time>+<ball-time>` <box-width> <ball-sequencer> `BOX+INSTANCE+<RED>`)))
 ]]
 >>>
 
@@ -310,9 +313,10 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 <<< <background-type> == <bgtype-color-dotted-dual>
     pop
     add-palette-color
-    3
+    <background-darkening>
     darken
     repeat
+    <background-darkening2>
     darken
     -2
     duplicate
