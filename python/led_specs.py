@@ -2466,7 +2466,7 @@ def specs():
       set_effect_processing_macro()
 
       # place alternating dynamic colors
-      lc.command_str("4,0:dyn:bld")
+      lc.command_str("0,4:dyn:bld")
 
       # simulate a half blink period
       expect_render(quarter_blink_period(), 0, 1, "0,0,51", False)
