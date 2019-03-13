@@ -1760,12 +1760,7 @@ def specs():
   if group("setting custom breathe time"):                                                                                                            
 
     if test("setting a custom breathe time"):                                                                                                                                                                                                           
-
-      # set the breate period to the minimum possible value
       set_minimum_breathe_period()
-
-      # use a macro to process the effects and update the render buffer
-      # this gets around the fact effects are reset on processing commands
       set_effect_processing_macro()
 
       # place a breathing blue
@@ -1888,10 +1883,7 @@ def specs():
       expect_accumulators("rng:sto", "67,0,0")
 
     if test("it generates a different random number"):
-      expect_accumulators("6,3,99:tst:rng:sto", "63,0,0")
-# this doesn't work: @@@
-#      set_alternate_seed()
-#      expect_accumulators("rng:sto", "63,0,0")
+      expect_accumulators(set_alternate_seed() + ":rng:sto", "63,0,0")
 
     if test("it generates a random number within the upper limit"):
       expect_accumulators("wht:5:rng:psh:5:rng:psh:5:rng:psh", "3,4,2")
@@ -2474,7 +2466,7 @@ def specs():
       set_effect_processing_macro()
 
       # place alternating dynamic colors
-      lc.command_str("0,4:dyn:bld")
+      lc.command_str("4,0:dyn:bld")
 
       # simulate a half blink period
       expect_render(quarter_blink_period(), 0, 1, "0,0,51", False)
@@ -2484,9 +2476,38 @@ def specs():
 
       set_default_blink_period()
 
-    # @@@
-    pending_test("dynamic breathe")
-      
+    if test("dynamic breathe"):
+      set_minimum_breathe_period()
+      set_effect_processing_macro()
+
+      # place a dynamic breathing blu/red
+      lc.command_str("4,0:dyn:brd")
+
+      # these are the expected values if using the floats for breathe ratio
+      # expected_render_values = [ 0,  0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 47, 49, 50, 50,
+      #                           50, 49, 47, 46, 44, 41, 39, 36, 32, 29, 25, 21, 17, 13,  8,  4,  0,  0,  0,  0,  0,  0 ]
+
+      # these are the expected values if using the bytes for breathe ratio
+      # expected_render_values = [ 0,  0,  0,  0,  0,  4,  8, 13, 17, 21, 25, 29, 32, 36, 39, 41, 44, 46, 48, 49, 50, 50,
+      #                           50, 49, 48, 46, 44, 41, 39, 36, 32, 29, 25, 21, 17, 13,  8,  4,  0,  0,  0,  0,  0,  0 ]
+
+      # simulate rendering through each breathe step period
+      # for n in range(0, len(expected_render_values)):
+      #   expect_render("0," + str(n) + ":run", 0, 1, "0," + str(expected_render_values[n]) + ",0", False)
+
+      expect_render(breathe_step(10), 0, 1, "0,0,29", False)
+      expect_render(breathe_step(11), 0, 1, "0,0,32", False)
+      expect_render(breathe_step(12), 0, 1, "0,0,36", False)
+      expect_render(breathe_step(13), 0, 1, "0,0,39", False)
+
+      breathe_steps = 42 # found through trial and error, not sure why it's this value
+      expect_render(breathe_step(10 + breathe_steps), 0, 1, "29,0,0", False)
+      expect_render(breathe_step(11 + breathe_steps), 0, 1, "32,0,0", False)
+      expect_render(breathe_step(12 + breathe_steps), 0, 1, "36,0,0", False)
+      expect_render(breathe_step(13 + breathe_steps), 0, 1, "39,0,0", False)
+
+      set_default_breathe_period()
+ 
 
 ########################################################################
 # Dynamic Color Handling
