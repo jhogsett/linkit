@@ -63,7 +63,7 @@ $foreground-type <fgtype-palette2>
 #$background-darkening-heavy <MEDIUM>
 #$background-darkening-light <LIGHT>
 #$background-darkening-none <NONE>
-$background-darkening  `<NONE> if <balls-per-box> == 0 else <VERY-LIGHT>`
+$background-darkening  `<NONE> if <balls-per-box> == 0 else <MEDIUM>`
 $background-darkening2 `<VERY-LIGHT> if <balls-per-box> == 0 else <LIGHT>`
 
 %allow-mutability
