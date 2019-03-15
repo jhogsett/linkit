@@ -2538,10 +2538,23 @@ def specs():
 ########################################################################
   if group("scheduling"):
 
-    pending_test("scheduling")
-    # a macro can be scheduled to run @@@
-    # a macro can be stopped from running
-    # all macros can be stopped from running
+    if test("a macro can be scheduled to run"):
+      lc.command("0:set:red")
+      lc.command("100,0:sch:2:cnt")
+      time.sleep(0.1)
+      expect_buffer("", 0, 1, "20,0,0")
+
+    if test("a macro schedule can be canceled"):
+      lc.command("0:set:red")
+      lc.command("100,0:sch:2:cnt:0,0:sch")
+      time.sleep(0.1)
+      expect_buffer("", 0, 1, "20,0,0", True, False, False)
+
+    if test("all macro schedules can be canceled"):
+      lc.command("0:set:red")
+      lc.command("100,0:sch:2:cnt:-1:sch")
+      time.sleep(0.1)
+      expect_buffer("", 0, 1, "20,0,0", True, False, False)
 
 
 ########################################################################
