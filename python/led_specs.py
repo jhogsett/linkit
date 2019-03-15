@@ -2562,8 +2562,10 @@ def specs():
 ########################################################################
   if group("mapping"):
 
-    # @@@
-    pending_test("mapping")
+    if lc.get_mapping_enabled():
+      pending_test("mapping")
+    else:
+      skip_test("xyp", "Mapping not enabled on device - specs skipped")
 
 
 ########################################################################
