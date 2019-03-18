@@ -2,20 +2,21 @@
 %include hsl-sequencer
 
 %allow-mutability
-$HSL-ANGLE 20
+$HSL-ANGLE 45
+$HSL-STEP 10
 #40
 
 # this doesn't work because the variable keeps it's previous value until eventually being changed when the variables are resolved
 #$HSL-TIME `<color-sequence-time>*<time-factor>`
 
-$HSL-TIME 1250
+$HSL-TIME 1000
 
 %include colors
 
-$inner-rotate-time 1600
-$outer-rotate-time 800
+$inner-rotate-time 16
+$outer-rotate-time 8
 $color-sequence-time 250
-$time-factor 4
+$time-factor 10
 
 %play-macro monument-app
 
