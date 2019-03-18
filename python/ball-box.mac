@@ -84,9 +84,11 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     set-draw-mode
 >>>
 
+<<< <brightness> != <BRIGHTNESS-AUTO>
     # set the preset brightness level
     <brightness>
     set-brightness
+>>>
 
     # multi macro replaced with a macro run to a 
     # new macro that will run each start-up macro
