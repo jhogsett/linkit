@@ -1,0 +1,433 @@
+# ----------------------------------------------------------------
+# Groups of Objects animation
+# ----------------------------------------------------------------
+
+# background types: dotted white, dotted color, dotted colors
+
+# object types: white, two dots, three dots, black, three dots black in the middle, three dots rotating, carry color, static
+
+
+%include symbols
+%include hsl-sequencer
+
+$draw-mode <DRAW-WRITE>
+$brightness <BRIGHTNESS-AUTO>
+$render-time <object-time>
+$fade-rate 9000
+$object-time 25
+$group-width 15
+$group-time 50
+$num-groups 3
+$objects-per-group 2
+$group-instance-time 30
+$object-instance-time 10
+$refresh-time 25
+$group-sequencer swing-sequencer
+$object-sequencer swing-sequencer
+$group-step 0
+$object-step 0
+
+$bgtype-none 0
+$bgtype-line 1
+$bgtype-points 2
+$bgtype-darkgray 3
+$bgtype-color-points 4
+$bgtype-dotted 5
+$bgtype-color-dotted 6
+$bgtype-color-dotted-dual 7
+
+# this is too loud and not pretty
+$bgtype-palette 8
+
+# these aren't compatible with frame animation because 
+# the rendered output keeps being put back where it belongs
+$bgtype-rotate 9
+$bgtype-mirror 10
+
+# these are too slow
+$bgtype-points-alt 11
+$bgtype-color-points-alt 12
+
+$background-type <bgtype-line>
+$use-computed-value False
+$palette-bg-zoom 3
+$fgtype-palette 0
+$fgtype-palette2 1
+$fgtype-white 2
+$fgtype-black 3
+$fgtype-darken 4
+$fgtype-brighten 5
+
+$foreground-type <fgtype-palette2>
+
+#$background-darkening-heavy <MEDIUM>
+#$background-darkening-light <LIGHT>
+#$background-darkening-none <NONE>
+$background-darkening  `<NONE> if <objects-per-group> == 0 else <MEDIUM>`
+$background-darkening2 `<VERY-LIGHT> if <objects-per-group> == 0 else <LIGHT>`
+
+%allow-mutability
+$HSL-ANGLE 60 #`int(360/(<num-groups>*<objects-per-group>))`
+
+%play-macro app
+
+# ------------------------------------------
+# main app macro
+# ------------------------------------------
+
+[app 10]
+    start-application
+
+<<< <draw-mode> != <DRAW-WRITE> 
+    # set the preset draw mode
+    <draw-mode>
+    set-draw-mode
+>>>
+
+<<< <brightness> != <BRIGHTNESS-AUTO>
+    # set the preset brightness level
+    <brightness>
+    set-brightness
+>>>
+
+    # multi macro replaced with a macro run to a 
+    # new macro that will run each start-up macro
+    [[[group-start <num-groups>]]]
+
+    # schedule animation rendering
+    (groups-render <render-time>)
+
+    # schuedule display refreshing
+    (render <refresh-time>)
+
+    # start the color palette cycling
+    (hsl-sequencer-start)
+
+
+# ------------------------------------------
+# main app animation rendering
+# ------------------------------------------
+
+[groups-render]
+    <FAST-ERASE-BUFFER>
+    erase-buffer
+
+    # multi macro replaced with a macro run to a 
+    # new macro that will run each render macro
+    [[[group-render <num-groups>]]]
+
+
+# ------------------------------------------
+# create animation objects
+# ------------------------------------------
+
+# expand group template per number of groups
+(((group <num-groups> `<group-instance-time>*INSTANCE+<group-time>` <group-width> `<NUM-LEDS>-<group-width>` <group-sequencer>)))
+
+<<< <objects-per-group> > 0
+# expand template to place object-creating meta templates for each group
+(((create-objects-for-group <num-groups>)))
+
+
+# template for adding object-creating meta templates
+[[create-objects-for-group GROUP
+    # meta template to create object(s) for a group
+    (((object <objects-per-group> GROUP `<num-groups>*INSTANCE*<object-instance-time>+<object-time>` <group-width> <object-sequencer> `GROUP+INSTANCE+<RED>`)))
+]]
+>>>
+
+# ------------------------------------------
+# group template - manages a moving region
+# object that has child objects
+# ------------------------------------------
+
+[[group INSTANCE SCHEDULE WIDTH MAX SEQ-TYPE
+
+<<< <objects-per-group> > 0
+    # expand meta template to run all object start macros
+    [group-start-objects-INSTANCE]
+        (((object-start-all <objects-per-group> INSTANCE)))
+>>>
+    # start this group instance
+    [group-start-INSTANCE]
+        # create this group's position sequencer
+        {seq-group-INSTANCE}, MAX
+        SEQ-TYPE
+
+<<< <objects-per-group> > 0
+        # run the object start macros
+        (group-start-objects-INSTANCE)
+>>>
+
+        # schedule this group's animation rendering
+        (group-step-INSTANCE SCHEDULE)
+
+    # advance this group forwar one animation step
+    [group-step-INSTANCE]
+        {seq-group-INSTANCE},<GET-NEXT>,<group-step>
+        advance-sequence
+
+<<< <background-type> != <bgtype-none>
+    # macro to draw the group background
+    [group-background-INSTANCE]
+        # push the instance as a palette color onto the stack
+        INSTANCE
+        store
+
+        # run the background drawing macro
+        {{
+          (group-draw-background)
+        }}
+>>>
+
+    # render this group instance and its child objects        
+    [group-render-INSTANCE]
+<<< <background-type> != <bgtype-none>
+        # set the viewport to the group bounds
+        (group-set-window-INSTANCE)
+
+        # render the background
+        (group-background-INSTANCE)
+>>>
+
+<<< <objects-per-group> > 0
+	# render the foreground
+        # meta template expands to run each object render macro
+        (((object-render-each <objects-per-group> INSTANCE)))
+>>>
+
+    # set the viewport to only this group
+    [group-set-window-INSTANCE]
+        # put the sequencer arguments on the stack
+
+<<< <use-computed-value> == True
+        {seq-group-INSTANCE}, <GET-COMPUTED>
+>>>
+<<< <use-computed-value> == False
+        {seq-group-INSTANCE}, <GET-CURRENT>
+>>>
+        store
+
+        # run the helper macro to set the viewport
+        (group-set-viewport)
+]]
+
+# ------------------------------------------
+# group helper macros
+# ------------------------------------------
+
+<<< <background-type> != <bgtype-none>
+# multiple types of group backgrounds
+# accum0: background palette color
+[group-draw-background]
+>>>
+
+# draw white points at the group bounds
+<<< <background-type> == <bgtype-points>
+    white
+    <group-width>
+    set-position
+    white
+>>>
+
+# draw white points at the group bounds
+<<< <background-type> == <bgtype-points-alt>
+    white
+    black
+    <ENABLE>
+    set-reverse
+    white
+    <DISABLE>
+    set-reverse
+>>>
+
+# fill the group background with a darkened palette color
+<<< <background-type> == <bgtype-line>
+    pop
+    add-palette-color
+    <background-darkening>
+    darken    
+    <FILL-COLORS>
+    fill
+>>>
+
+<<< <background-type> == <bgtype-rotate>
+    2
+    rng
+    set-reverse
+    rotate
+    disable
+    set-reverse
+>>>
+
+<<< <background-type> == <bgtype-mirror>
+    mirror
+>>>
+
+<<< <background-type> == <bgtype-darkgray>
+    gray
+    <background-darkening>
+    darken
+    <FILL-COLORS>
+    fill
+>>>
+
+<<< <background-type> == <bgtype-palette>
+    <NUM-PALETTE-COLORS>,<PASTE>,<palette-bg-zoom>
+    duplicate
+>>>
+
+# draw palette color points at the group bounds
+<<< <background-type> == <bgtype-color-points>
+    recall
+    add-palette-color
+    <group-width>
+    set-position
+    recall
+    add-palette-color
+>>>
+
+# draw palette color points at the group bounds
+<<< <background-type> == <bgtype-color-points-alt>
+    recall
+    add-palette-color
+    black
+    <ENABLE>
+    set-reverse
+    recall
+    add-palette-color
+    <DISABLE>
+    set-reverse
+>>>
+
+# fill the group background with a dotted darkened palette color
+<<< <background-type> == <bgtype-color-dotted>
+    pop
+    add-palette-color
+    <background-darkening>
+    darken
+    -1,<AUTO-FILL>,-2
+    duplicate
+>>>
+
+# fill the group background with a dotted darkened palette color
+<<< <background-type> == <bgtype-color-dotted-dual>
+    pop
+    add-palette-color
+    <background-darkening>
+    darken
+    repeat
+    <background-darkening2>
+    darken
+    -2
+    duplicate
+>>>
+
+# fill the group background with a dotted dark gray
+<<< <background-type> == <bgtype-dotted>
+    dark-gray
+    -1,<AUTO-FILL>,-2
+    duplicate
+>>>
+
+
+# set the offset and window to cover the group's current position
+# accum0-3: sequence get current value arguments
+[group-set-viewport]
+    # get the passed sequencer arguments
+    recall
+
+    # get the sequence current value
+    # this is the group viewport lower bounds
+    get-sequence
+
+    # push the lower bounds onto the stack
+    store
+
+    # recall the lower bounds as arg0 and the width as arg1
+    <group-width>
+    recall
+
+    # set both position and width at once
+    set-position
+
+
+# ------------------------------------------
+# group helper templates
+# ------------------------------------------
+
+# template to place macro runs of the 
+# object start macro for each of a groups's objects
+[[object-start-all OBJECT GROUP
+    (object-start-GROUP-OBJECT)
+]]
+
+# template to place macro runs of the 
+# object render macro for each of a group's objects
+[[object-render-each OBJECT GROUP
+        (object-render-GROUP-OBJECT)
+]]
+
+
+# ------------------------------------------
+# object template - manages a single
+# animated pixel
+# ------------------------------------------
+
+[[object INSTANCE GROUP SCHEDULE WIDTH SEQ-TYPE COLOR
+
+    # start the a specific object instance
+    # for a specific group instance
+    [object-start-GROUP-INSTANCE]
+        {seq-object-GROUP-INSTANCE}, WIDTH
+        SEQ-TYPE
+
+        # schedle the object position updating
+        # for a object instance of a group instance
+        (object-step-GROUP-INSTANCE SCHEDULE)
+
+    # advance to the next object animation step
+    [object-step-GROUP-INSTANCE]
+        {seq-object-GROUP-INSTANCE},<GET-NEXT>,<object-step>
+        advance-sequence
+
+    # render a specific object instance of 
+    # a specific group instance
+    [object-render-GROUP-INSTANCE]
+        (group-set-window-GROUP)
+
+<<< <use-computed-value> == True
+        {seq-object-GROUP-INSTANCE}, <GET-COMPUTED>
+>>>
+<<< <use-computed-value> == False
+        {seq-object-GROUP-INSTANCE}, <GET-CURRENT>
+>>>        
+        get-sequence
+
+        set-position
+        {{
+<<< <foreground-type> == <fgtype-palette>
+            COLOR
+            add-palette-color
+>>>
+<<< <foreground-type> == <fgtype-white>
+            dark-gray
+>>>
+<<< <foreground-type> == <fgtype-palette2>
+            `COLOR+3`
+            add-palette-color
+>>>
+<<< <foreground-type> == <fgtype-black>
+            black
+>>>
+<<< <foreground-type> == <fgtype-darken>
+            2
+            darken
+>>>
+<<< <foreground-type> == <fgtype-brighten>
+            2
+            brighten
+>>>
+        }}
+]]
+
