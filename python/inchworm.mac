@@ -76,7 +76,7 @@ $num-worms 5
     # add the two sequencers
     # get and set the offset,window to fill in for this frame
     <seq-SEQ1>,<ADD-SEQ>,<seq-SEQ2>
-    sequence-next-window
+    get-next-window
 
     # set drawing window
     set-position
