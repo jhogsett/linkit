@@ -696,25 +696,26 @@ def process_set_variable(line):
 
             # see if line has a variable setting
             args = utils.get_key_args(line, "$")
-            if len(args) >= 2:
 
+	    if len(args) > 0:
                 variable_name = args[0]
+                if len(args) >= 2:
+                    if variable_name in presets:
+                        # override this variable with the preset
+                        return ''
 
-                if variable_name in presets:
-                    # override this variable with the preset
+                    # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
+                    variable_value = line[len(variable_name) + 1:].strip()
+
+                    # can only set if not already set, or a preset that allows overwriting
+                    if not immutable_resolved_value(variable_name, variable_value):
+                        #ui.report_verbose("process_set_variable settings {}={}".format(variable_name, variable_value))
+                        set_resolved(variable_name, variable_value)
+
+                    # return a blank line now that this one is consumed
                     return ''
-
-                # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
-                variable_value = line[len(variable_name) + 1:].strip()
-
-                # can only set if not already set, or a preset that allows overwriting
-                if not immutable_resolved_value(variable_name, variable_value):
-                    #ui.report_verbose("process_set_variable settings {}={}".format(variable_name, variable_value))
-                    set_resolved(variable_name, variable_value)
-
-                # return a blank line now that this one is consumed
-                return ''
-
+                else:
+                    raise ValueError("Variable '" + variable_name + "' was given no value.")
     return line
 
 ## ----------------------------------------------------

@@ -39,7 +39,7 @@ $swinger-max-half <swinger-max>
 
     [swinger-X]
         {seq-X}
-        sequence-next-window
+        get-next-window
         set-position
         {{
             <seq-X>

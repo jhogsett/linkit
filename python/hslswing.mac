@@ -52,7 +52,7 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 
 	[render-X]				# define a templated macro 'render-X' to handle advancing and drawing the swinger
 		{seq-X}				# push the above allocated sequencer number onto the argument stack
-		sequence-next-window		# advance the swinger to the next position, leaving offset & window on the argument
+		get-next-window		        # advance the swinger to the next position, leaving offset & window on the argument
 						# stack, used to draw contigious fast-moving pixels
 		set-position			# set the 'offset' and 'window' for drawing per to the arguments on the stack
                 {{
@@ -76,7 +76,7 @@ $render-time 100				# render the display buffer to the LEDs every 100 ticks
 
 [render-a]					# define a macro to advance and draw the swinger
 	{seq-a},<MACRO-SEQ>,<math-a>		# push avove sequence number with option to compute macro and macro number 
-	sequence-next-window			# get the next contiguous draw region
+	get-next-window			        # get the next contiguous draw region
 	set-position				# set the fill region per the pushed arguments
         {{
 	        <BLUE>					# push the palette color index for the color blue

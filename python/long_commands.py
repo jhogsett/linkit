@@ -135,6 +135,7 @@ long_commands = {
  "sine-sequencer" : "sws",              # keep as a type
  "start-sine-sequence" : "sws",
  "sequence-next-window" : "snw",
+ "get-next-window" : "snw",
  "set-palette-by-hue" : "csh",
  "set-palette-by-saturation" : "css",
  "set-palette-by-lightness" : "csl",

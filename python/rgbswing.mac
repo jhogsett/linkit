@@ -32,7 +32,7 @@ $fade-type ffd
 
 [render-0]
 	<sequencer0>
-	sequence-next-window
+	get-next-window
 	set-position
         {{
 	     <RED>
@@ -48,7 +48,7 @@ $fade-type ffd
 
 [render-1]
 	{sequencer1}
-	sequence-next-window
+	get-next-window
 	set-position
         {{
 	    <GREEN>
@@ -64,7 +64,7 @@ $fade-type ffd
 
 [render-2]
 	<sequencer2>,<MACRO-SEQ>,<math-2>
-	sequence-next-window
+	get-next-window
 	set-position
         {{
 	    <BLUE>
