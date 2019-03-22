@@ -27,9 +27,11 @@ $timing-offset 5
 [circle-app 10]
     start-application
  
+<<< <brightness> != <BRIGHTNESS-AUTO>
     # set the preset brightness level
     <brightness>
     set-brightness
+>>>
 
     # start up the palette color sequencer
     (hsl-sequencer-start)

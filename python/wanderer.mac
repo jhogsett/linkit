@@ -30,9 +30,11 @@ $wanderer-max-half <wanderer-max>
     <wanderer-draw-mode>
     set-draw-mode
 
+<<< <wanderer-brightness> != <BRIGHTNESS-AUTO>
     # set the preset brightness level
     <wanderer-brightness>
     set-brightness
+>>>
 
     # create 5 meta-templates for wanderer setup
     (((wanderer-setup 5)))
