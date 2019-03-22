@@ -18,6 +18,7 @@ $brightness <DEFAULT-BRIGHTNESS>
 <<< <brightness> != <DEFAULT-BRIGHTNESS>
   <brightness>
   set-brightness
+>>>
 
   (hsl-sequencer-start)
   (setup)
