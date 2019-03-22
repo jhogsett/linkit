@@ -129,16 +129,6 @@ void BlinkEffects::rebuild_cache()
 
 bool BlinkEffects::blink_on(byte effect)
 {
-  // if (effect == BLINK_ON)
-  //   return this->blink_test();
-  // else if(effect == BLINK_ON_A)
-  //   return this->blink_a_test();
-  // else if(effect == BLINK_ON_B)
-  //   return !this->blink_a_test();
-  // else if (effect == BLINK_ON_D)
-  //   return this->blink_a_test();
-  // else
-  //   return this->blink_1_6_test(effect);
   return this->blink_cache[effect - BLINK_MIN];
 }
 #endif

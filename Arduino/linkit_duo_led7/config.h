@@ -22,7 +22,7 @@
 
 // single 90-LED strip for dev
 // blinkit
-#define LED_STRIP_90
+// #define LED_STRIP_90
 
 // 2 50-led strands
 // decoration3
@@ -38,7 +38,7 @@
 // #define MONUMENT
 
 // 57-LED three part monument3
-// #define MONUMENT3
+#define MONUMENT3
 
 // 93-LED platform
 // #define PLATFORM
@@ -55,7 +55,7 @@
 
 // single 50-LED strand
 // sphere2
-//#define LED_STRAND_50
+// #define LED_STRAND_50
 
 // 64-LED Glasses
 // #define WEARABLE_AND_GLASSES
@@ -192,7 +192,7 @@
 #define ZONES_SPHERE
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 150
+#define BREATHE_PERIOD 100
 #define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
 #define HIGH_BRIGHTNESS_PERCENT    33
 #define LOW_BRIGHTNESS_PERCENT     15
@@ -227,7 +227,7 @@
 #define ANIM_LED_COUNT 72
 #define ZONES_72_LEDS
 #define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 150
+#define BREATHE_PERIOD 100
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #define MAX_BRIGHTNESS_PERCENT     30 // symbolized auto brightness levels
 #define HIGH_BRIGHTNESS_PERCENT    20
@@ -241,7 +241,7 @@
 #define ZONES_DISC
 #define DEFAULT_BRIGHTNESS_PERCENT 50
 #define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 150
+#define BREATHE_PERIOD 100
 #define MAX_BRIGHTNESS_PERCENT     100 // symbolized auto brightness levels
 #define HIGH_BRIGHTNESS_PERCENT    75
 #define LOW_BRIGHTNESS_PERCENT     25
@@ -254,7 +254,7 @@
 #define ZONES_DISC
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 150
+#define BREATHE_PERIOD 100
 #define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
 #define HIGH_BRIGHTNESS_PERCENT    33
 #define LOW_BRIGHTNESS_PERCENT     15
@@ -337,7 +337,7 @@
 #define ZONES_GLASSES
 #define DEFAULT_BRIGHTNESS_PERCENT 10
 #define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 150
+#define BREATHE_PERIOD 100
 #endif
 
 #ifdef WEARABLE_AND_GLASSES_TYPE2
@@ -435,11 +435,11 @@
 #define ANIM_LED_COUNT 57
 #define ZONES_3_X_19_LEDS
 #define BLINK_PERIOD 3000
-#define BREATHE_PERIOD 150
-#define DEFAULT_BRIGHTNESS_PERCENT 33
-#define MAX_BRIGHTNESS_PERCENT     50 // symbolized auto brightness levels
-#define HIGH_BRIGHTNESS_PERCENT    40
-#define LOW_BRIGHTNESS_PERCENT     15
+#define BREATHE_PERIOD 100
+#define DEFAULT_BRIGHTNESS_PERCENT 20
+#define MAX_BRIGHTNESS_PERCENT     40 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    30
+#define LOW_BRIGHTNESS_PERCENT     10
 #define MIN_BRIGHTNESS_PERCENT     5
 #endif
 
