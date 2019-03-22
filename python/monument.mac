@@ -8,13 +8,17 @@ $color-sequence-time 1000
 $color1 <RED>
 $color2 <YELLOW>
 $color3 <BLUE>
+$brightness <DEFAULT-BRIGHTNESS>
 
 %play-macro monument-app
 
 [monument-app 10]
   start-application
-  <DEFAULT-BRIGHTNESS>
+
+<<< <brightness> != <DEFAULT-BRIGHTNESS>
+  <brightness>
   set-brightness
+
   (hsl-sequencer-start)
   (setup)
 

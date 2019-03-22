@@ -17,13 +17,18 @@ $inner-rotate-time 16
 $outer-rotate-time 8
 $color-sequence-time 250
 $time-factor 10
+$brightness <DEFAULT-BRIGHTNESS>
 
 %play-macro monument-app
 
 [monument-app 10]
   start-application
-  <DEFAULT-BRIGHTNESS>
+
+<<< <brightness> != <DEFAULT-BRIGHTNESS>
+  <brightness>
   set-brightness
+>>>
+
   (hsl-sequencer-start)
   (setup)
 
