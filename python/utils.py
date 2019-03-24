@@ -61,7 +61,9 @@ def strip_comments(lines, comment_marker="#"):
   for line in lines:
     if comment_marker in line:
       parts = line.split(comment_marker)
-      new_lines.append(parts[0].strip())
+      keep = parts[0].strip()
+      if len(keep) > 0:
+          new_lines.append(keep)
     else:
       new_lines.append(line)
   return new_lines

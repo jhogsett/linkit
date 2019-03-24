@@ -232,13 +232,13 @@ def pre_process_script(script_lines):
     new_lines = remove_blank_lines(script_lines)
     new_lines = remove_comments(new_lines)
     new_lines = pre_rewrite(new_lines)
-    report_verbose_script(new_lines, "script after blank line, comment and colon removal")
+    #report_verbose_script(new_lines, "script after blank line, comment and colon removal")
 
     new_lines = translate_commands(new_lines)
     report_verbose_script(new_lines, "script after command translation")
 
     new_lines = process_directives(new_lines)
-    report_verbose_script(new_lines, "script after processing directives")
+    #report_verbose_script(new_lines, "script after processing directives")
     ingest_directives()
 
     new_lines = process_set_variables(new_lines)
@@ -253,11 +253,30 @@ def pre_process_script(script_lines):
     new_lines = process_get_variables(new_lines)
     report_verbose_script(new_lines, "script after replacing variables")
 
+
+    # try
+    new_lines = capture_templates(new_lines)
+    report_verbose_script(new_lines, "script after capturing templates")
+
+
+    new_lines = expand_templates(new_lines)
+    report_verbose_script(new_lines, "script after expanding templates")
+
+
     new_lines = expand_multi_macros(new_lines)
     report_verbose_script(new_lines, "script after expanding multi macros")
 
+
+    # try
     new_lines = capture_templates(new_lines)
     report_verbose_script(new_lines, "script after capturing templates")
+
+
+    # try 2
+    ###new_lines = expand_templates(new_lines)
+    ###report_verbose_script(new_lines, "script after expanding templates")
+
+
 
     new_lines = expand_meta_templates(new_lines)
     report_verbose_script(new_lines, "script after expanding meta templates")
@@ -272,6 +291,32 @@ def pre_process_script(script_lines):
     report_verbose_script(new_lines, "script after expanding templates pass #2")
 
     return new_lines
+
+def capture_expand_loop(script_lines):
+    orig_lines = script_lines
+    new_lines = script_lines
+    passnum = 1
+    while(true):
+        ui.report_verbose("capture_expand_loop pass #" + str(passnum))
+        orig_lines = new_lines
+        new_lines = capture_templates(new_lines)
+        new_lines = expand_templates(new_lines)
+        new_lines = expand_multi_macros(new_lines)
+        if new_lines == orig_lines:
+            break
+
+
+
+    report_verbose_script(new_lines, "script after capturing templates")
+
+
+    new_lines = expand_templates(new_lines)
+    report_verbose_script(new_lines, "script after expanding templates")
+
+
+    new_lines = expand_multi_macros(new_lines)
+    report_verbose_script(new_lines, "script after expanding multi macros")
+
 
 ## ----------------------------------------------------
 
@@ -570,6 +615,7 @@ def template_replacements(template_lines, keys, replacements):
             for index, key in enumerate(keys):
                 if index < len(replacements):
                     replacement = replacements[index]
+                    print replacement
                 else:
                     ui.report_verbose_alt("template replacement not provided for: " + key)
                     replacement = ''
