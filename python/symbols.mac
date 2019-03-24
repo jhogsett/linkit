@@ -107,6 +107,10 @@ $HEAVY 5
 $VERY-HEAVY 6
 $EXTREME 7
 
+# reverse
+$REVERSE-ENABLED 1
+$REVERSE-DISABLED 0
+
 # standard render function, consumes partial final macro
 [render !]
   refresh-display

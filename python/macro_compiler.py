@@ -253,42 +253,11 @@ def pre_process_script(script_lines):
     new_lines = process_get_variables(new_lines)
     report_verbose_script(new_lines, "script after replacing variables")
 
+    new_lines = capture_expand_loop(new_lines)
+    report_verbose_script(new_lines, "script after capture-expand loop")
 
-    # try
-    new_lines = capture_templates(new_lines)
-    report_verbose_script(new_lines, "script after capturing templates")
-
-
-    new_lines = expand_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding templates")
-
-
-    new_lines = expand_multi_macros(new_lines)
-    report_verbose_script(new_lines, "script after expanding multi macros")
-
-
-    # try
-    new_lines = capture_templates(new_lines)
-    report_verbose_script(new_lines, "script after capturing templates")
-
-
-    # try 2
-    ###new_lines = expand_templates(new_lines)
-    ###report_verbose_script(new_lines, "script after expanding templates")
-
-
-
-    new_lines = expand_meta_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding meta templates")
-
-    new_lines = expand_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding templates")
-
-    new_lines = expand_meta_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding meta templates pass #2")
-
-    new_lines = expand_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding templates pass #2")
+    new_lines = expand_meta_loop(new_lines)
+    report_verbose_script(new_lines, "script after expand-meta loop")
 
     return new_lines
 
@@ -296,27 +265,28 @@ def capture_expand_loop(script_lines):
     orig_lines = script_lines
     new_lines = script_lines
     passnum = 1
-    while(true):
-        ui.report_verbose("capture_expand_loop pass #" + str(passnum))
+    while(True):
+        ui.report_verbose_alt("capture_expand_loop pass #" + str(passnum))
         orig_lines = new_lines
         new_lines = capture_templates(new_lines)
         new_lines = expand_templates(new_lines)
         new_lines = expand_multi_macros(new_lines)
         if new_lines == orig_lines:
             break
+    return new_lines
 
-
-
-    report_verbose_script(new_lines, "script after capturing templates")
-
-
-    new_lines = expand_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding templates")
-
-
-    new_lines = expand_multi_macros(new_lines)
-    report_verbose_script(new_lines, "script after expanding multi macros")
-
+def expand_meta_loop(script_lines):
+    orig_lines = script_lines
+    new_lines = script_lines
+    passnum = 1
+    while(True):
+        ui.report_verbose_alt("expand_meta_loop pass #" + str(passnum))
+        orig_lines = new_lines
+        new_lines = expand_meta_templates(new_lines)
+        new_lines = expand_templates(new_lines)
+        if new_lines == orig_lines:
+            break
+    return new_lines
 
 ## ----------------------------------------------------
 
@@ -615,7 +585,6 @@ def template_replacements(template_lines, keys, replacements):
             for index, key in enumerate(keys):
                 if index < len(replacements):
                     replacement = replacements[index]
-                    print replacement
                 else:
                     ui.report_verbose_alt("template replacement not provided for: " + key)
                     replacement = ''
