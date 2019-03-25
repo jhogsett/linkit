@@ -242,7 +242,7 @@ def pre_process_script(script_lines):
     ingest_directives()
 
     new_lines = process_set_variables(new_lines)
-    report_verbose_script(new_lines, "script after capturing variables")
+    #report_verbose_script(new_lines, "script after capturing variables")
 
     new_lines = process_conditionals(new_lines)
     report_verbose_script(new_lines, "script after processing conditionals")
@@ -267,10 +267,18 @@ def capture_expand_loop(script_lines):
     passnum = 1
     while(True):
         ui.report_verbose_alt("capture_expand_loop pass #" + str(passnum))
+        passnum += 1
         orig_lines = new_lines
+
         new_lines = capture_templates(new_lines)
+        #report_verbose_script(new_lines, "script after capturing templates")
+
         new_lines = expand_templates(new_lines)
+        #report_verbose_script(new_lines, "script after expanding templates")
+
         new_lines = expand_multi_macros(new_lines)
+        #report_verbose_script(new_lines, "script after expanding multi-macros")
+
         if new_lines == orig_lines:
             break
     return new_lines
@@ -281,9 +289,15 @@ def expand_meta_loop(script_lines):
     passnum = 1
     while(True):
         ui.report_verbose_alt("expand_meta_loop pass #" + str(passnum))
+        passnum += 1
         orig_lines = new_lines
+
         new_lines = expand_meta_templates(new_lines)
+        #report_verbose_script(new_lines, "script after expanding meta templates")
+
         new_lines = expand_templates(new_lines)
+        #report_verbose_script(new_lines, "script after expanding templates")
+
         if new_lines == orig_lines:
             break
     return new_lines
@@ -446,14 +460,14 @@ def capture_templates(script_lines):
     for line in script_lines:
         line = line.strip()
         if capture_mode:
-            if line.startswith("]]"):
+            if line.startswith("]]") and not line.startswith("]]]"):
                 capture_mode = False
                 set_resolved(template_name, template_builder)
                 template_builder = []
             else:
                 template_builder.append(line)
         else:
-            if "[[" in line:
+            if "[[" in line and "[[[" not in line:
                 args = utils.get_key_args(line, "[[")
                 template_name = args[0]
                 combined_args = " ".join(args[1:])
