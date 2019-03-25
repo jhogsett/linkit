@@ -22,7 +22,7 @@
 
 // single 90-LED strip for dev
 // blinkit
-// #define LED_STRIP_90
+#define LED_STRIP_90
 
 // 2 50-led strands
 // decoration3
@@ -38,7 +38,7 @@
 // #define MONUMENT
 
 // 57-LED three part monument3
-#define MONUMENT3
+// #define MONUMENT3
 
 // 93-LED platform
 // #define PLATFORM

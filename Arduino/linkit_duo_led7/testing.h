@@ -34,6 +34,7 @@
 #define TEST_INQUIRY_FIRST_EEPROM_MACRO 19
 #define TEST_INQUIRY_NUM_SEQUENCERS 20
 #define TEST_INQUIRY_NUM_FINE_ZONES 21
+#define TEST_INQUIRY_FIXED_PALETTE_SIZE 22
 
 void Commands::do_test_inquiry(byte type)
 {
@@ -130,6 +131,10 @@ void Commands::do_test_inquiry(byte type)
 
     case TEST_INQUIRY_NUM_FINE_ZONES:
       result = FINE_ZONES;
+      break;
+
+    case TEST_INQUIRY_FIXED_PALETTE_SIZE:
+      result = NUM_COLORS;
       break;
     }  
 
