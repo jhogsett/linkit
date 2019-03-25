@@ -14,12 +14,12 @@ $group-width 8
 $group-time <object-time>
 
 $objects-per-group 2
-$object-time 150
-$object-instance-time 5
+$object-time 100
+$object-instance-time 25
 $object-sequencer sine-sequencer
-$object-step <DEFAULT-STEP>
+$object-step 1
 $object-darkening 2
-$smooth-factor 4
+$smooth-factor 3
 
 $right 0
 $right-start 0
@@ -56,7 +56,7 @@ $left-width <group-width>
 ]]
 
 [[create-objects-for-group GROUP-NUM OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR
-    (((object OBJECTS-PER-GROUP GROUP-NUM `(OBJECT-INSTANCE-TIME*INSTANCE)+OBJECT-TIME` GROUP-WIDTH OBJECT-SEQUENCER `(GROUP-NUM*OBJECTS-PER-GROUP)+INSTANCE` OBJECT-STEP OBJECT-DARKEN FACTOR)))
+    (((object OBJECTS-PER-GROUP GROUP-NUM `(OBJECT-INSTANCE-TIME*INSTANCE)+OBJECT-TIME` GROUP-WIDTH OBJECT-SEQUENCER `(GROUP-NUM*OBJECTS-PER-GROUP)+INSTANCE` `(GROUP-NUM*-1)*OBJECT-STEP` OBJECT-DARKEN FACTOR)))
 ]]
 
 # -----------------------------------------------
