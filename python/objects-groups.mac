@@ -4,46 +4,8 @@
 # ----------------------------------------------------------------
 
 %include symbols
-%include hsl-sequencer
 
-$render-time <object-time>
-$refresh-time <object-time>
-
-$num-groups 2
-$group-width 8
-$group-time <object-time>
-
-$objects-per-group 2
-$object-time 100
-$object-instance-time 25
-$object-sequencer sine-sequencer
-$object-step 1
-$object-darkening 2
-$smooth-factor 3
-
-$right 0
-$right-start 0
-$right-width <group-width>
-
-$left 1
-$left-start 56
-$left-width <group-width>
-
-%play-macro app
-
-[app 10]
-    start-application
-    (hsl-sequencer-start)
-    (objects-groups-start)
-
-((group <right> <group-time> <right-start> <right-width> <objects-per-group>))
-((group <left>  <group-time> <left-start>  <left-width>  <objects-per-group>))
-
-((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <object-darkening> <smooth-factor>))
-
-# -----------------------------------------------
-
-[[objects-groups-start-template NUM-GROUPS GROUP-WIDTH GROUP-TIME RENDER-TIME OBJECTS-PER-GROUP OBJECT-TIME OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR
+[[objects-groups-start-template NUM-GROUPS GROUP-WIDTH GROUP-TIME RENDER-TIME OBJECTS-PER-GROUP OBJECT-TIME OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO
     [objects-groups-start]
         [[[group-start NUM-GROUPS]]]
         (groups-render GROUP-TIME)
@@ -52,16 +14,16 @@ $left-width <group-width>
     [groups-render]
         [[[group-render NUM-GROUPS]]]
 
-    (((create-objects-for-group NUM-GROUPS OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR)))
+    (((create-objects-for-group NUM-GROUPS OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO)))
 ]]
 
-[[create-objects-for-group GROUP-NUM OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR
-    (((object OBJECTS-PER-GROUP GROUP-NUM `(OBJECT-INSTANCE-TIME*INSTANCE)+OBJECT-TIME` GROUP-WIDTH OBJECT-SEQUENCER `(GROUP-NUM*OBJECTS-PER-GROUP)+INSTANCE` `(GROUP-NUM*-1)*OBJECT-STEP` OBJECT-DARKEN FACTOR)))
+[[create-objects-for-group GROUP-NUM OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO
+    (((object OBJECTS-PER-GROUP GROUP-NUM `(OBJECT-INSTANCE-TIME*INSTANCE)+OBJECT-TIME` GROUP-WIDTH OBJECT-SEQUENCER `(GROUP-NUM*OBJECTS-PER-GROUP)+INSTANCE` `(GROUP-NUM*-1)*OBJECT-STEP` OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO)))
 ]]
 
 # -----------------------------------------------
 
-[[group INSTANCE SCHEDULE START WIDTH OBJECTS-PER-GROUP
+[[group INSTANCE SCHEDULE START WIDTH OBJECTS-PER-GROUP ERASE-MACRO
     [group-start-objects-INSTANCE]
         (((object-start-all OBJECTS-PER-GROUP INSTANCE)))
 
@@ -71,7 +33,7 @@ $left-width <group-width>
     [group-render-INSTANCE]
         (group-set-window-INSTANCE)
         {{
-            erase-buffer
+            (ERASE-MACRO)
         }}
         (((object-render-each OBJECTS-PER-GROUP INSTANCE)))
 
@@ -90,7 +52,7 @@ $left-width <group-width>
     (object-render-GROUP-OBJECT)
 ]]
 
-[[object INSTANCE GROUP SCHEDULE WIDTH SEQ-TYPE COLOR STEP DARKEN-LEVEL FACTOR
+[[object INSTANCE GROUP SCHEDULE WIDTH SEQ-TYPE COLOR STEP DARKEN-LEVEL FACTOR DRAW-MACRO
     [object-start-GROUP-INSTANCE]
         {seq-object-GROUP-INSTANCE}, `WIDTH*FACTOR-1`
         SEQ-TYPE
@@ -113,9 +75,8 @@ $left-width <group-width>
         set-position
         {{
             COLOR
-            add-palette-color
-            DARKEN-LEVEL
-            darken
+            push
+            (DRAW-MACRO)
         }}
 ]]
 
