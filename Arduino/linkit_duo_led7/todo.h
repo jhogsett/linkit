@@ -1,3 +1,10 @@
+// warn if template variables overlap
+
+//Macro doesn't match:
+//Expected: 22:set:6:run:7:run:14:run:15:run:16:run:17:run:18:run:19:run:20:run:21:run:8:run:9:run:11:run:12:run:13:run
+//     Got: 22:set:6:run:7:run:14:run:15:run:16:run:17:run:18:run:19:run:20:run:21:run:8:run:9:run:11:run:12:run:13:0
+
+
 // allow a list of items used with meta-template parceled out to each expansion
 // (((meta-template <num> 5 15 <RED>,<GREEN>,<BLUE> 0,2,3 
 
@@ -35,23 +42,6 @@
 //     }}
 
 //// needed specs:
-//
-//    pending_test("it processes effects")
-//
-//    pending_test("it processes schedules")
-//
-//    pending_test("it times a macro")
-//
-//    pending_test("it sets a random seed")
-//
-//    pending_test("more configuration tests")
-//    # a blink period can be set
-//    # a breathe time can be set
-//
-//    pending_test("scheduling")
-//    # a macro can be scheduled to run
-//    # a macro can be stopped from running
-//    # all macros can be stopped from running
 //
 //     pending_test("mapping")
 //

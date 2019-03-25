@@ -110,6 +110,7 @@ void BreatheEffects::reset()
   breathe_step = 0;
   breathe_counter = 0;
   breathe_direction = 1;
+  breathe_alt = false;
 }
 
 bool BreatheEffects::process()
