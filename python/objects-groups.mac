@@ -1,3 +1,4 @@
+
 # ----------------------------------------------------------------
 # Groups of Objects animation
 # ----------------------------------------------------------------
@@ -13,11 +14,12 @@ $group-width 8
 $group-time <object-time>
 
 $objects-per-group 2
-$object-time 100
-$object-instance-time 20
-$object-sequencer swing-sequencer
+$object-time 150
+$object-instance-time 5
+$object-sequencer sine-sequencer
 $object-step <DEFAULT-STEP>
-$object-darkening 1
+$object-darkening 2
+$smooth-factor 4
 
 $right 0
 $right-start 0
@@ -32,16 +34,16 @@ $left-width <group-width>
 [app 10]
     start-application
     (hsl-sequencer-start)
-    (objects-groups-start)    
+    (objects-groups-start)
 
 ((group <right> <group-time> <right-start> <right-width> <objects-per-group>))
 ((group <left>  <group-time> <left-start>  <left-width>  <objects-per-group>))
 
-((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <object-darkening>))
+((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <object-darkening> <smooth-factor>))
 
 # -----------------------------------------------
 
-[[objects-groups-start-template NUM-GROUPS GROUP-WIDTH GROUP-TIME RENDER-TIME OBJECTS-PER-GROUP OBJECT-TIME OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN
+[[objects-groups-start-template NUM-GROUPS GROUP-WIDTH GROUP-TIME RENDER-TIME OBJECTS-PER-GROUP OBJECT-TIME OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR
     [objects-groups-start]
         [[[group-start NUM-GROUPS]]]
         (groups-render GROUP-TIME)
@@ -50,11 +52,11 @@ $left-width <group-width>
     [groups-render]
         [[[group-render NUM-GROUPS]]]
 
-    (((create-objects-for-group NUM-GROUPS OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN)))
+    (((create-objects-for-group NUM-GROUPS OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR)))
 ]]
 
-[[create-objects-for-group GROUP-NUM OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN
-    (((object OBJECTS-PER-GROUP GROUP-NUM `(OBJECT-INSTANCE-TIME*INSTANCE)+OBJECT-TIME` GROUP-WIDTH OBJECT-SEQUENCER `(GROUP-NUM*OBJECTS-PER-GROUP)+INSTANCE` OBJECT-STEP OBJECT-DARKEN)))
+[[create-objects-for-group GROUP-NUM OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR
+    (((object OBJECTS-PER-GROUP GROUP-NUM `(OBJECT-INSTANCE-TIME*INSTANCE)+OBJECT-TIME` GROUP-WIDTH OBJECT-SEQUENCER `(GROUP-NUM*OBJECTS-PER-GROUP)+INSTANCE` OBJECT-STEP OBJECT-DARKEN FACTOR)))
 ]]
 
 # -----------------------------------------------
@@ -88,9 +90,9 @@ $left-width <group-width>
     (object-render-GROUP-OBJECT)
 ]]
 
-[[object INSTANCE GROUP SCHEDULE WIDTH SEQ-TYPE COLOR STEP DARKEN-LEVEL
+[[object INSTANCE GROUP SCHEDULE WIDTH SEQ-TYPE COLOR STEP DARKEN-LEVEL FACTOR
     [object-start-GROUP-INSTANCE]
-        {seq-object-GROUP-INSTANCE}, WIDTH
+        {seq-object-GROUP-INSTANCE}, `WIDTH*FACTOR-1`
         SEQ-TYPE
 
         (object-step-GROUP-INSTANCE SCHEDULE)
@@ -102,14 +104,18 @@ $left-width <group-width>
     [object-render-GROUP-INSTANCE]
         (group-set-window-GROUP)
 
-        {seq-object-GROUP-INSTANCE}, <GET-CURRENT>
+        {seq-object-GROUP-INSTANCE}, <GET-COMPUTED>
         get-sequence
+        push
+        FACTOR
+        push
+        divide-equals
         set-position
         {{
             COLOR
             add-palette-color
-#            DARKEN-LEVEL
-#            darken
+            DARKEN-LEVEL
+            darken
         }}
 ]]
 
