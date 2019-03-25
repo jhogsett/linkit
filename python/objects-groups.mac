@@ -1,0 +1,82 @@
+
+# ----------------------------------------------------------------
+# Groups of Objects animation
+# ----------------------------------------------------------------
+
+%include symbols
+
+[[objects-groups-start-template NUM-GROUPS GROUP-WIDTH GROUP-TIME RENDER-TIME OBJECTS-PER-GROUP OBJECT-TIME OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO
+    [objects-groups-start]
+        [[[group-start NUM-GROUPS]]]
+        (groups-render GROUP-TIME)
+        (render RENDER-TIME)
+
+    [groups-render]
+        [[[group-render NUM-GROUPS]]]
+
+    (((create-objects-for-group NUM-GROUPS OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO)))
+]]
+
+[[create-objects-for-group GROUP-NUM OBJECTS-PER-GROUP OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO
+    (((object OBJECTS-PER-GROUP GROUP-NUM `(OBJECT-INSTANCE-TIME*INSTANCE)+OBJECT-TIME` GROUP-WIDTH OBJECT-SEQUENCER `(GROUP-NUM*OBJECTS-PER-GROUP)+INSTANCE` `(GROUP-NUM*-1)*OBJECT-STEP` OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO)))
+]]
+
+# -----------------------------------------------
+
+[[group INSTANCE SCHEDULE START WIDTH OBJECTS-PER-GROUP ERASE-MACRO
+    [group-start-objects-INSTANCE]
+        (((object-start-all OBJECTS-PER-GROUP INSTANCE)))
+
+    [group-start-INSTANCE]
+        (group-start-objects-INSTANCE)
+
+    [group-render-INSTANCE]
+        (group-set-window-INSTANCE)
+        {{
+            (ERASE-MACRO)
+        }}
+        (((object-render-each OBJECTS-PER-GROUP INSTANCE)))
+
+    [group-set-window-INSTANCE]
+        START, WIDTH
+        set-position
+]]
+
+# -----------------------------------------------
+
+[[object-start-all OBJECT GROUP
+    (object-start-GROUP-OBJECT)
+]]
+
+[[object-render-each OBJECT GROUP
+    (object-render-GROUP-OBJECT)
+]]
+
+[[object INSTANCE GROUP SCHEDULE WIDTH SEQ-TYPE COLOR STEP DARKEN-LEVEL FACTOR DRAW-MACRO
+    [object-start-GROUP-INSTANCE]
+        {seq-object-GROUP-INSTANCE}, `WIDTH*FACTOR-1`
+        SEQ-TYPE
+
+        (object-step-GROUP-INSTANCE SCHEDULE)
+
+    [object-step-GROUP-INSTANCE]
+        {seq-object-GROUP-INSTANCE}, <GET-NEXT>, STEP
+        advance-sequence
+
+    [object-render-GROUP-INSTANCE]
+        (group-set-window-GROUP)
+
+        {seq-object-GROUP-INSTANCE}, <GET-COMPUTED>
+        get-sequence
+        push
+        FACTOR
+        push
+        divide-equals
+        set-position
+        {{
+            COLOR
+            push
+            (DRAW-MACRO)
+        }}
+]]
+

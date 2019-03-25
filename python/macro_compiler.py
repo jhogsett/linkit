@@ -232,13 +232,13 @@ def pre_process_script(script_lines):
     new_lines = remove_blank_lines(script_lines)
     new_lines = remove_comments(new_lines)
     new_lines = pre_rewrite(new_lines)
-    report_verbose_script(new_lines, "script after blank line, comment and colon removal")
+    #report_verbose_script(new_lines, "script after blank line, comment and colon removal")
 
     new_lines = translate_commands(new_lines)
     report_verbose_script(new_lines, "script after command translation")
 
     new_lines = process_directives(new_lines)
-    report_verbose_script(new_lines, "script after processing directives")
+    #report_verbose_script(new_lines, "script after processing directives")
     ingest_directives()
 
     new_lines = process_set_variables(new_lines)
@@ -253,24 +253,39 @@ def pre_process_script(script_lines):
     new_lines = process_get_variables(new_lines)
     report_verbose_script(new_lines, "script after replacing variables")
 
-    new_lines = expand_multi_macros(new_lines)
-    report_verbose_script(new_lines, "script after expanding multi macros")
+    new_lines = capture_expand_loop(new_lines)
+    report_verbose_script(new_lines, "script after capture-expand loop")
 
-    new_lines = capture_templates(new_lines)
-    report_verbose_script(new_lines, "script after capturing templates")
+    new_lines = expand_meta_loop(new_lines)
+    report_verbose_script(new_lines, "script after expand-meta loop")
 
-    new_lines = expand_meta_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding meta templates")
+    return new_lines
 
-    new_lines = expand_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding templates")
+def capture_expand_loop(script_lines):
+    orig_lines = script_lines
+    new_lines = script_lines
+    passnum = 1
+    while(True):
+        ui.report_verbose_alt("capture_expand_loop pass #" + str(passnum))
+        orig_lines = new_lines
+        new_lines = capture_templates(new_lines)
+        new_lines = expand_templates(new_lines)
+        new_lines = expand_multi_macros(new_lines)
+        if new_lines == orig_lines:
+            break
+    return new_lines
 
-    new_lines = expand_meta_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding meta templates pass #2")
-
-    new_lines = expand_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding templates pass #2")
-
+def expand_meta_loop(script_lines):
+    orig_lines = script_lines
+    new_lines = script_lines
+    passnum = 1
+    while(True):
+        ui.report_verbose_alt("expand_meta_loop pass #" + str(passnum))
+        orig_lines = new_lines
+        new_lines = expand_meta_templates(new_lines)
+        new_lines = expand_templates(new_lines)
+        if new_lines == orig_lines:
+            break
     return new_lines
 
 ## ----------------------------------------------------

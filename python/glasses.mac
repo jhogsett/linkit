@@ -1,0 +1,118 @@
+
+# ----------------------------------------------------------------
+# Groups of Objects animation
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+%include objects-groups
+
+$render-time <object-time>
+$refresh-time <object-time>
+
+$num-groups 2
+$group-width 8
+$group-time <object-time>
+
+$objects-per-group 2
+$object-time 100
+$object-instance-time 25
+$object-sequencer sine-sequencer
+$object-step 1
+$object-darkening 2
+$smooth-factor 3
+
+$eye-start 8
+$eye-mid 32
+$eye-width 48
+$eye-size 24
+
+$right 0
+$right-start 0
+$right-width <group-width>
+
+$left 1
+$left-start 56
+$left-width <group-width>
+
+%play-macro cool
+
+[cool 10]
+    start-application
+    (hsl-sequencer-start)
+    (objects-groups-start)
+
+    <WHITE>
+    push
+    (set-eye-color)
+
+[warm 11]
+    start-application
+    (hsl-sequencer-start)
+    (objects-groups-start)
+
+    <TUNGSTEN>
+    push
+    (set-eye-color)
+
+[dark 12]
+    start-application
+    (set-red-palette)
+    (objects-groups-start)
+
+    <RED>
+    push
+    (set-eye-color)
+
+[fun 13]
+    start-application
+    (hsl-sequencer-start)
+    (objects-groups-start)
+
+    <eye-start>, <eye-size>
+    set-position
+    {{
+        <RED>
+        add-dynamic-color
+        fill
+    }}
+
+    <eye-mid>, <eye-size>
+    set-position
+    {{
+        <GREEN>
+        add-dynamic-color
+        fill
+    }}
+
+
+((group <right> <group-time> <right-start> <right-width> <objects-per-group> erase-group))
+((group <left>  <group-time> <left-start>  <left-width>  <objects-per-group> erase-group))
+((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <object-darkening> <smooth-factor> draw-object))
+
+
+[erase-group]
+    erase-buffer
+
+[draw-object]
+    pop
+    add-palette-color
+
+[set-red-palette]
+    6
+    red
+    6, <COPY>
+    copy
+    erase-buffer
+
+[set-eye-color]
+    <eye-start>, <eye-width>
+    set-position
+    {{
+        <FIXED-PALETTE>
+        recall
+        add-palette-color
+
+        fill
+    }}
+
