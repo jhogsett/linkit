@@ -23,7 +23,9 @@ $object-darkening 2
 $smooth-factor 3
 
 $eye-start 8
+$eye-mid 32
 $eye-width 48
+$eye-size 24
 
 $right 0
 $right-start 0
@@ -39,6 +41,7 @@ $left-width <group-width>
     start-application
     (hsl-sequencer-start)
     (objects-groups-start)
+
     <WHITE>
     push
     (set-eye-color)
@@ -47,6 +50,7 @@ $left-width <group-width>
     start-application
     (hsl-sequencer-start)
     (objects-groups-start)
+
     <TUNGSTEN>
     push
     (set-eye-color)
@@ -55,6 +59,7 @@ $left-width <group-width>
     start-application
     (set-red-palette)
     (objects-groups-start)
+
     <RED>
     push
     (set-eye-color)
@@ -63,10 +68,22 @@ $left-width <group-width>
     start-application
     (hsl-sequencer-start)
     (objects-groups-start)
-    24
-    get-random-number
-    push
-    (set-eye-color)
+
+    <eye-start>, <eye-size>
+    set-position
+    {{
+        <RED>
+        add-dynamic-color
+        fill
+    }}
+
+    <eye-mid>, <eye-size>
+    set-position
+    {{
+        <GREEN>
+        add-dynamic-color
+        fill
+    }}
 
 
 ((group <right> <group-time> <right-start> <right-width> <objects-per-group> erase-group))
