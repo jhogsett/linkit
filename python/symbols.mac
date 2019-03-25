@@ -62,14 +62,14 @@ $TURQUOISE 15
 $LAVENDER 16
 $ROSE 17
 
-# not part of palette yet
-#$DKGRAY 18
-#$GRAY 19
-#$WHITE 20
-#$TUNGSTEN 21
-#$NEON 22
-#$SODIUM 23
-#$BLACK 24
+# from the fixed palette
+$DKGRAY 18
+$GRAY 19
+$WHITE 20
+$TUNGSTEN 21
+$NEON 22
+$SODIUM 23
+$BLACK 24
 
 # random position type
 $RANDOM-POSITION-ANY 0
