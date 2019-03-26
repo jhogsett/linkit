@@ -99,7 +99,7 @@ long_commands = {
  "set-brightness" : "lev",
  "do-fade-animation" : "fad",
  "do-animated-rotation" : "art",
- "do_crossfade" : "cfa",
+ "do-crossfade" : "cfa",
  "set-random-blink" : "blr",
  "set-random-effect" : "efr",
  "test" : "tst",
