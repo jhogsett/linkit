@@ -1,3 +1,9 @@
+// scramble buffer, either completely random or remix
+
+// new inquiry: whether red and green are being swapped; add spec to cover rendering in a swap situation
+
+// dynamic colors should support > palette colors
+
 // warn if template variables overlap
 
 //Macro doesn't match:

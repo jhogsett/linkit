@@ -22,7 +22,7 @@
 
 // single 90-LED strip for dev
 // blinkit
-#define LED_STRIP_90
+// #define LED_STRIP_90
 
 // 2 50-led strands
 // decoration3
@@ -55,7 +55,7 @@
 
 // single 50-LED strand
 // sphere2
-// #define LED_STRAND_50
+#define LED_STRAND_50
 
 // 64-LED Glasses
 // #define WEARABLE_AND_GLASSES
@@ -304,6 +304,8 @@
 #define SWAP_REDGREEN
 #define ANIM_LED_COUNT 50
 #define ZONES_STRAND_50
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
 #define DEFAULT_BRIGHTNESS_PERCENT 25
 #define MAX_BRIGHTNESS_PERCENT     40 // symbolized auto brightness levels
 #define HIGH_BRIGHTNESS_PERCENT    30
