@@ -1,0 +1,13 @@
+$value 3
+
+[macro 10]
+  blue
+  ((test <value> `<value>*3`))
+
+[[test X Y
+  [macro-X]
+    `Y*2`
+     add-palette-color
+     refresh-display
+]]
+
