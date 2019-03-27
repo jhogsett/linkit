@@ -549,7 +549,7 @@ def expand_meta_templates(script_lines):
         line = line.strip()
         # do any variable replacements that can be done
         line = replace_all_variables(line) 
-        args = utils.extract_args(line, "(((", ")))") #, {"[","]"})
+        args = utils.extract_args(line, "(((", ")))", {"[":"]"})
         if len(args) >= 2:
             template_name = args[0]
             index_arg = args[1]
