@@ -508,14 +508,15 @@ def expand_multi_macros(script_lines):
             start, end = utils.locate_delimiters(num_instance_arg, "`", "`")
             if start != -1 and end != -1:
                 expression = utils.extract_contents(num_instance_arg, "`", "`")
-                num_instance_max = eval(expression)
+                try:
+                    num_instance_max = eval(expression)
+                except StandardError:
+                    raise ValueError("Multi macro cannot be expanded due to unprocessable argument: '" + num_instance_arg + "'");
             else:
                 try:
                     num_instance_max = int(num_instance_arg)
                 except ValueError:
                     raise ValueError("Multi macro cannot be expanded due to unresolved non-integer argument: " + num_instance_arg);
-                except:
-                    raise ValueError("Multi macro cannot be expanded due to unprocessable argument: " + num_instance_arg);
 
             # remaining argument, if any, is the optional schedule replacement
             schedule = " ".join(args[2:])
@@ -547,24 +548,24 @@ def expand_meta_templates(script_lines):
     for line in script_lines:
         line = line.strip()
         # do any variable replacements that can be done
-        line = replace_all_variables(line) # ?????
+        line = replace_all_variables(line) 
         args = utils.extract_args(line, "(((", ")))")
         if len(args) >= 2:
-            args = utils.extract_args(line, "(((", ")))")
             template_name = args[0]
             index_arg = args[1]
             index_max = None
             start, end = utils.locate_delimiters(index_arg, "`", "`")
             if start != -1 and end != -1:
                 expression = utils.extract_contents(index_arg, "`", "`")
-                index_max = eval(expression)
+                try:
+                    index_max = eval(expression)
+                except StandardError:
+                    raise ValueError("Meta template cannot be expanded due to unprocessable argument: '" + index_arg + "'");                  
             else:
                 try:
                     index_max = int(index_arg)
                 except ValueError:
                     raise ValueError("Meta template cannot be expanded due to unresolved non-integer argument: " + index_arg);
-                except:
-                    raise ValueError("Meta template cannot be expanded due to unprocessable argument: " + index_arg);
             # remaining arguments, if any, are the search replacements
             replacements = " ".join(args[2:])
             for index in range(0, index_max):
