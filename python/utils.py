@@ -177,3 +177,57 @@ def replace_args(line, start_delimiter, end_delimiter, replacement, outer=False)
         return line[0:start] + str(replacement) + line[end + 1:]
     return line
 
+def smart_split(input_str, grouping_dict = {'"':'"'}, keep_grouping_chars=False, split_str=" "):
+    final_split = []
+    capture_mode = False
+    capture_starter = None
+    capture_ender = None
+    capture_builder = []
+
+    parts = input_str.split(split_str)
+    num_parts = len(parts)
+
+    grouping_starts = grouping_dict.keys()
+    grouping_ends = grouping_dict.values()
+    num_grouping_keys = len(grouping_starts)
+
+    for p in range(0, num_parts):
+        part = parts[p]
+
+        if num_grouping_keys > 0:
+            if capture_mode:
+                if part.endswith(capture_ender):
+                    capture_mode = False
+                    capture_builder.append(part)
+                    captured = split_str.join(capture_builder)
+                    capture_builder = []
+                    if keep_grouping_chars == False:
+                        group_starter_size = len(capture_starter)
+                        group_ender_size = len(capture_ender)
+                        captured = captured[group_starter_size:-group_ender_size]
+                    final_split.append(captured)
+                else:
+                    capture_builder.append(part)
+                continue
+
+            for i in range(0, num_grouping_keys):
+                capture_starter = grouping_starts[i]
+                if part.startswith(capture_starter):
+                    capture_ender = grouping_ends[i];
+                    if not part.endswith(capture_ender):
+                        capture_mode = True
+                        capture_ender = grouping_ends[i];
+                        capture_builder.append(part)
+                    break
+
+            if capture_mode:
+                continue
+
+        final_split.append(part)
+
+    if len(capture_builder) > 0:
+        raise ValueError("utils.smart_split() unable to parse due to unbalanced grouping: " + input_str)
+
+    return final_split
+
+
