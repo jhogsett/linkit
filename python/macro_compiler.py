@@ -470,6 +470,7 @@ def capture_templates(script_lines):
             if "[[" in line and "[[[" not in line:
                 args = utils.get_key_args(line, "[[")
                 template_name = args[0]
+                check_for_argument_collision(args[1:])
                 combined_args = " ".join(args[1:])
                 # store the search strings that will be replaced with passed arguments later
                 template_builder.append(combined_args)
@@ -477,6 +478,18 @@ def capture_templates(script_lines):
             else:
                 new_lines.append(line)
     return new_lines
+
+def check_for_argument_collision(arguments):
+    num_args = len(arguments)
+    for a in range(0, num_args):
+        for b in range(0, num_args):
+            arg_a = arguments[a]
+            arg_b = arguments[b]
+            if a != b:
+                if arg_a == arg_b:
+                    raise ValueError("Template has duplicate argument '" + arg_a + "'")
+                if arg_a in arg_b or arg_b in arg_a:
+                    raise ValueError("Template has interfering arguments '" + arg_a + "' and '" + arg_b + "'")
 
 ## ----------------------------------------------------
 

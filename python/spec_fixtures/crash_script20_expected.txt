@@ -1,0 +1,2 @@
+Variable 'set-to-nothing' was given no value.
+
