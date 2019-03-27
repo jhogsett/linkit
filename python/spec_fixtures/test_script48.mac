@@ -1,0 +1,23 @@
+
+[qpp]
+  [[[start `1 + 1`]]]
+
+(((template `1 + 1`)))
+
+(((start 2)))
+
+[[template A
+  [macro-A]
+    `1 + 1`
+    blue
+
+<<< `1 == 1`
+    red
+>>>
+]]
+
+[[start A
+  [start-A]
+    green
+]]
+
