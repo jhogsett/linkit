@@ -549,7 +549,7 @@ def expand_meta_templates(script_lines):
         line = line.strip()
         # do any variable replacements that can be done
         line = replace_all_variables(line) 
-        args = utils.extract_args(line, "(((", ")))")
+        args = utils.extract_args(line, "(((", ")))") #, {"[","]"})
         if len(args) >= 2:
             template_name = args[0]
             index_arg = args[1]
@@ -566,10 +566,44 @@ def expand_meta_templates(script_lines):
                     index_max = int(index_arg)
                 except ValueError:
                     raise ValueError("Meta template cannot be expanded due to unresolved non-integer argument: " + index_arg);
-            # remaining arguments, if any, are the search replacements
-            replacements = " ".join(args[2:])
+
+            replacements = {}
+            replacement_args = args[2:]
+            num_replacements = len(replacement_args)
+
+            for i in range(0, num_replacements):
+                replacement = replacement_args[i]
+
+                if replacement.startswith("[") and replacement.endswith("]"):
+                    replacement = replacement[1:-1]
+                    parts = replacement.split(",")
+                    num_parts = len(parts)
+
+                    if num_parts < index_max:
+                        raise ValueError("Meta template cannot be expanded due to fewer than " + str(index_max) + " replacements in list: [" + replacement + "]")
+
+                    parts_list = []
+                    for j in range(0, num_parts):
+                        part = parts[j].strip()
+                        parts_list.append(part)
+                    replacements[i] = parts_list
+
+                else:
+                    replacements[i] = replacement
+
             for index in range(0, index_max):
-                new_line = "((" + template_name + " " + str(index) + " " + replacements + "))"
+                replacement_round = []
+
+                for j in range(0, len(replacements.keys())):
+                    replacement = replacements[j]
+                    if isinstance(replacement, list):
+                        parts_list = replacement
+                        replacement_round.append(parts_list[index])
+                    else:
+                        replacement_round.append(replacement)
+                replacement_str = " ".join(replacement_round)
+
+                new_line = "((" + template_name + " " + str(index) + " " + replacement_str + "))"
                 new_lines.append(new_line)
         else:
             new_lines.append(line)
