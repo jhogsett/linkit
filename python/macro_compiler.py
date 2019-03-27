@@ -616,7 +616,7 @@ def expand_templates(script_lines):
     for line in script_lines:
         line = line.strip()
         if "((" in line and "(((" not in line:
-            args = utils.extract_args(line, "((", "))")
+            args = utils.extract_args(line, "((", "))", {"`":"`"})
             if len(args) > 0:
                 template_name = args[0]
                 # remaining arguments, if any, are the search replacements
@@ -752,7 +752,9 @@ def process_evaluate_python(line):
                     #ui.report_verbose_alt2("skipping segment with unresolved: " + expression)
                     new_line.append(segment)
             else:
-                new_line.append(segment)
+                # guard against empty expression
+                if segment != "``":
+                    new_line.append(segment)
         result = ",".join(new_line)
         #ui.report_verbose_alt2("line returned by process_evaluate_python: " + result)
         return result
