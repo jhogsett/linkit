@@ -232,17 +232,17 @@ def pre_process_script(script_lines):
     new_lines = remove_blank_lines(script_lines)
     new_lines = remove_comments(new_lines)
     new_lines = pre_rewrite(new_lines)
-    report_verbose_script(new_lines, "script after blank line, comment and colon removal")
+    #report_verbose_script(new_lines, "script after blank line, comment and colon removal")
 
     new_lines = translate_commands(new_lines)
     report_verbose_script(new_lines, "script after command translation")
 
     new_lines = process_directives(new_lines)
-    report_verbose_script(new_lines, "script after processing directives")
+    #report_verbose_script(new_lines, "script after processing directives")
     ingest_directives()
 
     new_lines = process_set_variables(new_lines)
-    report_verbose_script(new_lines, "script after capturing variables")
+    #report_verbose_script(new_lines, "script after capturing variables")
 
     new_lines = process_conditionals(new_lines)
     report_verbose_script(new_lines, "script after processing conditionals")
@@ -253,24 +253,53 @@ def pre_process_script(script_lines):
     new_lines = process_get_variables(new_lines)
     report_verbose_script(new_lines, "script after replacing variables")
 
-    new_lines = expand_multi_macros(new_lines)
-    report_verbose_script(new_lines, "script after expanding multi macros")
+    new_lines = capture_expand_loop(new_lines)
+    report_verbose_script(new_lines, "script after capture-expand loop")
 
-    new_lines = capture_templates(new_lines)
-    report_verbose_script(new_lines, "script after capturing templates")
+    new_lines = expand_meta_loop(new_lines)
+    report_verbose_script(new_lines, "script after expand-meta loop")
 
-    new_lines = expand_meta_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding meta templates")
+    return new_lines
 
-    new_lines = expand_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding templates")
+def capture_expand_loop(script_lines):
+    orig_lines = script_lines
+    new_lines = script_lines
+    passnum = 1
+    while(True):
+        ui.report_verbose_alt("capture_expand_loop pass #" + str(passnum))
+        passnum += 1
+        orig_lines = new_lines
 
-    new_lines = expand_meta_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding meta templates pass #2")
+        new_lines = capture_templates(new_lines)
+        #report_verbose_script(new_lines, "script after capturing templates")
 
-    new_lines = expand_templates(new_lines)
-    report_verbose_script(new_lines, "script after expanding templates pass #2")
+        new_lines = expand_templates(new_lines)
+        #report_verbose_script(new_lines, "script after expanding templates")
 
+        new_lines = expand_multi_macros(new_lines)
+        #report_verbose_script(new_lines, "script after expanding multi-macros")
+
+        if new_lines == orig_lines:
+            break
+    return new_lines
+
+def expand_meta_loop(script_lines):
+    orig_lines = script_lines
+    new_lines = script_lines
+    passnum = 1
+    while(True):
+        ui.report_verbose_alt("expand_meta_loop pass #" + str(passnum))
+        passnum += 1
+        orig_lines = new_lines
+
+        new_lines = expand_meta_templates(new_lines)
+        #report_verbose_script(new_lines, "script after expanding meta templates")
+
+        new_lines = expand_templates(new_lines)
+        #report_verbose_script(new_lines, "script after expanding templates")
+
+        if new_lines == orig_lines:
+            break
     return new_lines
 
 ## ----------------------------------------------------
@@ -431,16 +460,17 @@ def capture_templates(script_lines):
     for line in script_lines:
         line = line.strip()
         if capture_mode:
-            if line.startswith("]]"):
+            if line.startswith("]]") and not line.startswith("]]]"):
                 capture_mode = False
                 set_resolved(template_name, template_builder)
                 template_builder = []
             else:
                 template_builder.append(line)
         else:
-            if "[[" in line:
+            if "[[" in line and "[[[" not in line:
                 args = utils.get_key_args(line, "[[")
                 template_name = args[0]
+                check_for_argument_collision(args[1:])
                 combined_args = " ".join(args[1:])
                 # store the search strings that will be replaced with passed arguments later
                 template_builder.append(combined_args)
@@ -448,6 +478,18 @@ def capture_templates(script_lines):
             else:
                 new_lines.append(line)
     return new_lines
+
+def check_for_argument_collision(arguments):
+    num_args = len(arguments)
+    for a in range(0, num_args):
+        for b in range(0, num_args):
+            arg_a = arguments[a]
+            arg_b = arguments[b]
+            if a != b:
+                if arg_a == arg_b:
+                    raise ValueError("Template has duplicate argument '" + arg_a + "'")
+                if arg_a in arg_b or arg_b in arg_a:
+                    raise ValueError("Template has interfering arguments '" + arg_a + "' and '" + arg_b + "'")
 
 ## ----------------------------------------------------
 
@@ -458,7 +500,7 @@ def expand_multi_macros(script_lines):
         line = line.strip()
         # do any variable replacements that can be done
         line = replace_all_variables(line)
-        args = utils.extract_args(line, "[[[", "]]]")
+        args = utils.extract_args(line, "[[[", "]]]", {"`":"`"})
         if len(args) >= 2:
             macro_name = args[0]
             num_instance_arg = args[1]
@@ -466,14 +508,15 @@ def expand_multi_macros(script_lines):
             start, end = utils.locate_delimiters(num_instance_arg, "`", "`")
             if start != -1 and end != -1:
                 expression = utils.extract_contents(num_instance_arg, "`", "`")
-                num_instance_max = eval(expression)
+                try:
+                    num_instance_max = eval(expression)
+                except StandardError:
+                    raise ValueError("Multi macro cannot be expanded due to unprocessable argument: '" + num_instance_arg + "'");
             else:
                 try:
                     num_instance_max = int(num_instance_arg)
                 except ValueError:
                     raise ValueError("Multi macro cannot be expanded due to unresolved non-integer argument: " + num_instance_arg);
-                except:
-                    raise ValueError("Multi macro cannot be expanded due to unprocessable argument: " + num_instance_arg);
 
             # remaining argument, if any, is the optional schedule replacement
             schedule = " ".join(args[2:])
@@ -505,28 +548,62 @@ def expand_meta_templates(script_lines):
     for line in script_lines:
         line = line.strip()
         # do any variable replacements that can be done
-        line = replace_all_variables(line) # ?????
-        args = utils.extract_args(line, "(((", ")))")
+        line = replace_all_variables(line) 
+        args = utils.extract_args(line, "(((", ")))", {"[" : "]", "`" : "`"})
         if len(args) >= 2:
-            args = utils.extract_args(line, "(((", ")))")
             template_name = args[0]
             index_arg = args[1]
             index_max = None
             start, end = utils.locate_delimiters(index_arg, "`", "`")
             if start != -1 and end != -1:
                 expression = utils.extract_contents(index_arg, "`", "`")
-                index_max = eval(expression)
+                try:
+                    index_max = eval(expression)
+                except StandardError:
+                    raise ValueError("Meta template cannot be expanded due to unprocessable argument: '" + index_arg + "'");                  
             else:
                 try:
                     index_max = int(index_arg)
                 except ValueError:
                     raise ValueError("Meta template cannot be expanded due to unresolved non-integer argument: " + index_arg);
-                except:
-                    raise ValueError("Meta template cannot be expanded due to unprocessable argument: " + index_arg);
-            # remaining arguments, if any, are the search replacements
-            replacements = " ".join(args[2:])
+
+            replacements = {}
+            replacement_args = args[2:]
+            num_replacements = len(replacement_args)
+
+            for i in range(0, num_replacements):
+                replacement = replacement_args[i]
+
+                if replacement.startswith("[") and replacement.endswith("]"):
+                    replacement = replacement[1:-1]
+                    parts = replacement.split(",")
+                    num_parts = len(parts)
+
+                    if num_parts < index_max:
+                        raise ValueError("Meta template cannot be expanded due to fewer than " + str(index_max) + " replacements in list: [" + replacement + "]")
+
+                    parts_list = []
+                    for j in range(0, num_parts):
+                        part = parts[j].strip()
+                        parts_list.append(part)
+                    replacements[i] = parts_list
+
+                else:
+                    replacements[i] = replacement
+
             for index in range(0, index_max):
-                new_line = "((" + template_name + " " + str(index) + " " + replacements + "))"
+                replacement_round = []
+
+                for j in range(0, len(replacements.keys())):
+                    replacement = replacements[j]
+                    if isinstance(replacement, list):
+                        parts_list = replacement
+                        replacement_round.append(parts_list[index])
+                    else:
+                        replacement_round.append(replacement)
+                replacement_str = " ".join(replacement_round)
+
+                new_line = "((" + template_name + " " + str(index) + " " + replacement_str + "))"
                 new_lines.append(new_line)
         else:
             new_lines.append(line)
@@ -539,7 +616,7 @@ def expand_templates(script_lines):
     for line in script_lines:
         line = line.strip()
         if "((" in line and "(((" not in line:
-            args = utils.extract_args(line, "((", "))")
+            args = utils.extract_args(line, "((", "))", {"`":"`"})
             if len(args) > 0:
                 template_name = args[0]
                 # remaining arguments, if any, are the search replacements
@@ -675,7 +752,9 @@ def process_evaluate_python(line):
                     #ui.report_verbose_alt2("skipping segment with unresolved: " + expression)
                     new_line.append(segment)
             else:
-                new_line.append(segment)
+                # guard against empty expression
+                if segment != "``":
+                    new_line.append(segment)
         result = ",".join(new_line)
         #ui.report_verbose_alt2("line returned by process_evaluate_python: " + result)
         return result
@@ -696,25 +775,26 @@ def process_set_variable(line):
 
             # see if line has a variable setting
             args = utils.get_key_args(line, "$")
-            if len(args) >= 2:
 
+	    if len(args) > 0:
                 variable_name = args[0]
+                if len(args) >= 2:
+                    if variable_name in presets:
+                        # override this variable with the preset
+                        return ''
 
-                if variable_name in presets:
-                    # override this variable with the preset
+                    # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
+                    variable_value = line[len(variable_name) + 1:].strip()
+
+                    # can only set if not already set, or a preset that allows overwriting
+                    if not immutable_resolved_value(variable_name, variable_value):
+                        #ui.report_verbose("process_set_variable settings {}={}".format(variable_name, variable_value))
+                        set_resolved(variable_name, variable_value)
+
+                    # return a blank line now that this one is consumed
                     return ''
-
-                # instead of taking arg #2, set the variable to the remainder of the line, so it can include spaces
-                variable_value = line[len(variable_name) + 1:].strip()
-
-                # can only set if not already set, or a preset that allows overwriting
-                if not immutable_resolved_value(variable_name, variable_value):
-                    #ui.report_verbose("process_set_variable settings {}={}".format(variable_name, variable_value))
-                    set_resolved(variable_name, variable_value)
-
-                # return a blank line now that this one is consumed
-                return ''
-
+                else:
+                    raise ValueError("Variable '" + variable_name + "' was given no value.")
     return line
 
 ## ----------------------------------------------------

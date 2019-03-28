@@ -1,0 +1,7 @@
+4:set:2:blu:red
+5:set:2:blu:red
+6:set:9:run
+7:set:grn
+8:set:grn
+9:set:7:run:8:run
+

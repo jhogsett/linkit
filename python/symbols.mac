@@ -22,6 +22,7 @@ $SEQ-RESET -9
 $GET-PREVIOUS -10
 $GET-PREV-COMPUTED -11
 $GET-NEXT-NO-SAVE -12
+$DEFAULT-STEP 0
 
 # draw modes
 $DRAW-WRITE 0
@@ -61,14 +62,15 @@ $TURQUOISE 15
 $LAVENDER 16
 $ROSE 17
 
-# not part of palette yet
-#$DKGRAY 18
-#$GRAY 19
-#$WHITE 20
-#$TUNGSTEN 21
-#$NEON 22
-#$SODIUM 23
-#$BLACK 24
+# from the fixed palette
+$DKGRAY 18
+$GRAY 19
+$WHITE 20
+$TUNGSTEN 21
+$NEON 22
+$SODIUM 23
+$BLACK 24
+$FIXED-PALETTE -1
 
 # random position type
 $RANDOM-POSITION-ANY 0
@@ -105,6 +107,10 @@ $MEDIUM-HEAVY 4
 $HEAVY 5
 $VERY-HEAVY 6
 $EXTREME 7
+
+# reverse
+$REVERSE-ENABLED 1
+$REVERSE-DISABLED 0
 
 # standard render function, consumes partial final macro
 [render !]

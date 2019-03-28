@@ -1,0 +1,270 @@
+# ----------------------------------------------------------------
+# Groups of Objects animation
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+
+$draw-mode <DRAW-WRITE>
+$brightness <BRIGHTNESS-AUTO>
+$render-time <object-time>
+$refresh-time <object-time>
+$use-erase False
+$draw-background False
+$use-fade True
+$use-next-window False
+
+$num-groups 3
+$group-width 15
+$group-time 25
+$group-instance-time 10
+$group-sequencer sine-sequencer
+$group-step <DEFAULT-STEP>
+$background-darkening 3
+
+$objects-per-group 2
+$object-time 20
+$object-instance-time 6
+$object-sequencer sine-sequencer
+$object-step <DEFAULT-STEP>
+
+%allow-mutability
+$HSL-ANGLE 60 #`int(360/(<num-groups>*<objects-per-group>))`
+
+%play-macro app
+
+# ------------------------------------------
+# main app macro
+# ------------------------------------------
+
+[app 10]
+    start-application
+
+<<< <draw-mode> != <DRAW-WRITE> 
+    # set the preset draw mode
+    <draw-mode>
+    set-draw-mode
+>>>
+
+<<< <brightness> != <BRIGHTNESS-AUTO>
+    # set the preset brightness level
+    <brightness>
+    set-brightness
+>>>
+
+    # multi macro replaced with a macro run to a 
+    # new macro that will run each start-up macro
+    [[[group-start <num-groups>]]]
+
+    # schedule animation rendering
+    (groups-render <render-time>)
+
+    # schuedule display refreshing
+    (render <refresh-time>)
+
+    # start the color palette cycling
+    (hsl-sequencer-start)
+
+
+# ------------------------------------------
+# main app animation rendering
+# ------------------------------------------
+
+[groups-render]
+<<< <use-erase>
+    <FAST-ERASE-BUFFER>
+    erase-buffer
+>>>
+
+    # multi macro replaced with a macro run to a 
+    # new macro that will run each render macro
+    [[[group-render <num-groups>]]]
+
+
+# ------------------------------------------
+# create animation objects
+# ------------------------------------------
+
+# expand group template per number of groups
+(((group <num-groups> `<group-instance-time>*INSTANCE+<group-time>` <group-width> `<NUM-LEDS>-<group-width>` <group-sequencer>)))
+
+<<< <objects-per-group> > 0
+# expand template to place object-creating meta templates for each group
+(((create-objects-for-group <num-groups>)))
+
+
+# template for adding object-creating meta templates
+[[create-objects-for-group GROUP
+    # meta template to create object(s) for a group
+    (((object <objects-per-group> GROUP `<num-groups>*INSTANCE*<object-instance-time>+<object-time>` <group-width> <object-sequencer> `GROUP+INSTANCE+<RED>`)))
+]]
+>>>
+
+# ------------------------------------------
+# group template - manages a moving region
+# object that has child objects
+# ------------------------------------------
+
+[[group INSTANCE SCHEDULE WIDTH MAX SEQ-TYPE
+
+<<< <objects-per-group> > 0
+    # expand meta template to run all object start macros
+    [group-start-objects-INSTANCE]
+        (((object-start-all <objects-per-group> INSTANCE)))
+>>>
+    # start this group instance
+    [group-start-INSTANCE]
+        # create this group's position sequencer
+        {seq-group-INSTANCE}, MAX
+        SEQ-TYPE
+
+<<< <objects-per-group> > 0
+        # run the object start macros
+        (group-start-objects-INSTANCE)
+>>>
+
+        # schedule this group's animation rendering
+        (group-step-INSTANCE SCHEDULE)
+
+    # advance this group forwar one animation step
+    [group-step-INSTANCE]
+        {seq-group-INSTANCE},<GET-NEXT>,<group-step>
+        advance-sequence
+
+<<< <draw-background>
+    # macro to draw the group background
+    [group-background-INSTANCE]
+        # push the instance as a palette color onto the stack
+        INSTANCE
+        store
+
+        # run the background drawing macro
+        {{
+          (group-draw-background)
+        }}
+>>>
+
+    # render this group instance and its child objects        
+    [group-render-INSTANCE]
+        # set the viewport to the group bounds
+        (group-set-window-INSTANCE)
+
+<<< <draw-background>
+        # render the background
+        (group-background-INSTANCE)
+>>>
+
+<<< <objects-per-group> > 0
+	# render the foreground
+        # meta template expands to run each object render macro
+        (((object-render-each <objects-per-group> INSTANCE)))
+>>>
+
+    # set the viewport to only this group
+    [group-set-window-INSTANCE]
+        # put the sequencer arguments on the stack
+        {seq-group-INSTANCE}, <GET-COMPUTED>
+        store
+
+        # run the helper macro to set the viewport
+        (group-set-viewport)
+]]
+
+# ------------------------------------------
+# group helper macros
+# ------------------------------------------
+
+<<< <draw-background>
+# accum0: background palette color
+[group-draw-background]
+    pop
+    add-palette-color
+    <background-darkening>
+    darken    
+    <FILL-COLORS>
+    fill
+>>>
+
+# set the offset and window to cover the group's current position
+# accum0-3: sequence get current value arguments
+[group-set-viewport]
+    # get the passed sequencer arguments
+    recall
+
+    # get the sequence current value
+    # this is the group viewport lower bounds
+    get-sequence
+
+    # push the lower bounds onto the stack
+    store
+
+    # recall the lower bounds as arg0 and the width as arg1
+    <group-width>
+    recall
+
+    # set both position and width at once
+    set-position
+
+# ------------------------------------------
+# group helper templates
+# ------------------------------------------
+
+# template to place macro runs of the 
+# object start macro for each of a groups's objects
+[[object-start-all OBJECT GROUP
+    (object-start-GROUP-OBJECT)
+]]
+
+# template to place macro runs of the 
+# object render macro for each of a group's objects
+[[object-render-each OBJECT GROUP
+        (object-render-GROUP-OBJECT)
+]]
+
+
+# ------------------------------------------
+# object template - manages a single
+# animated pixel
+# ------------------------------------------
+
+[[object INSTANCE GROUP SCHEDULE WIDTH SEQ-TYPE COLOR
+    # start the a specific object instance
+    # for a specific group instance
+    [object-start-GROUP-INSTANCE]
+        {seq-object-GROUP-INSTANCE}, WIDTH
+        SEQ-TYPE
+
+        # schedle the object position updating
+        # for a object instance of a group instance
+        (object-step-GROUP-INSTANCE SCHEDULE)
+
+    # advance to the next object animation step
+    [object-step-GROUP-INSTANCE]
+        {seq-object-GROUP-INSTANCE},<GET-NEXT>,<object-step>
+        advance-sequence
+
+    # render a specific object instance of 
+    # a specific group instance
+    [object-render-GROUP-INSTANCE]
+        (group-set-window-GROUP)
+
+        {seq-object-GROUP-INSTANCE}, <GET-COMPUTED>
+<<< <use-next-window> == False
+        get-sequence
+>>>
+<<< <use-next-window> == True
+        get-next-window
+>>>
+        set-position
+        {{
+            COLOR
+            add-palette-color
+<<< <use-fade>
+            slow-fade
+>>>
+<<< <use-next-window>
+            fill
+>>>
+        }}
+]]
+

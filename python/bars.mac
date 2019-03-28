@@ -36,9 +36,11 @@ $bar-sequencer cosine-sequencer
     set-draw-mode
 >>>
 
+<<< <brightness> != <BRIGHTNESS-AUTO>
     # set the preset brightness level
     <brightness>
     set-brightness
+>>>
 
     # start the macro instances
     [[[start <num-instances>]]]

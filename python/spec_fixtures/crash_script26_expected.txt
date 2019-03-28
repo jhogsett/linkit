@@ -1,0 +1,2 @@
+Multi macro cannot be expanded due to unresolved non-integer argument: asdf
+

@@ -36,9 +36,11 @@ $HSL-TIME 1000
     set-draw-mode
 >>>
 
+<<< <brightness> != <BRIGHTNESS-AUTO>
     # set the preset brightness level
     <brightness>
     set-brightness
+>>>
 
     # start the macro instances
     [[[start <num-instances>]]]

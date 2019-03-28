@@ -1,0 +1,50 @@
+# ----------------------------------------------------------------
+# Macro Template v.0.0 
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+
+$neutral-color white
+$step-time 12000
+
+%allow-mutability
+$HSL-TIME 500
+
+%play-macro fancy
+
+[fancy 10]
+    start-application
+    (hsl-sequencer-start)
+    (setup-colors)
+    (step-colors <step-time>)    
+
+[mellow 11]
+  (fancy)
+
+[lamp 12]
+    start-application
+    (hsl-sequencer-start)
+
+    <RED>
+    add-dynamic-color
+    fill
+
+    <EFFECTS-PROCESSING>
+    continue
+
+[demo 13]
+    (fancy)
+
+[setup-colors]
+    <neutral-color>
+    black
+    <RED>
+    add-dynamic-color
+    3
+    copy
+
+[step-colors]
+    rotate
+    do-crossfade
+

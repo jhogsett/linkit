@@ -174,6 +174,9 @@ def get_num_sequencers():
 def get_num_fine_zones():
     return get_device_config(21)
 
+def get_fixed_palette_size():
+    return get_device_config(22)
+
 def get_last_macro_bytes():
     bytes_per_macro = get_num_macro_bytes()
     return (1024 - ((1024 / bytes_per_macro) * bytes_per_macro))

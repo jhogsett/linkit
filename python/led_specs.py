@@ -53,10 +53,12 @@ group_name_only = ""
 test_number_only = 0
 skip_led_report = None
 quiet_mode = None
-
+fixed_palette_size = 0
+fixed_palette = ""
 
 def initialize():
   global s, debug_mode, num_leds, default_brightness, default_brightness_percent, palette_size, group_number_only, standard_palette, verbose_mode, group_name_only, test_number_only, skip_led_report, quiet_mode
+  global fixed_palette_size, fixed_palette
 
   parser = argparse.ArgumentParser(description=app_description)
   parser.add_argument("-g", "--group",     type=int, dest="group",      default=0, help="group number to test")
@@ -81,6 +83,7 @@ def initialize():
   do_reset_device()
   num_leds = lc.get_num_leds()
   palette_size = lc.get_palette_size()
+  fixed_palette_size = lc.get_fixed_palette_size()
   default_brightness = lc.get_default_brightness()
 
   introduction()
@@ -90,6 +93,10 @@ def initialize():
   for i in range(0, palette_size):
     standard_palette += test_colors.colors[i][1] + ","
   standard_palette = standard_palette[:-1]
+
+  for i in range(0, fixed_palette_size):
+    fixed_palette += test_colors.colors[i][1] + ","
+  fixed_palette = fixed_palette[:-1]
 
   if not lc.get_test_framework_enabled():
     ui.report_error("Test framework is not enabled for this device.")
@@ -593,7 +600,7 @@ def specs():
     if test("inquiries"):
       # test each inquiry type
       usually_zero = [2, 6, 9, 14, 15]
-      for i in range(0, 22):
+      for i in range(0, 23):
         positive = i in usually_zero
         expect_int("0," + str(i) + ":tst", 0, positive)
 
@@ -1379,7 +1386,12 @@ def specs():
       expect_buffer("2,3:pal", 0, 3, "20,20,0,0,20,0,0,0,0")
 
     if test("it places all palette colors"):
-      expect_buffer("0,17:pal", 0, 18, standard_palette, True, True) 
+      expect_buffer("0," + str(palette_size-1) + ":pal", 0, palette_size, standard_palette, True, True) 
+
+    if test("it places all fixed palette colors"):
+      for i in xrange(fixed_palette_size-1, -1, -1):
+        lc.command(str(i) + ",-1:pal:flu")
+      expect_buffer("", 0, fixed_palette_size, fixed_palette, True, True)
 
 
 ########################################################################
@@ -2538,10 +2550,23 @@ def specs():
 ########################################################################
   if group("scheduling"):
 
-    pending_test("scheduling")
-    # a macro can be scheduled to run @@@
-    # a macro can be stopped from running
-    # all macros can be stopped from running
+    if test("a macro can be scheduled to run"):
+      lc.command("0:set:red")
+      lc.command("100,0:sch:2:cnt")
+      time.sleep(0.1)
+      expect_buffer("", 0, 1, "20,0,0")
+
+    if test("a macro schedule can be canceled"):
+      lc.command("0:set:red")
+      lc.command("100,0:sch:2:cnt:0,0:sch")
+      time.sleep(0.1)
+      expect_buffer("", 0, 1, "20,0,0", True, False, False)
+
+    if test("all macro schedules can be canceled"):
+      lc.command("0:set:red")
+      lc.command("100,0:sch:2:cnt:-1:sch")
+      time.sleep(0.1)
+      expect_buffer("", 0, 1, "20,0,0", True, False, False)
 
 
 ########################################################################
@@ -2549,8 +2574,10 @@ def specs():
 ########################################################################
   if group("mapping"):
 
-    # @@@
-    pending_test("mapping")
+    if lc.get_mapping_enabled():
+      pending_test("mapping")
+    else:
+      skip_test("xyp", "Mapping not enabled on device - specs skipped")
 
 
 ########################################################################

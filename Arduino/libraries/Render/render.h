@@ -77,7 +77,7 @@ rgb_color Render::get_blink(rgb_color color, rgb_color render_color, byte effect
 
     if(effect_only == BLINK_ON_D){
       byte color_index = min((blink_effects->blink_on(effect_only) ? color.red : color.green), NUM_PALETTE_COLORS-1);
-      render_color = Colors::get_palette()[color_index];
+      render_color = ColorMath::correct_color(Colors::get_palette()[color_index]);
       scale = default_brightness_scale;
     } else {
       scale = blink_effects->blink_on(effect_only) ? default_brightness_scale : minimum_brightness_scale;
@@ -97,7 +97,7 @@ rgb_color Render::compute_dynamic_breathe(rgb_color color)
 rgb_color Render::get_dynamic_breathe(rgb_color color)
 {
   byte color_index = this->breathe_effects->alt_breathe() ? color.green : color.red;
-  return Colors::get_palette()[color_index];
+  return ColorMath::correct_color(Colors::get_palette()[color_index]);
 }
 
 #ifdef USE_COLOR_CACHE

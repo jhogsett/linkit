@@ -63,7 +63,7 @@ $foreground-type <fgtype-palette2>
 #$background-darkening-heavy <MEDIUM>
 #$background-darkening-light <LIGHT>
 #$background-darkening-none <NONE>
-$background-darkening  `<NONE> if <balls-per-box> == 0 else <VERY-LIGHT>`
+$background-darkening  `<NONE> if <balls-per-box> == 0 else <MEDIUM>`
 $background-darkening2 `<VERY-LIGHT> if <balls-per-box> == 0 else <LIGHT>`
 
 %allow-mutability
@@ -84,9 +84,11 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
     set-draw-mode
 >>>
 
+<<< <brightness> != <BRIGHTNESS-AUTO>
     # set the preset brightness level
     <brightness>
     set-brightness
+>>>
 
     # multi macro replaced with a macro run to a 
     # new macro that will run each start-up macro

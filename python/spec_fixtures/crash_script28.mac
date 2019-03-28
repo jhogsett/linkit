@@ -1,0 +1,8 @@
+
+
+(((template 3 [10,20,30] [11,22])))
+
+[[template A B C
+    A,B,C
+]]
+

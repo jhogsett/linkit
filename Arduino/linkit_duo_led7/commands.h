@@ -106,7 +106,7 @@ class Commands
   void do_color_sequence(byte type, int arg0, int arg1, int arg2);
   void do_random_number(int arg0, int arg1, int arg2);
   void do_stop();
-  void do_palette(byte arg0, byte arg1);
+  void do_palette(byte arg0, int arg1);
   void do_shuffle(int arg0, int arg1, int arg2);
   void set_black_level(int arg0, int arg1, int arg2);
   void do_push(int arg0, int arg1, int arg2);
@@ -1427,9 +1427,10 @@ void Commands::do_stop()
 // arg[1] if > 0, colors are inserted counting down from this position
 //                the counting down is done so the palette achieves a left-to-right order when inserted  
 //                in this case arg[0] is the stopping point when counting down
+//        if = -1, a color is inserted from the fixed master palette
 // arg[2] 
 // for example: a rainbow is 0,5:pal, whole palette: 0,17:pal
-void Commands::do_palette(byte arg0, byte arg1)
+void Commands::do_palette(byte arg0, int arg1)
 {
   rgb_color * palette = Colors::get_palette();
 
@@ -1439,6 +1440,11 @@ void Commands::do_palette(byte arg0, byte arg1)
     for(int i = arg1; i >= arg0; i--)
       buffer->push_color(palette[i], 1);                      
   } 
+  else if(arg1 < 0)
+  { 
+    arg0 = min(arg0, NUM_COLORS-1);
+    buffer->push_color(*Colors::get_color(arg0));
+  }
   else 
     buffer->push_color(palette[arg0], 1);                                                      
 }

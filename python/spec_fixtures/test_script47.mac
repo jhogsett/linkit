@@ -1,0 +1,9 @@
+
+
+[[template A B C
+  red
+  A,B,C
+]]
+
+((template `1 + 1` `int(True and True)` ``))
+

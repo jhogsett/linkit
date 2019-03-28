@@ -27,9 +27,11 @@ $timing-offset 5
 [circle-app 10]
     start-application
  
+<<< <brightness> != <BRIGHTNESS-AUTO>
     # set the preset brightness level
     <brightness>
     set-brightness
+>>>
 
     # start up the palette color sequencer
     (hsl-sequencer-start)
@@ -47,8 +49,7 @@ $timing-offset 5
   <EFFECTS-PROCESSING>
   refresh-display
 
-((circle 0 2 <factor> `<base-timing>+<timing-offset>` <base-timing> <base-timing>))
-((circle 1 3 <factor> `<base-timing>-<timing-offset>` <base-timing> <base-timing>))
+(((circle 2 [2,3] <factor> [`<base-timing>+<timing-offset>`, `<base-timing>-<timing-offset>`] <base-timing> <base-timing>)))
 
 [[circle INSTANCE MARGIN FACTOR TIMEX TIMEY TIMES
 
