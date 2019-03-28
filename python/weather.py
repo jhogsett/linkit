@@ -307,8 +307,8 @@ def render_forecast_conditions():
             else:
                 week_slots[x][y] = wc.weather_conditions[int(condition)]
 
-minimum_temperature = 32	# freezing
-maximum_temperature = 106       # half-boiling
+minimum_temperature = 40
+maximum_temperature = 110
 temperature_range = maximum_temperature - minimum_temperature
 
 def hsl_color(hue, sat=255, lit=None):
@@ -341,7 +341,8 @@ def render_forecast_temperature():
 
                 # convert to hue 0-255
                 # hue = temperature * 3
-                hue = int(temperature * 255.0 / temperature_range)
+                # hue = int(temperature * 255.0 / temperature_range)
+                hue = temperature * 2
                 #print "hue: " + str(hue)
 
                 week_slots[x][y] = hsl_color(hue)
