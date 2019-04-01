@@ -605,7 +605,7 @@ def specs():
         expect_int("0," + str(i) + ":tst", 0, positive)
 
     if test("dumping macro"):
-      expect_macro("0:set:5,10,15:rgb", 0, "254,5,0,10,0,15,0,17")
+      expect_macro("0:set:5,10,15:rgb", 0, "149,5,10,15,17,255")
 
     if test("dumping buffer contents"):
       expect_buffer("red:grn:blu", 0, 3, "0,0,20,0,20,0,20,0,0")
