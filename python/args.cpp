@@ -4,7 +4,7 @@
 
 using namespace std;
 
-#define ARG_MARKER (0x00)
+#define ARG_MARKER (0x80)
 #define NUM_SUB_ARGS (3)
 
 int sub_args[NUM_SUB_ARGS];
@@ -17,36 +17,26 @@ bool fits_in_byte(int value){
 
 int encode_args(unsigned char *bytes, int write_index, int *sub_args)
 {
-    unsigned char marker = 0;
+    unsigned char final_marker = 0;
     int index = write_index + 1;
-    unsigned char markers[3];
-
     for(int i = 0; i < NUM_SUB_ARGS; i++){
+        unsigned char marker = 0;
         int arg = sub_args[i];
-
         if(arg != 0){
             if(fits_in_byte(arg)){
-                markers[i] = 0x01;
+                marker = 0x01;
                 bytes[index] = (unsigned char)arg;
                 index += 1;
             } else {
-                markers[i] = 0x02;
+                marker = 0x02;
                 unsigned short * word = (unsigned short *)&bytes[index];
                 *word = (unsigned short)arg;
                 index += 2;
             }
         }
+        final_marker = final_marker | (marker << (2 * i));
     }
-
-    for(int i = NUM_SUB_ARGS-1; i >= 0; i--){
-        marker |= markers[i];
-        if(i > 0){
-            marker = marker << 2;
-        }
-    }
-
-    bytes[write_index] = (unsigned char)marker | ARG_MARKER;
-
+    bytes[write_index] = (unsigned char)(final_marker | ARG_MARKER);
     return index - write_index;
 }
 
@@ -54,12 +44,8 @@ void decode_args(unsigned char *bytes, int read_index, int *sub_args)
 {
     unsigned char marker = bytes[read_index];
     int index = read_index + 1;
-
     for(int i = 0; i < NUM_SUB_ARGS; i++){
         int count = marker & 0x03;
-    
-        //cout << count << "\n";
-
         if(count == 1){
             sub_args[i] = (int)((char)bytes[index]);
             index += 1;
@@ -73,11 +59,6 @@ void decode_args(unsigned char *bytes, int read_index, int *sub_args)
         marker = marker >> 2;
     }
 }
-
-
-
-
-
 
 void test(int arg0, int arg1, int arg2){
     unsigned char bytes[8];
