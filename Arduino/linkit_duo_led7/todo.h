@@ -1,25 +1,119 @@
+// explosion animation
+
+// more compact number storage
+// cases:
+// bytes: 1-7
+
+// 3 16-bit arguments 6 bytes
+
+  // 16, 16, 8 bit arguments: 5 bytes
+  // 16, 8, 16 bit arguments: 5 bytes
+  // 8, 16, 16 bit arguments: 5 bytes
+
+// 2 16-bit arguments: 4 bytes
+
+  // 16, 8 bit arguments: 3 bytes
+  // 8, 16 bit arguments: 3 bytes
+
+// 1 16-bit argument 2 bytes
+
+// 1 8-bit positive argument 1 byte 0 to 255
+// 1 8-bit negative argument 1 byte -1 to -255
+
+
+// 1 8-bit positive argument 1 byte 0 to 255
+// 1 8-bit negative argument 1 byte -1 to -255
+
+// 1 4-bit positive argument 0 bytes 0 to 15
+// 1 4-bit negative argument 0 bytes -1 to -15
+
+
+  
+// simpler:
+// - all arguments are signed
+// - all arguments can be 1 or 2 bytes
+
+// 1 -127 to 127
+// 2 -32,767 to 32,767
+
+// types
+
+// 4 BITS OF MARKER, 1 BIT OF NON-COMMAND
+// x, x, x MACRO_ARG_MARKER_XXX 1 bytes, could signal that remaining 3 bits is -3 to 3
+// 1, x, x MACRO_ARG_MARKER_1XX 2 bytes
+// 1, 1, x MACRO_ARG_MARKER_11X 3 bytes
+// 1, 1, 1 MACRO_ARG_MARKER_111 4 bytes
+// 1, 1, 2 MACRO_ARG_MARKER_112 5 bytes
+// 1, 2, x MACRO_ARG_MARKER_12X 4 bytes
+// 1, 2, 1 MACRO_ARG_MARKER_121 5 bytes
+// 1, 2, 2 MACRO_ARG_MARKER_122 6 bytes
+// 2, x, x MACRO_ARG_MARKER_2XX 3 bytes
+// 2, 1, x MACRO_ARG_MARKER_21X 4 bytes
+// 2, 1, 1 MACRO_ARG_MARKER_211 5 bytes
+// 2, 1, 2 MACRO_ARG_MARKER_212 6 bytes
+// 2, 2, x MACRO_ARG_MARKER_22X 5 bytes
+// 2, 2, 1 MACRO_ARG_MARKER_221 6 bytes
+// 2, 2, 2 MACRO_ARG_MARKER_222 7 bytes
+
+
+// x, x, x MACRO_ARG_MARKER_XXX 000000
+// 1, x, x MACRO_ARG_MARKER_1XX 010000
+// 2, x, x MACRO_ARG_MARKER_2XX 100000
+
+// x, x, x MACRO_ARG_MARKER_XXX 000000
+// x, 1, x MACRO_ARG_MARKER_X1X 000100
+// x, 2, x MACRO_ARG_MARKER_X2X 001000
+
+// x, x, x MACRO_ARG_MARKER_XXX 000000
+// x, x, 1 MACRO_ARG_MARKER_XX1 000001
+// x, x, 2 MACRO_ARG_MARKER_XX2 000010
+
+
+// i = (int)arg0, 1, 2
+// if abs(i) <= 127 arg0-8 else arg0-16
+// if abs(i) == 0   arg0-0
+// if abs(i) <= 127 arg1-8 else arg1-16
+// if abs(i) == 0   arg1-0
+// if abs(i) <= 127 arg2-8 else arg2-16
+// if abs(i) == 0   arg2-0
+
+// if arg0 == 0 
+
+// if an earlier arg is zero but a later arg has a value, use 8-bit for that value
+
+// if arg2 has a value, flag that arg1 and arg0 must have placeholders
+// if arg1 has a value, flag that arg0 must have a placeholder
+
+
+
+// maybe smarter python expression combing than jsut removing backticks?
+
+
+// remix:
+// mirror alternative: reverse a set of pixels
+// to remix:
+// 1) apply reversing to groups of leds, groups computed as # of leds / some count, so 4 would create four groups, 1 would reverse all pixels
+// 2) reverse only half of the groups, alternating reverse, not reverse (which starts first should be settable or predictable - negative number could switch to start without reversing)
+// 3) do several rounds with random numbers to complete the remix, could make it animated or not
+
+// add flipping to mirror command
+
+
+
+
+// sequencer: min,max,macro:sqr (run macro if sequencer value between min-max inclusive) val,0,macro:sqr (run macro if sequencer value = val)
+
 // scramble buffer, either completely random or remix
+// would have to be scalable and account for uneven divisions
 
 // new inquiry: whether red and green are being swapped; add spec to cover rendering in a swap situation
 
 // dynamic colors should support > palette colors
 
-// warn if template variables overlap
-
 //Macro doesn't match:
 //Expected: 22:set:6:run:7:run:14:run:15:run:16:run:17:run:18:run:19:run:20:run:21:run:8:run:9:run:11:run:12:run:13:run
 //     Got: 22:set:6:run:7:run:14:run:15:run:16:run:17:run:18:run:19:run:20:run:21:run:8:run:9:run:11:run:12:run:13:0
 
-
-// allow a list of items used with meta-template parceled out to each expansion
-// (((meta-template <num> 5 15 <RED>,<GREEN>,<BLUE> 0,2,3 
-
-//>>> t = eval("1,2,3")
-//>>> t
-//(1, 2, 3)
-//>>> l = list(t)
-//>>> l
-//[1, 2, 3]
 
 // how to make it easy to add a bouncing ball within width bounds with least effort
 // %include ball
@@ -146,17 +240,10 @@
 //set this as window
 
 
-// add symbols for dim/brt levels 1-7
 
 // flooding should overwrite the origin position (otherwise ?)
 
 // macro compiler substitutes macro numbers with single digits, but could require double digits when programming (command string length risk)
-
-// backgrounds
-// rainbow
-// white
-// black/white
-// a few random dots
 
 // effect to dim by varing amounts dynamically (could be like soft fade but fade ratio the wanders)
 
@@ -176,14 +263,6 @@
 //        do-animated-rotation
 //      }}}
 //    }}
-
-// a way to use ((( ))) with a list of arguments
-//((light-setting wht red))
-//((light-setting red red))
-//((light-setting tun sod))
-//((light-setting neo neo))
-//
-// (((light-setting (wht,red,run,neo) (red,red,sod.neo) )))
 
 // %include hsl-sequencer
 //   (hsl-sequencer-start)
@@ -248,7 +327,8 @@
 //
 //
 //
-//
+
+// call this instant template?
 //$num-instances 3
 //[[[ <num-instances> INSTANCE COLOR `<RED>+INSTANCE` REPEATS `INSTANCE`
 //        COLOR
@@ -271,16 +351,6 @@
 //0:pal:1:pal:2:pal
 //
 
-// clean out spaces before macro sizing
-
-// <<< `python expression`
-//   do something if it evaluates to True
-// >>>
-//
-// <<< variable-name
-//   do something 
-// >>>
-
 
 // magic zoom (-1?) zooms to fill the current width
 
@@ -298,8 +368,6 @@
 // ---> maybe if certain commands are used in a macro, a reset is added to the end
 
 // something like snw but makes it easy to erase before drawing next segment
-
-// there are no position tests, no push/pop tests, no scheduling tests, no mapping tests, no draw mode tests
 
 // change fade effect to be a cross fade to the current black level
 
@@ -320,33 +388,10 @@
 // something like 100:red or 500:red can cause the device to lock up
 
 
-
-
-
-
-
- 
-// carry
-// crossfade
-// "more general macro tests"
-// testing test framework features
-// configuring
-// static effect?
-// pause, continue,m scheduling
-// pin
-// mapping, xy position
-// custom black level, other modes where it applies
-// fan
-// app command
-// draw modes
-
-// configure: set random seed
-
 // dynamic rendering hints
 
-// don't need 'blr' and 'efr'
 
-// use namespacing ike python
+// use namespacing like python
 // %import module
 // (module.init)
 // always do (filename.init) in any macro that uses "app"
@@ -359,12 +404,6 @@
 // would be helpful to have some conditionals during template expansion
 // ex: template for disc, each ring has a particular set up
 // could use same technique for conditional compilation instead of lots of numbered files
-
-// add macro compiler spec: should be able to use spaces in python expressions
-
-// sta could use palette colors
-
-// constrained animation, itself moving
 
 // add final command to sunrise
 
@@ -396,49 +435,8 @@
 
 
 
-// ununused brackets || << >> <<< >>> "" // \\ {{ }} {{{ }}}
-// unused operators - _ ~
-
-// {{
-//   1,10
-//   set-position
-//   red
-// }} 
-
-// <<
-//   1,10
-//   set-position
-//   red
-// >> 
-
-// |>
-//   1,10
-//   set-position
-//   red
-// <| 
-
-// //
-//   1,10
-//   set-position
-//   red
-// \\ 
-
-
-// set-position 
-// {{
-//
-//   do stuff
-//
-// }}
-
-// the {{ is stripped and ignored
-// the }} is replaced with 'reset-buffer'
-
-
-replaced by "reset-buffer"
-
-
-
+// ununused brackets || << >> "" // \\ 
+// unused operators - _ ~ !
 
 
 
@@ -475,20 +473,9 @@ replaced by "reset-buffer"
 
 // idea: dampening generator, for instance, averaging, lamp burning out, side-gravity
 
-// may not need arg command given psh command
-
 // figure out a scheme for spec randomization
 
 // name match should apply to to group and/or test description
-
-
-
-
-
-
-
-
-
 
 // handle -127 to -1 with a single byte instead of two
 
@@ -504,27 +491,7 @@ replaced by "reset-buffer"
 
 // add a way to reverse a swing sequencer, to flip the direction any time
 
-// if value passed to template expansion is a python expression, and it's used later in another python expression, the backticks conflict.
 
-/*
-$value 3
-
-[macro 10]
-  ((test <value> `<value>*3`))
-
-[[test X Y
-  [macro-X]
-    `Y*2`
-     palette-color
-     flush
-]]
-
-The script did not compile successfully due to unresolved values.
-more error details:
-'-10':set
-<macro-3>:set:``3*3`*2`:pal:flu
-
- */
 
 // need to inquire mapping bounds
 
@@ -539,8 +506,6 @@ more error details:
 // -p show # bytes and/or show all macro bytes don't stop on 255 to check on overrun macros
 
 // can't use long command names for passing values to template
-
-// for ((( ))) could have option to specify a list of values instead of only 0, 1, ...
 
 // would be nice not to have to use additional macros just to assign 10,11,12 as numbers.
 // maybe pass macro number in include line? (don't want extra args)
@@ -594,8 +559,7 @@ Final Macro Numbers:
  * 13:set:4:sto:5:run:rcl
  */
 
-// test macro to find size, then find a block of macros and assign number
-//   do fixed macro numbers first
+
 
 //maybe measure all macros first, then do fitting
 
@@ -608,11 +572,7 @@ Final Macro Numbers:
 [[[worm NUM-FINE-ZONES]]]
 
 
-idea: do replacements for all decice properties, incase they're used
-
-if first arg is a python expression, evaluation it and use as the index_max
-
-==> the python evaluation has to happen at meta template expansion time
+idea: do replacements for all device properties, incase they're used
 
 ---------------------------------
 
@@ -623,8 +583,6 @@ could always assume the argument is a python expression (`3` is OK) but it needs
 
 */
  
-// make sure comments mid-line are stripped
-
 // can't use long names in macro expansions
 
 // error message if device config values come back as zero
@@ -647,12 +605,9 @@ could always assume the argument is a python expression (`3` is OK) but it needs
 
 // why does a double return from a macro wipe out arg0? mayube by design?
 
-// need to make schedulers a limited resource to no waste memory
-
 // print out fixed macro numbers / apps
 
-// display devcice profile only
-// dump macros from any device
+// display device profile only
 
 //need an easy way to see bytes per script line (save used bytes)
 
@@ -662,9 +617,8 @@ could always assume the argument is a python expression (`3` is OK) but it needs
 // . , test each app
 
 
-// long command names don't work in variables assignnents
+// long command names don't work in variables assignments
   // since these can be specified on the command line, it's probably better to require real commands
-
 
 // table - list out sequencers
 
@@ -686,27 +640,11 @@ could always assume the argument is a python expression (`3` is OK) but it needs
 
 // idea: run the test script for a few seconds and make sure the device can be taken control of
 
-// could use "=" or some other symbol to show configuring the device, like
-// instead of:
-//     <CONFIG-FADE-RATE>,<fade-rate>
-//     cfg
-//
-//     <CONFIG-FADE-RATE> = <fade-rate>
-//     <CONFIG-FADE-RATE> <= <fade-rate>
-//     <CONFIG-FADE-RATE> <- <fade-rate>
-//     <CONFIG-FADE-RATE> ~ <fade-rate>
-//     <CONFIG-FADE-RATE> | <fade-rate>
-//     <CONFIG-FADE-RATE> @ <fade-rate>
-//     /<CONFIG-FADE-RATE> <fade-rate>/
-//     \<CONFIG-FADE-RATE> <fade-rate>\
-//     |<CONFIG-FADE-RATE> <fade-rate>|
-//     /<CONFIG-FADE-RATE> <fade-rate>/
-//     @<CONFIG-FADE-RATE> <fade-rate>@
 
 // a simple way to invoke a sequencer that uses a macro for math
 
-// ununused brackets || <<>> [[[]]] <<<>>> '' "" // \\ 
-// unused operators = - _ ~
+// ununused brackets || <<>> '' "" // \\ 
+// unused operators = - _ ~ !
 
 // reusable components: 
 // -- need to share, or namespace, render routines
@@ -776,8 +714,6 @@ could always assume the argument is a python expression (`3` is OK) but it needs
   // examine an input
   // if it's positive X number of times and negative < Y number of times, consider it switched on
   // could be a special type of schedule that counts pin highs, and macro gets called if pin is high
-
-// may not need arg command given psh command
 
 // sequencers: one-time
 
@@ -851,7 +787,6 @@ could always assume the argument is a python expression (`3` is OK) but it needs
 
 // command document last modified date should be the later of it and http_command.py
 
-// dazzling intense flashy color pulsating and changing lights from apollo
 
 
 

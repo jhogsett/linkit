@@ -540,8 +540,9 @@ void Commands::do_random(byte type, int times)
   }
 }
 
-// arg0: number of cuts, 0: defaults to 1 
-void Commands::do_mirror()
+// arg0: number of cuts, 0: defaults to 1
+// arg1: type: 0=mirror 1=flip
+ void Commands::do_mirror()
 {
   bool reverse = buffer->get_reverse();
   byte front = buffer->get_offset();

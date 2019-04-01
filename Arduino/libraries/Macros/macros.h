@@ -7,6 +7,9 @@
 
 #define MACRO_END_MARKER 0xff
 
+#define NEW_ARG_ENCODING
+
+#ifndef NEW_ARG_ENCODING
 #define MACRO_ARG1_MARKER 0xf9
 #define MACRO_ARG2_MARKER 0xfa
 #define MACRO_ARG3_MARKER 0xfb
@@ -15,15 +18,19 @@
 #define MACRO_ARG6_MARKER 0xfe
 #define ARG_MARKER_FIRST  MACRO_ARG1_MARKER
 #define ARG_MARKER_LAST   MACRO_ARG6_MARKER
-
 // this one doesn't need to be stored in macros, but it could be useful if supporting receiving binary commands
 #define MACRO_CMD_MARKER 0xf0
+#else
+#define ARG_MARKER (0x80)
+#endif
 
 #define MAX_MEMORY_MACRO (NUM_MEMORY_MACROS - 1)
 #define MAX_EEPROM_MACRO (EEPROM_STARTING_MACRO + NUM_EEPROM_MACROS - 1)
 #define MAX_MACRO (NUM_MACROS - 1)
 
 #define DEFAULT_ERASE_BYTE 0xff
+
+//#define NEW_ARG_ENCODING
 
 //#define STRTOK_50_59_FIX
 
@@ -53,15 +60,30 @@ class Macros
   bool is_eeprom_macro(byte macro);
   byte * get_memory_macro(byte macro);
   byte * get_eeprom_macro(byte macro);
+
+#ifndef NEW_ARG_ENCODING
   byte num_bytes_from_arg_marker(byte arg_marker);
   byte num_words_from_arg_marker(byte arg_marker);
+#endif
+
   byte read_byte(byte * buffer, bool from_eeprom);
   void write_byte(byte * buffer, bool to_eeprom, byte data);
   word read_word(word * buffer, bool from_eeprom);
   void write_word(word * buffer, bool to_eeprom, word data);
+
+#ifndef NEW_ARG_ENCODING
   void determine_arg_marker(byte &arg_marker, byte &num_args);
+#endif
+
   void set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom);
   bool get_macro_ptr(byte macro, byte **pptr);
+
+#ifdef NEW_ARG_ENCODING
+  bool fits_in_byte(int value);
+  int encode_args(byte * buffer, bool to_eeprom);
+  int encoded_args_bytes(byte marker);
+  int decode_args(byte marker, byte * buffer, bool from_eeprom);
+#endif
 };
 
 // in-memory macros
@@ -98,6 +120,7 @@ byte * Macros::get_eeprom_macro(byte macro)
   return (byte*)(effective_macro * NUM_MACRO_CHARS);
 }
 
+#ifndef NEW_ARG_ENCODING
 byte Macros::num_bytes_from_arg_marker(byte arg_marker)
 {
   return (arg_marker - ARG_MARKER_FIRST) + 1;
@@ -107,6 +130,7 @@ byte Macros::num_words_from_arg_marker(byte arg_marker)
 {
   return num_bytes_from_arg_marker(arg_marker) / 2;
 }
+#endif
 
 byte Macros::read_byte(byte * buffer, bool from_eeprom)
 {
@@ -149,12 +173,25 @@ void Macros::set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom){
     macro_data++;
     buffer++;
 
+#ifndef NEW_ARG_ENCODING
     if(b >= ARG_MARKER_FIRST && b <= ARG_MARKER_LAST)
     {
       // copy the packed arguments, which can be any value 0-255
       // including the end of macro marker
       byte num_bytes = num_bytes_from_arg_marker(b);
-
+      for(byte i = 0; i < num_bytes; i++)
+     {
+        write_byte(macro_data, to_eeprom, read_byte(buffer, from_eeprom));
+        macro_data++;
+        buffer++;
+      }
+    }
+#else
+    if(b & ARG_MARKER)
+    {
+      // copy the packed arguments, which can be any value 0-255
+      // including the end of macro marker
+      byte num_bytes = encoded_args_bytes(b);
       for(byte i = 0; i < num_bytes; i++)
       {
         write_byte(macro_data, to_eeprom, read_byte(buffer, from_eeprom));
@@ -162,198 +199,12 @@ void Macros::set_macro_from_macro(byte macro, byte * buffer, bool from_eeprom){
         buffer++;
       }
     }
+#endif
   }
   write_byte(macro_data, to_eeprom, MACRO_END_MARKER);
 }
 
-
-// assume number of commands won't exceed 127 (currently 103)
-// the 128-255 space of commands can be reserved for marking
-// 255 = end of macro marker
-// reserve 240-254 (15 values) to mark argument data
-// reserve 128-239 for specially optimized arguments
-
-// optimizing
-// 128-239 has 2^6 bits useful
-// 00 = -1
-// 01 = 1
-// 10 = 2
-// 11 = -2
-
-// complicated parsing will slow things down
-
-// special values:
-// small numbers
-// small negative numbers
-// 
-
-// cases
-// 0,          0, 0 - ignore and do nothing
-// 1,          0, 0 - 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-
-// simpler idea
-// 1-byte marker
-// 0-6 bytes data
-
-// data types
-// positive 8-bit value
-// negative 8-bit value
-// 16-bit signed value
-
-// 127 marker positions
-
-// 48 cases
-// 1, 0, 0
-// -1, 0, 0
-// 1000, 0, 0
-// 1, 1, 0
-// -1, 1, 0
-// 1000, 1, 0
-// 1, -1, 0
-// -1, -1, 0
-// 1000, -1, 0
-// 1, 1000, 0
-// -1, 1000, 0
-// 1000, 1000, 0
-// 1, 0, 1
-// -1, 0, 1
-// 1000, 0, 1
-// 1, 1, 1
-// -1, 1, 1
-// 1000, 1, 1
-// 1, -1, 1
-// -1, -1, 1
-// 1000, -1, 1
-// 1, 1000, 1
-// -1, 1000, 1
-// 1000, 1000, 1
-// 1, 0, -1
-// -1, 0, -1
-// 1000, 0, -1
-// 1, 1, -1
-// -1, 1, -1
-// 1000, 1, -1
-// 1, -1, -1
-// -1, -1, -1
-// 1000, -1, -1
-// 1, 1000, -1
-// -1, 1000, -1
-// 1000, 1000, -1
-// 1, 0, 1000
-// -1, 0, 1000
-// 1000, 0, 1000
-// 1, 1, 1000
-// -1, 1, 1000
-// 1000, 1, 1000
-// 1, -1, 1000
-// -1, -1, 1000
-// 1000, -1, 1000
-// 1, 1000, 1000
-// -1, 1000, 1000
-// 1000, 1000, 1000
-
-// each position can be
-// 0 to 255
-// -1 to -255
-// 16 bit signed
-
-// types
-// 0) no data
-// 1) single 8-bit positive
-// 2) single 8-bit negative
-// 3) single 16-bit signed
-
-// 39 useful combos + 000
-
-// 000
-
-// 100 01 00 00
-
-// 110 01 01 00
-// 111 01 01 01
-// 112 01 01 10
-// 113 01 01 11
-
-// 120
-// 121
-// 122
-// 123
-
-// 130
-// 131
-// 132
-// 133
-
-// 200
-
-// 210
-// 211
-// 212
-// 213
-
-// 220
-// 221
-// 222
-// 223
-
-// 230
-// 231
-// 232
-// 233
-
-// 300
-
-// 310
-// 311
-// 312
-// 313
-
-// 320
-// 321
-// 322
-// 323
-
-// 330
-// 331
-// 332
-// 333
-
-// each position can be 0-4, or 2 bits x 3 = 6 bits w/ 64 values
-
-// simpler, use 8-bit and 16-bit signed values always
-// then marker just has to specify size
-// 8-bit values would be -127 to + 127
-// numeric values are often in that range
-
-// 14 cases
-
-// one argument
-// 1 byte - char
-// 2 bytes - int
-
-// two arguments
-// 2 bytes - char, char
-// 3 bytes - char, int
-// 3 bytes - int, char
-// 4 bytes - int, int
-
-// three arguments
-// 3 bytes - char, char, char
-// 4 bytes - char, char, int
-// 4 bytes - char, int, char
-// 4 bytes - int, char, char
-// 5 bytes - char, int, int
-// 5 bytes - int, char, int
-// 5 bytes - int, int, char
-// 6 bytes - int, int, int
-
+#ifndef NEW_ARG_ENCODING
 void Macros::determine_arg_marker(byte &arg_marker, byte &num_args)
 {
   int * sub_args = command_processor->sub_args;
@@ -386,6 +237,7 @@ void Macros::determine_arg_marker(byte &arg_marker, byte &num_args)
     }
   }
 }
+#endif
 
 bool Macros::get_macro_ptr(byte macro, byte **pptr)
 {
@@ -400,6 +252,77 @@ bool Macros::get_macro_ptr(byte macro, byte **pptr)
     return false;
   }
 }
+
+#ifdef NEW_ARG_ENCODING
+bool Macros::fits_in_byte(int value)
+{
+    char char_value = (char)value;
+    return value == (int)char_value;
+}
+
+int Macros::encode_args(byte * buffer, bool to_eeprom)
+{
+    int * sub_args = command_processor->sub_args;
+    byte final_marker = 0;
+    byte * data = buffer + 1;
+    for(int i = 0; i < NUM_SUB_ARGS; i++){
+        byte marker = 0;
+        int arg = sub_args[i];
+        if(arg != 0){
+            if(fits_in_byte(arg)){
+                marker = 0x01;
+                write_byte(data, to_eeprom, (byte)arg);
+                data += 1;
+            } else {
+                marker = 0x02;
+                write_word((word*)data, to_eeprom, (word)arg);
+                data += 2;
+            }
+        }
+        final_marker = final_marker | (marker << (2 * i));
+    }
+    write_byte(buffer, to_eeprom, final_marker | ARG_MARKER);
+    return data - buffer;
+}
+
+int Macros::encoded_args_bytes(byte marker)
+{
+    int count = 1;
+    for(int i = 0; i < NUM_SUB_ARGS; i++)
+    {
+        count += marker & 0x03;
+        marker = marker >> 2;
+    }
+    return count;
+}
+
+int Macros::decode_args(byte marker, byte * buffer, bool from_eeprom)
+{
+    int * sub_args = command_processor->sub_args;
+    int byte_count = 0;
+    for(int i = 0; i < NUM_SUB_ARGS; i++)
+    {
+        int count = marker & 0x03;
+        if(count == 1)
+        {
+            sub_args[i] = (int)((char)read_byte(buffer, from_eeprom));
+            buffer += 1;
+        } 
+        else if(count == 2)
+        {
+            sub_args[i] = (int)((short)read_word((word*)buffer, from_eeprom));
+            buffer += 2;
+        } 
+        else 
+        {
+            sub_args[i] = 0;
+        }
+        byte_count += count;
+        marker = marker >> 2;
+    }
+    return byte_count;
+}
+#endif
 
 byte Macros::set_macro(byte macro, char * commands){
   byte * macro_buffer;
@@ -450,6 +373,8 @@ byte Macros::set_macro(byte macro, char * commands){
 //      command_processor->get_sub_args(buf);
 //#endif
 
+
+#ifndef NEW_ARG_ENCODING
       // pack the arguments
       byte arg_marker;
       byte num_args = 0;
@@ -475,6 +400,11 @@ byte Macros::set_macro(byte macro, char * commands){
           byte_count += 2;
         }
       }
+#else
+      int count = encode_args(macro_buffer, to_eeprom);
+      macro_buffer += count;
+      byte_count += count;
+#endif      
     }
     else
     {
@@ -489,8 +419,6 @@ byte Macros::set_macro(byte macro, char * commands){
     cmd = command_processor->lookup_command(command);
 
   }while(cmd != CMD_NULL);
-
-///// todo don't write it if we've already written the last byte
 
   // write end of macro marker
   write_byte(macro_buffer, to_eeprom, MACRO_END_MARKER);
@@ -507,7 +435,8 @@ byte Macros::set_macro_from_serial(byte macro)
 // arg[0] macro number to run, default = 0
 // arg[1] number of times to run, default = 1
 // arg[2] milliseconds delay between runs, default = no delay
-void Macros::run_macro(byte macro, int times, int delay_){
+void Macros::run_macro(byte macro, int times, int delay_)
+{
   times = max(1, times);
 
   byte * cached_macro_buffer;
@@ -531,6 +460,7 @@ void Macros::run_macro(byte macro, int times, int delay_){
     while((cmd = read_byte(macro_buffer, from_eeprom)) != MACRO_END_MARKER)
     {
       macro_buffer++;
+#ifndef NEW_ARG_ENCODING
       if(cmd >= ARG_MARKER_FIRST && cmd <= ARG_MARKER_LAST)
       {
         // unpack the arguments
@@ -550,6 +480,12 @@ void Macros::run_macro(byte macro, int times, int delay_){
           }
         }
       }
+#else
+      if(cmd & ARG_MARKER)
+      {
+        macro_buffer += decode_args(cmd, macro_buffer, from_eeprom);
+      }
+#endif
       else
       {
         if(cmd == CMD_SET_MACRO)
