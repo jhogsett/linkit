@@ -300,9 +300,10 @@ def get_full_macro_bytes(macro):
         script_terminator_found = True
         break
       if is_arg_marker(byte):
-        format, size = get_arg_decode_info(byte)
+        #format, size = get_arg_decode_info(byte)
         # index could be the last byte in the buffer
         # at least one more byte is needed
+        size = get_args_byte_count(byte) #+ 1 #@@@
         if index + size >= macro_bytes_max:
           # break the inner loop to get the next set of bytes
           # and don't increment the index so the byte is checked again
@@ -362,41 +363,43 @@ def stop_all():
 #define MACRO_ARG6_MARKER 0xfe
 
 def is_arg_marker(byte):
-  return byte >= 240 and byte <= 254
+  return (byte & 0x80) != 0
 
 def is_macro_end_marker(byte):
   return byte == 255
 
-def get_arg_decode_info(marker):
-  decode_args = {
-    249: { "format": "B", "size": 1 },
-    250: { "format": "h", "size": 2 },
-    251: { "format": "hB", "size": 3 },
-    252: { "format": "hh", "size": 4 },
-    253: { "format": "hhB", "size": 5 },
-    254: { "format": "hhh", "size": 6}
-  }
-  format = decode_args[marker]["format"]
-  size = decode_args[marker]["size"]
-  return format, size
+#def get_arg_decode_info(marker):
+#  decode_args = {
+#    249: { "format": "B", "size": 1 },
+#    250: { "format": "h", "size": 2 },
+#    251: { "format": "hB", "size": 3 },
+#    252: { "format": "hh", "size": 4 },
+#    253: { "format": "hhB", "size": 5 },
+#    254: { "format": "hhh", "size": 6}
+#  }
+#  format = decode_args[marker]["format"]
+#  size = decode_args[marker]["size"]
+#  return format, size
 
-def decode_args(bytes):
-  leftover_bytes = []
-  #print "bytes: " + str(bytes) #@@@
-
-  marker = bytes[0]
-  format, size = get_arg_decode_info(marker)
-  remaining_bytes = bytes[1:]
-  #print "remaining bytes: " + str(remaining_bytes)
-  value_bytes = remaining_bytes[:size]
-  #print "value bytes: " + str(value_bytes)
-  packed_as_bytes = struct.pack(str(size) + "B", *tuple(value_bytes))
-  values = struct.unpack(format, packed_as_bytes)
-  #print "values: " + str(values)
+def decode_args(marker, bytes):
+  args = [0,0,0]
+  byte_count = get_args(marker, bytes, args)
   args_string = ""
-  for value in values:
-    args_string += str(value) + ","
-  return args_string[:-1], size
+  
+  if args[0] == 0 and args[1] == 0 and args[2] == 0:
+    return "0", 0
+
+  if args[1] == 0 and args[2] == 0:
+    return str(args[0]), byte_count
+
+  if args[2] == 0:
+    for i in range(0, 2):
+      args_string += str(args[i]) + ","
+    return args_string[:-1], byte_count
+
+  for i in range(0, 3):
+    args_string += str(args[i]) + ","
+  return args_string[:-1], byte_count
 
 def translate_macro_bytes(macro_bytes):
     commands_cutoff = 240
@@ -404,15 +407,15 @@ def translate_macro_bytes(macro_bytes):
     index = 0
     while index < len(macro_bytes):
         byte = macro_bytes[index]
+        index += 1
         if byte == 255:
           break;
         if is_arg_marker(byte):
-          args_string, size = decode_args(macro_bytes[index:])
+          args_string, size = decode_args(byte, macro_bytes[index:])
           macro.append(args_string)
           index += size
         else:
           macro.append(lookup_command(byte))
-        index += 1
     return ":".join(macro)
 
 def lookup_command(byte):
@@ -528,4 +531,65 @@ def commands():
         102: "drw",
         103: "pop"
     }
+
+def get_args_byte_count(marker):
+  marker = marker & 0x7f
+  mapping = arg_mapping()[marker]
+  return sum(mapping.values())
+
+def get_args(marker, bytes, args):
+  marker = marker & 0x7f
+  index = 0
+  byte_count = 0
+  mapping = arg_mapping()[marker]
+  for i in range(0, 3):
+    count = mapping[i]
+    if count == 1:
+        low_byte = bytes[index]
+        if low_byte & 0x80:
+          low_byte -= 256
+        args[i] = low_byte
+    elif count == 2:
+        low_byte = bytes[index]
+        high_byte = bytes[index+1]
+        word = low_byte + (256 * high_byte)
+        if high_byte & 0x80:
+          word -= 65536
+        args[i] = word
+    else:
+        args[i] = 0
+    index += count
+    byte_count += count
+  return byte_count
+
+def arg_mapping():
+  return {
+    0b000000: { 2:0, 1:0, 0:0 },
+    0b000001: { 2:0, 1:0, 0:1 },
+    0b000010: { 2:0, 1:0, 0:2 },
+    0b000100: { 2:0, 1:1, 0:0 },
+    0b000101: { 2:0, 1:1, 0:1 },
+    0b000110: { 2:0, 1:1, 0:2 },
+    0b001000: { 2:0, 1:2, 0:0 },
+    0b001001: { 2:0, 1:2, 0:1 },
+    0b001010: { 2:0, 1:2, 0:2 },
+    0b010000: { 2:1, 1:0, 0:0 }, 
+    0b010001: { 2:1, 1:0, 0:1 },
+    0b010010: { 2:1, 1:0, 0:2 },
+    0b010100: { 2:1, 1:1, 0:0 },
+    0b010101: { 2:1, 1:1, 0:1 },
+    0b010110: { 2:1, 1:1, 0:2 },
+    0b011000: { 2:1, 1:2, 0:0 },
+    0b011001: { 2:1, 1:2, 0:1 },
+    0b011010: { 2:1, 1:2, 0:2 },
+    0b100000: { 2:2, 1:0, 0:0 },
+    0b100001: { 2:2, 1:0, 0:1 },
+    0b100010: { 2:2, 1:0, 0:1 },
+    0b100100: { 2:2, 1:1, 0:0 },
+    0b100101: { 2:2, 1:1, 0:1 },
+    0b100110: { 2:2, 1:1, 0:2 },
+    0b101000: { 2:2, 1:2, 0:0 },
+    0b101001: { 2:2, 1:2, 0:1 },
+    0b101010: { 2:2, 1:2, 0:2 }
+  }
 
