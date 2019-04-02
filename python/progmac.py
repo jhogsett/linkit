@@ -9,6 +9,7 @@ import argparse
 import app_ui as ui
 import macro_compiler as mc
 import math
+import progmac_utils as pu
 
 global app_description, verbose_mode, debug_mode, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, show_tables, quiet_mode, allow_mutability, no_led_show
 app_description = None
@@ -227,22 +228,6 @@ def print_table(description, table):
           ui.info_entry_alt(key_title, str(value))
     print
 
-def verify_programming(compiled_script):
-  script_ok = True
-  for compiled_line in compiled_script:
-    macro_number = int(compiled_line.split(":")[0])
-    programmed_line, carry_over_macro = lc.get_macro(macro_number)
-    if programmed_line != compiled_line:
-      script_ok = False
-      print
-      ui.report_error("Macro doesn't match:")
-      print tc.green("Expected: " + compiled_line)
-      print tc.red("     Got: " + programmed_line)
-      print
-    ui.write(tc.green('.'))
-  print
-  return script_ok
-
 def program_macros(program_name):
     compiled_script = ""
     ui.report_info_header("1. Compiling ")
@@ -283,7 +268,7 @@ def program_macros(program_name):
               set_script(script_text) 
             print
             ui.report_info_header("3. Verifying ")
-            script_ok = verify_programming(compiled_script)
+            script_ok = pu.verify_programming(compiled_script)
 
     if show_tables:
       print

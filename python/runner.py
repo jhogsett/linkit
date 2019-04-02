@@ -10,6 +10,7 @@ import time
 import random
 import led_command as lc
 import macro_compiler as mc
+import progmac_utils as pu
 
 global plans, program, anti_plans
 plans = []
@@ -304,25 +305,8 @@ def program_script(presets):
               script_ok = True
               ui.report_separator()
             else:
-              script_ok = verify_programming(compiled_script)
+              script_ok = pu.verify_programming(compiled_script)
     return script_ok
-
-def verify_programming(compiled_script):
-  script_ok = True
-  for compiled_line in compiled_script:
-    macro_number = int(compiled_line.split(":")[0])
-    programmed_line = lc.get_macro(macro_number)
-    if programmed_line != compiled_line:
-      script_ok = False
-      ui.report_separator()
-      ui.report_error("Macro doesn't match:")
-      ui.write_line(tc.green("Expected: " + compiled_line))
-      ui.write_line(tc.red("     Got: " + programmed_line))
-      ui.report_separator()
-    if not verbose_mode:
-      ui.write(tc.cyan('.'))
-  ui.report_separator()
-  return script_ok
 
 def record_program(arguments):
   presets = utils.merge_dicts(device_presets, arguments)
