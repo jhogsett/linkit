@@ -411,7 +411,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
             add-palette-color
 >>>
 <<< <foreground-type> == <fgtype-white>
-            dark-gray
+            gray
 >>>
 <<< <foreground-type> == <fgtype-palette2>
             `COLOR+3`

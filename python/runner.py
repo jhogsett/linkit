@@ -345,7 +345,7 @@ def enter_pause_loop():
 
 def round_delay():
   if not no_rating:
-    ui.report_info_alt2("Press X to exit, P to pause, any other key to Vote:")
+    ui.report_info_alt2("Press X to exit, P to pause, any other key to rate:")
     choice = utils.get_input(round_time)
     if choice == "x" or choice == "X":
       raise KeyboardInterrupt
