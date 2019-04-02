@@ -1,6 +1,7 @@
 import app_ui as ui
 import terminal_colors as tc
 import led_command as lc
+import utils
 
 def verify_programming(compiled_script):
   script_ok = True
@@ -17,4 +18,34 @@ def verify_programming(compiled_script):
     ui.write(tc.green('.'))
   print
   return script_ok
+
+def print_table(description, table):
+    print
+    ui.report_info_alt("------------------------------------------------------")
+    ui.report_info_alt(description + ":")
+    ui.report_info_alt("------------------------------------------------------")
+    keys = table.keys()
+    values = table.values()
+    keys_width = utils.get_list_width(keys)
+    values_width = utils.get_list_width(values)
+
+    for key in sorted(table.iterkeys()):
+        key_len = len(str(key))
+        key_diff = keys_width - key_len
+        value = table[key]
+        filler = " " * key_diff
+        key_title = filler + str(key)
+        if type(value) is list:
+          ui.report_info_alt(key_title + ":")
+          print_script(value)
+        else:
+          ui.info_entry_alt(key_title, str(value))
+    print
+
+def print_device_macros():
+  macros = lc.get_macros()
+  ui.report_info("Macros on device:")
+  for macro in macros:
+    ui.report_info_alt(macro)
+
 

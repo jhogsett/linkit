@@ -10,6 +10,7 @@ import app_ui as ui
 import macro_compiler as mc
 import math
 import progmac_utils as pu
+import utils
 
 global app_description, verbose_mode, debug_mode, macro_count, program, macro_run_number, presets, dryrun, bytes_programmed, show_output, show_tables, quiet_mode, allow_mutability, no_led_show
 app_description = None
@@ -121,17 +122,10 @@ def initialize():
     if char_buffer_override != 0:
       char_buffer_size = char_buffer_override
 
-    all_presets = merge_two_dicts(device_profile, get_command_line_presets())
+    all_presets = utils.merge_two_dicts(device_profile, get_command_line_presets())
     mc.begin(lc, verbose_mode, quiet_mode, all_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_bytes, char_buffer_size, last_macro_bytes, allow_mutability)
     if dryrun:
       lc.resume()
-
-# https://stackoverflow.com/questions/38987/how-to-merge-two-dictionaries-in-a-single-expression
-def merge_two_dicts(x, y):
-    """Given two dicts, merge them into a new dict as a shallow copy."""
-    z = x.copy()
-    z.update(y)
-    return z
 
 def get_command_line_presets():
     result = {}
@@ -173,60 +167,25 @@ def set_script(script_text):
       print str(e) + " - retrying"
       set_script(script_text)
 
-def import_file(program_name):
-    script = []
-    show_comments = True
-    program_name = "./" + program_name
-
-    if not program_name.endswith(".mac"):
-        program_name = program_name  + ".mac"
-
-    file = open(program_name, "r")
-    for line in file:
-        line = line.strip()
-        if len(line) == 0:
-            continue
-        if line[0] == "#":
-            if show_comments:
-                print tc.yellow(line[1:].strip())
-            continue
-        else:
-            if show_comments:
-                print
-                show_comments = False
-        script.append(line)
-    return script
-
-def get_list_width(list):
-  result = -1
-  for item in list:
-    length = len(str(item))
-    if length > result:
-      result = length
-  return result
-
-def print_table(description, table):
-    print
-    ui.report_info_alt("------------------------------------------------------")
-    ui.report_info_alt(description + ":")
-    ui.report_info_alt("------------------------------------------------------")
-    keys = table.keys()
-    values = table.values()
-    keys_width = get_list_width(keys)
-    values_width = get_list_width(values)    
-
-    for key in sorted(table.iterkeys()):
-        key_len = len(str(key))
-        key_diff = keys_width - key_len
-        value = table[key]
-        filler = " " * key_diff
-        key_title = filler + str(key)
-        if type(value) is list:
-          ui.report_info_alt(key_title + ":")
-          print_script(value)
-        else:
-          ui.info_entry_alt(key_title, str(value))
-    print
+#def import_file(program_name):
+#    script = []
+#    show_comments = True
+#    program_name = utils.locate_file(program_name, ".mac")
+#    file = open(program_name, "r")
+#    for line in file:
+#        line = line.strip()
+#        if len(line) == 0:
+#            continue
+#        if line[0] == "#":
+#            if show_comments:
+#                print tc.yellow(line[1:].strip())
+#            continue
+#        else:
+#            if show_comments:
+#                print
+#                show_comments = False
+#        script.append(line)
+#    return script
 
 def program_macros(program_name):
     compiled_script = ""
@@ -272,12 +231,12 @@ def program_macros(program_name):
 
     if show_tables:
       print
-      print_table("Presets", mc.get_presets())
-      print_table("Includes", mc.get_includes())
-      print_table("Resolved Values", mc.get_resolved())
-      print_table("Unresolved Macros", mc.get_unresolved())
-      print_table("Final Macro Numbers", mc.get_final_macro_numbers())
-      print_table("Macros", mc.get_macros())
+      pu.print_table("Presets", mc.get_presets())
+      pu.print_table("Includes", mc.get_includes())
+      pu.print_table("Resolved Values", mc.get_resolved())
+      pu.print_table("Unresolved Macros", mc.get_unresolved())
+      pu.print_table("Final Macro Numbers", mc.get_final_macro_numbers())
+      pu.print_table("Macros", mc.get_macros())
 
     if show_output and not verbose_mode:
         print
@@ -386,11 +345,11 @@ def run_default_macro():
         else:
           lc.run_macro(macro_run_number)
 
-def print_device_macros():
-  macros = lc.get_macros()
-  ui.report_info("Macros on device:")
-  for macro in macros:
-    ui.report_info_alt(macro)
+#def print_device_macros():
+#  macros = lc.get_macros()
+#  ui.report_info("Macros on device:")
+#  for macro in macros:
+#    ui.report_info_alt(macro)
 
 ############################################################################
 
@@ -408,7 +367,7 @@ if __name__ == '__main__':
     setup()
 
     if print_macros:
-      print_device_macros()
+      pu.print_device_macros()
       sys.exit()
 
     while True:
