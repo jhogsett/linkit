@@ -166,8 +166,8 @@ def set_script(script_text):
                 ui.write(tc.green('.'))
         else:
             macro_number = int(script_text.split(":")[0])
-            print lc.get_macro(macro_number)
-        #print@@@
+            macro, carry_over_macro = lc.get_macro(macro_number)
+            print macro
     except ValueError as e:
       print str(e) + " - retrying"
       set_script(script_text)
@@ -231,7 +231,7 @@ def verify_programming(compiled_script):
   script_ok = True
   for compiled_line in compiled_script:
     macro_number = int(compiled_line.split(":")[0])
-    programmed_line = lc.get_macro(macro_number)
+    programmed_line, carry_over_macro = lc.get_macro(macro_number)
     if programmed_line != compiled_line:
       script_ok = False
       print

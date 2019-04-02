@@ -238,10 +238,9 @@ def set_macro(macro, macro_text, expected_bytes, debug_mode):
       print "macro " + str(macro) + ": ",
     bytes = command_int(str(macro) + ":set:" + macro_text)
     if debug_mode:
-        #print str(bytes) + " bytes"
         macro_bytes = command_str("1," + str(macro) + ":tst")
-        #print "Macro bytes: " + str(macro_bytes)
-        print "Macro: " + lc.get_macro(macro)
+        macro, carry_over_macro = get_macro(macro)
+        print "Macro: " + macro
     else:
         if expected_bytes > 0 and expected_bytes != bytes:
             raise StandardError("Wrong number of bytes received for macro %s" % str(macro)) 
@@ -254,14 +253,19 @@ def get_macro_raw(macro):
     return command_str("1," + str(macro) + ":tst")
 
 def get_macro(macro):
-    macro_bytes = get_full_macro_bytes(macro)
-    return str(macro) + ":set:" + translate_macro_bytes(macro_bytes)
+    macro_bytes, carry_over_macro = get_full_macro_bytes(macro)
+    result = str(macro) + ":set:" + translate_macro_bytes(macro_bytes)
+    return result, carry_over_macro
 
 def get_macros():
     result = []
     last_macro = get_last_eeprom_macro()
+    carry_over_macro = -1
     for i in range(0, last_macro + 1):
-      result.append(get_macro(i))
+      if i <= carry_over_macro:
+        continue
+      macro, carry_over_macro = get_macro(i)
+      result.append(macro)
     return result
 
 def get_macro_bytes(macro):
@@ -288,22 +292,13 @@ def get_full_macro_bytes(macro):
     macro_bytes = get_macro_bytes(current_macro)
     buffer += macro_bytes
     macro_bytes_max += macro_size
-    #print str(macro_bytes)
-    #index = 0
-    #script_terminator_found = False
     while(index < macro_bytes_max):
-      #print "index: " + str(index)
-      #print "len: " + str(len(macro_bytes))
-      #print "max: " + str(macro_bytes_max)
       byte = buffer[index]
       if byte == 255 or byte == 0:
         script_terminator_found = True
         break
       if is_arg_marker(byte):
-        #format, size = get_arg_decode_info(byte)
-        # index could be the last byte in the buffer
-        # at least one more byte is needed
-        size = get_args_byte_count(byte) #+ 1 #@@@
+        size = get_args_byte_count(byte)
         if index + size >= macro_bytes_max:
           # break the inner loop to get the next set of bytes
           # and don't increment the index so the byte is checked again
@@ -311,7 +306,6 @@ def get_full_macro_bytes(macro):
         result.append(byte)
         index += 1
         for i in range(0, size):
-          #print "INDEX: " + str(index)
           byte = buffer[index]
           result.append(byte)
           index += 1
@@ -321,7 +315,7 @@ def get_full_macro_bytes(macro):
     if script_terminator_found:
       break;
     current_macro += 1
-  return result
+  return result, current_macro
 
 def get_buffer(start, count, slow=False):
   return command_str("2," + str(start) + "," + str(count) + ":tst", slow)

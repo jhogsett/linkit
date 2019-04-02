@@ -95,7 +95,7 @@ def merge_dicts(x, y):
     z.update(y)
     return z
 
-def randomize(seed=0, max=65535):
+def randomize(seed=0, max=4294967296):
     if seed == 0:
         seed = random.randint(1, max)
     random.seed(seed)
