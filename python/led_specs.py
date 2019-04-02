@@ -978,6 +978,17 @@ def specs():
     if test("it mirrors properly in reverse mode within an offset and window"):
       expect_buffer("1:rev:10:off:20:win:red:pur:mir", 10, 10, "10,0,20,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,0,0,10,0,20")
 
+    # draw mode?
+
+    # flip
+    if test("it flips"):
+      lc.command("0,4:pos:red:3:pos:blu:flu")
+      expect_buffer("0,4:pos:1:mir", 0, 4, "20,0,0,0,0,0,0,0,0,0,0,20")
+
+    if test("it flips in reverse mode"):
+      lc.command("0,4:pos:red:3:pos:blu:flu")
+      expect_buffer("0,4:pos:1:rev:1:mir", 0, 4, "20,0,0,0,0,0,0,0,0,0,0,20")
+
 
 ########################################################################
 # POSITIONING
