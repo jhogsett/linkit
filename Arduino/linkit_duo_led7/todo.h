@@ -1,92 +1,8 @@
 // explosion animation
 
-// more compact number storage
-// cases:
-// bytes: 1-7
+// background: darker pixels are next higher palette color
 
-// 3 16-bit arguments 6 bytes
-
-  // 16, 16, 8 bit arguments: 5 bytes
-  // 16, 8, 16 bit arguments: 5 bytes
-  // 8, 16, 16 bit arguments: 5 bytes
-
-// 2 16-bit arguments: 4 bytes
-
-  // 16, 8 bit arguments: 3 bytes
-  // 8, 16 bit arguments: 3 bytes
-
-// 1 16-bit argument 2 bytes
-
-// 1 8-bit positive argument 1 byte 0 to 255
-// 1 8-bit negative argument 1 byte -1 to -255
-
-
-// 1 8-bit positive argument 1 byte 0 to 255
-// 1 8-bit negative argument 1 byte -1 to -255
-
-// 1 4-bit positive argument 0 bytes 0 to 15
-// 1 4-bit negative argument 0 bytes -1 to -15
-
-
-  
-// simpler:
-// - all arguments are signed
-// - all arguments can be 1 or 2 bytes
-
-// 1 -127 to 127
-// 2 -32,767 to 32,767
-
-// types
-
-// 4 BITS OF MARKER, 1 BIT OF NON-COMMAND
-// x, x, x MACRO_ARG_MARKER_XXX 1 bytes, could signal that remaining 3 bits is -3 to 3
-// 1, x, x MACRO_ARG_MARKER_1XX 2 bytes
-// 1, 1, x MACRO_ARG_MARKER_11X 3 bytes
-// 1, 1, 1 MACRO_ARG_MARKER_111 4 bytes
-// 1, 1, 2 MACRO_ARG_MARKER_112 5 bytes
-// 1, 2, x MACRO_ARG_MARKER_12X 4 bytes
-// 1, 2, 1 MACRO_ARG_MARKER_121 5 bytes
-// 1, 2, 2 MACRO_ARG_MARKER_122 6 bytes
-// 2, x, x MACRO_ARG_MARKER_2XX 3 bytes
-// 2, 1, x MACRO_ARG_MARKER_21X 4 bytes
-// 2, 1, 1 MACRO_ARG_MARKER_211 5 bytes
-// 2, 1, 2 MACRO_ARG_MARKER_212 6 bytes
-// 2, 2, x MACRO_ARG_MARKER_22X 5 bytes
-// 2, 2, 1 MACRO_ARG_MARKER_221 6 bytes
-// 2, 2, 2 MACRO_ARG_MARKER_222 7 bytes
-
-
-// x, x, x MACRO_ARG_MARKER_XXX 000000
-// 1, x, x MACRO_ARG_MARKER_1XX 010000
-// 2, x, x MACRO_ARG_MARKER_2XX 100000
-
-// x, x, x MACRO_ARG_MARKER_XXX 000000
-// x, 1, x MACRO_ARG_MARKER_X1X 000100
-// x, 2, x MACRO_ARG_MARKER_X2X 001000
-
-// x, x, x MACRO_ARG_MARKER_XXX 000000
-// x, x, 1 MACRO_ARG_MARKER_XX1 000001
-// x, x, 2 MACRO_ARG_MARKER_XX2 000010
-
-
-// i = (int)arg0, 1, 2
-// if abs(i) <= 127 arg0-8 else arg0-16
-// if abs(i) == 0   arg0-0
-// if abs(i) <= 127 arg1-8 else arg1-16
-// if abs(i) == 0   arg1-0
-// if abs(i) <= 127 arg2-8 else arg2-16
-// if abs(i) == 0   arg2-0
-
-// if arg0 == 0 
-
-// if an earlier arg is zero but a later arg has a value, use 8-bit for that value
-
-// if arg2 has a value, flag that arg1 and arg0 must have placeholders
-// if arg1 has a value, flag that arg0 must have a placeholder
-
-
-
-// maybe smarter python expression combing than jsut removing backticks?
+// maybe smarter python expression combining than jsut removing backticks?
 
 
 // remix:
@@ -154,7 +70,8 @@
 // command: 0:set:0:seq:dyn
 // command: 1:set:0,18:seq:0,18:run
 //
-// 
+
+// sequence command to advance two at once (then math them?)
 
 // ball-box: a wandering mode (needs dampening)
 
@@ -300,6 +217,9 @@
 // a standard macro like this is 15 bytes + terminator
 //50:set:2,75:swc:56:run:150,59:sch
 //51:set:
+
+// after arg storage change, no carryover macro
+// 14:set:1,75:sws:18:run:25,21:sch
 
 // need somelike like [[[ ]]] that does multiple expansion with fill-invariables (that can replicate meta-templates)
 //

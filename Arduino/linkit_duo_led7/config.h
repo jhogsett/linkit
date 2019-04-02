@@ -43,7 +43,7 @@
 // 93-LED platform
 // #define PLATFORM
 
-// 93-LED projector
+// 93-LED projector and projector2
 // #define PROJECTOR
 
 // 200-LED display/overhead

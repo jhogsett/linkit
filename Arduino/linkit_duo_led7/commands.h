@@ -72,7 +72,7 @@ class Commands
   void do_math(int arg0);
   void do_flood(byte type);
   void do_random(byte type, int times);
-  void do_mirror();
+  void do_mirror(byte type);
   void draw_mirror_step(rgb_color * buf_back, rgb_color * buf_front);
   void do_copy(int size, int times, int zoom);
   void do_repeat(byte times);
@@ -540,17 +540,20 @@ void Commands::do_random(byte type, int times)
   }
 }
 
-// arg0: number of cuts, 0: defaults to 1
-// arg1: type: 0=mirror 1=flip
- void Commands::do_mirror()
+#define MIRROR_MIRROR 0
+#define MIRROR_FLIP 1
+
+// arg1: number of cuts, 0: defaults to 1
+// arg0: type: 0=mirror 1=flip
+ void Commands::do_mirror(byte type)
 {
   bool reverse = buffer->get_reverse();
   byte front = buffer->get_offset();
   byte back = buffer->get_window() - 1;
-  
+  bool flip = type == MIRROR_FLIP;
   byte width;
 
-  if(buffer->get_draw_mode() == DRAW_MODE_WRITE)
+  if(buffer->get_draw_mode() == DRAW_MODE_WRITE || flip)
     width = buffer->get_width() / 2;
   else
     width = buffer->get_width();
@@ -560,17 +563,43 @@ void Commands::do_random(byte type, int times)
   byte * effects_front = &buffer->get_effects_buffer()[front];
   byte * effects_back = &buffer->get_effects_buffer()[back];
 
+  rgb_color save_color;
+  byte save_effect;
   for(byte i = 0; i < width; i++)
   {
     if(reverse)
     {
+      if(flip)
+      {
+        save_color = *(buf_front + i);
+        save_effect = *(effects_front + i);         
+      }
+    
       *(buf_front + i) = *(buf_back - i);
       *(effects_front + i) = *(effects_back - i);
+
+      if(flip)
+      {
+        *(buf_back - i) = save_color;
+        *(effects_back - i) = save_effect;
+      }
     } 
     else 
     {
+      if(flip)
+      {
+        save_color = *(buf_back - i);
+        save_effect = *(effects_back - i);         
+      }
+
       *(buf_back - i) = *(buf_front + i);
       *(effects_back - i) = *(effects_front + i);
+
+      if(flip)
+      {
+        *(buf_front + i) = save_color;
+        *(effects_front + i) = save_effect;
+      }
     }
   }
 }

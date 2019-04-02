@@ -57,7 +57,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_MIRROR: 
-      do_mirror(); 
+      do_mirror(arg0); 
       break;
  
     case CMD_DISPLAY: 
