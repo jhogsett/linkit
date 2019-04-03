@@ -19,6 +19,10 @@ def verify_programming(compiled_script):
   print
   return script_ok
 
+def print_script(script_lines):
+  for script_text in script_lines:
+    ui.report_warn(script_text)
+
 def print_table(description, table):
     print
     ui.report_info_alt("------------------------------------------------------")

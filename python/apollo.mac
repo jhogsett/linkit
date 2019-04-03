@@ -1,8 +1,10 @@
 
 %include symbols
 
-%include inchworm
 %include hsl-sequencer
+
+%include inchworm
+#%include hsl-sequencer
 %include bars
 
 $lamp-render-time 200

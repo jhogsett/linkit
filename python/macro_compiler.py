@@ -153,7 +153,15 @@ def load_file(filename, default_ext=".mac"):
             if len(include_filename) > 0 and include_filename not in includes.keys():
                 full_filename = os.path.join(file_path, include_filename)
                 include_lines = load_file(full_filename)
+                module_name = os.path.basename(include_filename)
+
+                include_lines, no_prefix = no_prefix_directive_check(include_lines)
                 include_lines = rewrite_included_script_lines(include_lines)
+
+                if not no_prefix:
+                    include_lines = prefix_module_on_macros(module_name, include_lines)
+                    include_lines = prefix_module_on_variables(module_name, include_lines)
+
                 file_lines = file_lines + include_lines
                 includes[include_filename] = full_filename
                 continue
@@ -161,6 +169,17 @@ def load_file(filename, default_ext=".mac"):
     return file_lines
 
 ## ----------------------------------------------------
+
+def no_prefix_directive_check(script_lines):
+    new_lines = []
+    result = False
+    for line in script_lines:
+        line = line.strip()
+        if line.startswith("%no-prefix"):
+            result = True
+        else:
+            new_lines.append(line)
+    return new_lines, result
 
 def remove_fixed_macro_numbers(line):
     if not line_has_unresolved_for_include_rewrite(line):
@@ -171,6 +190,92 @@ def remove_fixed_macro_numbers(line):
                 # leave only the name
                 return "[" + args[0] + "]"
     return line
+
+def prefix_module_on_macros(module_name, script_lines):
+    new_lines = []
+    translation = {}
+
+    # locate and prefix macro names
+    for line in script_lines:
+        line = line.strip()
+        if "[" in line and "[[" not in line and "[[[" not in line:
+            start, end = utils.locate_delimiters(line, "[", "]")
+            if start != -1 and end != -1:
+                args = utils.extract_args(line, "[", "]")
+                if len(args) >= 1:
+                    old_macro_name = args[0]
+                    new_macro_name = module_name + "-" + old_macro_name
+                    translation[old_macro_name] = new_macro_name
+                    args[0] = new_macro_name
+                    new_line = "[" + " ".join(args) + "]"
+		    new_lines.append(new_line)
+                else:
+                    new_lines.append(line)
+	    else:
+                new_lines.append(line)
+        else:
+            new_lines.append(line)
+
+    # locate and replace old macro names in macro runs
+    script_lines = new_lines
+    new_lines = []
+
+#    for line in script_lines:
+#        for key in translation.keys():
+#            replacement = translation[key]
+#            line = line.replace(key, replacement)
+#        new_lines.append(line)
+
+    for line in script_lines:
+#	if line_has_unresolved_for_include_prefixing(line):
+#            new_lines.append(line)
+#            continue
+        if "(" in line and "((" not in line and "(((" not in line and "`" not in line:
+            start, end = utils.locate_delimiters(line, "(", ")")
+            if start != -1 and end != -1:
+                args = utils.extract_args(line, "(", ")")
+                if len(args) >= 1:
+                    old_macro_name = args[0]
+                    ui.report_verbose("module: " + module_name + " old macro name: " + old_macro_name)
+                    if old_macro_name in translation:
+                        new_macro_name = translation[old_macro_name]
+                        args[0] = new_macro_name
+                        ui.report_verbose("module: " + module_name + " new macro name: " + new_macro_name)
+                    new_line = "(" + " ".join(args) + ")"
+                    new_lines.append(new_line)
+                else:
+                    new_lines.append(line)
+            else:
+                new_lines.append(line)
+        else:
+            new_lines.append(line)
+
+    return new_lines
+
+def prefix_module_on_variables(module_name, script_lines):
+    new_lines = []
+    translation = {}
+
+    # locate and prefix variable names
+    for line in script_lines:
+        line = line.strip()
+        args = utils.get_key_args(line, "$")
+	if len(args) > 0:
+            old_variable_name = args[0]
+            new_variable_name = module_name + "-" + old_variable_name
+            translation[old_variable_name] = new_variable_name
+
+    # locate and replace old variable names in variable references
+    for line in script_lines:
+        for key in translation.keys():
+            replacement = translation[key]
+            line = line.replace(key, replacement)
+        new_lines.append(line)
+
+    return new_lines
+
+
+
 
 ## ----------------------------------------------------
 
@@ -1354,6 +1459,9 @@ def line_has_unresolved_for_python_evaluation(line):
 
 def line_has_unresolved_for_include_rewrite(line):
     return line_has_template_marker(line) or line_has_multi_macro_marker(line)
+
+def line_has_unresolved_for_include_prefixing(line):
+    return line_has_python_expression(line)
 
 ########################################################################
 ## line maniupation routines

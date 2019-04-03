@@ -198,7 +198,7 @@ def program_macros(program_name):
         ui.report_error("Fatal error compiling script. Reported error: ")
         ui.report_error_alt(str(e))
         ui.report_error("more error details:")
-        print_script(mc.get_saved_bad_script())
+        pu.print_script(mc.get_saved_bad_script())
         compilation_succeeded = False
     print
 
@@ -215,7 +215,7 @@ def program_macros(program_name):
           ui.report_error("Compilation failed!")
           if not verbose_mode:
             print
-            print_script(compiled_script)
+            pu.print_script(compiled_script)
 
         script_ok = compilation_valid
         if compilation_valid:
@@ -245,10 +245,6 @@ def program_macros(program_name):
             ui.report_info_alt(script_text)
 
     return script_ok
-
-def print_script(script_lines):
-  for script_text in script_lines:
-    ui.report_warn(script_text)
 
 # --------------------------------------------------------------------------
     

@@ -4,7 +4,7 @@
 
 %include symbols
 %include hsl-sequencer
-%play-macro bars-app
+%play-macro app
 
 $num-instances 5
 #$instance-width `int(<NUM-LEDS>/10)`
@@ -27,7 +27,7 @@ $bar-step 1
 $use-computed-value True
 $bar-sequencer cosine-sequencer
 
-[bars-app 10]
+[app 10]
     start-application
  
 <<< <draw-mode> != <DRAW-WRITE>
