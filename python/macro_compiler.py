@@ -153,7 +153,19 @@ def load_file(filename, default_ext=".mac"):
             if len(include_filename) > 0 and include_filename not in includes.keys():
                 full_filename = os.path.join(file_path, include_filename)
                 include_lines = load_file(full_filename)
+
+                # maybe this should return the prefix just done
+                # then while prefixing the present file, ignore macros already prefixed
+
+                # or keep global table of prefixes, added to when prefixing is done
+                # and macros that start with any of those don't get prefixed.
+
                 module_name = os.path.basename(include_filename)
+
+
+                # on two level include, how to prevent later included file having macros prefixed again?
+
+		# 
 
                 include_lines, no_prefix = no_prefix_directive_check(include_lines)
                 include_lines = rewrite_included_script_lines(include_lines)
@@ -191,24 +203,47 @@ def remove_fixed_macro_numbers(line):
                 return "[" + args[0] + "]"
     return line
 
+global translated
+translated = []
+
 def prefix_module_on_macros(module_name, script_lines):
+    global translated
     new_lines = []
     translation = {}
 
+    block_skip_mode = False
     # locate and prefix macro names
     for line in script_lines:
         line = line.strip()
+
+	# don't prefix macros inside templates
+        if block_skip_mode:
+            if line.startswith("]]"):
+                block_skip_mode = False
+            new_lines.append(line)
+            continue
+
+        if line.startswith("[["):
+            block_skip_mode = True
+            new_lines.append(line)
+            continue
+
         if "[" in line and "[[" not in line and "[[[" not in line:
             start, end = utils.locate_delimiters(line, "[", "]")
             if start != -1 and end != -1:
                 args = utils.extract_args(line, "[", "]")
                 if len(args) >= 1:
                     old_macro_name = args[0]
-                    new_macro_name = module_name + "-" + old_macro_name
-                    translation[old_macro_name] = new_macro_name
-                    args[0] = new_macro_name
-                    new_line = "[" + " ".join(args) + "]"
-		    new_lines.append(new_line)
+                    # skip already-translated macros
+                    if old_macro_name not in translated:
+                        new_macro_name = module_name + "-" + old_macro_name
+                        translation[old_macro_name] = new_macro_name
+                        translated.append(new_macro_name)
+                        args[0] = new_macro_name
+                        new_line = "[" + " ".join(args) + "]"
+		        new_lines.append(new_line)
+                    else:
+                        new_lines.append(line)
                 else:
                     new_lines.append(line)
 	    else:

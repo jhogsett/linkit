@@ -25,7 +25,7 @@ $swinger-max-half <swinger-max>
 
     <CONFIG-FADE-RATE> = <swinger-fade-rate>
 
-    (hsl-sequencer-start)
+    (test_script37_include-start)
 
     [[[setup-swinger 6]]]
 

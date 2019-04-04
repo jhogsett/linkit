@@ -1,0 +1,9 @@
+# ---------- test 1 --------------
+
+%include test_script50_include2
+
+[test1macro]
+    green
+    (test1macro)
+    (test_script50_include2-test2macro)
+
