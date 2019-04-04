@@ -271,11 +271,11 @@ def prefix_module_on_macros(module_name, script_lines):
                 args = utils.extract_args(line, "(", ")")
                 if len(args) >= 1:
                     old_macro_name = args[0]
-                    ui.report_verbose("module: " + module_name + " old macro name: " + old_macro_name)
+                    #ui.report_verbose("module: " + module_name + " old macro name: " + old_macro_name)
                     if old_macro_name in translation:
                         new_macro_name = translation[old_macro_name]
                         args[0] = new_macro_name
-                        ui.report_verbose("module: " + module_name + " new macro name: " + new_macro_name)
+                        #ui.report_verbose("module: " + module_name + " new macro name: " + new_macro_name)
                     new_line = "(" + " ".join(args) + ")"
                     new_lines.append(new_line)
                 else:
