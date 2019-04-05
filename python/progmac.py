@@ -83,7 +83,7 @@ def get_options():
 def initialize():
     global app_description, bytes_programmed
     global device_profile, num_leds, starting_macro, num_macro_bytes, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers, last_macro_bytes, total_macro_bytes
-    app_description = "Apollo Lighting System - Macro Programmer v.2.0 6-1-2018"
+    app_description = "Apollo Lighting System - Macro Programmer v.3.0 4-0-2018"
     get_options()
 
     if not validate_options():
