@@ -1,14 +1,13 @@
+%no-prefix
+
+$TRUE 1
+$FALSE 0
 
 # configuration
 $CONFIG-BLINK-PERIOD 0
 $CONFIG-BREATHE-TIME 1
 $CONFIG-FADE-RATE 2
 $CONFIG-DEFAULT-EFFECT 3
-
-#define CONFIG_SET_BLINK_PERIOD   0
-#define CONFIG_SET_BREATHE_TIME   1
-#define CONFIG_SET_FADE_RATE      2
-#define CONFIG_SET_DEFAULT_EFFECT 3
 
 # sequencing
 $GET-NEXT 0
@@ -21,13 +20,15 @@ $SUB-SEQ -6
 $SEQ-NEW-HIGH -7
 $SEQ-NEW-LOW -8
 $SEQ-RESET -9
+$GET-PREVIOUS -10
+$GET-PREV-COMPUTED -11
+$GET-NEXT-NO-SAVE -12
+$DEFAULT-STEP 0
 
 # draw modes
 $DRAW-WRITE 0
 $DRAW-PLUS 1
-$DRAW-MINUS 2
-$DRAW-MIX 3
-$DRAW-DIFF 4
+$DRAW-MIX 2
 
 # brightness levels
 $DEFAULT-BRIGHTNESS 0
@@ -36,6 +37,7 @@ $BRIGHTNESS-MAX -1
 $BRIGHTNESS-HIGH -2
 $BRIGHTNESS-LOW -3
 $BRIGHTNESS-MIN -4
+$BRIGHTNESS-MAPPED -5
 
 # pause/continue control
 $EFFECTS-PROCESSING 1
@@ -61,14 +63,55 @@ $TURQUOISE 15
 $LAVENDER 16
 $ROSE 17
 
-# not part of palette yet
-#$DKGRAY 18
-#$GRAY 19
-#$WHITE 20
-#$TUNGSTEN 21
-#$NEON 22
-#$SODIUM 23
-#$BLACK 24
+# from the fixed palette
+$DKGRAY 18
+$GRAY 19
+$WHITE 20
+$TUNGSTEN 21
+$NEON 22
+$SODIUM 23
+$BLACK 24
+$FIXED-PALETTE -1
+
+# random position type
+$RANDOM-POSITION-ANY 0
+$RANDOM-POSITION-EMPTY -1
+$RANDOM-POSITION-FILLED -2
+
+# copy/paste/duplicate
+$COPY-PASTE 0
+$COPY -1
+$PASTE -2
+$AUTO-FILL 0
+
+# erasing
+$FAST-ERASE-BUFFER 1
+$FAST-ERASE-ALL 2
+
+# flood/fill types
+$FILL-ALL 0
+$FILL-COLORS 1
+
+# enablement
+$ENABLE 1
+$DISABLE 0
+
+# macros
+$PASS-ARGUMENT -1
+
+# dimming/brightening
+$NONE 0
+$VERY-LIGHT 1
+$LIGHT 2
+$MEDIUM 3
+$MEDIUM-HEAVY 4
+$HEAVY 5
+$VERY-HEAVY 6
+$EXTREME 7
+
+# reverse
+$REVERSE-ENABLED 1
+$REVERSE-DISABLED 0
 
 # standard render function, consumes partial final macro
 [render !]

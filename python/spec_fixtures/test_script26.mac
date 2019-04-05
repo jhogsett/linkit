@@ -32,7 +32,7 @@ $num-worms 5
   (worms-start)
   
   # start the palette color sequencer
-  (hsl-sequencer-start)
+  (test_script26_include-start)
 
 # start up all worms
 [worms-start]

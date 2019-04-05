@@ -2,14 +2,13 @@
 %include hsl-sequencer
 
 %allow-mutability
-$HSL-ANGLE 45
-$HSL-STEP 10
-#40
+$hsl-sequencer-ANGLE 45
+$hsl-sequencer-STEP 10
 
 # this doesn't work because the variable keeps it's previous value until eventually being changed when the variables are resolved
-#$HSL-TIME `<color-sequence-time>*<time-factor>`
+#$hsl-sequencer-TIME `<color-sequence-time>*<time-factor>`
 
-$HSL-TIME 1000
+$hsl-sequencer-TIME 1000
 
 %include colors
 
@@ -19,9 +18,9 @@ $color-sequence-time 250
 $time-factor 10
 $brightness <DEFAULT-BRIGHTNESS>
 
-%play-macro monument-app
+%play-macro start
 
-[monument-app 10]
+[start 10]
   start-application
 
 <<< <brightness> != <DEFAULT-BRIGHTNESS>
@@ -33,13 +32,13 @@ $brightness <DEFAULT-BRIGHTNESS>
   (setup)
 
 [demo11 11]
-  (monument-app)
+  (start)
 
 [demo12 12]
-  (monument-app)
+  (start)
 
 [demo13 13]
-  (colors-app)
+  (colors-start)
 
 [setup]
   (set-schedules)

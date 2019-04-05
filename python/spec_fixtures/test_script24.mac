@@ -17,8 +17,8 @@ $the-color <RED>
   (color-render <render-time>)
   (color-draw <draw-time>)
 # (color-start)
-  (hsl-sequencer-start)
-  (hsl-sequencer <draw-time>)
+  (test_script24_include-start)
+  (test_script24_include-step <draw-time>)
 
 [color-render]
   refresh-display

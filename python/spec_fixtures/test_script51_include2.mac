@@ -1,0 +1,12 @@
+# ---- test 2------------
+[test2macro]
+     red
+     (test2macro)
+
+((anothertemplate))
+
+[[anothertemplate
+    [another-unprefixed-macro]
+        purple
+]]
+

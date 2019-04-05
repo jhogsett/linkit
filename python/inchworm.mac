@@ -6,7 +6,7 @@
 %include symbols
 %include hsl-sequencer
 
-%play-macro inchworm-app
+%play-macro app
 
 $worm-render-time 100
 $width0 `<NUM-LEDS> * 1 / 6`
@@ -18,7 +18,7 @@ $seq-type swing-sequencer
 $fade-type fast-fade
 $num-worms 5
 
-[inchworm-app 10]
+[app 10]
   start-application
 
   # make colors intermingle
@@ -32,9 +32,9 @@ $num-worms 5
   (hsl-sequencer-start)
 
   # schedule the renderer
-  (inchworm-render <worm-render-time>)
+  (worm-render <worm-render-time>)
 
-[inchworm-render]
+[worm-render]
   <EFFECTS-PROCESSING>
   refresh-display
 

@@ -19,6 +19,7 @@ $fade-type ffd
 [this-render]
         {{{
 	    mirror
+            <EFFECTS-PROCESSING>
 	}}}
 
 [[start X

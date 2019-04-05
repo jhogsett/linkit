@@ -4,24 +4,24 @@
 # ----------------------------------------------------------------
 
 %include symbols
-%play-macro hsl-sequencer-start
+%play-macro start
 
-$HSL-ANGLE 60
-$HSL-STEP 2
-$HSL-TIME 100
+$ANGLE 60
+$STEP 2
+$TIME 100
 
-[hsl-sequencer-start]
-    {seq-hsl},360
+[start]
+    {seq-hsl}, 360
     start-wheel-sequence
 
-    (hsl-sequencer <HSL-TIME>)
+    (step <TIME>)
 
-[hsl-sequencer]
-    {seq-hsl}, <GET-NEXT>, <HSL-STEP>
+[step]
+    {seq-hsl}, <GET-NEXT>, <STEP>
     advance-sequence
     store
 
-    <HSL-ANGLE>
+    <ANGLE>
     recall
 
     set-palette-by-hue
