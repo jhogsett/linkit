@@ -2,9 +2,7 @@
 %include symbols
 
 %include hsl-sequencer
-
 %include inchworm
-#%include hsl-sequencer
 %include bars
 
 $lamp-render-time 200
@@ -23,9 +21,9 @@ $demo-time 30000
   (lamp-render <lamp-render-time>)
 
 [lamp-render]
-  0,<lamp-colors>
+  0, <lamp-colors>
   add-palette-colors
-  <lamp-colors>,<AUTO-FILL>,`<NUM-LEDS>/<lamp-colors>`
+  <lamp-colors>, <AUTO-FILL>, `<NUM-LEDS> / <lamp-colors>`
   duplicate
   refresh-display
 

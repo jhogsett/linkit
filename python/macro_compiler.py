@@ -153,23 +153,10 @@ def load_file(filename, default_ext=".mac"):
             if len(include_filename) > 0 and include_filename not in includes.keys():
                 full_filename = os.path.join(file_path, include_filename)
                 include_lines = load_file(full_filename)
-
-                # maybe this should return the prefix just done
-                # then while prefixing the present file, ignore macros already prefixed
-
-                # or keep global table of prefixes, added to when prefixing is done
-                # and macros that start with any of those don't get prefixed.
-
                 module_name = os.path.basename(include_filename)
-
-
-                # on two level include, how to prevent later included file having macros prefixed again?
-
-		# 
 
                 include_lines, no_prefix = no_prefix_directive_check(include_lines)
                 include_lines = rewrite_included_script_lines(include_lines)
-
                 if not no_prefix:
                     include_lines = prefix_module_on_macros(module_name, include_lines)
                     include_lines = prefix_module_on_variables(module_name, include_lines)
@@ -285,7 +272,31 @@ def prefix_module_on_macros(module_name, script_lines):
         else:
             new_lines.append(line)
 
+#    return new_lines
+    script_lines = new_lines
+    new_lines = []
+
+    # translate macro names in variable references
+    for line in script_lines:
+        if "<" in line and "<<" not in line and "<<<" not in line:
+            parts = utils.smart_split(line, {"<":">"}, True)
+            #ui.report_verbose("parts " + str(parts))
+            new_parts = []
+            for part in parts:
+                if part.startswith("<") and part.endswith(">"):
+                    old_macro_name = part.strip()[1:-1]
+                    if old_macro_name in translation:
+                        new_macro_name = translation[old_macro_name]
+                        part = "<" + new_macro_name + ">"
+                        #ui.report_verbose("part: " + part)
+                new_parts.append(part)
+            line = " ".join(new_parts)
+            #ui.report_verbose("line: " + line)
+        new_lines.append(line)
+
     return new_lines
+
+
 
 def prefix_module_on_variables(module_name, script_lines):
     new_lines = []

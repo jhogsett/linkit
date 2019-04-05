@@ -179,60 +179,48 @@ def replace_args(line, start_delimiter, end_delimiter, replacement, outer=False)
         return line[0:start] + str(replacement) + line[end + 1:]
     return line
 
-def smart_split(input_str, grouping_dict=None, keep_grouping_chars=False, split_str=" "):
-    if grouping_dict == None:
-        grouping_dict = { '"' : '"', "'" : "'" }
-    final_split = []
-    capture_mode = False
-    capture_starter = None
-    capture_ender = None
-    capture_builder = []
+def smart_split(line, grouping=None, keep_grouping_chars = False, split_char = " "):
+    if grouping == None:
+        grouping = { '"' : '"' }
+    grouping_mode = False
+    group_starter = None
+    group_ender = None
+    line_segments = []
+    line_segment = ""
+    for char in line:
+        if grouping_mode:
+            if char == group_ender:
+                if keep_grouping_chars:
+                    line_segment += char
+                if len(line_segment) > 0:
+                    line_segments.append(line_segment)
+                line_segment = ""
+                grouping_mode = False
+            else:
+                line_segment += char
+            continue
+        if char in grouping.keys():
+            if len(line_segment) > 0:
+                line_segments.append(line_segment)
+            grouping_mode = True
+            group_starter = char
+            group_ender = grouping[char]
+            line_segment = ""
+            if keep_grouping_chars:
+                line_segment += char
+            continue
+        if char == split_char:
+            if len(line_segment) > 0:
+                line_segments.append(line_segment)
+            line_segment = ""
+            continue
+        line_segment += char
+    if grouping_mode:
+        raise ValueError("utils.smart_split(): unbalanced grouping of '" + group_starter + " " + group_ender + "' in '" + line + "'")
+    if len(line_segment) > 0:
+        line_segments.append(line_segment)
+    return line_segments
 
-    parts = input_str.split(split_str)
-    num_parts = len(parts)
-
-    grouping_starts = grouping_dict.keys()
-    grouping_ends = grouping_dict.values()
-    num_grouping_keys = len(grouping_starts)
-
-    for p in range(0, num_parts):
-        part = parts[p]
-
-        if num_grouping_keys > 0:
-            if capture_mode:
-                if part.endswith(capture_ender):
-                    capture_mode = False
-                    capture_builder.append(part)
-                    captured = split_str.join(capture_builder)
-                    capture_builder = []
-                    if keep_grouping_chars == False:
-                        group_starter_size = len(capture_starter)
-                        group_ender_size = len(capture_ender)
-                        captured = captured[group_starter_size:-group_ender_size]
-                    final_split.append(captured)
-                else:
-                    capture_builder.append(part)
-                continue
-
-            for i in range(0, num_grouping_keys):
-                capture_starter = grouping_starts[i]
-                if part.startswith(capture_starter):
-                    capture_ender = grouping_ends[i];
-                    if not part.endswith(capture_ender):
-                        capture_mode = True
-                        capture_ender = grouping_ends[i];
-                        capture_builder.append(part)
-                    break
-
-            if capture_mode:
-                continue
-
-        final_split.append(part)
-
-    if len(capture_builder) > 0:
-        raise ValueError("utils.smart_split() unable to parse due to unbalanced grouping: " + input_str)
-
-    return filter(None, final_split)
 
 # https://stackoverflow.com/questions/38987/how-to-merge-two-dictionaries-in-a-single-expression
 def merge_two_dicts(x, y):

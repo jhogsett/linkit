@@ -32,9 +32,9 @@ $num-worms 5
   (hsl-sequencer-start)
 
   # schedule the renderer
-  (render <worm-render-time>)
+  (worm-render <worm-render-time>)
 
-[render]
+[worm-render]
   <EFFECTS-PROCESSING>
   refresh-display
 
