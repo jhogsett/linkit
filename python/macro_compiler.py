@@ -753,8 +753,8 @@ def expand_meta_templates(script_lines):
                     else:
                         replacement_round.append(replacement)
                 replacement_str = " ".join(replacement_round)
-
                 new_line = "((" + template_name + " " + str(index) + " " + replacement_str + "))"
+                ui.report_verbose_alt("expanded meta template: " + new_line)
                 new_lines.append(new_line)
         else:
             new_lines.append(line)
