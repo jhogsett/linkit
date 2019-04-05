@@ -15,7 +15,7 @@ $brightness <BRIGHTNESS-AUTO>
 $render-time <ball-time>
 $fade-rate 9000
 $ball-time 25
-$box-width 15
+$box-width 12
 $box-time 50
 $num-boxes 3
 $balls-per-box 1
@@ -48,7 +48,7 @@ $bgtype-mirror 10
 $bgtype-points-alt 11
 $bgtype-color-points-alt 12
 
-$background-type <bgtype-line>
+$background-type <bgtype-points>
 $use-computed-value False
 $palette-bg-zoom 3
 $fgtype-palette 0

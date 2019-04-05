@@ -30,15 +30,17 @@ $left 1
 $left-start 56
 $left-width <group-width>
 
-%play-macro app
+%play-macro start
 
-[cool 10]
+[start 10]
     start-application
     (hsl-sequencer-start)
     (objects-groups-start)
 
-((group <right> <group-time> <right-start> <right-width> <objects-per-group> erase-group))
-((group <left>  <group-time> <left-start>  <left-width>  <objects-per-group> erase-group))
+#((group <right> <group-time> <right-start> <right-width> <objects-per-group> erase-group))
+#((group <left>  <group-time> <left-start>  <left-width>  <objects-per-group> erase-group))
+
+(((group <num-groups>  <group-time> [<right-start>, <left-start>] [<right-width>, <left-width>] <objects-per-group> erase-group)))
 
 ((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <object-darkening> <smooth-factor> draw-object))
 
@@ -48,5 +50,4 @@ $left-width <group-width>
 [draw-object]
     pop
     add-palette-color
-
 
