@@ -49,6 +49,7 @@ $wanderer-max-half <wanderer-max>
 [wanderer-render]
     {{{
         mirror
+        <EFFECTS-PROCESSING>
     }}}
 
 # create 5 meta-templates for wander processing

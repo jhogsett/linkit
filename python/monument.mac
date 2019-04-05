@@ -10,9 +10,9 @@ $color2 <YELLOW>
 $color3 <BLUE>
 $brightness <DEFAULT-BRIGHTNESS>
 
-%play-macro monument-app
+%play-macro start
 
-[monument-app 10]
+[start 10]
   start-application
 
 <<< <brightness> != <DEFAULT-BRIGHTNESS>
@@ -24,18 +24,18 @@ $brightness <DEFAULT-BRIGHTNESS>
   (setup)
 
 [demo11 11]
-  (monument-app)
+  (start)
 
 [demo12 12]
-  (monument-app)
+  (start)
 
 [demo13 13]
-  (colors-app)
+  (colors-start)
 
 [setup]
   (set-schedules)
   (setup-rings)
-  (hsl-sequencer <color-sequence-time>)
+  (hsl-sequencer-start <color-sequence-time>)
 
 [set-schedules]
   (rotate-outer <outer-rotate-time>)

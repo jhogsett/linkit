@@ -5,7 +5,7 @@
 %include symbols
 %include hsl-sequencer
 
-%play-macro colors-app
+%play-macro start
 
 $render-time 100
 $draw-time 1000
@@ -14,13 +14,13 @@ $the-color <RED>
 %allow-mutability
 $hsl-sequencer-TIME <draw-time>
 
-[colors-app 10]
+[start 10]
   start-application
-  (color-draw <draw-time>)
+  (draw <draw-time>)
   (hsl-sequencer-start)
   (render <render-time>)
 
-[color-draw]
+[draw]
   <the-color>
   add-palette-color
   <FILL-COLORS>
