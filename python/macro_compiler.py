@@ -11,6 +11,7 @@ import re
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
 global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
 global led_command, final_macro_numbers, saved_bad_script, includes, last_macro_bytes, allow_mutability
+
 macros = {}
 macro_commands = {}
 resolved = {}
@@ -110,10 +111,10 @@ def compile_script(script):
 
     new_script = resolve_script(script)
     new_lines = consolidate_macros(new_script)
-    report_verbose_script(new_lines, "consolidated script with proxied macro numbers")
+    ui.report_verbose_script(new_lines, "consolidated script with proxied macro numbers")
 
-    sort_script(new_lines)
-    report_verbose_script(new_lines, "script after sorting")
+    utils.sort_script(new_lines)
+    ui.report_verbose_script(new_lines, "script after sorting")
 
     if not compilation_valid(new_lines):
         saved_bad_script = new_lines
@@ -122,12 +123,12 @@ def compile_script(script):
     ui.report_verbose("--------------- post compilation processing ---------------")
 
     new_lines = post_processing(new_lines)
-    report_verbose_script(new_lines, "script after final macro number assignment")
+    ui.report_verbose_script(new_lines, "script after final macro number assignment")
 
     ui.report_verbose("--------------- post compilation clean up ---------------")
 
     new_lines = post_clean_up(new_lines)
-    report_verbose_script(new_lines, "script after post clean up")
+    ui.report_verbose_script(new_lines, "script after post clean up")
 
     ui.report_verbose("--------------- comnpilation complete ---------------")
     return new_lines
@@ -156,7 +157,7 @@ def load_file(filename, default_ext=".mac"):
                 module_name = os.path.basename(include_filename)
 
                 include_lines, no_prefix = no_prefix_directive_check(include_lines)
-                include_lines = rewrite_included_script_lines(include_lines)
+                include_lines = remove_macro_numbers(include_lines)
                 if not no_prefix:
                     include_lines = prefix_module_on_macros(module_name, include_lines)
                     include_lines = prefix_module_on_variables(module_name, include_lines)
@@ -185,7 +186,7 @@ def remove_fixed_macro_numbers(line):
         start, end = utils.locate_delimiters(line, "[", "]")
         if start != -1 and end != -1:
             args = utils.extract_args(line, "[", "]")
-            if len(args) == 2 and is_number(args[1]):
+            if len(args) == 2 and utils.is_number(args[1]):
                 # leave only the name
                 return "[" + args[0] + "]"
     return line
@@ -325,17 +326,11 @@ def prefix_module_on_variables(module_name, script_lines):
 
 ## ----------------------------------------------------
 
-def rewrite_included_script_line(script_line):
-    new_line = remove_fixed_macro_numbers(script_line)
-    return new_line
-
-## ----------------------------------------------------
-
-def rewrite_included_script_lines(script_lines):
+def remove_macro_numbers(script_lines):
     new_lines = []
     for line in script_lines:
         line = line.strip()
-        new_lines.append(rewrite_included_script_line(line))
+        new_lines.append(remove_fixed_macro_numbers(line))
     return new_lines
 
 
@@ -347,22 +342,22 @@ def resolve_script(script_lines):
     ui.report_verbose("--------------- Pre-processing ---------------")
 
     new_lines = pre_process_script(script_lines)
-    report_verbose_script(new_lines, "pre-processed script")
+    ui.report_verbose_script(new_lines, "pre-processed script")
 
     ui.report_verbose("--------------- Initial processing ---------------")
 
     new_lines = resolution_pass(new_lines)
-    report_verbose_script(new_lines, "script after resolution pass")
+    ui.report_verbose_script(new_lines, "script after resolution pass")
 
     proxy_macro_numbers()
-    report_verbose_script(new_lines, "script after proxy macro number assignment")
+    ui.report_verbose_script(new_lines, "script after proxy macro number assignment")
 
     ui.report_verbose("--------------- Main processing ---------------")
 
     while True:
         prev_lines = new_lines
         new_lines = resolution_pass(new_lines)
-        report_verbose_script(new_lines, "script after resolution pass")
+        ui.report_verbose_script(new_lines, "script after resolution pass")
         if new_lines == prev_lines:
             # no more resolving needed/possible
             break
@@ -378,37 +373,38 @@ def resolve_script(script_lines):
 ########################################################################
 
 def pre_process_script(script_lines):
-    report_verbose_script(script_lines, "script before pre-processing")
+    ui.report_verbose_script(script_lines, "script before pre-processing")
 
-    new_lines = remove_blank_lines(script_lines)
-    new_lines = remove_comments(new_lines)
+    new_lines = script_lines
+    new_lines = utils.strip_whitespace(new_lines)
+    new_lines = utils.strip_comments(new_lines)
     new_lines = pre_rewrite(new_lines)
-    #report_verbose_script(new_lines, "script after blank line, comment and colon removal")
+    #ui.report_verbose_script(new_lines, "script after blank line, comment and colon removal")
 
     new_lines = translate_commands(new_lines)
-    report_verbose_script(new_lines, "script after command translation")
+    ui.report_verbose_script(new_lines, "script after command translation")
 
     new_lines = process_directives(new_lines)
-    #report_verbose_script(new_lines, "script after processing directives")
+    #ui.report_verbose_script(new_lines, "script after processing directives")
     ingest_directives()
 
     new_lines = process_set_variables(new_lines)
-    #report_verbose_script(new_lines, "script after capturing variables")
+    #ui.report_verbose_script(new_lines, "script after capturing variables")
 
     new_lines = process_conditionals(new_lines)
-    report_verbose_script(new_lines, "script after processing conditionals")
+    ui.report_verbose_script(new_lines, "script after processing conditionals")
 
     new_lines = process_blocks(new_lines)
-    report_verbose_script(new_lines, "script after processing blocks")
+    ui.report_verbose_script(new_lines, "script after processing blocks")
 
     new_lines = process_get_variables(new_lines)
-    report_verbose_script(new_lines, "script after replacing variables")
+    ui.report_verbose_script(new_lines, "script after replacing variables")
 
     new_lines = capture_expand_loop(new_lines)
-    report_verbose_script(new_lines, "script after capture-expand loop")
+    ui.report_verbose_script(new_lines, "script after capture-expand loop")
 
     new_lines = expand_meta_loop(new_lines)
-    report_verbose_script(new_lines, "script after expand-meta loop")
+    ui.report_verbose_script(new_lines, "script after expand-meta loop")
 
     return new_lines
 
@@ -422,13 +418,13 @@ def capture_expand_loop(script_lines):
         orig_lines = new_lines
 
         new_lines = capture_templates(new_lines)
-        #report_verbose_script(new_lines, "script after capturing templates")
+        #ui.report_verbose_script(new_lines, "script after capturing templates")
 
         new_lines = expand_templates(new_lines)
-        #report_verbose_script(new_lines, "script after expanding templates")
+        #ui.report_verbose_script(new_lines, "script after expanding templates")
 
         new_lines = expand_multi_macros(new_lines)
-        #report_verbose_script(new_lines, "script after expanding multi-macros")
+        #ui.report_verbose_script(new_lines, "script after expanding multi-macros")
 
         if new_lines == orig_lines:
             break
@@ -444,19 +440,14 @@ def expand_meta_loop(script_lines):
         orig_lines = new_lines
 
         new_lines = expand_meta_templates(new_lines)
-        #report_verbose_script(new_lines, "script after expanding meta templates")
+        #ui.report_verbose_script(new_lines, "script after expanding meta templates")
 
         new_lines = expand_templates(new_lines)
-        #report_verbose_script(new_lines, "script after expanding templates")
+        #ui.report_verbose_script(new_lines, "script after expanding templates")
 
         if new_lines == orig_lines:
             break
     return new_lines
-
-## ----------------------------------------------------
-
-def remove_blank_lines(script_lines):
-    return utils.strip_whitespace(script_lines)
 
 ## ----------------------------------------------------
 
@@ -820,9 +811,8 @@ def resolution_pass(script_lines):
         if new_line != None and new_line != '':
             new_lines.append(new_line)
     passes += 1
-    if verbose_mode:
-        ui.report_verbose("--------------------- resolution_pass pass #" + str(passes))
-    report_progress()
+    ui.report_verbose("--------------------- resolution_pass pass #" + str(passes))
+    ui.report_progress()
     new_lines = filter(None, new_lines)
     return new_lines
 
@@ -1140,7 +1130,6 @@ def process_place_template(line):
         # can only expand if there are no unresolved values
         if template_name in resolved:
             template_script = resolved[template_name]
-            #ui.report_verbose("-placing template: " + template_name)
             ui.report_verbose("process_place_template expanding template " + template_name)
             return utils.replace_args(line, "((", "))", template_script)
 
@@ -1372,7 +1361,7 @@ def assign_final_macro_number(line):
         final_macro_number = potential_macro_number
 
     ui.report_verbose_alt("assign_final_macro_number assigning final macro #" + str(final_macro_number) + " for proxy #" + str(proxy_macro_number))
-    report_progress()
+    ui.report_progress()
     set_final_macro_number(proxy_macro_number, final_macro_number)
 
     # FIX
@@ -1427,11 +1416,11 @@ def process_finalized_macro_numbers(script_lines):
     pass_num = 0
     while True:
         prev_lines = processed_lines
-        report_progress()
+        ui.report_progress()
 
         processed_lines = process_finalized_macro_numbers_pass(processed_lines)
         pass_num += 1
-        report_verbose_script(processed_lines, "script after finalizing macro numbers pass " + str(pass_num)) 
+        ui.report_verbose_script(processed_lines, "script after finalizing macro numbers pass " + str(pass_num)) 
 
         if processed_lines == prev_lines:
             # no more resolving is possible
@@ -1462,10 +1451,10 @@ def assign_final_macro_numbers(script_lines):
         prev_lines = processed_lines
 
         processed_lines = assign_final_macro_numbers_pass_one(processed_lines)
-        report_verbose_script(processed_lines, "script after final macro number assignment pass #1")
+        ui.report_verbose_script(processed_lines, "script after final macro number assignment pass #1")
 
         processed_lines = assign_final_macro_numbers_pass_two(processed_lines)
-        report_verbose_script(processed_lines, "script after final macro number assignment pass #2")
+        ui.report_verbose_script(processed_lines, "script after final macro number assignment pass #2")
 
         if processed_lines == prev_lines:
             # no more processing is possible
@@ -1630,41 +1619,4 @@ def get_macros():
 
 def get_includes():
     return includes
-
-
-########################################################################
-## general helpers
-########################################################################
-
-def is_number(str):
-    try:
-        int(str)
-        return True
-    except ValueError:
-        return False
-
-def print_script(script):
-    for line in script:
-        ui.report_error(line)
-    ui.report_error()
-
-def report_verbose_script(script, message):
-    if not verbose_mode:
-        return
-    line_count = len(script)
-    byte_count = 0
-    for line in script:
-        byte_count += len(line)
-    count_message = " (lines: " + str(line_count) + ", bytes: " + str(byte_count) + ")"
-    ui.report_verbose_alt(message + count_message)
-    for line in script:
-        ui.report_verbose(line)
-    ui.report_verbose()
-
-def sort_script(script_lines):
-    script_lines.sort(reverse=False)
-
-def report_progress():
-        if not verbose_mode:
-                ui.write(tc.green("."))
 

@@ -81,3 +81,25 @@ def intro_entry(key, value):
 def app_description(description):
     print tc.magenta("\n" + description + "\n")
 
+def print_script(script):
+    for line in script:
+        report_error(line)
+    report_error()
+
+def report_verbose_script(script, message):
+    if not verbose_mode:
+        return
+    line_count = len(script)
+    byte_count = 0
+    for line in script:
+        byte_count += len(line)
+    count_message = " (lines: " + str(line_count) + ", bytes: " + str(byte_count) + ")"
+    report_verbose_alt(message + count_message)
+    for line in script:
+        report_verbose(line)
+    report_verbose()
+
+def report_progress():
+        if not verbose_mode:
+                write(tc.green("."))
+

@@ -236,4 +236,14 @@ def get_list_width(list):
       result = length
   return result
 
+def sort_script(script_lines):
+    script_lines.sort(reverse=False)
+
+def is_number(str):
+    try:
+        int(str)
+        return True
+    except ValueError:
+        return False
+
 
