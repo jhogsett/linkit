@@ -7,14 +7,16 @@ import struct
 slow_response_wait = 0.15
 fast_response_wait = 0.01
 
-global s, verbose_mode, cmd, max_command_chars
+global s, verbose_mode, cmd, max_command_chars, max_push_chars
 s = None
 verbose_mode = False
 cmd = ""
 max_command_chars = None
+max_push_chars = None
+command_terminator = ':\0:'
 
 def begin(verbose=False):
-    global s, verbose_mode, max_command_chars
+    global s, verbose_mode, max_command_chars, max_push_chars
     s = serial.Serial("/dev/ttyS0", 115200)
     verbose_mode = verbose
     flush_output()
@@ -23,8 +25,9 @@ def begin(verbose=False):
     if max_command_chars == None or max_command_chars == 0:
         #raise StandardError("unable to get maximum command chars")
         # just use a default
-        max_command_chars = 60
+        max_command_chars = 50
     max_command_chars -= 1
+    max_push_chars = max_command_chars - len(command_terminator)
 
 def flush_input():
     s.flushInput()
@@ -208,10 +211,10 @@ def push_command(cmd_text=None):
             cmd = ""
         return
 
-    if len(cmd_text) > max_command_chars:
-        raise StandardError("command length exceeds maximum. command: " + cmd_text + "length: " + str(len(cmd_text)) + " max length: " + str(max_command_chars))
+    if len(cmd_text) > max_push_chars:
+        raise StandardError("command length exceeds maximum. command: " + cmd_text + "length: " + str(len(cmd_text)) + " max length: " + str(max_push_chars))
 
-    if len(cmd) + len(cmd_text) > max_command_chars:
+    if len(cmd) + len(cmd_text) > max_push_chars:
         # adding new comand text would exceed maximum
         # send the accumulated commands and clear the buffer
         command(cmd)
