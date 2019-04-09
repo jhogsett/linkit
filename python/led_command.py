@@ -14,6 +14,7 @@ cmd = ""
 max_command_chars = None
 max_push_chars = None
 command_terminator = ':\0:'
+push_command_margin = 10 # don't know why this is needed
 
 def begin(verbose=False):
     global s, verbose_mode, max_command_chars, max_push_chars
@@ -25,9 +26,8 @@ def begin(verbose=False):
     if max_command_chars == None or max_command_chars == 0:
         #raise StandardError("unable to get maximum command chars")
         # just use a default
-        max_command_chars = 50
-    max_command_chars -= 1
-    max_push_chars = max_command_chars - len(command_terminator)
+        max_command_chars = 49
+    max_push_chars = max_command_chars - len(command_terminator) - push_command_margin
 
 def flush_input():
     s.flushInput()

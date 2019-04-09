@@ -352,6 +352,7 @@ def render_forecast_humidity():
     sat = 255
     hue_min = 120
     hue_max = 240
+    humidity_low_limit = 30
     map_to_weekdays(humidity_slots)
     for x in xrange(7 -1, -1, -1):
         for y in range(num_segments):
@@ -360,14 +361,18 @@ def render_forecast_humidity():
                 week_slots[x][y] = filler_data
             else:
                 humidity = int(humidity) 
+
                 # trim range to 40%-100% to increase visibility of differences
-                humidity = max(40, humidity)
-                humidity = (humidity - 40) / 60.0
+                humidity = max(humidity_low_limit, humidity)
+                humidity = (humidity - humidity_low_limit) / (100.0 - humidity_low_limit)
+
                 # map humidity to hue-min thru hue-max
                 hue_diff = hue_max - hue_min
                 hue = hue_min + int(humidity * hue_diff)
+
                 # map humidity to 0-max default lightness
-                lit = int(humidity * default_lightness)
+                lightness_range = (default_lightness - minimum_lightness)
+                lit = int(humidity * lightness_range) + minimum_lightness
                 week_slots[x][y] = hsl_color(hue, sat, lit)
 
 def render_forecast_wind_speed():
