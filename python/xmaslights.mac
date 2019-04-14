@@ -1,0 +1,128 @@
+# ----------------------------------------------------------------
+# Xmas Lights v.0.0 4/0/19
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+
+# pick a set of colors, repeat them, have some blink randomly
+# mix in white also
+# rainbow
+
+
+
+
+$draw-mode <DRAW-WRITE>
+$brightness <BRIGHTNESS-AUTO>
+$render-time 120
+$fade-rate 9000
+$num-instances 12
+$color-time 1000
+$brightening 2
+$cycle-time 30000
+$num-blinkers 15
+
+%allow-mutability
+$hsl-sequencer-ANGLE ` int( 360 / <num-instances> ) `
+$hsl-sequencer-TIME <color-time>
+
+%play-macro mellow
+
+[start 11]
+    start-application
+
+<<< <draw-mode> != <DRAW-WRITE>
+    # set the preset draw mode
+    <draw-mode>
+    set-draw-mode
+>>> 
+
+<<< <brightness> != <BRIGHTNESS-AUTO>
+    # set the preset brightness level
+    <brightness>
+    set-brightness
+>>>
+
+    (start-up)
+
+
+[mellow 10]
+    start-application
+    (setup-mellow)
+    (setup-mellow <cycle-time>)
+    continue
+
+
+[setup-mellow]
+    (add-random-colors)
+
+    <add-blinker>, <num-blinkers>
+    run-macro
+
+    (common-setup)
+    do-crossfade
+
+[add-random-colors]
+    shuffle-palette
+
+    6, <PASTE>
+    paste
+
+    6
+    duplicate
+
+[common-setup]
+
+    # start up the palette color sequencer
+    (hsl-sequencer-start)
+
+    # schedule the display rendering
+    (render <render-time>)
+
+
+[add-blinker]
+    set-random-position
+    {{
+        white
+        <brightening>
+        brighten
+        set-blink
+    }}
+
+
+[lamp 12]
+    start-application
+
+    0
+    add-dynamic-color
+    fill
+
+    (common-setup)
+
+
+[demo 13]
+    (start)
+
+
+[start-up]
+    # start the macro instances
+    [[[init <num-instances>]]]
+
+    <num-instances>, <AUTO-FILL>, ` int( <NUM-LEDS> / <num-instances>) `
+    duplicate
+
+    (common-setup)
+
+((( macro <num-instances> INSTANCE )))
+
+[[macro INSTANCE PALETTE
+
+    [init-INSTANCE]
+        # set up the sequencers
+        (setup-INSTANCE)
+
+    [setup-INSTANCE]
+        PALETTE
+        add-dynamic-color 
+]]
+
