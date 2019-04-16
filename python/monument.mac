@@ -10,6 +10,9 @@ $color2 <YELLOW>
 $color3 <BLUE>
 $brightness <DEFAULT-BRIGHTNESS>
 
+%allow-mutability
+$hsl-sequencer-TIME <color-sequence-time>
+
 %play-macro start
 
 [start 10]
@@ -26,16 +29,16 @@ $brightness <DEFAULT-BRIGHTNESS>
 [demo11 11]
   (start)
 
-[demo12 12]
+[demo13 13]
   (start)
 
-[demo13 13]
+[demo12 12]
   (colors-start)
 
 [setup]
   (set-schedules)
   (setup-rings)
-  (hsl-sequencer-start <color-sequence-time>)
+#  (hsl-sequencer-start <color-sequence-time>)
 
 [set-schedules]
   (rotate-outer <outer-rotate-time>)
