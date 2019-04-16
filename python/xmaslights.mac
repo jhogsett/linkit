@@ -17,12 +17,12 @@ $brightness <BRIGHTNESS-AUTO>
 $render-time 120
 $fade-rate 9000
 $num-instances 12
-$color-time 250
+$color-time 100
 $brightening <MEDIUM-HEAVY>
 $cycle-time 30000
 $num-blinkers 15
 $use-rainbow-colors True
-$effect-time 2000
+$effect-time 500
 $num-rainbow-colors 6
 $flash-time 5
 $set-fade-type fast-fade
@@ -54,13 +54,14 @@ $hsl-sequencer-TIME <color-time>
 
 [mellow 10]
     start-application
+    (common-setup)
     (setup-mellow)
     (setup-mellow <cycle-time>)
     continue
 
 
 [setup-mellow]
-    (common-setup)
+#    (common-setup)
 
 <<< not <use-rainbow-colors>
     (add-random-colors)
@@ -70,10 +71,14 @@ $hsl-sequencer-TIME <color-time>
 >>>
 
 <<< <use-rainbow-colors>
+    erase-buffer
     (add-rainbow-colors)
 >>>
 
-#    do-crossfade
+    # refesh the palette
+    (hsl-sequencer-step)
+
+    do-crossfade
 
 <<< not <use-rainbow-colors>
 [add-random-colors]
@@ -93,12 +98,12 @@ $hsl-sequencer-TIME <color-time>
 #    0, <num-rainbow-colors>
 #    add-palette-colors
 
-    {{{
+#    {{{
         (set-dynamic-colors)
  
         <num-rainbow-colors>
         duplicate
-    }}}
+#    }}}
 
     (add-effect <effect-time>)
 >>>    
@@ -118,7 +123,7 @@ $hsl-sequencer-TIME <color-time>
     add-dynamic-color
     <ORANGE>
     add-dynamic-color
-    <RED>
+    <RED>,0,1
     add-dynamic-color
 
 
@@ -132,17 +137,18 @@ $hsl-sequencer-TIME <color-time>
     <RANDOM-POSITION-FILLED>
     set-random-position
     {{
-        {{{
-            white
-            <brightening>
-            brighten
-        }}}
+#        {{{
+#            white
+#            <brightening>
+#            brighten
+#        }}}
 
-        <flash-time>
-        delay
+#        <flash-time>
+#        delay
 
         {{{
-            white
+#            white
+            gray
             <set-fade-type>
         }}}
     }}

@@ -1,6 +1,16 @@
 # ----------------------------------------------------------------
 # HSL Color Sequencer
 # sequences palette colors automatically
+#
+# macros:
+# start - begin the automatic color sequencing
+# step  - advance the color sequence - useful for refreshing the palette
+#
+# overrides:
+# ANGLE - hue angle between each palette entry
+# STEP  - hue starting angle sequencing increment
+# TIME  - sequencing schedule
+#
 # ----------------------------------------------------------------
 
 %include symbols
@@ -25,4 +35,5 @@ $TIME 100
     recall
 
     set-palette-by-hue
+
 
