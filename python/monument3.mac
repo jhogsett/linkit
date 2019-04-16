@@ -44,6 +44,9 @@ $brightness <DEFAULT-BRIGHTNESS>
   (set-schedules)
   (setup-rings)
 
+  # ensure the palette is right
+  (hsl-sequencer-step)
+
 [set-schedules]
   (rotate-outerl `<outer-rotate-time>*<time-factor>`)
   (rotate-innerl `<inner-rotate-time>*<time-factor>`)
