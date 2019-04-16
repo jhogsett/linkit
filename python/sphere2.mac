@@ -7,9 +7,10 @@
 
 $neutral-color white
 $step-time 12000
+$color-time 250
 
 %allow-mutability
-$hsl-sequencer-TIME 166
+$hsl-sequencer-TIME <color-time>
 
 %play-macro fancy
 
