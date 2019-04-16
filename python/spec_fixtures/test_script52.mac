@@ -1,0 +1,8 @@
+
+%include test_script52_include
+
+# (why is this getting referenced?)
+
+[macro]
+    red
+
