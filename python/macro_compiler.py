@@ -194,6 +194,65 @@ def remove_fixed_macro_numbers(line):
 global translated
 translated = []
 
+
+def delimiters_in_line(line, delimiters):
+    for delimiter in delimiters:
+        if delimiter in line:
+            return delimiter
+    return None
+
+#def delimiters_not_in_line(line, delimiters):
+#    for delimiter in delimters:
+#        if delimiter in line:
+#            return False
+#    return True
+
+
+def prefix_module(line, delimiters, non_delimiters, translated, translation, prefix_name):
+    starter_delimiters = delimiters.keys()
+    ender_delimiters = delimiters.values()
+    starter_non_delimiters = non_delimiters.keys()
+    
+    delimiter = delimiters_in_line(line, starter_delimiters)
+    if delimiter == None:
+        return line
+
+    if delimiters_in_line(line, starter_non_delimiters) != None:
+        return line
+
+    starter_delimiter = delimiter
+    ender_delimiter = delimiters[starter_delimiter]
+
+    start, end = utils.locate_delimiters(line, starter_delimiter, ender_delimiter)
+    if start == -1 or end == -1:
+        return line
+
+    args = utils.extract_args(line, starter_delimiter, ender_delimiter)
+    if len(args) < 1:
+        return line
+
+    old_name = args[0]
+
+    # skip already-translated macros
+    if old_name in translated:
+        return line
+
+    new_name = prefix_name + "-" + old_name
+
+    translation[old_name] = new_name
+    translated.append(new_name)
+
+    args[0] = new_name
+    new_line = starter_delimiter + " ".join(args) + ender_delimiter
+    return new_line
+
+
+
+
+
+
+
+
 def prefix_module_on_macros(module_name, script_lines):
     global translated
     new_lines = []
@@ -216,28 +275,35 @@ def prefix_module_on_macros(module_name, script_lines):
             new_lines.append(line)
             continue
 
-        if "[" in line and "[[" not in line and "[[[" not in line:
-            start, end = utils.locate_delimiters(line, "[", "]")
-            if start != -1 and end != -1:
-                args = utils.extract_args(line, "[", "]")
-                if len(args) >= 1:
-                    old_macro_name = args[0]
-                    # skip already-translated macros
-                    if old_macro_name not in translated:
-                        new_macro_name = module_name + "-" + old_macro_name
-                        translation[old_macro_name] = new_macro_name
-                        translated.append(new_macro_name)
-                        args[0] = new_macro_name
-                        new_line = "[" + " ".join(args) + "]"
-		        new_lines.append(new_line)
-                    else:
-                        new_lines.append(line)
-                else:
-                    new_lines.append(line)
-	    else:
-                new_lines.append(line)
-        else:
-            new_lines.append(line)
+#	# generalize - line, marker delimiters, non-marker delimiters, translation-dictionary, prefix name; return line
+#        if "[" in line and "[[" not in line and "[[[" not in line:
+#            start, end = utils.locate_delimiters(line, "[", "]")
+#            if start != -1 and end != -1:
+#                args = utils.extract_args(line, "[", "]")
+#                if len(args) >= 1:
+#                    old_macro_name = args[0]
+#                    # skip already-translated macros
+#                    if old_macro_name not in translated:
+#                        new_macro_name = module_name + "-" + old_macro_name
+#                        translation[old_macro_name] = new_macro_name
+#                        translated.append(new_macro_name)
+#                        args[0] = new_macro_name
+#                        new_line = "[" + " ".join(args) + "]"
+#		        new_lines.append(new_line)
+#                    else:
+#                        new_lines.append(line)
+#                else:
+#                    new_lines.append(line)
+#	    else:
+#                new_lines.append(line)
+#        else:
+#            new_lines.append(line)
+
+        delimiters = { "[" : "]" }
+        non_delimiters = { "[[" : "]]", "[[[" : "]]]" }
+        line = prefix_module(line, delimiters, non_delimiters, translated, translation, module_name)
+        new_lines.append(line)
+
 
     # locate and replace old macro names in macro runs
     script_lines = new_lines
