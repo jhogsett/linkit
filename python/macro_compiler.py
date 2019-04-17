@@ -246,9 +246,70 @@ def prefix_module(line, delimiters, non_delimiters, translated, translation, pre
     new_line = starter_delimiter + " ".join(args) + ender_delimiter
     return new_line
 
+def apply_prefixing(line, delimiters, non_delimiters, translation):
+    starter_delimiters = delimiters.keys()
+    ender_delimiters = delimiters.values()
+    starter_non_delimiters = non_delimiters.keys()
 
+    delimiter = delimiters_in_line(line, starter_delimiters)
+    if delimiter == None:
+        return line
 
+    if delimiters_in_line(line, starter_non_delimiters) != None:
+        return line
 
+    starter_delimiter = delimiter
+    ender_delimiter = delimiters[starter_delimiter]
+
+    start, end = utils.locate_delimiters(line, starter_delimiter, ender_delimiter)
+    if start == -1 or end == -1:
+        return line
+
+    args = utils.extract_args(line, starter_delimiter, ender_delimiter)
+    if len(args) < 1:
+        return line
+
+    old_name = args[0]
+    if old_name not in translation:
+        return line
+
+    new_name = translation[old_name]
+    args[0] = new_name
+    new_line = starter_delimiter + " ".join(args) + ender_delimiter
+    return new_line
+
+def apply_prefixing_multiple(line, delimiters, non_delimiters, translation):
+    starter_delimiters = delimiters.keys()
+    ender_delimiters = delimiters.values()
+    starter_non_delimiters = non_delimiters.keys()
+
+    delimiter = delimiters_in_line(line, starter_delimiters)
+    if delimiter == None:
+        return line
+
+    if delimiters_in_line(line, starter_non_delimiters) != None:
+        return line
+
+    starter_delimiter = delimiter
+    ender_delimiter = delimiters[starter_delimiter]
+
+    start, end = utils.locate_delimiters(line, starter_delimiter, ender_delimiter)
+    if start == -1 or end == -1:
+        return line
+
+    split_delimiters = { starter_delimiter : ender_delimiter }
+    parts = utils.smart_split(line, split_delimiters, True)
+    new_parts = []
+
+    for part in parts:
+        if part.startswith(starter_delimiter) and part.endswith(ender_delimiter):
+            old_name = part.strip()[1:-1]
+            if old_name in translation:
+                new_name = translation[old_name]
+                part = "<" + new_name + ">"
+        new_parts.append(part)
+    line = " ".join(new_parts)
+    return line
 
 
 
@@ -304,7 +365,6 @@ def prefix_module_on_macros(module_name, script_lines):
         line = prefix_module(line, delimiters, non_delimiters, translated, translation, module_name)
         new_lines.append(line)
 
-
     # locate and replace old macro names in macro runs
     script_lines = new_lines
     new_lines = []
@@ -319,46 +379,60 @@ def prefix_module_on_macros(module_name, script_lines):
 #	if line_has_unresolved_for_include_prefixing(line):
 #            new_lines.append(line)
 #            continue
-        if "(" in line and "((" not in line and "(((" not in line and "`" not in line:
-            start, end = utils.locate_delimiters(line, "(", ")")
-            if start != -1 and end != -1:
-                args = utils.extract_args(line, "(", ")")
-                if len(args) >= 1:
-                    old_macro_name = args[0]
-                    #ui.report_verbose("module: " + module_name + " old macro name: " + old_macro_name)
-                    if old_macro_name in translation:
-                        new_macro_name = translation[old_macro_name]
-                        args[0] = new_macro_name
-                        #ui.report_verbose("module: " + module_name + " new macro name: " + new_macro_name)
-                    new_line = "(" + " ".join(args) + ")"
-                    new_lines.append(new_line)
-                else:
-                    new_lines.append(line)
-            else:
-                new_lines.append(line)
-        else:
-            new_lines.append(line)
+
+#        if "(" in line and "((" not in line and "(((" not in line and "`" not in line:
+#            start, end = utils.locate_delimiters(line, "(", ")")
+#            if start != -1 and end != -1:
+#                args = utils.extract_args(line, "(", ")")
+#                if len(args) >= 1:
+#                    old_macro_name = args[0]
+#                    #ui.report_verbose("module: " + module_name + " old macro name: " + old_macro_name)
+#                    if old_macro_name in translation:
+#                        new_macro_name = translation[old_macro_name]
+#                        args[0] = new_macro_name
+#                        #ui.report_verbose("module: " + module_name + " new macro name: " + new_macro_name)
+#                    new_line = "(" + " ".join(args) + ")"
+#                    new_lines.append(new_line)
+#                else:
+#                    new_lines.append(line)
+#            else:
+#                new_lines.append(line)
+#        else:
+#            new_lines.append(line)
 
 #    return new_lines
+
+        delimiters = { "(" : ")" }
+        non_delimiters = { "((" : "))", "(((" : "))" }
+        line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+
     script_lines = new_lines
     new_lines = []
 
     # translate macro names in variable references
     for line in script_lines:
-        if "<" in line and "<<" not in line and "<<<" not in line:
-            parts = utils.smart_split(line, {"<":">"}, True)
-            #ui.report_verbose("parts " + str(parts))
-            new_parts = []
-            for part in parts:
-                if part.startswith("<") and part.endswith(">"):
-                    old_macro_name = part.strip()[1:-1]
-                    if old_macro_name in translation:
-                        new_macro_name = translation[old_macro_name]
-                        part = "<" + new_macro_name + ">"
-                        #ui.report_verbose("part: " + part)
-                new_parts.append(part)
-            line = " ".join(new_parts)
-            #ui.report_verbose("line: " + line)
+
+#        if "<" in line and "<<" not in line and "<<<" not in line:
+#            parts = utils.smart_split(line, {"<":">"}, True)
+#            #ui.report_verbose("parts " + str(parts))
+#            new_parts = []
+#            for part in parts:
+#                if part.startswith("<") and part.endswith(">"):
+#                    old_macro_name = part.strip()[1:-1]
+#                    if old_macro_name in translation:
+#                        new_macro_name = translation[old_macro_name]
+#                        part = "<" + new_macro_name + ">"
+#                        #ui.report_verbose("part: " + part)
+#                new_parts.append(part)
+#            line = " ".join(new_parts)
+#            #ui.report_verbose("line: " + line)
+#        new_lines.append(line)
+
+
+        delimiters = { "<" : ">" }
+        non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
+        line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
         new_lines.append(line)
 
     return new_lines
