@@ -194,19 +194,11 @@ def remove_fixed_macro_numbers(line):
 global translated
 translated = []
 
-
 def delimiters_in_line(line, delimiters):
     for delimiter in delimiters:
         if delimiter in line:
             return delimiter
     return None
-
-#def delimiters_not_in_line(line, delimiters):
-#    for delimiter in delimters:
-#        if delimiter in line:
-#            return False
-#    return True
-
 
 def prefix_module(line, delimiters, non_delimiters, translated, translation, prefix_name):
     starter_delimiters = delimiters.keys()
@@ -243,8 +235,8 @@ def prefix_module(line, delimiters, non_delimiters, translated, translation, pre
     translated.append(new_name)
 
     args[0] = new_name
-    new_line = starter_delimiter + " ".join(args) + ender_delimiter
-    return new_line
+    line = starter_delimiter + " ".join(args) + ender_delimiter
+    return line
 
 def apply_prefixing(line, delimiters, non_delimiters, translation):
     starter_delimiters = delimiters.keys()
@@ -275,8 +267,8 @@ def apply_prefixing(line, delimiters, non_delimiters, translation):
 
     new_name = translation[old_name]
     args[0] = new_name
-    new_line = starter_delimiter + " ".join(args) + ender_delimiter
-    return new_line
+    line = starter_delimiter + " ".join(args) + ender_delimiter
+    return line
 
 def apply_prefixing_multiple(line, delimiters, non_delimiters, translation):
     starter_delimiters = delimiters.keys()
@@ -311,8 +303,29 @@ def apply_prefixing_multiple(line, delimiters, non_delimiters, translation):
     line = " ".join(new_parts)
     return line
 
+def prefix_module_single(line, starter_delimiters, translated, translation, prefix_name):
+    delimiter = delimiters_in_line(line, starter_delimiters)
+    if delimiter == None:
+        return line
 
+    args = utils.get_key_args(line, delimiter)
+    if len(args) < 1:
+        return line
 
+    old_name = args[0]
+
+    # skip already-translated macros
+    if old_name in translated:
+        return line
+
+    new_name = prefix_name + "-" + old_name
+
+    translation[old_name] = new_name
+    translated.append(new_name)
+
+    args[0] = new_name
+    line = delimiter + " ".join(args)
+    return line
 
 def prefix_module_on_macros(module_name, script_lines):
     global translated
@@ -336,30 +349,6 @@ def prefix_module_on_macros(module_name, script_lines):
             new_lines.append(line)
             continue
 
-#	# generalize - line, marker delimiters, non-marker delimiters, translation-dictionary, prefix name; return line
-#        if "[" in line and "[[" not in line and "[[[" not in line:
-#            start, end = utils.locate_delimiters(line, "[", "]")
-#            if start != -1 and end != -1:
-#                args = utils.extract_args(line, "[", "]")
-#                if len(args) >= 1:
-#                    old_macro_name = args[0]
-#                    # skip already-translated macros
-#                    if old_macro_name not in translated:
-#                        new_macro_name = module_name + "-" + old_macro_name
-#                        translation[old_macro_name] = new_macro_name
-#                        translated.append(new_macro_name)
-#                        args[0] = new_macro_name
-#                        new_line = "[" + " ".join(args) + "]"
-#		        new_lines.append(new_line)
-#                    else:
-#                        new_lines.append(line)
-#                else:
-#                    new_lines.append(line)
-#	    else:
-#                new_lines.append(line)
-#        else:
-#            new_lines.append(line)
-
         delimiters = { "[" : "]" }
         non_delimiters = { "[[" : "]]", "[[[" : "]]]" }
         line = prefix_module(line, delimiters, non_delimiters, translated, translation, module_name)
@@ -369,39 +358,7 @@ def prefix_module_on_macros(module_name, script_lines):
     script_lines = new_lines
     new_lines = []
 
-#    for line in script_lines:
-#        for key in translation.keys():
-#            replacement = translation[key]
-#            line = line.replace(key, replacement)
-#        new_lines.append(line)
-
     for line in script_lines:
-#	if line_has_unresolved_for_include_prefixing(line):
-#            new_lines.append(line)
-#            continue
-
-#        if "(" in line and "((" not in line and "(((" not in line and "`" not in line:
-#            start, end = utils.locate_delimiters(line, "(", ")")
-#            if start != -1 and end != -1:
-#                args = utils.extract_args(line, "(", ")")
-#                if len(args) >= 1:
-#                    old_macro_name = args[0]
-#                    #ui.report_verbose("module: " + module_name + " old macro name: " + old_macro_name)
-#                    if old_macro_name in translation:
-#                        new_macro_name = translation[old_macro_name]
-#                        args[0] = new_macro_name
-#                        #ui.report_verbose("module: " + module_name + " new macro name: " + new_macro_name)
-#                    new_line = "(" + " ".join(args) + ")"
-#                    new_lines.append(new_line)
-#                else:
-#                    new_lines.append(line)
-#            else:
-#                new_lines.append(line)
-#        else:
-#            new_lines.append(line)
-
-#    return new_lines
-
         delimiters = { "(" : ")" }
         non_delimiters = { "((" : "))", "(((" : "))" }
         line = apply_prefixing(line, delimiters, non_delimiters, translation)
@@ -412,24 +369,6 @@ def prefix_module_on_macros(module_name, script_lines):
 
     # translate macro names in variable references
     for line in script_lines:
-
-#        if "<" in line and "<<" not in line and "<<<" not in line:
-#            parts = utils.smart_split(line, {"<":">"}, True)
-#            #ui.report_verbose("parts " + str(parts))
-#            new_parts = []
-#            for part in parts:
-#                if part.startswith("<") and part.endswith(">"):
-#                    old_macro_name = part.strip()[1:-1]
-#                    if old_macro_name in translation:
-#                        new_macro_name = translation[old_macro_name]
-#                        part = "<" + new_macro_name + ">"
-#                        #ui.report_verbose("part: " + part)
-#                new_parts.append(part)
-#            line = " ".join(new_parts)
-#            #ui.report_verbose("line: " + line)
-#        new_lines.append(line)
-
-
         delimiters = { "<" : ">" }
         non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
         line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
@@ -437,14 +376,13 @@ def prefix_module_on_macros(module_name, script_lines):
 
     return new_lines
 
-
-
 def prefix_module_on_variables(module_name, script_lines):
     new_lines = []
     translation = {}
 
     # locate and prefix variable names
     for line in script_lines:
+
         line = line.strip()
         args = utils.get_key_args(line, "$")
 	if len(args) > 0:
@@ -452,16 +390,29 @@ def prefix_module_on_variables(module_name, script_lines):
             new_variable_name = module_name + "-" + old_variable_name
             translation[old_variable_name] = new_variable_name
 
+#        delimiters = [ "$" ]
+#        line = prefix_module_single(line, delimiters, translated, translation, module_name)
+#        new_lines.append(line)
+
+    script_lines = new_lines
+    new_lines = []
+
     # locate and replace old variable names in variable references
     for line in script_lines:
+
         for key in translation.keys():
             replacement = translation[key]
             line = line.replace(key, replacement)
         new_lines.append(line)
 
+#    # translate macro names in variable references
+#    for line in script_lines:
+#        delimiters = { "<" : ">" }
+#        non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
+#        line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
+#        new_lines.append(line)
+
     return new_lines
-
-
 
 
 ## ----------------------------------------------------
