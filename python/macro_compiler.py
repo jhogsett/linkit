@@ -161,6 +161,7 @@ def load_file(filename, default_ext=".mac"):
                 if not no_prefix:
                     include_lines = prefix_module_on_macros(module_name, include_lines)
                     include_lines = prefix_module_on_variables(module_name, include_lines)
+                    include_lines = prefix_module_on_templates(module_name, include_lines)
 
                 file_lines = file_lines + include_lines
                 includes[include_filename] = full_filename
@@ -209,7 +210,7 @@ def prefix_module(line, delimiters, non_delimiters, translated, translation, pre
     if delimiter == None:
         return line
 
-    if delimiters_in_line(line, starter_non_delimiters) != None:
+    if len(starter_non_delimiters) > 0 and delimiters_in_line(line, starter_non_delimiters) != None:
         return line
 
     starter_delimiter = delimiter
@@ -247,7 +248,7 @@ def apply_prefixing(line, delimiters, non_delimiters, translation):
     if delimiter == None:
         return line
 
-    if delimiters_in_line(line, starter_non_delimiters) != None:
+    if len(starter_non_delimiters) > 0 and delimiters_in_line(line, starter_non_delimiters) != None:
         return line
 
     starter_delimiter = delimiter
@@ -279,7 +280,7 @@ def apply_prefixing_multiple(line, delimiters, non_delimiters, translation):
     if delimiter == None:
         return line
 
-    if delimiters_in_line(line, starter_non_delimiters) != None:
+    if len(starter_non_delimiters) > 0 and delimiters_in_line(line, starter_non_delimiters) != None:
         return line
 
     starter_delimiter = delimiter
@@ -303,9 +304,12 @@ def apply_prefixing_multiple(line, delimiters, non_delimiters, translation):
     line = " ".join(new_parts)
     return line
 
-def prefix_module_single(line, starter_delimiters, translated, translation, prefix_name):
-    delimiter = delimiters_in_line(line, starter_delimiters)
+def prefix_module_single(line, delimiters, non_delimiters, translated, translation, prefix_name):
+    delimiter = delimiters_in_line(line, delimiters)
     if delimiter == None:
+        return line
+
+    if len(non_delimiters) > 0 and delimiters_in_line(line, non_delimiters) != None:
         return line
 
     args = utils.get_key_args(line, delimiter)
@@ -385,7 +389,8 @@ def prefix_module_on_variables(module_name, script_lines):
         line = line.strip()
 
         delimiters = [ "$" ]
-        line = prefix_module_single(line, delimiters, translated, translation, module_name)
+        non_delimiters = []
+        line = prefix_module_single(line, delimiters, non_delimiters, translated, translation, module_name)
         new_lines.append(line)
 
     script_lines = new_lines
@@ -411,7 +416,41 @@ def prefix_module_on_variables(module_name, script_lines):
 
     return new_lines
 
+def prefix_module_on_templates(module_name, script_lines):
+    global translated
+    new_lines = []
+    translation = {}
 
+    # locate and prefix template names
+    for line in script_lines:
+        line = line.strip()
+
+        delimiters = [ "[[" ]
+        non_delimiters = ["[[[" ]
+        line = prefix_module_single(line, delimiters, non_delimiters, translated, translation, module_name)
+        new_lines.append(line)
+
+    # locate and replace old template names in template expansions
+    script_lines = new_lines
+    new_lines = []
+
+    for line in script_lines:
+        delimiters = { "((" : "))" }
+        non_delimiters = { "(((" : ")))" }
+        line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+
+    # locate and replace old template names in meta templates and multi macros
+    script_lines = new_lines
+    new_lines = []
+
+    for line in script_lines:
+        delimiters = { "(((" : ")))", "[[[" : "]]]" }
+        non_delimiters = {}
+        line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+
+    return new_lines
 
 ## ----------------------------------------------------
 
