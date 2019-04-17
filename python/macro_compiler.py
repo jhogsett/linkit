@@ -382,37 +382,35 @@ def prefix_module_on_variables(module_name, script_lines):
 
     # locate and prefix variable names
     for line in script_lines:
-
         line = line.strip()
-        args = utils.get_key_args(line, "$")
-	if len(args) > 0:
-            old_variable_name = args[0]
-            new_variable_name = module_name + "-" + old_variable_name
-            translation[old_variable_name] = new_variable_name
 
-#        delimiters = [ "$" ]
-#        line = prefix_module_single(line, delimiters, translated, translation, module_name)
-#        new_lines.append(line)
+        delimiters = [ "$" ]
+        line = prefix_module_single(line, delimiters, translated, translation, module_name)
+        new_lines.append(line)
 
     script_lines = new_lines
     new_lines = []
 
     # locate and replace old variable names in variable references
+    conditional = False
     for line in script_lines:
 
-        for key in translation.keys():
-            replacement = translation[key]
-            line = line.replace(key, replacement)
+        if "<<< " in line:
+            conditional = True
+            line = line[4:]
+
+        delimiters = { "<" : ">" }
+        non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
+        line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
+
+        if conditional:
+            line = "<<< " + line
+            conditional = False
+
         new_lines.append(line)
 
-#    # translate macro names in variable references
-#    for line in script_lines:
-#        delimiters = { "<" : ">" }
-#        non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
-#        line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
-#        new_lines.append(line)
-
     return new_lines
+
 
 
 ## ----------------------------------------------------
