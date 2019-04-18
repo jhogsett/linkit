@@ -162,6 +162,7 @@ def load_file(filename, default_ext=".mac"):
                     include_lines = prefix_module_on_macros(module_name, include_lines)
                     include_lines = prefix_module_on_variables(module_name, include_lines)
                     include_lines = prefix_module_on_templates(module_name, include_lines)
+                    include_lines = prefix_module_on_template_macros(module_name, include_lines)
 
                 file_lines = file_lines + include_lines
                 includes[include_filename] = full_filename
@@ -368,10 +369,10 @@ def prefix_module_on_macros(module_name, script_lines):
         line = apply_prefixing(line, delimiters, non_delimiters, translation)
         new_lines.append(line)
 
+    # translate macro names in variable references
     script_lines = new_lines
     new_lines = []
 
-    # translate macro names in variable references
     for line in script_lines:
         delimiters = { "<" : ">" }
         non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
@@ -451,6 +452,136 @@ def prefix_module_on_templates(module_name, script_lines):
         new_lines.append(line)
 
     return new_lines
+
+def prefix_module_on_template_macros(module_name, script_lines):
+    global translated
+    new_lines = []
+    translation = {}
+
+    block_mode = False
+    # locate and prefix macro names
+    for line in script_lines:
+        line = line.strip()
+
+        if line.startswith("]]"):
+            block_mode = False
+            new_lines.append(line)
+            continue
+
+        if line.startswith("[["):
+            block_mode = True
+
+        if not block_mode:
+            new_lines.append(line)
+            continue
+
+        delimiters = { "[" : "]" }
+        non_delimiters = { "[[[" : "]]]" }
+        line = prefix_module(line, delimiters, non_delimiters, translated, translation, module_name)
+        new_lines.append(line)
+
+    # locate and replace old macro names in macro runs
+    script_lines = new_lines
+    new_lines = []
+
+    block_mode = False
+    for line in script_lines:
+        line = line.strip()
+
+        if line.startswith("]]"):
+            block_mode = False
+            new_lines.append(line)
+            continue
+
+        if line.startswith("[["):
+            block_mode = True
+
+        if not block_mode:
+            new_lines.append(line)
+            continue
+
+        delimiters = { "(" : ")" }
+        non_delimiters = { "((" : "))", "(((" : "))" }
+        line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+
+    # locate and replace old macro names in template expansions
+    script_lines = new_lines
+    new_lines = []
+
+    block_mode = False
+    for line in script_lines:
+        line = line.strip()
+
+        if line.startswith("]]"):
+            block_mode = False
+            new_lines.append(line)
+            continue
+
+        if line.startswith("[["):
+            block_mode = True
+
+        if not block_mode:
+            new_lines.append(line)
+            continue
+
+        delimiters = { "((" : "))" }
+        non_delimiters = { "(((" : ")))" }
+        line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+
+    # locate and replace old macro names in meta templates and multi macros
+    script_lines = new_lines
+    new_lines = []
+
+    block_mode = False
+    for line in script_lines:
+        line = line.strip()
+
+        if line.startswith("]]"):
+            block_mode = False
+            new_lines.append(line)
+            continue
+
+        if line.startswith("[["):
+            block_mode = True
+
+        if not block_mode:
+            new_lines.append(line)
+            continue
+
+        delimiters = { "(((" : ")))", "[[[" : "]]]" }
+        non_delimiters = {}
+        line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+
+    # translate macro names in variable references
+    script_lines = new_lines
+    new_lines = []
+
+    block_mode = False
+    for line in script_lines:
+        line = line.strip()
+
+        if line.startswith("]]"):
+            block_mode = False
+            new_lines.append(line)
+            continue
+
+        if line.startswith("[["):
+            block_mode = True
+
+        if not block_mode:
+            new_lines.append(line)
+            continue
+
+        delimiters = { "<" : ">" }
+        non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
+        line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+
+    return new_lines
+
 
 ## ----------------------------------------------------
 
