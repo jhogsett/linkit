@@ -10,9 +10,10 @@ import led_command as lc
 import math
 import utils as u
 
-global app_description, verbose_mode
+global app_description, verbose_mode, random_seed
 app_description = None 
 verbose_mode = None
+random_seed = 1
 
 global device_profile, num_leds, starting_macro, num_macro_chars, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers, quiet_mode
 device_profile = None
@@ -158,6 +159,10 @@ def test(description):
 ########################################################################
 ########################################################################
 
+def do_compilation(filename):
+    u.randomize(random_seed)
+    return mc.compile_file(filename)
+
 def specs():
 
   if verbose_mode:
@@ -214,7 +219,7 @@ def specs():
       if verbose_mode:
         report_test("Crash script", fixture_file)
       try:
-        compiled_script = mc.compile_file(fixture_file)
+        compiled_script = do_compilation(fixture_file)
         expect("Script " + fixture_file + " was expected to raise an error", "no error raised", "error raised")
         if verbose_mode:
           print_script(compiled_script)
@@ -238,7 +243,7 @@ def specs():
       if verbose_mode:
         report_test("Negative script", fixture_file)
       try:
-        compiled_script = mc.compile_file(fixture_file)
+        compiled_script = do_compilation(fixture_file)
         if verbose_mode:
           print_script(compiled_script)
         expect("Invalid compilation of: " + fixture_file, mc.compilation_valid(compiled_script), False)
@@ -262,7 +267,7 @@ def specs():
       if verbose_mode:
         report_test("Positive script", fixture_file)
       try:
-        compiled_script = mc.compile_file(fixture_file)
+        compiled_script = do_compilation(fixture_file)
       except ValueError, e:
         ui.report_error("Compilation error in " + fixture_file + ": " + str(e))
         break

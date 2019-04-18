@@ -282,6 +282,8 @@ def program_script(presets):
           ui.report_separator()
           ui.report_error("Fatal error compiling script. Reported error: ")
           ui.report_error_alt(str(e))
+        else:
+          ui.write(tc.red("."))
         compiler_error = str(e)
         compilation_succeeded = False
 

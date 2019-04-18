@@ -4,9 +4,7 @@ from subprocess import call
 import sys
 import time
 import random
-#import select
-#import tty
-#import termios
+import string
 
 global script_directory
 script_directory = None
@@ -243,15 +241,7 @@ def reverse_find(subject, term):
     index = subject[::-1].find(term)
     return len(subject) - index - 1
 
-
-
-
-
-
-
-
-
-
-
-
+# from https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
+def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
+   return ''.join(random.choice(chars) for _ in range(size))
 

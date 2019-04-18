@@ -638,17 +638,17 @@ def pre_process_script(script_lines):
     new_lines = utils.strip_whitespace(new_lines)
     new_lines = utils.strip_comments(new_lines)
     new_lines = pre_rewrite(new_lines)
-    #ui.report_verbose_script(new_lines, "script after blank line, comment and colon removal")
+    ui.report_verbose_script(new_lines, "script after blank line, comment and colon removal")
 
     new_lines = translate_commands(new_lines)
     ui.report_verbose_script(new_lines, "script after command translation")
 
     new_lines = process_directives(new_lines)
-    #ui.report_verbose_script(new_lines, "script after processing directives")
+    ui.report_verbose_script(new_lines, "script after processing directives")
     ingest_directives()
 
     new_lines = process_set_variables(new_lines)
-    #ui.report_verbose_script(new_lines, "script after capturing variables")
+    ui.report_verbose_script(new_lines, "script after capturing variables")
 
     new_lines = process_conditionals(new_lines)
     ui.report_verbose_script(new_lines, "script after processing conditionals")
@@ -677,13 +677,13 @@ def capture_expand_loop(script_lines):
         orig_lines = new_lines
 
         new_lines = capture_templates(new_lines)
-        #ui.report_verbose_script(new_lines, "script after capturing templates")
+        ui.report_verbose_script(new_lines, "script after capturing templates")
 
         new_lines = expand_templates(new_lines)
-        #ui.report_verbose_script(new_lines, "script after expanding templates")
+        ui.report_verbose_script(new_lines, "script after expanding templates")
 
         new_lines = expand_multi_macros(new_lines)
-        #ui.report_verbose_script(new_lines, "script after expanding multi-macros")
+        ui.report_verbose_script(new_lines, "script after expanding multi-macros")
 
         if new_lines == orig_lines:
             break
@@ -699,10 +699,10 @@ def expand_meta_loop(script_lines):
         orig_lines = new_lines
 
         new_lines = expand_meta_templates(new_lines)
-        #ui.report_verbose_script(new_lines, "script after expanding meta templates")
+        ui.report_verbose_script(new_lines, "script after expanding meta templates")
 
         new_lines = expand_templates(new_lines)
-        #ui.report_verbose_script(new_lines, "script after expanding templates")
+        ui.report_verbose_script(new_lines, "script after expanding templates")
 
         if new_lines == orig_lines:
             break
@@ -927,7 +927,10 @@ def expand_multi_macros(script_lines):
 
             # remaining argument, if any, is the optional schedule replacement
             schedule = " ".join(args[2:])
-            multi_macro_name = macro_name + "-all-" + str(num_instance_max)
+
+            #multi_macro_name = macro_name + "-all-" + str(num_instance_max)
+            multi_macro_name = macro_name + "-" + utils.id_generator()
+
             template_name = multi_macro_name + "-template"
 
             # replace the multi macro expression with the call to the new macro
@@ -1231,6 +1234,9 @@ def process_set_macro(line):
         if is_known_unresolved(macro_name):
             raise ValueError("Macro '" + macro_name + "' cannot be reassigned.")
 
+        if is_known_resolved(macro_name):
+            raise ValueError("Macro name '" + macro_name + "' is already in use.")
+
         if len(args) > 1:
             macro_number = args[1]
 
@@ -1256,6 +1262,10 @@ def process_set_macro(line):
                 macro_number = ending_macro_number
 
             macro_number = int(macro_number)
+
+            if macro_number_in_use(macro_number):
+                raise ValueError("Fixed macro number " + str(macro_number) + " for macro '" + macro_name + "' is already in use.")
+
             set_final_macro_number(macro_number, macro_number)
             ui.report_verbose("process_set_macro new forced macro: {} {}".format(macro_name, macro_number))
 
@@ -1814,6 +1824,10 @@ def remove_resolved():
             pass
     unresolved = new_dict
 
+def is_known_resolved(name):
+    name = name.strip()
+    return name in resolved
+
 def is_known_unresolved(name):
     name = name.strip()
     return name in unresolved
@@ -1844,8 +1858,11 @@ def resolve_presets(presets):
 ########################################################################
 
 def set_macro(name, value):
-    global macros
+    #global macros
     macros[name] = value
+
+def macro_number_in_use(number):
+    return number in macros.values()
 
 def set_final_macro_number(proxy_macro_number, final_macro_number):
     if not type(proxy_macro_number) is int:
