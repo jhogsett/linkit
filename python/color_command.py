@@ -24,7 +24,7 @@ def wait_for_ack():
 
 def command(cmd_text):
   s.write((cmd_text + ':\0:').encode())   
-#  print (cmd_text + ':').encode()
+  #print (cmd_text + ':').encode()
   wait_for_ack()
 
 def setup(): 
@@ -32,8 +32,9 @@ def setup():
   s = serial.Serial("/dev/ttyS0", 115200) 
 
   if len(sys.argv) > 1:
-    for arg in sys.argv:
+    for arg in sys.argv[1:]:
       command(arg)
+      flush_output();
     sys.exit("\nSent.\n")    
 
 cmd = ""
@@ -46,8 +47,8 @@ def loop():
     if cmd == "":
       command(last_cmd)
     else:
-     command(cmd)
-     last_cmd = cmd
+      command(cmd)
+      last_cmd = cmd
     flush_output();
 
   except EOFError:
