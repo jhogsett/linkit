@@ -40,7 +40,7 @@ $left-width <group-width>
 [start 10]
     start-application
     (hsl-sequencer-start)
-    (objects-groups-start)
+    (objects-groups-objects-groups-start)
 
     <WHITE>
     push
@@ -49,7 +49,7 @@ $left-width <group-width>
 [warm 11]
     start-application
     (hsl-sequencer-start)
-    (objects-groups-start)
+    (objects-groups-objects-groups-start)
 
     <TUNGSTEN>
     push
@@ -58,7 +58,7 @@ $left-width <group-width>
 [dark 12]
     start-application
     (set-red-palette)
-    (objects-groups-start)
+    (objects-groups-objects-groups-start)
 
     <RED>
     push
@@ -67,7 +67,7 @@ $left-width <group-width>
 [fun 13]
     start-application
     (hsl-sequencer-start)
-    (objects-groups-start)
+    (objects-groups-objects-groups-start)
 
     <eye-start>, <eye-size>
     set-position
@@ -89,9 +89,9 @@ $left-width <group-width>
 #((group <right> <group-time> <right-start> <right-width> <objects-per-group> erase-group))
 #((group <left>  <group-time> <left-start>  <left-width>  <objects-per-group> erase-group))
 
-(((group <num-groups> <group-time> [<right-start>, <left-start>] [<right-width>, <left-width>] <objects-per-group> erase-group)))
+(((objects-groups-group <num-groups> <group-time> [<right-start>, <left-start>] [<right-width>, <left-width>] <objects-per-group> erase-group)))
 
-((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <object-darkening> <smooth-factor> draw-object))
+((objects-groups-objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <object-darkening> <smooth-factor> draw-object))
 
 
 [erase-group]

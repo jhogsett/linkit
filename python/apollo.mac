@@ -37,5 +37,5 @@ $demo-time 30000
   run-macro
   (demo-choose <demo-time>)
 
-%play-macro demo
+%play-macro mellow
 

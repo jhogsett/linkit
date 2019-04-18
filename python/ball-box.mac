@@ -92,7 +92,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
     # multi macro replaced with a macro run to a 
     # new macro that will run each start-up macro
-    [[[box-start <num-boxes>]]]
+    [[[box-start-INSTANCE <num-boxes>]]]
 
     # schedule animation rendering
     (boxes-render <render-time>)
@@ -114,7 +114,7 @@ $HSL-ANGLE 60 #`int(360/(<num-boxes>*<balls-per-box>))`
 
     # multi macro replaced with a macro run to a 
     # new macro that will run each render macro
-    [[[box-render <num-boxes>]]]
+    [[[box-render-INSTANCE <num-boxes>]]]
 
 
 # ------------------------------------------
