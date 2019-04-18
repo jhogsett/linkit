@@ -40,7 +40,7 @@ $timing-offset 5
 
 [circle-app-startup]
     # start up the circle processing
-    [[[circle-init <num-instances>]]]
+    [[[circle-init-INSTANCE <num-instances>]]]
 
     # schedule the display rendering
     (circle-render <render-time>)
