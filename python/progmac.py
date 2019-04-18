@@ -122,7 +122,7 @@ def initialize():
     if char_buffer_override != 0:
       char_buffer_size = char_buffer_override
 
-    all_presets = utils.merge_two_dicts(device_profile, get_command_line_presets())
+    all_presets = utils.merge_dicts(device_profile, get_command_line_presets())
     mc.begin(lc, verbose_mode, quiet_mode, all_presets, starting_macro, ending_macro, number_of_sequencers, num_macro_bytes, char_buffer_size, last_macro_bytes, allow_mutability)
     if dryrun:
       lc.resume()

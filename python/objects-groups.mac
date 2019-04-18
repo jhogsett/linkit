@@ -7,12 +7,12 @@
 
 [[objects-groups-start-template NUM-GROUPS GROUP-WIDTH GROUP-TIME RENDER-TIME OBJECTS-PER OBJECT-TIME OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO
     [objects-groups-start]
-        [[[group-start NUM-GROUPS]]]
+        [[[group-start-GROUP NUM-GROUPS]]]
         (groups-render GROUP-TIME)
         (render RENDER-TIME)
 
     [groups-render]
-        [[[group-render NUM-GROUPS]]]
+        [[[group-render-GROUP NUM-GROUPS]]]
 
     (((create-objects-for-group NUM-GROUPS OBJECTS-PER OBJECT-TIME GROUP-WIDTH OBJECT-SEQUENCER OBJECT-STEP OBJECT-INSTANCE-TIME OBJECT-DARKEN FACTOR OBJECT-DRAW-MACRO)))
 ]]

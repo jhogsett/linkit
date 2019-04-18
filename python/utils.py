@@ -221,13 +221,6 @@ def smart_split(line, grouping=None, keep_grouping_chars = False, split_char = "
         line_segments.append(line_segment)
     return line_segments
 
-
-# https://stackoverflow.com/questions/38987/how-to-merge-two-dictionaries-in-a-single-expression
-def merge_two_dicts(x, y):
-    z = x.copy()
-    z.update(y)
-    return z
-
 def get_list_width(list):
   result = -1
   for item in list:
@@ -245,5 +238,20 @@ def is_number(str):
         return True
     except ValueError:
         return False
+
+def reverse_find(subject, term):
+    index = subject[::-1].find(term)
+    return len(subject) - index - 1
+
+
+
+
+
+
+
+
+
+
+
 
 

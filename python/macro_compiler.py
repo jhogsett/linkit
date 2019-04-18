@@ -904,6 +904,12 @@ def expand_multi_macros(script_lines):
         args = utils.extract_args(line, "[[[", "]]]", {"`":"`"})
         if len(args) >= 2:
             macro_name = args[0]
+
+            # remove instance segment from name 
+            index = utils.reverse_find(macro_name, "-")
+            if index != -1:
+                macro_name = macro_name[:index]
+
             num_instance_arg = args[1]
             num_instance_max = None
             start, end = utils.locate_delimiters(num_instance_arg, "`", "`")
