@@ -26,7 +26,7 @@ $num-worms 5
   set-draw-mode
 
   # start the worms
-  [[[worm-start <num-worms>]]]
+  [[[worm-start-INSTANCE <num-worms>]]]
   
   # start the palette color sequencer
   (hsl-sequencer-start)

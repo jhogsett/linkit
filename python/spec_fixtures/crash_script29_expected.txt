@@ -1,0 +1,2 @@
+Macro name 'duplicate-name' is already in use.
+

@@ -1,0 +1,2 @@
+Fixed macro number 10 for macro 'duplicate-macro-number2' is already in use.
+

@@ -43,7 +43,7 @@ $bar-sequencer cosine-sequencer
 >>>
 
     # start the macro instances
-    [[[start <num-instances>]]]
+    [[[start-INSTANCE <num-instances>]]]
 
     # start up the palette color sequencer
     (hsl-sequencer-start)
@@ -59,7 +59,7 @@ $bar-sequencer cosine-sequencer
 [render-all]
     <FAST-ERASE-BUFFER>
     erase-buffer
-    [[[draw <num-instances>]]]
+    [[[draw-INSTANCE <num-instances>]]]
 
 (((bar <num-instances> INSTANCE `INSTANCE*<add-time>+<base-next-time>`)))
 

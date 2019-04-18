@@ -27,7 +27,7 @@ $swinger-max-half <swinger-max>
 
     (test_script37_include-start)
 
-    [[[setup-swinger 6]]]
+    [[[setup-swinger-X 6]]]
 
     (render <swinger-render-time>)
 
