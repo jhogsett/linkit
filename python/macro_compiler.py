@@ -202,7 +202,8 @@ def delimiters_in_line(line, delimiters):
             return delimiter
     return None
 
-def prefix_module(line, delimiters, non_delimiters, translated, translation, prefix_name):
+# add prefix to the the beginning of the name argument for dual-delimiter arguments
+def prefix_module(line, delimiters, non_delimiters, translated, translation, prefix):
     starter_delimiters = delimiters.keys()
     ender_delimiters = delimiters.values()
     starter_non_delimiters = non_delimiters.keys()
@@ -231,13 +232,41 @@ def prefix_module(line, delimiters, non_delimiters, translated, translation, pre
     if old_name in translated:
         return line
 
-    new_name = prefix_name + "-" + old_name
+    new_name = prefix + "-" + old_name
 
     translation[old_name] = new_name
     translated.append(new_name)
 
     args[0] = new_name
     line = starter_delimiter + " ".join(args) + ender_delimiter
+    return line
+
+# add prefix to the the beginning of the name argument for single-delimiter arguments
+def prefix_module_single(line, delimiters, non_delimiters, translated, translation, prefix_name):
+    delimiter = delimiters_in_line(line, delimiters)
+    if delimiter == None:
+        return line
+
+    if len(non_delimiters) > 0 and delimiters_in_line(line, non_delimiters) != None:
+        return line
+
+    args = utils.get_key_args(line, delimiter)
+    if len(args) < 1:
+        return line
+
+    old_name = args[0]
+
+    # skip already-translated macros
+    if old_name in translated:
+        return line
+
+    new_name = prefix_name + "-" + old_name
+
+    translation[old_name] = new_name
+    translated.append(new_name)
+
+    args[0] = new_name
+    line = delimiter + " ".join(args)
     return line
 
 def apply_prefixing(line, delimiters, non_delimiters, translation):
@@ -305,32 +334,175 @@ def apply_prefixing_multiple(line, delimiters, non_delimiters, translation):
     line = " ".join(new_parts)
     return line
 
-def prefix_module_single(line, delimiters, non_delimiters, translated, translation, prefix_name):
-    delimiter = delimiters_in_line(line, delimiters)
-    if delimiter == None:
-        return line
+## ----------------------------------------------------
 
-    if len(non_delimiters) > 0 and delimiters_in_line(line, non_delimiters) != None:
-        return line
+def inside_block(line, delimiters, in_block):
+    starter_delimiter = delimiters.keys()[0]
+    ender_delimiter = delimiters[starter_delimiter]
+    line = line.strip()
 
-    args = utils.get_key_args(line, delimiter)
-    if len(args) < 1:
-        return line
+    if in_block:
+        if line.startswith(ender_delimiter):
+            in_block = False
+        return in_block
 
-    old_name = args[0]
+    if line.startswith(starter_delimiter):
+        in_block = True
+        return in_block
 
-    # skip already-translated macros
-    if old_name in translated:
-        return line
 
-    new_name = prefix_name + "-" + old_name
 
-    translation[old_name] = new_name
-    translated.append(new_name)
 
-    args[0] = new_name
-    line = delimiter + " ".join(args)
-    return line
+
+def rename_macro_headers(script_lines, translation, module_name):
+    new_lines = []
+    in_block = False
+    for line in script_lines:
+        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        if not in_block:
+            delimiters = { "[" : "]" }
+            non_delimiters = { "[[" : "]]", "[[[" : "]]]" }
+            line = prefix_module(line, delimiters, non_delimiters, translated, translation, module_name)
+        new_lines.append(line)
+    return new_lines
+
+def rename_macro_runs(script_lines, translation, module_name):
+    new_lines = []
+    in_block = False
+    for line in script_lines:
+        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        if not in_block:
+            delimiters = { "(" : ")" }
+            non_delimiters = { "((" : "))", "(((" : "))" }
+            line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+    return new_lines
+
+def rename_variable_settings(script_lines, translation, module_name):
+    new_lines = []
+    for line in script_lines:
+        line = line.strip()
+        delimiters = [ "$" ]
+        non_delimiters = []
+        line = prefix_module_single(line, delimiters, non_delimiters, translated, translation, module_name)
+        new_lines.append(line)
+    return new_lines
+
+def rename_variable_references(script_lines, translation, module_name):
+    new_lines = []
+    in_block = False
+    conditional = False
+    for line in script_lines:
+        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        if not in_block:
+            if "<<< " in line:
+                conditional = True
+                line = line[4:]
+            delimiters = { "<" : ">" }
+            non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
+            line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
+            if conditional:
+                line = "<<< " + line
+                conditional = False
+        new_lines.append(line)
+    return new_lines
+
+def rename_template_headers(script_lines, translation, module_name):
+    new_lines = []
+    for line in script_lines:
+        line = line.strip()
+        delimiters = [ "[[" ]
+        non_delimiters = ["[[[" ]
+        line = prefix_module_single(line, delimiters, non_delimiters, translated, translation, module_name)
+        new_lines.append(line)
+    return new_lines
+
+def rename_template_expansions(script_lines, translation, module_name):
+    new_lines = []
+    for line in script_lines:
+        delimiters = { "((" : "))" }
+        non_delimiters = { "(((" : ")))" }
+        line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+    return new_lines
+
+def rename_meta_templates_and_multi_macros(script_lines, translation, module_name):
+    new_lines = []
+    for line in script_lines:
+        delimiters = { "(((" : ")))", "[[[" : "]]]" }
+        non_delimiters = {}
+        line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+    return new_lines
+
+def rename_template_macro_headers(script_lines, translation, module_name):
+    new_lines = []
+    in_block = False
+    for line in script_lines:
+        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        if in_block:
+            delimiters = { "[" : "]" }
+            non_delimiters = { "[[[" : "]]]" }
+            line = prefix_module(line, delimiters, non_delimiters, translated, translation, module_name)
+        new_lines.append(line)
+    return new_lines
+
+def rename_template_macro_runs(script_lines, translation, module_name):
+    new_lines = []
+    in_block = False
+    for line in script_lines:
+        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        if in_block:
+            delimiters = { "(" : ")" }
+            non_delimiters = { "((" : "))", "(((" : "))" }
+            line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+    return new_lines
+
+def rename_template_template_expansions(script_lines, translation, module_name):
+    new_lines = []
+    in_block = False
+    for line in script_lines:
+        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        if in_block:
+            delimiters = { "((" : "))" }
+            non_delimiters = { "(((" : ")))" }
+            line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+    return new_lines
+
+def rename_template_meta_templates_and_multi_macros(script_lines, translation, module_name):
+    new_lines = []
+    in_block = False
+    for line in script_lines:
+        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        if in_block:
+            delimiters = { "(((" : ")))", "[[[" : "]]]" }
+            non_delimiters = {}
+            line = apply_prefixing(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+    return new_lines
+
+def rename_template_variable_references(script_lines, translation, module_name):
+    new_lines = []
+    in_block = False
+    for line in script_lines:
+        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        if in_block:
+            delimiters = { "<" : ">" }
+            non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
+            line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
+        new_lines.append(line)
+    return new_lines
+
+
+
+
+#def prefix_module_on_macros(module_name, script_lines):
+#    translation = {}
+#    new_lines = rename_macro_headers(script_lines, translation, module_name)
+#    new_lines = rename_macro_runs(new_lines, translation, module_name) 
+#    return new_lines
 
 def prefix_module_on_macros(module_name, script_lines):
     global translated
@@ -342,7 +514,7 @@ def prefix_module_on_macros(module_name, script_lines):
     for line in script_lines:
         line = line.strip()
 
-	# don't prefix macros inside templates
+        # don't prefix macros inside templates
         if block_skip_mode:
             if line.startswith("]]"):
                 block_skip_mode = False
@@ -381,6 +553,12 @@ def prefix_module_on_macros(module_name, script_lines):
 
     return new_lines
 
+#def prefix_module_on_variables(module_name, script_lines):
+#    translation = {}
+#    new_lines = rename_variable_settings(script_lines, translation, module_name)
+#    new_lines = rename_variable_references(new_lines, translation, module_name)
+#    return new_lines
+
 def prefix_module_on_variables(module_name, script_lines):
     new_lines = []
     translation = {}
@@ -418,168 +596,19 @@ def prefix_module_on_variables(module_name, script_lines):
     return new_lines
 
 def prefix_module_on_templates(module_name, script_lines):
-    global translated
-    new_lines = []
     translation = {}
-
-    # locate and prefix template names
-    for line in script_lines:
-        line = line.strip()
-
-        delimiters = [ "[[" ]
-        non_delimiters = ["[[[" ]
-        line = prefix_module_single(line, delimiters, non_delimiters, translated, translation, module_name)
-        new_lines.append(line)
-
-    # locate and replace old template names in template expansions
-    script_lines = new_lines
-    new_lines = []
-
-    for line in script_lines:
-        delimiters = { "((" : "))" }
-        non_delimiters = { "(((" : ")))" }
-        line = apply_prefixing(line, delimiters, non_delimiters, translation)
-        new_lines.append(line)
-
-    # locate and replace old template names in meta templates and multi macros
-    script_lines = new_lines
-    new_lines = []
-
-    for line in script_lines:
-        delimiters = { "(((" : ")))", "[[[" : "]]]" }
-        non_delimiters = {}
-        line = apply_prefixing(line, delimiters, non_delimiters, translation)
-        new_lines.append(line)
-
+    new_lines = rename_template_headers(script_lines, translation, module_name)
+    new_lines = rename_template_expansions(new_lines, translation, module_name)
+    new_lines = rename_meta_templates_and_multi_macros(new_lines, translation, module_name)
     return new_lines
 
 def prefix_module_on_template_macros(module_name, script_lines):
-    global translated
-    new_lines = []
     translation = {}
-
-    block_mode = False
-    # locate and prefix macro names
-    for line in script_lines:
-        line = line.strip()
-
-        if line.startswith("]]"):
-            block_mode = False
-            new_lines.append(line)
-            continue
-
-        if line.startswith("[["):
-            block_mode = True
-
-        if not block_mode:
-            new_lines.append(line)
-            continue
-
-        delimiters = { "[" : "]" }
-        non_delimiters = { "[[[" : "]]]" }
-        line = prefix_module(line, delimiters, non_delimiters, translated, translation, module_name)
-        new_lines.append(line)
-
-    # locate and replace old macro names in macro runs
-    script_lines = new_lines
-    new_lines = []
-
-    block_mode = False
-    for line in script_lines:
-        line = line.strip()
-
-        if line.startswith("]]"):
-            block_mode = False
-            new_lines.append(line)
-            continue
-
-        if line.startswith("[["):
-            block_mode = True
-
-        if not block_mode:
-            new_lines.append(line)
-            continue
-
-        delimiters = { "(" : ")" }
-        non_delimiters = { "((" : "))", "(((" : "))" }
-        line = apply_prefixing(line, delimiters, non_delimiters, translation)
-        new_lines.append(line)
-
-    # locate and replace old macro names in template expansions
-    script_lines = new_lines
-    new_lines = []
-
-    block_mode = False
-    for line in script_lines:
-        line = line.strip()
-
-        if line.startswith("]]"):
-            block_mode = False
-            new_lines.append(line)
-            continue
-
-        if line.startswith("[["):
-            block_mode = True
-
-        if not block_mode:
-            new_lines.append(line)
-            continue
-
-        delimiters = { "((" : "))" }
-        non_delimiters = { "(((" : ")))" }
-        line = apply_prefixing(line, delimiters, non_delimiters, translation)
-        new_lines.append(line)
-
-    # locate and replace old macro names in meta templates and multi macros
-    script_lines = new_lines
-    new_lines = []
-
-    block_mode = False
-    for line in script_lines:
-        line = line.strip()
-
-        if line.startswith("]]"):
-            block_mode = False
-            new_lines.append(line)
-            continue
-
-        if line.startswith("[["):
-            block_mode = True
-
-        if not block_mode:
-            new_lines.append(line)
-            continue
-
-        delimiters = { "(((" : ")))", "[[[" : "]]]" }
-        non_delimiters = {}
-        line = apply_prefixing(line, delimiters, non_delimiters, translation)
-        new_lines.append(line)
-
-    # translate macro names in variable references
-    script_lines = new_lines
-    new_lines = []
-
-    block_mode = False
-    for line in script_lines:
-        line = line.strip()
-
-        if line.startswith("]]"):
-            block_mode = False
-            new_lines.append(line)
-            continue
-
-        if line.startswith("[["):
-            block_mode = True
-
-        if not block_mode:
-            new_lines.append(line)
-            continue
-
-        delimiters = { "<" : ">" }
-        non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
-        line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
-        new_lines.append(line)
-
+    new_lines = rename_template_macro_headers(script_lines, translation, module_name)
+    new_lines = rename_template_macro_runs(new_lines, translation, module_name)
+    new_lines = rename_template_template_expansions(new_lines, translation, module_name)
+    new_lines = rename_template_meta_templates_and_multi_macros(new_lines, translation, module_name)
+    new_lines = rename_template_variable_references(new_lines, translation, module_name)
     return new_lines
 
 
