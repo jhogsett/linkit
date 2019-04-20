@@ -579,6 +579,7 @@ def capture_expand_loop(script_lines):
         ui.report_verbose_alt("capture_expand_loop pass #" + str(passnum))
         passnum += 1
         orig_lines = new_lines
+        #orig_hash = utils.hash_object(new_lines)
 
         new_lines = capture_templates(new_lines)
         ui.report_verbose_script(new_lines, "script after capturing templates")
@@ -590,17 +591,19 @@ def capture_expand_loop(script_lines):
         ui.report_verbose_script(new_lines, "script after expanding multi-macros")
 
         if new_lines == orig_lines:
+#        if utils.hash_object(new_lines) == orig_hash:
             break
     return new_lines
 
 def expand_meta_loop(script_lines):
-    orig_lines = script_lines
+#    orig_lines = script_lines
     new_lines = script_lines
     passnum = 1
     while(True):
         ui.report_verbose_alt("expand_meta_loop pass #" + str(passnum))
         passnum += 1
         orig_lines = new_lines
+#        orig_hash = utils.hash_object(new_lines)
 
         new_lines = expand_meta_templates(new_lines)
         ui.report_verbose_script(new_lines, "script after expanding meta templates")
@@ -609,6 +612,7 @@ def expand_meta_loop(script_lines):
         ui.report_verbose_script(new_lines, "script after expanding templates")
 
         if new_lines == orig_lines:
+#        if utils.hash_object(new_lines) == orig_hash:
             break
     return new_lines
 
@@ -956,6 +960,7 @@ def template_replacements(template_lines, keys, replacements):
     lines = template_lines
     while(True):
         orig_lines = lines
+#        orig_hash = utils.hash_object(lines)
         new_lines = []
         for line in lines:
             for index, key in enumerate(keys):
@@ -967,6 +972,7 @@ def template_replacements(template_lines, keys, replacements):
                 line = line.replace(key, replacement)
             new_lines.append(line)
         if new_lines == orig_lines:
+#        if utils.hash_object(new_lines) == orig_hash:
             return new_lines
         lines = new_lines
 

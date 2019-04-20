@@ -1,5 +1,6 @@
 import sys
 import terminal_colors as tc
+import utils
 
 global verbose_mode
 verbose_mode = False
@@ -93,7 +94,8 @@ def report_verbose_script(script, message):
     byte_count = 0
     for line in script:
         byte_count += len(line)
-    count_message = " (lines: " + str(line_count) + ", bytes: " + str(byte_count) + ")"
+    hash = utils.hash_object(script)
+    count_message = " (lines: " + str(line_count) + ", bytes: " + str(byte_count) + ", hash: " + hash + ")"
     report_verbose_alt(message + count_message)
     for line in script:
         report_verbose(line)

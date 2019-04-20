@@ -5,6 +5,7 @@ import sys
 import time
 import random
 import string
+import hashlib
 
 global script_directory
 script_directory = None
@@ -244,4 +245,12 @@ def reverse_find(subject, term):
 # from https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
    return ''.join(random.choice(chars) for _ in range(size))
+
+def hash_object(object, with_dashes=True):
+    md5 = hashlib.md5()
+    md5.update(str(object))
+    hash = md5.hexdigest()
+    if with_dashes:
+        hash = hash[1:8] + "-" + hash[8:16] + "-" + hash[16:24] + "-" + hash[24:32]
+    return hash
 

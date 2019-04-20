@@ -9,6 +9,7 @@ import argparse
 import led_command as lc
 import math
 import utils as u
+import datetime
 
 global app_description, verbose_mode, random_seed
 app_description = None 
@@ -286,8 +287,15 @@ def setup():
   initialize()
 
 def loop():
+  start_time = datetime.datetime.now()
   specs() 
+  end_time = datetime.datetime.now()
+
   print
+
+  print tc.white("tests ran in: " + str(end_time - start_time))
+  print
+
   sys.exit()
 
 if __name__ == '__main__':
