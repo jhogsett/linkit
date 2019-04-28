@@ -10,7 +10,8 @@ import re
 
 global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number
 global verbose_mode, starting_macro_number, ending_macro_number, presets, number_of_sequencers, number_of_macros
-global led_command, final_macro_numbers, saved_bad_script, includes, last_macro_bytes, allow_mutability
+global led_command, final_macro_numbers, saved_bad_script, includes, last_macro_bytes, allow_mutability, translated, translation
+global pre_processed_script
 
 macros = {}
 macro_commands = {}
@@ -32,6 +33,9 @@ saved_bad_script = []
 includes = {}
 last_macro_bytes = None
 allow_mutability = None
+translated = []
+translation = {}
+pre_processed_script = None
 
 ########################################################################
 ## API methods
@@ -80,7 +84,7 @@ def remaining_sequencers():
 
 def reset(presets_={}):
     global macros, macro_commands, resolved, unresolved, passes, next_available_macro_number, next_available_sequencer_number, allow_mutability
-    global final_macro_numbers, includes, presets
+    global final_macro_numbers, includes, presets, translated, translation
     macros = {}
     macro_commands = {}
     resolved = {}
@@ -95,6 +99,8 @@ def reset(presets_={}):
       presets = presets_
     resolve_presets(presets)
     allow_mutability = False
+    translated = []
+    translation = {}
 
 def reset_next_available_sequence_number():
     next_available_sequencer_number = 0
@@ -192,9 +198,6 @@ def remove_fixed_macro_numbers(line):
                 # leave only the name
                 return "[" + args[0] + "]"
     return line
-
-global translated
-translated = []
 
 def delimiters_in_line(line, delimiters):
     for delimiter in delimiters:
@@ -459,27 +462,23 @@ def rename_meta_templates_and_multi_macros(script_lines, translation, module_nam
 ## ----------------------------------------------------
 
 def prefix_module_on_macros(module_name, script_lines):
-    translation = {}
     new_lines = rename_macro_headers(script_lines, translation, module_name, False)
     new_lines = rename_macro_runs(new_lines, translation, module_name, False) 
     new_lines = rename_macro_variable_references(new_lines, translation, module_name, False)
     return new_lines
 
 def prefix_module_on_variables(module_name, script_lines):
-    translation = {}
     new_lines = rename_variable_settings(script_lines, translation, module_name)
     new_lines = rename_variable_references(new_lines, translation, module_name)
     return new_lines
 
 def prefix_module_on_templates(module_name, script_lines):
-    translation = {}
     new_lines = rename_template_headers(script_lines, translation, module_name)
     new_lines = rename_template_expansions(new_lines, translation, module_name, False)
     new_lines = rename_meta_templates_and_multi_macros(new_lines, translation, module_name, False)
     return new_lines
 
 def prefix_module_on_template_macros(module_name, script_lines):
-    translation = {}
     new_lines = rename_macro_headers(script_lines, translation, module_name, True)
     new_lines = rename_macro_runs(new_lines, translation, module_name, True)
     new_lines = rename_template_expansions(new_lines, translation, module_name, True)
@@ -502,9 +501,12 @@ def remove_macro_numbers(script_lines):
 ########################################################################
 
 def resolve_script(script_lines):
+    global pre_processed_script
+
     ui.report_verbose("--------------- Pre-processing ---------------")
 
     new_lines = pre_process_script(script_lines)
+    pre_processed_script = new_lines
     ui.report_verbose_script(new_lines, "pre-processed script")
 
     ui.report_verbose("--------------- Initial processing ---------------")
@@ -1811,4 +1813,13 @@ def get_macros():
 
 def get_includes():
     return includes
+
+def get_translated():
+    return translated
+
+def get_translation():
+    return translation
+
+def get_preprocessed():
+    return pre_processed_script
 

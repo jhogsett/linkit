@@ -28,7 +28,8 @@ quiet_mode = None
 allow_mutability = None
 no_led_show = None
 
-global device_profile, num_leds, starting_macro, num_macro_bytes, ending_macro, number_of_macros, char_buffer_size, number_of_fine_zones, number_of_colors, number_of_sequencers
+global device_profile, num_leds, starting_macro, num_macro_bytes, ending_macro, number_of_macros, char_buffer_size
+global number_of_fine_zones, number_of_colors, number_of_sequencers, show_preprocessed
 device_profile = None
 num_leds = None
 starting_macro = None
@@ -40,10 +41,11 @@ number_of_fine_zones = None
 number_of_colors = None
 number_of_sequencers = None
 print_macros = None
+show_preprocessed = None
 
 def get_options():
     global verbose_mode, debug_mode, program, macro_run_number, presets, dryrun, show_output, show_tables, num_macro_bytes_override, starting_macro_override, ending_macro_override, char_buffer_override, quiet_mode, allow_mutability
-    global print_macros, no_led_show
+    global print_macros, no_led_showi, show_preprocessed
     parser = argparse.ArgumentParser(description=app_description)
     parser.add_argument("-m", "--macro", type=int, dest="macro", default=10, help="macro number to run after programming (10)")
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="display verbose info (False)")
@@ -59,6 +61,7 @@ def get_options():
     parser.add_argument("-q", "--quiet", dest="quiet", action="store_true", help="don't use terminal colors (False)")
     parser.add_argument("-a", "--allow-mutability", dest="mutability", action="store_true", help="allow variable values to be changed (False)")
     parser.add_argument("-n", "--no-led-show", dest="no_led_show", action="store_true", help="don't write to the display while programming (False)")
+    parser.add_argument("-w", "--show-preprocessed", dest="show_preprocessed", action="store_true", help="Show preprocessed script (False)")
     parser.add_argument("program", nargs="?", help="program to transmit")
     parser.add_argument("presets", nargs=argparse.REMAINDER, help="resolved=value presets (None)")
 
@@ -79,6 +82,7 @@ def get_options():
     print_macros = args.print_macros
     allow_mutability = args.mutability
     no_led_show = args.no_led_show
+    show_preprocessed = args.show_preprocessed
 
 def initialize():
     global app_description, bytes_programmed
@@ -237,6 +241,14 @@ def program_macros(program_name):
       pu.print_table("Unresolved Macros", mc.get_unresolved())
       pu.print_table("Final Macro Numbers", mc.get_final_macro_numbers())
       pu.print_table("Macros", mc.get_macros())
+      pu.print_table("Translation", mc.get_translation())
+
+    if show_preprocessed and not verbose_mode:
+        print
+        ui.report_info("preprocessed script:")
+        preprocessed = mc.get_preprocessed()
+        for line in preprocessed:
+            ui.report_info_alt(line)
 
     if show_output and not verbose_mode:
         print
