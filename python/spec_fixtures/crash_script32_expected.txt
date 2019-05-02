@@ -1,0 +1,2 @@
+No block of macros for fixed macro during final number assignment
+

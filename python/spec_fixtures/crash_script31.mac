@@ -1,0 +1,9 @@
+
+[macro]
+  (((waste 20)))
+
+[[waste INSTANCE
+  12345,12345,12345
+  sto
+]]
+
