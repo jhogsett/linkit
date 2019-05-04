@@ -31,7 +31,6 @@ class Buffer
   // void set_color(byte pos, rgb_color color, bool display, byte effect);
   void fade(float rate);
   void fade_fast();
-  void cross_fade(byte step);
   byte get_window();
   void set_display(byte display);
   void set_buffer(byte buffer);
@@ -57,6 +56,8 @@ class Buffer
   void set_default_effect(byte effect);
   void set_draw_mode(byte mode = DRAW_MODE_WRITE);
   byte get_draw_mode();
+  void uniform_cross_fade(int frame_delay);
+  void rolling_cross_fade(int frame_delay);
 
   // todo: is there an alternative to storing all these pointers?
   private:
@@ -85,6 +86,10 @@ class Buffer
   byte default_effect = NO_EFFECT;
 
   void shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse);
+
+  void do_rolling_position(byte led_pos, byte cfstep);
+  void do_rolling_step(int step, byte max_led, byte max_step, byte offset);
+  void cross_fade_step(byte step);
 };
 
 rgb_color *Buffer::render;
@@ -172,7 +177,7 @@ void Buffer::erase(bool display = false)
     render_display();
 }
 
-void Buffer::cross_fade(byte step)
+void Buffer::cross_fade_step(byte step)
 {
   byte offset = get_offset();
   byte window = get_window();
@@ -192,6 +197,58 @@ void Buffer::cross_fade(byte step)
     // rgb_color rendered_color = renderer->get_default(*pb);
     *pr = ColorMath::crossfade_colors(step, *pr, rendered_color);
    }
+}
+
+void Buffer::uniform_cross_fade(int frame_delay)
+{
+  byte steps = ColorMath::crossfade_steps();
+  for(byte step = 0; step <= steps; step++)
+  {
+    cross_fade_step(step);
+    display_buffer(render);
+    delay(frame_delay);
+  }
+}
+
+void Buffer::do_rolling_position(byte led_pos, byte cfstep)
+{
+  rgb_color *pb = buffers[current_display] + led_pos;
+  rgb_color *pr = render + led_pos;
+  byte *effect = effects_buffers[current_display] + led_pos;
+
+  rgb_color rendered_color = renderer->render(pb, *effect, 0.0, NULL);
+  *pr = ColorMath::crossfade_colors(cfstep, *pr, rendered_color);
+}
+
+void Buffer::do_rolling_step(int step, byte max_led, byte max_step, byte offset)
+{
+  byte last_led_pos = min(step, max_led);
+  bool ended = false;
+  for(int led_pos = 0; led_pos <= last_led_pos; led_pos++){
+    byte cross_fade_step = min(step - led_pos, max_step);
+    if(!ended){
+      do_rolling_position(led_pos + offset, cross_fade_step);
+    }
+    if(cross_fade_step == CROSSFADE_STEPS){
+      ended = true;
+    } 
+  }
+}
+
+void Buffer::rolling_cross_fade(int frame_delay)
+{
+  byte offset = get_offset();
+  byte window = get_window();
+  byte num_leds = window - offset;
+  byte max_led = num_leds - 1;
+  byte max_step = CROSSFADE_STEPS - 1;
+  int max_loops = max_led + max_step + 1;
+
+  for(int step = 0; step < max_loops; step++){
+    do_rolling_step(step, max_led, max_step, offset);
+    display_buffer(render);
+    delay(frame_delay);
+  }
 }
 
 void Buffer::rotate()
@@ -326,23 +383,6 @@ void Buffer::push_carry_color()
 {
   push_color(carry_color, 1, false, carry_effect);
 }
-
-// todo: is this used?
-//void Buffer::set_color(byte pos, rgb_color color, bool display = false, byte effect = NO_EFFECT)
-//{
-//  rgb_color * buffer = buffers[current_display];
-//  byte * effects = effects_buffers[current_display];
-//
-//  buffer[pos] = ColorMath::correct_color(color);
-//
-//  if(effect != LEAVE_EFFECT){
-//    effects[pos] = effect;
-//  }
-//
-//  if(display){
-//    render_display();
-//  }
-//}
 
 // when setting override, should it fix the override to be normal?
 // 2:win:4:off leaves window override at 2

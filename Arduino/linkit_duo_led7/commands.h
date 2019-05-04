@@ -68,7 +68,7 @@ class Commands
   void do_dim(byte times);
   void do_bright(byte times);
 //  void do_fade();
-  void do_crossfade();
+  void do_crossfade(byte type);
   void do_math(int arg0);
   void do_flood(byte type);
   void do_random(byte type, int times);
@@ -431,18 +431,30 @@ void Commands::do_bright(byte times){
 //  do_crossfade();
 //}
 
-// todo: move delay to the color math class
-void Commands::do_crossfade()
-{
-  rgb_color * render_buffer = buffer->get_render_buffer();
-  byte steps = ColorMath::crossfade_steps();
+#define CROSSFADE_UNIFORM 0
+#define CROSSFADE_ROLLING 1
 
-  for(byte i = 0; i <= steps; i++)
-  {
-    buffer->cross_fade(i);
-    buffer->display_buffer(render_buffer);
-    delay(CROSSFADE_DELAY);
+// todo: move delay to the color math class
+void Commands::do_crossfade(byte type = CROSSFADE_UNIFORM)
+{
+  switch(type){
+    case CROSSFADE_UNIFORM:
+      buffer->uniform_cross_fade(CROSSFADE_DELAY);
+      break;
+    case CROSSFADE_ROLLING:
+      buffer->rolling_cross_fade(CROSSFADE_DELAY);
+      break;  
   }
+  
+//  rgb_color * render_buffer = buffer->get_render_buffer();
+//  byte steps = ColorMath::crossfade_steps();
+//
+//  for(byte i = 0; i <= steps; i++)
+//  {
+//    buffer->cross_fade(i);
+//    buffer->display_buffer(render_buffer);
+//    delay(CROSSFADE_DELAY);
+//  }
 }
 
 #define FLOOD_TYPE_ALL 0
@@ -904,6 +916,7 @@ void Commands::do_rotate(byte times, byte steps, bool flush)
   }
 }
 
+// arg0 sets force_effects_processing
 void Commands::flush(bool force_display, bool force_effects_processing)
 {
   if(force_display || !effects_paused)
@@ -1160,6 +1173,9 @@ int Commands::random_num(int max, int min)
 // arg1 -7 = set new upper limit
 // arg1 -8 = set new lower limit
 // arg1 -9 = reset
+
+// arg1 = 10 = next new incoming value for dampening, etc., sequence - proposed
+// (the 'wheel' or 'swing' could indicate the memory position of the dampening storage)
 
 // arg2 - step, default = 1
 // 1,0,0:seq - get next number from #1
