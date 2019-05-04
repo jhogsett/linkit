@@ -1,0 +1,12 @@
+
+[macro 4]
+  (((waste 4)))
+
+[macro2 5]
+  red
+
+[[waste INSTANCE
+  12345,12345,12345
+  sto
+]]
+

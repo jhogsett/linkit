@@ -9,6 +9,8 @@ $lamp-render-time 200
 $lamp-colors 6
 $demo-time 30000
 
+%play-macro fancy
+
 [fancy 10]
   (inchworm-app)
 
@@ -36,6 +38,4 @@ $demo-time 30000
   get-random-number 
   run-macro
   (demo-choose <demo-time>)
-
-%play-macro mellow
 

@@ -1,0 +1,2 @@
+Macro being tested exceeds char buffer size
+
