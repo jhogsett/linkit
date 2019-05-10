@@ -1,10 +1,214 @@
+// have ability for default arguments to templates
+// idea: if two macros are identical, keep only one of them and fix up references
+// 72:set:flu
+// 9:set:flu
+
+// don't keep this in resolved
+// %include: hsl-sequencer
+
+// what happens passing wrong things to (( ((( [[[
+
+// rolling crossfade
+// leading edge does step #1
+// leading edge keeps advancing doing step #1
+// goes back to trailing edge (trailing edge starts at zero)
+// each step back advances to the next crossfade step
+// once the trailing edge seens the last crossfast step start advancing the trailing edge
+// the leading edge stops advancing when it hits the edge
+// 
+// leading edge starts at zero, goes to limit + count of crossfade steps
+//
+// 0 1 2 3 4 5 6 7 8 9
+// X X X X X X X X X X 
+// 0
+// 1 0
+// 2 1 0
+// 3 2 1 0
+// 4 3 2 1 0
+// 5 4 3 2 1 0
+// 5 5 4 3 2 1 0
+// 5 5 5 4 3 2 1 0
+// 5 5 5 5 4 3 2 1 0
+// 5 5 5 5 5 4 3 2 1 0
+// 5 5 5 5 5 5 4 3 2 1
+// 5 5 5 5 5 5 5 4 3 2
+// 5 5 5 5 5 5 5 5 4 3
+// 5 5 5 5 5 5 5 5 5 4
+// 5 5 5 5 5 5 5 5 5 5
+
+// leading and trailing edge iterate through each led position
+// leading edge stays at max once it hits it
+// trailing edge stays at zero until leading edge hits count of crossfade steps
+// trailing edge goes all the way to max
+// leading edge could go past max + crossfade steps
+//   led position computed from it but maxes out at limit
+//   crossfade step computed from it, as (leading edge position - led position) maxing out at max crossfade step
+//
+//def at_most(a,b):
+//  return a if a <= b else b  
+//
+//num_leds = 10
+//max_led = num_leds - 1
+//num_steps = 5
+//max_step = num_steps - 1
+//max_loops = max_led + max_step + 1
+//
+//for i in range(max_loops):
+//  last_led_pos = at_most(i, max_led)
+//  for led_pos in range(last_led_pos + 1):
+//    step = at_most(i - led_pos, max_step)
+//    print str(led_pos) + ":" + str(step), 
+//  print
+//
+//0:0
+//0:1 1:0
+//0:2 1:1 2:0
+//0:3 1:2 2:1 3:0
+//0:4 1:3 2:2 3:1 4:0
+//0:4 1:4 2:3 3:2 4:1 5:0
+//0:4 1:4 2:4 3:3 4:2 5:1 6:0
+//0:4 1:4 2:4 3:4 4:3 5:2 6:1 7:0
+//0:4 1:4 2:4 3:4 4:4 5:3 6:2 7:1 8:0
+//0:4 1:4 2:4 3:4 4:4 5:4 6:3 7:2 8:1 9:0
+//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:3 8:2 9:1
+//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:4 8:3 9:2
+//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:4 8:4 9:3
+//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:4 8:4 9:4
+//
+// 
+//
+//
+//
+//
+//
+//
+//def do_led(led_pos, cfstep):
+//  print str(led_pos) + ":" + str(cfstep),
+//
+//def do_step(step):
+//  last_led_pos = at_most(step, max_led)
+//  for led_pos in range(last_led_pos + 1):
+//    cfstep = at_most(step - led_pos, max_step)
+//    do_led(led_pos + offset, cfstep)
+//  print
+//
+//offset = 10
+//window = 19
+//num_leds = window - offset + 1
+//max_led = num_leds - 1
+//num_steps = 6
+//max_step = num_steps - 1
+//max_loops = max_led + max_step + 1
+//
+//for step in range(max_loops):
+//  do_step(step)
+
+
+
+// these are not tested for:
+//No available macro numbers available during final number assignment
+//is needed as a carry-over macro but is already assigned
+
+
+// DRY up delimiter strings
+// standardize on dictionaries for delimiters
+// parse template arguments better to avoid name clashing
+
+// idea: simulate runtime variables using push/pop
+
+// idea: peek at sequencer's next value
+
+// start of a pretty xmas effect
+// 0:set:rps:0,-1:seq:pal:sfd:rst
+// 1:set:rps:0,-1:seq:psh:1:psh:add:pal:sfd:rst:50,250:rng:psh:1:0
+// 3:set:0:seq
+
+
+// new sequencer type:
+// - wander
+// - between bounds
+// - uses step
+// - stays in bounds or wraps around
+
+
+// dampening
+// practical use
+// generate values
+// pass as arg0 to filter, get new arg0 back
+// uses macro #0 and #1 for data storage
+// or just a small array of ints
+
+// new concept: filters?
+
+
+
+
+
+
+
+
+// ideas
+// background striper
+// 93-led disc manager
+// 19-led disc manager
+// glasses manager
+// 200-led mapping manager
+
+// a way to transofrm a dynamic color into a real one in place in the buffer
+
+// might need a shortcut for running a macro a number of times
+// (<macro-to-run> <schedule>)
+// (<macro-to-run>) <times>
+
+
+//  get-random-number
+//  run-macro
+
+//  get-random-number
+//  (<<arg0>>)
+
+
+// when starting a sequencer can you get the very first low value?
+
+// could have argument to shuffle to allow it shuffle only N pixels
+
+// why is a push_command extra margin of chars needed?
+
+// make sure there are specs covering all error messages in macro compiler
+// remove unnecessary verbose output
+
+/* MUST */
+// need error if macro and variable have the same name
+// should raise error if more than one macro use the same fix macro number
+
+
+/* NICE */
+// [[[ multimacro needs name prefixing too to avoid possible name clashes ]]]
+// template names should be prefixed too
+// need to be able to multicast system commands, to all or maybe targetted to
 // explosion animation
-
-// background: darker pixels are next higher palette color
-
 // maybe smarter python expression combining than jsut removing backticks?
+// dynamic colors should support > palette colors
+// should be able to override the default [render !] so a custom render can go in the short space
+// ball-box: a wandering mode (needs dampening)
+// macro compiler substitutes macro numbers with single digits, but could require double digits when programming (command string length risk)
+// could make upper case only variables always mutable
 
 
+
+/* WANT */
+// report errors before compressing spaces because it confuses troubleshooting
+// progmac.py report actual number of macro bytes programmed
+// might need to expand multi macros before prefixing (others?) 
+// prefixing is sensitive to order of include files (had to put hsl-sequencer first for hsl-sequencer-start to be recognized)
+// background: darker pixels are next higher palette color
+// new inquiry: whether red and green are being swapped; add spec to cover rendering in a swap situation
+
+
+
+
+
+/* IDEA */
 // remix:
 // mirror alternative: reverse a set of pixels
 // to remix:
@@ -12,112 +216,21 @@
 // 2) reverse only half of the groups, alternating reverse, not reverse (which starts first should be settable or predictable - negative number could switch to start without reversing)
 // 3) do several rounds with random numbers to complete the remix, could make it animated or not
 
-// add flipping to mirror command
-
-
-
-
 // sequencer: min,max,macro:sqr (run macro if sequencer value between min-max inclusive) val,0,macro:sqr (run macro if sequencer value = val)
 
 // scramble buffer, either completely random or remix
 // would have to be scalable and account for uneven divisions
 
-// new inquiry: whether red and green are being swapped; add spec to cover rendering in a swap situation
-
-// dynamic colors should support > palette colors
-
-//Macro doesn't match:
-//Expected: 22:set:6:run:7:run:14:run:15:run:16:run:17:run:18:run:19:run:20:run:21:run:8:run:9:run:11:run:12:run:13:run
-//     Got: 22:set:6:run:7:run:14:run:15:run:16:run:17:run:18:run:19:run:20:run:21:run:8:run:9:run:11:run:12:run:13:0
-
-
-// how to make it easy to add a bouncing ball within width bounds with least effort
-// %include ball
-// [[[ball-start 2]]]
-// (ball-render time)
-// $zone-left 6
-// $zone-right 8
-// ((ball-by-zone 0 <zone-left> <RED>))
-// ((ball-by-zone 1 <zone-right> <RED>))  
-// ((ball-by-window 0 10 20 <BLUE>))
-
-// [[ball-by-zone INSTANCE GROUP ZONE WIDTH COLOR TIME
-//   [ball-start-GROUP-INSTANCE]
-//     {seq-GROUP-INSTANCE}, <WIDTH>
-//     start-swing-sequence
-//     (ball-render-GROUP-INSTANCE TIME)
-//
-//   [ball-render-GROUP-INSTANCE]
-//     ZONE
-//     set-zone
-//     {{
-//       {seq-GROUP-INSTANCE}, <GET-CURRENT>
-//       get-sequence
-//       set-position
-//       COLOR
-//     }}
-
-//// needed specs:
-//
-//     pending_test("mapping")
-//
-
-
-// should be able to override the default [render !] so a custom render can go in the short space
-
 // have a special language construction that uses memory macros 0 and 1 to perform a loop
 // useful if needing to do something N times with an index
 // command: 0:set:0:seq:dyn
 // command: 1:set:0,18:seq:0,18:run
-//
 
 // sequence command to advance two at once (then math them?)
-
-// ball-box: a wandering mode (needs dampening)
-
-// test 0:dim, 0:brt
 
 // snf set-next-frame
 // take sequencer arguments
 // get the sequencer value
-// 
-
-
-//# set the offset and window to cover the box's current position
-//# accum0-3: sequence get current value arguments
-//[box-set-viewport]
-//    # get the passed sequencer arguments
-//    recall
-//
-//    # get the sequence current value
-//    # this is the box viewport lower bounds
-//    get-sequence
-//
-//    # save the lower bounds
-//    push
-//
-//    # get the saved lower bounds
-//    # and set the viewport offset
-//    recall
-//    set-offset
-//
-//    # push the box width onto the stack
-//    <box-width>
-//    push
-//
-//    # add it to the saved lower bounds
-//    # to get the upper bounds
-//    add-equals
-//
-//    # set the viewport upper bounds
-//    set-window
-    
-// push width, get sequence, push, position
-
-
-
-
-
 
 
 //animation needs
@@ -160,7 +273,6 @@
 
 // flooding should overwrite the origin position (otherwise ?)
 
-// macro compiler substitutes macro numbers with single digits, but could require double digits when programming (command string length risk)
 
 // effect to dim by varing amounts dynamically (could be like soft fade but fade ratio the wanders)
 
@@ -180,10 +292,6 @@
 //        do-animated-rotation
 //      }}}
 //    }}
-
-// %include hsl-sequencer
-//   (hsl-sequencer-start)
-// could assume that there's a (include name)-start method in included programs
 
 // fast mirror, flood
 
@@ -217,36 +325,8 @@
 // a standard macro like this is 15 bytes + terminator
 //50:set:2,75:swc:56:run:150,59:sch
 //51:set:
-
 // after arg storage change, no carryover macro
 // 14:set:1,75:sws:18:run:25,21:sch
-
-// need somelike like [[[ ]]] that does multiple expansion with fill-invariables (that can replicate meta-templates)
-//
-//
-//
-//multi expander
-//
-//# when like this over multiple lines, it's a multi expander
-//[[[ <num-instances> ABC DEF GHI
-//
-//whatever goes here
-//
-//those all get replaced with the incoming arguments
-//
-//automatic variable name INSTANCE replace with which one
-//
-//]]]
-//
-//
-//multi-macro
-//
-//# when like this on one line, it's a multi-macro 
-//[[[box-render <num-boxes>]]]
-//
-//
-//
-//
 
 // call this instant template?
 //$num-instances 3
@@ -282,11 +362,6 @@
 
 // sequencer for drawing and erasing objects
 
-// could make upper case only variables always mutable
-
-// some way to mark a block, after it auto resets
-// ---> maybe if certain commands are used in a macro, a reset is added to the end
-
 // something like snw but makes it easy to erase before drawing next segment
 
 // change fade effect to be a cross fade to the current black level
@@ -311,30 +386,13 @@
 // dynamic rendering hints
 
 
-// use namespacing like python
-// %import module
-// (module.init)
-// always do (filename.init) in any macro that uses "app"
-
-
 // setting window, have a way to make it relative, like -10 means offset+10
 
 // add ability to get different brightness levels for testing
 
-// would be helpful to have some conditionals during template expansion
-// ex: template for disc, each ring has a particular set up
-// could use same technique for conditional compilation instead of lots of numbered files
-
 // add final command to sunrise
 
 // simple script run check: run be able to run, stop, and regain control over the device. (start/stop each app macro)
-
-// idea: for an included module, have a way to specify an "init" macro that must be run when any app starts up
-//   could be a directive
-// . adds (calls it) along with each "app" command
-// %init-macro hsl-sequencer-start
-//
-// when seen, add to a list of init macro names
 
 // a simple way to invoke a sequencer that uses a macro for math
 // {seq-hsl hsl-macro}
@@ -355,7 +413,8 @@
 
 
 
-// ununused brackets || << >> "" // \\ 
+// ununused brackets || // \\ ^^ 
+// << something related to variables? or conditional compilation? or spit out text? >>
 // unused operators - _ ~ !
 
 
@@ -367,11 +426,12 @@
 // -- need to share sequencers
 
 // report line number of error (would require not adding/subtracting lines, or saving an original line identity per new lines
+// could make each line a dictionary instead of string then keep properties along with each line; methods to simplify using as strings
 
 // must document language
 
 // -1 is common so maybe it should have it's own number encoding with zero data bytes
-// negative numbers are generally small; they could be encoded as 8-bits and expanded back to 16 (if needed).
+// could have magic arg mapping 11xxxx xx11xx xxxx11
 
 // need command to quit macro early under certain conditions
   // something like: default: exit if zero, exit if non-zero, exit if (conditions of various kinds)
@@ -387,6 +447,14 @@
 // memory macro space could be used for:
     // dampening
     // storing variables for use in macros (even just as-is "1:set:19:1:run")    
+
+// dampening should be a sequencer type
+// some kind of incoming parameters
+// on advancing would always specify new value
+// would use memory macro space (or RAM?) to keep values for a moving average (other kinds?)
+
+// gravity could be a similar sequencer type where its fed new incoming values
+
 
 // weather data shows rain as main forecast even when rain amount section is missing
 // in these cases consider the conditions clear

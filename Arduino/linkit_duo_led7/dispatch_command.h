@@ -203,7 +203,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
   
     case CMD_CFADE: 
-      do_crossfade(); 
+      do_crossfade(arg0); 
       break;
     
     case CMD_TEST: 

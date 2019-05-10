@@ -25,7 +25,7 @@
 #define LED_STRIP_90
 
 // 2 50-led strands
-// decoration3
+// decoration3 & decoration4
 // #define LED_STRAND_100
 
 // 44-LED Hard Hat
@@ -315,12 +315,13 @@
 #define SWAP_REDGREEN
 #define ANIM_LED_COUNT 100
 #define ZONES_STRAND_100
-#define DEFAULT_BRIGHTNESS_PERCENT 25
-#define MAX_BRIGHTNESS_PERCENT     40 // symbolized auto brightness levels
-#define HIGH_BRIGHTNESS_PERCENT    30
-#define LOW_BRIGHTNESS_PERCENT     10
+#define DEFAULT_BRIGHTNESS_PERCENT 20
+#define MAX_BRIGHTNESS_PERCENT     60 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    40
+#define LOW_BRIGHTNESS_PERCENT     5
 #define MIN_BRIGHTNESS_PERCENT     2
-
+#define BLINK_PERIOD 2000
+#define BREATHE_PERIOD 150
 #endif
 
 #ifdef WEARABLE_AND_STRAND_50
