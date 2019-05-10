@@ -130,7 +130,10 @@ def get_path(file_path):
 
 # locate the start and end positions of a delimited portion of a string
 # returns start, end
-def locate_delimiters(line, start_delimiter, end_delimiter, outer=False):
+def locate_delimiters(line, delimiters={}, outer=False):
+    start_delimiter = delimiters.keys()[0]
+    end_delimiter = delimiters[start_delimiter]
+
     start = -1
     end = -1
     if start_delimiter in line:
@@ -147,19 +150,25 @@ def _cut_contents(line, start_delimiter, end_delimiter, start, end):
 
 # pass in line and two delimiters, get back contents within
 # delimiters specified as one or two characters
-def extract_contents(line, start_delimiter, end_delimiter, outer=False):
+def extract_contents(line, delimiters={}, outer=False):
+    start_delimiter = delimiters.keys()[0]
+    end_delimiter = delimiters[start_delimiter]
+
     line = line.strip()
     if len(line) == 0:
         return ''
-    start, end = locate_delimiters(line, start_delimiter, end_delimiter, outer)
+    start, end = locate_delimiters(line, {start_delimiter : end_delimiter}, outer)
     if start != -1 and end != -1:
         return _cut_contents(line, start_delimiter, end_delimiter, start, end)
     return ''
 
 # pass in line and two delimiters, get back list of arguments within
 # delimiters specified as one or two characters
-def extract_args(line, start_delimiter, end_delimiter, grouping=None):
-    contents = extract_contents(line, start_delimiter, end_delimiter)
+def extract_args(line, delimiters={}, grouping=None):
+    start_delimiter = delimiters.keys()[0]
+    end_delimiter = delimiters[start_delimiter]
+
+    contents = extract_contents(line, {start_delimiter : end_delimiter})
     return smart_split(contents, grouping, True)
 
 def get_key_contents(line, key):
@@ -172,8 +181,11 @@ def get_key_args(line, key, grouping=None):
     contents = get_key_contents(line, key)
     return smart_split(contents, grouping, True)
 
-def replace_args(line, start_delimiter, end_delimiter, replacement, outer=False):
-    start, end = locate_delimiters(line, start_delimiter, end_delimiter, outer)
+def replace_args(line, delimiters, replacement, outer=False):
+    start_delimiter = delimiters.keys()[0]
+    end_delimiter = delimiters[start_delimiter]
+
+    start, end = locate_delimiters(line, {start_delimiter : end_delimiter}, outer)
     if start != -1 and end != -1:
         return line[0:start] + str(replacement) + line[end + 1:]
     return line
