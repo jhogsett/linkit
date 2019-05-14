@@ -37,17 +37,28 @@ translated = []
 translation = {}
 pre_processed_script = None
 
-set_macro_delimiters = {"[" : "]"}
-python_delimiters = {"`" : "`"}
-multi_macro_delimiters = {"[[[" : "]]]"}
-meta_template_delimiters = {"(((" : ")))"}
-meta_template_grouping = {"[" : "]", "`" : "`"}
-place_template_delimiters = {"((" : "))"}
-place_template_grouping = {"`" : "`"}
-run_macro_delimiters = {"(" : ")"}
-get_variable_delimiters = {"<" : ">"}
+# language definitions
+get_variable_delimiters       = {"<" : ">"}
+set_macro_delimiters          = {"[" : "]"}
+run_macro_delimiters          = {"(" : ")"}
 allocate_sequencer_delimiters = {"{" : "}"}
+python_delimiters             = {"`" : "`"}
+place_template_delimiters     = {"((" : "))"}
+place_template_grouping       = {"`" : "`" }           # keep python expression contents together in template arguments
+meta_template_delimiters      = {"(((" : ")))"}
+meta_template_grouping        = {"[" : "]", "`" : "`"} # keep set macro arguments and python expressions together in meta-template arguments
+multi_macro_delimiters        = {"[[[" : "]]]"}
+refresh_block_start           = "{{{"
+refresh_block_end             = "}}}"
+reset_block_start             = "{{"
+reset_block_end               = "}}"
+
+# compiler use
 proxy_macro_delimiters = {"'" : "'"}
+
+# helpers
+macro_marker_delimiters = {"(" : ")", "[" : "]"}
+template_marker_delimiters = {"((" : "))", "[[" : "]]"}
 
 
 ########################################################################
@@ -84,6 +95,7 @@ def compile_file(filename):
 def compilation_valid(script):
     for line in script:
         if line_has_unresolved(line):
+            ui.report_verbose_alt2("Unresolved value in line:\n" + line);
             return False
     return True
 
@@ -160,7 +172,7 @@ def compile_script(script):
     global saved_bad_script
 
     ui.report_verbose()
-    ui.report_verbose("=============== compilation stating ===============")
+    ui.report_verbose_header("Compilation Starting", "=")
 
     new_script = resolve_script(script)
     new_lines = consolidate_macros(new_script)
@@ -173,17 +185,17 @@ def compile_script(script):
         saved_bad_script = new_lines
         raise ValueError("The script did not compile successfully due to unresolved values.")
 
-    ui.report_verbose("--------------- post compilation processing ---------------")
+    ui.report_verbose_header("Post Compilation Processing")
 
     new_lines = post_processing(new_lines)
     ui.report_verbose_script(new_lines, "script after final macro number assignment")
 
-    ui.report_verbose("--------------- post compilation clean up ---------------")
+    ui.report_verbose_header("Post Compilation Cleanup")
 
     new_lines = post_clean_up(new_lines)
     ui.report_verbose_script(new_lines, "script after post clean up")
 
-    ui.report_verbose("--------------- comnpilation complete ---------------")
+    ui.report_verbose_header("Compilation Complete", '=')
     return new_lines
 
 
@@ -531,16 +543,28 @@ def remove_macro_numbers(script_lines):
 # Main compilation engine
 ########################################################################
 
+def produce_preprocesssed_script(lines):
+    new_lines = []
+    for resolve in resolved:
+        value = resolved[resolve]
+        if type(value) is type(" "):
+            if resolve.startswith("%"):
+                if not resolve.startswith("%include"):
+                    new_lines.append(resolve + " " + str(resolved[resolve]))
+            else:
+                new_lines.append("$" + resolve + " " + str(resolved[resolve]))
+    return new_lines + lines
+
 def resolve_script(script_lines):
     global pre_processed_script
 
-    ui.report_verbose("--------------- Pre-processing ---------------")
+    ui.report_verbose_header("Preprocessing")
 
     new_lines = pre_process_script(script_lines)
-    pre_processed_script = new_lines
+    pre_processed_script = produce_preprocesssed_script(new_lines)
     ui.report_verbose_script(new_lines, "pre-processed script")
 
-    ui.report_verbose("--------------- Initial processing ---------------")
+    ui.report_verbose_header("Initial Processing")
 
     new_lines = resolution_pass(new_lines)
     ui.report_verbose_script(new_lines, "script after resolution pass")
@@ -548,7 +572,7 @@ def resolve_script(script_lines):
     proxy_macro_numbers()
     ui.report_verbose_script(new_lines, "script after proxy macro number assignment")
 
-    ui.report_verbose("--------------- Main processing ---------------")
+    ui.report_verbose_header("Main Processing")
 
     while True:
         prev_lines = new_lines
@@ -677,6 +701,8 @@ def process_get_variables(script_lines):
             new_lines.append(line)
     return new_lines
 
+## ----------------------------------------------------
+
 # this assumes all commands are on individual lines
 def translate_commands(script_lines):
     new_lines = []
@@ -765,22 +791,22 @@ def process_blocks(script_lines):
     for line in script_lines:
         line = line.strip()
 
-        if "{{{" in line:
-            position = line.find("{{{")
+        if refresh_block_start in line:
+            position = line.find(refresh_block_start)
             new_line = line[:position]
             if len(new_line) > 0:
                 new_lines.append(line[:position])
 
-        elif "{{" in line:
-            position = line.find("{{")
+        elif reset_block_start in line:
+            position = line.find(reset_block_start)
             new_line = line[:position]
             if len(new_line) > 0:
                 new_lines.append(line[:position])
 
-        elif "}}}" in line:
+        elif refresh_block_end in line:
             new_lines.append("flu")
 
-        elif "}}" in line:
+        elif reset_block_end in line:
             new_lines.append("rst")
 
         else:
@@ -1025,7 +1051,7 @@ def resolution_pass(script_lines):
             new_lines.append(new_line)
 
     passes += 1
-    ui.report_verbose("--------------------- resolution_pass pass #" + str(passes))
+    ui.report_verbose_header("resolution_pass pass #" + str(passes))
     ui.report_progress()
 
     new_lines = filter(None, new_lines)
@@ -1034,7 +1060,6 @@ def resolution_pass(script_lines):
 ## ----------------------------------------------------
 
 def process_line(line):
-    #ui.report_verbose("--------------------- process_line() ---------------------")
     line = process_blank_line(line)
     line = process_comment(line)
     line = process_evaluate_python(line)
@@ -1662,26 +1687,40 @@ def assign_final_macro_numbers(script_lines):
 ## line processing helpers
 ########################################################################
 
+def line_has_both_delimiters(line, delimiters):
+    if len(line) < 1:
+        return False
+
+    for start_delimiter in delimiters:
+        end_delimiter = delimiters[start_delimiter]
+        if start_delimiter in line and end_delimiter in line:
+            return True
+    return False
+
+def line_has_starting_delimiter(line, delimiters):
+    start_delimiter = delimiters.keys()[0]
+    return len(line) > 0 and start_delimiter in line
+
 def line_has_unresolved_variables(line):
-    return len(line) > 0 and "<" in line and ">" in line
+    return line_has_both_delimiters(line, get_variable_delimiters)
 
 def line_has_python_expression(line):
-    return len(line) > 0 and "`" in line
+    return line_has_starting_delimiter(line, python_delimiters)
 
 def line_has_macro_marker(line):
-    return len(line) > 0 and ("(" in line or ")" in line or "[" in line or "]" in line)
+    return line_has_both_delimiters(line, macro_marker_delimiters)
 
 def line_has_template_marker(line):
-    return len(line) > 0 and ("[[" in line or "]]" in line or "((" in line or "))" in line)
+    return line_has_both_delimiters(line, template_marker_delimiters)
 
 def line_has_meta_template_marker(line):
-    return len(line) > 0 and ("(((" in line or ")))" in line)
+    return line_has_both_delimiters(line, meta_template_delimiters)
 
 def line_has_multi_macro_marker(line):
-    return len(line) > 0 and ("[[[" in line or "]]]" in line)
+    return line_has_both_delimiters(line, multi_macro_delimiters)
 
 def line_has_sequence_marker(line):
-    return len(line) > 0 and ("{" in line or "}" in line)
+    return line_has_both_delimiters(line, allocate_sequencer_delimiters)
 
 def line_has_unresolved(line):
     return line_has_unresolved_variables(line) or line_has_python_expression(line) or line_has_template_marker(line) or line_has_macro_marker(line) or line_has_sequence_marker(line)

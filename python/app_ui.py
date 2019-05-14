@@ -56,6 +56,12 @@ def verbose_entry(key, value):
     if verbose_mode:
         print tc.green(key) + ": " + tc.white(str(value))        
 
+def report_verbose_header(message="", char='-', width=60, spacer=" "):
+    if verbose_mode:
+        remaining_chars = width - len(message) - 2
+        header = char * (remaining_chars / 2)
+        report_verbose(header + spacer + message + spacer + header)
+
 def write_line(text):
     print text
 
