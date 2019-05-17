@@ -2,7 +2,7 @@
 
 import os
 import app_ui as ui
-import terminal_colors as tc
+#import terminal_colors as tc
 import long_commands as lc
 import code
 import utils
@@ -62,7 +62,7 @@ def begin(led_command_, verbose_mode_, quiet_mode, presets_, starting_macro, end
     resolve_presets(presets)
 
     utils.begin(False, __file__)
-    tc.begin(quiet_mode)
+    #tc.begin(quiet_mode)
     ui.begin(verbose_mode, quiet_mode)
     ui.report_verbose("Beginning compilation engine")
 
@@ -230,7 +230,7 @@ def remove_fixed_macro_numbers(line):
             args = utils.extract_args(line, ml.set_macro_delimiters)
             if len(args) == 2 and utils.is_number(args[1]):
                 # leave only the name
-                return "[" + args[0] + "]"
+                return ml.set_macro_start + args[0] + ml.set_macro_end
     return line
 
 def delimiters_in_line(line, delimiters):
@@ -358,7 +358,7 @@ def apply_prefixing_multiple(line, delimiters, non_delimiters, translation):
             old_name = part.strip()[1:-1]
             if old_name in translation:
                 new_name = translation[old_name]
-                part = "<" + new_name + ">"
+                part = starter_delimiter + new_name + ender_delimiter
         new_parts.append(part)
     line = " ".join(new_parts)
     return line
@@ -383,11 +383,9 @@ def rename_macro_headers(script_lines, translation, module_name, within_block):
     new_lines = []
     in_block = False
     for line in script_lines:
-        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        in_block = inside_block(line, ml.set_template_delimiters, in_block)
         if in_block == within_block:
-            delimiters = { "[" : "]" }
-            non_delimiters = { "[[" : "]]", "[[[" : "]]]" }
-            line = prefix_module(line, delimiters, non_delimiters, translated, translation, module_name)
+            line = prefix_module(line, ml.set_macro_delimiters, ml.set_macro_non_delmiters, translated, translation, module_name)
         new_lines.append(line)
     return new_lines
 
@@ -395,11 +393,9 @@ def rename_macro_runs(script_lines, translation, module_name, within_block):
     new_lines = []
     in_block = False
     for line in script_lines:
-        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        in_block = inside_block(line, ml.set_template_delimiters, in_block)
         if in_block == within_block:
-            delimiters = { "(" : ")" }
-            non_delimiters = { "((" : "))", "(((" : "))" }
-            line = apply_prefixing(line, delimiters, non_delimiters, translation)
+            line = apply_prefixing(line, ml.run_macro_delimiters, ml.run_macro_non_delimiters, translation)
         new_lines.append(line)
     return new_lines
 
@@ -407,11 +403,9 @@ def rename_macro_variable_references(script_lines, translation, module_name, wit
     new_lines = []
     in_block = False
     for line in script_lines:
-        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        in_block = inside_block(line, ml.set_template_delimiters, in_block)
         if (not within_block) or in_block:
-            delimiters = { "<" : ">" }
-            non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
-            line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
+            line = apply_prefixing_multiple(line, ml.get_variable_delimiters, ml.get_variable_non_delimiters, translation)
         new_lines.append(line)
     return new_lines
 
@@ -421,9 +415,7 @@ def rename_variable_settings(script_lines, translation, module_name):
     new_lines = []
     for line in script_lines:
         line = line.strip()
-        delimiters = [ "$" ]
-        non_delimiters = []
-        line = prefix_module_single(line, delimiters, non_delimiters, translated, translation, module_name)
+        line = prefix_module_single(line, [ml.set_variable_marker], ml.empty_delimiter, translated, translation, module_name)
         new_lines.append(line)
     return new_lines
 
@@ -431,14 +423,12 @@ def rename_variable_references(script_lines, translation, module_name):
     new_lines = []
     conditional = False
     for line in script_lines:
-        if "<<< " in line:
+        if ml.conditional_start in line:
             conditional = True
-            line = line[4:]
-        delimiters = { "<" : ">" }
-        non_delimiters = { "<<" : ">>", "<<<" : ">>>" }
-        line = apply_prefixing_multiple(line, delimiters, non_delimiters, translation)
+            line = line[len(ml.conditional_start) + 1:]
+        line = apply_prefixing_multiple(line, ml.get_variable_delimiters, ml.get_variable_non_delimiters, translation)
         if conditional:
-            line = "<<< " + line
+            line = ml.conditional_start + " " + line
             conditional = False
 
         new_lines.append(line)
@@ -450,9 +440,7 @@ def rename_template_headers(script_lines, translation, module_name):
     new_lines = []
     for line in script_lines:
         line = line.strip()
-        delimiters = [ "[[" ]
-        non_delimiters = ["[[[" ]
-        line = prefix_module_single(line, delimiters, non_delimiters, translated, translation, module_name)
+        line = prefix_module_single(line, [ml.set_template_start], [ml.set_template_non_start], translated, translation, module_name)
         new_lines.append(line)
     return new_lines
 
@@ -460,11 +448,9 @@ def rename_template_expansions(script_lines, translation, module_name, within_bl
     new_lines = []
     in_block = False
     for line in script_lines:
-        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        in_block = inside_block(line, ml.set_template_delimiters, in_block)
         if (not within_block) or in_block:
-            delimiters = { "((" : "))" }
-            non_delimiters = { "(((" : ")))" }
-            line = apply_prefixing(line, delimiters, non_delimiters, translation)
+            line = apply_prefixing(line, ml.expand_template_delimiters, ml.expand_template_non_delimiters, translation)
         new_lines.append(line)
     return new_lines
 
@@ -472,11 +458,9 @@ def rename_meta_templates_and_multi_macros(script_lines, translation, module_nam
     new_lines = []
     in_block = False
     for line in script_lines:
-        in_block = inside_block(line, { "[[" : "]]" }, in_block)
+        in_block = inside_block(line, ml.set_template_delimiters, in_block)
         if (not within_block) or in_block:
-            delimiters = { "(((" : ")))", "[[[" : "]]]" }
-            non_delimiters = {}
-            line = apply_prefixing(line, delimiters, non_delimiters, translation)
+            line = apply_prefixing(line, ml.meta_and_multi_delimiters, ml.empty_delimiters, translation)
         new_lines.append(line)
     return new_lines
 
@@ -526,11 +510,12 @@ def produce_preprocesssed_script(lines):
     for resolve in resolved:
         value = resolved[resolve]
         if type(value) is type(" "):
-            if resolve.startswith("%"):
-                if not resolve.startswith("%include"):
+            if resolve.startswith(ml.directive_marker):
+                include_marker = ml.include_marker
+                if not resolve.startswith(include_marker):
                     new_lines.append(resolve + " " + str(resolved[resolve]))
             else:
-                new_lines.append("$" + resolve + " " + str(resolved[resolve]))
+                new_lines.append(ml.set_variable_marker + resolve + " " + str(resolved[resolve]))
     return new_lines + lines
 
 def resolve_script(script_lines):
@@ -695,9 +680,9 @@ def translate_commands(script_lines):
 def process_directives(script_lines):
     new_lines = []
     for line in script_lines:
-        args = utils.get_key_args(line, "%")
+        args = utils.get_key_args(line, ml.directive_marker)
         if len(args) > 0:
-            directive_name = "%" + args[0]
+            directive_name = ml.directive_marker + args[0]
             if len(args) == 1:
                 directive_value = True
             elif len(args) == 2:
@@ -713,7 +698,8 @@ def process_directives(script_lines):
 
 def ingest_directives():
     global allow_mutability
-    if "%allow-mutability" in resolved:
+    marker = ml.allow_mutability_marker
+    if marker in resolved:
         allow_mutability = True
 
 ## ----------------------------------------------------
@@ -729,7 +715,7 @@ def process_conditionals(script_lines):
         line = replace_all_variables(line)
 
         if capture_mode:
-            if line.startswith(">>>"):
+            if line.startswith(ml.conditional_end):
                 capture_mode = False
                 if not bypass_mode:
                     new_lines += builder
@@ -738,9 +724,10 @@ def process_conditionals(script_lines):
             else:
                 builder.append(line)
         else:
-            if "<<<" in line:
+            
+            if ml.conditional_start in line:
                 capture_mode = True
-                expression = utils.get_key_contents(line, "<<<")
+                expression = utils.get_key_contents(line, ml.conditional_start)
                 expression = replace_all_variables(expression)
                 python_expression = utils.extract_contents(expression, ml.python_delimiters, True)
 
@@ -803,15 +790,15 @@ def capture_templates(script_lines):
         line = line.strip()
 
         if capture_mode:
-            if line.startswith("]]") and not line.startswith("]]]"):
+            if line.startswith(ml.set_template_end) and not line.startswith(ml.set_template_non_end):
                 capture_mode = False
                 set_resolved(template_name, template_builder)
                 template_builder = []
             else:
                 template_builder.append(line)
         else:
-            if "[[" in line and "[[[" not in line:
-                args = utils.get_key_args(line, "[[")
+            if ml.set_template_start in line and ml.set_template_non_start not in line:
+                args = utils.get_key_args(line, ml.set_template_start)
                 template_name = args[0]
                 check_for_argument_collision(args[1:])
                 combined_args = " ".join(args[1:])
@@ -878,19 +865,19 @@ def expand_multi_macros(script_lines):
             template_name = multi_macro_name + "-template"
 
             # replace the multi macro expression with the call to the new macro
-            new_lines.append("(" + multi_macro_name + ")")
+            new_lines.append(ml.run_macro_start + multi_macro_name + ml.run_macro_end)
 
             # create the lines that will be added after this set of lines is processed:
             # add the multi macro
-            add_lines.append("[" + multi_macro_name + "]")
+            add_lines.append(ml.set_macro_start + multi_macro_name + ml.set_macro_end)
 
             # add the meta-template
-            add_lines.append("  (((" + template_name + " " + str(num_instance_max) + " " + schedule + ")))")
+            add_lines.append("  " + ml.meta_template_start + template_name + " " + str(num_instance_max) + " " + schedule + ml.meta_template_end)
 
             # add the template
-            add_lines.append("[[" + template_name + " INSTANCE SCHEDULE")
-            add_lines.append("(" + macro_name + "-INSTANCE SCHEDULE)")
-            add_lines.append("]]")
+            add_lines.append(ml.set_template_start + template_name + " INSTANCE SCHEDULE")
+            add_lines.append(ml.run_macro_start + macro_name + "-INSTANCE SCHEDULE" + ml.run_macro_end)
+            add_lines.append(ml.set_template_end)
         else:
             new_lines.append(line)
     return new_lines + add_lines
@@ -929,7 +916,7 @@ def expand_meta_templates(script_lines):
 
             for i in range(0, num_replacements):
                 replacement = replacement_args[i]
-                if replacement.startswith("[") and replacement.endswith("]"):
+                if replacement.startswith(ml.set_macro_start) and replacement.endswith(ml.set_macro_end):
                     replacement = replacement[1:-1]
                     parts = replacement.split(",")
                     num_parts = len(parts)
@@ -957,7 +944,7 @@ def expand_meta_templates(script_lines):
                         replacement_round.append(replacement)
                 replacement_str = " ".join(replacement_round)
 
-                new_line = "((" + template_name + " " + str(index) + " " + replacement_str + "))"
+                new_line = ml.expand_template_start + template_name + " " + str(index) + " " + replacement_str + ml.expand_template_end
                 ui.report_verbose_alt("expanded meta template: " + new_line)
                 new_lines.append(new_line)
         else:
@@ -971,8 +958,8 @@ def expand_templates(script_lines):
     for line in script_lines:
         line = line.strip()
 
-        if "((" in line and "(((" not in line:
-            args = utils.extract_args(line, ml.place_template_delimiters, ml.place_template_grouping)
+        if ml.expand_template_start in line and ml.expand_template_non_start not in line:
+            args = utils.extract_args(line, ml.expand_template_delimiters, ml.expand_template_grouping)
             if len(args) > 0:
                 template_name = args[0]
 
@@ -1066,10 +1053,10 @@ def process_comment(line):
     line = line.strip()
     if len(line) == 0:
         return ''
-    if line[0] == "#":
+    if line[0] == ml.comment_marker:
         return ''
-    if "#" in line:
-        return line.split("#")[0]
+    if ml.comment_marker in line:
+        return line.split(ml.comment_marker)[0]
     return line
 
 ## ----------------------------------------------------
@@ -1089,7 +1076,7 @@ def process_evaluate_python(line):
         for segment in segments:
             expression = utils.extract_contents(segment, ml.python_delimiters, True)
             # clean up the expression, removing excess backticks
-            expression = "".join(expression.split('`'))
+            expression = "".join(expression.split(ml.python_start))
 
             if len(expression) > 0:
                 # can only process python expression if there are no unresolves values
@@ -1111,7 +1098,7 @@ def process_evaluate_python(line):
                     new_line.append(segment)
             else:
                 # guard against empty expression
-                if segment != "``":
+                if segment != ml.empty_python:
                     new_line.append(segment)
         result = ",".join(new_line)
         #ui.report_verbose_alt2("line returned by process_evaluate_python: " + result)
@@ -1127,7 +1114,7 @@ def process_set_variable(line):
     line = line.strip()
     if len(line) > 0:
         # see if line has a variable setting
-        args = utils.get_key_args(line, "$")
+        args = utils.get_key_args(line, ml.set_variable_marker)
         if len(args) > 0:
             variable_name = args[0]
             if len(args) >= 2:
@@ -1188,10 +1175,10 @@ def process_set_macro(line):
             ui.report_verbose("process_set_macro new unresolved macro: " + macro_name)
 
             # convert the line to a simple variable reference
-            return "<" + macro_name + ">:set"
+            return ml.get_variable_start + macro_name + ml.get_variable_end + ":set"
         else:
             # there is a forced macro number
-            if macro_number == "!":
+            if macro_number == ml.final_macro_marker:
                 # the magic macro number ! means assign the
                 # final macro number, which commonly has fewer
                 # available bytes
@@ -1223,7 +1210,7 @@ def process_set_macro(line):
             proxy_macro_number = str(macro_number * -1)
             ui.report_verbose_alt("process_set_macro new proxy macro number marker: " + proxy_macro_number)
 
-            return "'" + proxy_macro_number + "':set"
+            return ml.proxy_macro_start + proxy_macro_number + ml.proxy_macro_end + ":set"
     # return the unprocessed line
     # ui.report_verbose("process_set_macro returning unprocessed line '{}'".format(line))
     return line
@@ -1325,7 +1312,7 @@ def process_place_template(line):
         return ''
 
     # see if line has a template expqnsion
-    args = utils.extract_args(line, ml.place_template_delimiters)
+    args = utils.extract_args(line, ml.expand_template_delimiters)
     if len(args) > 0:
         template_name = args[0]
         # can only expand if there are no unresolved values
@@ -1333,7 +1320,7 @@ def process_place_template(line):
             template_script = resolved[template_name]
             ui.report_verbose("process_place_template expanding template " + template_name)
 
-            return utils.replace_args(line, ml.place_template_delimiters, template_script)
+            return utils.replace_args(line, ml.expand_template_delimiters, template_script)
     # return the unprocessed line
     # ui.report_verbose("process_place_template returning unprocessed line '{}'".format(line))
     return line    
@@ -1346,8 +1333,8 @@ def process_configure(line):
         return ''
 
     # see if line has a configuration shortcut
-    if "=" in line:
-        halves = line.split("=")
+    if ml.configuration_marker in line:
+        halves = line.split(ml.configuration_marker)
         if len(halves) == 2:
             halves[0] = halves[0].strip()
             halves[1] = halves[1].strip()
@@ -1432,8 +1419,8 @@ def post_clean_up(script_lines):
 # expects a proxy macro number in the form '4'
 def is_macro_number_in_use(macro_number):
     for value in macros.values():
-        if "'" in str(value):
-            value = int(value[1:-1])
+        if ml.proxy_macro_start in str(value):
+            value = int(value[len(ml.proxy_macro_start):-len(ml.proxy_macro_end)])
 
         if value == macro_number:
          return True
@@ -1466,7 +1453,7 @@ def proxy_macro_numbers():
 
             # proxy numbers will be in the form '10' 
             ui.report_verbose("proxy_macro_numbers assigning proxy macro #" + str(new_macro_number) + " for macro: " + name)
-            proxy_macro_value = "'" + ("0" + str(new_macro_number))[-2:] + "'"
+            proxy_macro_value = ml.proxy_macro_start + ("0" + str(new_macro_number))[-2:] + ml.proxy_macro_end
 
             resolve_unresolved(name, new_macro_number)
             set_resolved(name, proxy_macro_value)
@@ -1491,7 +1478,7 @@ def assign_final_macro_number(line):
     test_macro = utils.replace_args(line, ml.proxy_macro_delimiters, "0")
 
     # replace remaining references with #1 to ensure args are stored
-    while "'" in test_macro:
+    while ml.proxy_macro_start in test_macro:
         test_macro = utils.replace_args(test_macro, ml.proxy_macro_delimiters, "1")
 
     # send to the device and check for consumed macro bytes
