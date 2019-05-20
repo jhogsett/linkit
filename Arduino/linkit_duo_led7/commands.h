@@ -160,6 +160,10 @@ class Commands
   bool user_fan_on;
 
 #ifdef USE_KEYBOARD
+  byte keyboard_capturing_macro = -1;
+  byte keyboard_captured_macro = -1;
+  byte keyboard_long_press_macro = -1;
+  byte keyboard_sample_count;
   bool keyboard_paused = false;
   bool keyboard_capture_mode;
   int keyboard_capture_count;
@@ -173,7 +177,7 @@ class Commands
   void set_keyboard_col(byte col);
   bool get_keyboard_data();
   byte scan_keyboard();
-  void do_get_key(byte type);
+  void do_get_key(byte type, byte macro);
 #endif
   
 #ifdef USE_MAPPING
@@ -401,6 +405,10 @@ void Commands::keyboard_reset()
   keyboard_capture_count = 0;
   keyboard_current_key = 0;
   keyboard_captured_key = 0; 
+  keyboard_sample_count = 0;
+  keyboard_capturing_macro = -1;
+  keyboard_captured_macro = -1;
+  keyboard_long_press_macro = -1;
 }
 
 void Commands::set_address_pin(byte position, byte bit, byte pin)
@@ -449,39 +457,81 @@ byte Commands::scan_keyboard()
 
 void Commands::process_keyboard()
 {
-  byte key = scan_keyboard();
-  if(key != 0)
+  if(keyboard_sample_count == 0)
   {
-    if(!keyboard_capture_mode)
+     byte key = scan_keyboard();
+    if(key != 0)
     {
-      keyboard_capture_mode = true;
-      keyboard_capture_count = 0;
-      keyboard_current_key = key;        
+      if(!keyboard_capture_mode)
+      {
+        keyboard_capture_mode = true;
+        keyboard_capture_count = 0;
+        keyboard_current_key = key;        
+
+        if(keyboard_capturing_macro >= 0)
+        {
+          macros.run_macro(keyboard_capturing_macro);
+        }
+}
+      else
+      {
+        keyboard_capture_count += 1;
+
+        if(keyboard_long_press_macro >= 0 && keyboard_capture_count >= KEYBOARD_LONG_PRESS)
+        {
+          macros.run_macro(keyboard_long_press_macro);
+          keyboard_capture_mode = false;
+          keyboard_captured_key = keyboard_current_key;
+          keyboard_current_key = 0;    
+          while(scan_keyboard() != 0);
+        }
+      }
     }
     else
     {
-      keyboard_capture_count += 1;
+      if(keyboard_capture_mode)
+      {
+        keyboard_capture_mode = false;
+        keyboard_captured_key = keyboard_current_key;
+        keyboard_current_key = 0;    
+
+        if(keyboard_captured_macro >= 0)
+        {
+          macros.run_macro(keyboard_captured_macro);
+        }
+      }
     }
   }
-  else
-  {
-    if(keyboard_capture_mode)
-    {
-      keyboard_capture_mode = false;
-      keyboard_captured_key = keyboard_current_key;
-      keyboard_captured_key = 0;    
-    }
-  }
+
+  keyboard_sample_count = (keyboard_sample_count + 1) % KEYBOARD_PERIOD;
 }
 
 #define KEY_CAPTURED 0
 #define KEY_COUNT 1
 #define KEY_CURRENT 2
+#define KEY_SET_CAPTURED_MACRO 3
+#define KEY_SET_CAPTURING_MACRO 4
+#define KEY_SET_LONG_PRESS_MACRO 5
 
-void Commands::do_get_key(byte type)
+void Commands::do_get_key(byte type, byte macro)
 {
   int result = 0;  
-  if(type == KEY_CAPTURED)
+  if(type == KEY_SET_CAPTURED_MACRO)
+  {
+    keyboard_captured_macro = macro;
+    return;
+  }
+  else if(type == KEY_SET_CAPTURING_MACRO)
+  {
+    keyboard_capturing_macro = macro;
+    return;
+  }
+  else if(type == KEY_SET_LONG_PRESS_MACRO)
+  {
+    keyboard_long_press_macro = macro;
+    return;
+  }
+  else if(type == KEY_CAPTURED)
   {
     result = keyboard_captured_key;
     keyboard_captured_key = 0;

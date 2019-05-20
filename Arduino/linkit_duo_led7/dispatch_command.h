@@ -304,7 +304,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     break;    
 
   case CMD_KEY:
-    do_get_key(arg0);
+    do_get_key(arg0, arg1);
     reset_args = false; 
     break;    
   }
