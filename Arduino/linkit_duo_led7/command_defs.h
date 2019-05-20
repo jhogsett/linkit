@@ -1,7 +1,7 @@
 #ifndef COMMANDS_DEF_H
 #define COMMANDS_DEF_H
 
-#define NUM_COMMANDS    103
+#define NUM_COMMANDS    104
 #define CMD_NULL         -1
 #define CMD_NONE          0
 #define CMD_FIRST         1
@@ -116,6 +116,7 @@
 
 #define CMD_DRAW_MODE   102 // move up a bit
 #define CMD_POP         103 // MOVE up
+#define CMD_KEY         104 // get keyboard key
 
 const char cmd_001[] PROGMEM = "flu";
 const char cmd_002[] PROGMEM = "rst";
@@ -221,6 +222,7 @@ const char cmd_100[] PROGMEM = "dif";
 const char cmd_101[] PROGMEM = "avg";
 const char cmd_102[] PROGMEM = "drw";
 const char cmd_103[] PROGMEM = "pop";
+const char cmd_104[] PROGMEM = "key";
 
 const char* const command_strings[] PROGMEM = {
    cmd_001, cmd_002, cmd_003, cmd_004, cmd_005, cmd_006, cmd_007, cmd_008, cmd_009, cmd_010,
@@ -233,7 +235,7 @@ const char* const command_strings[] PROGMEM = {
    cmd_071, cmd_072, cmd_073, cmd_074, cmd_075, cmd_076, cmd_077, cmd_078, cmd_079, cmd_080,
    cmd_081, cmd_082, cmd_083, cmd_084, cmd_085, cmd_086, cmd_087, cmd_088, cmd_089, cmd_090,
    cmd_091, cmd_092, cmd_093, cmd_094, cmd_095, cmd_096, cmd_097, cmd_098, cmd_099, cmd_100,
-   cmd_101, cmd_102, cmd_103
+   cmd_101, cmd_102, cmd_103, cmd_104
 };
 
 #endif

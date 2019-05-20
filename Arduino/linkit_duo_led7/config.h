@@ -22,7 +22,10 @@
 
 // single 90-LED strip for dev
 // blinkit
-#define LED_STRIP_90
+// #define LED_STRIP_90
+
+// 16-LED Uno Cheater Box / Remote
+#define CHEATER
 
 // 2 50-led strands
 // decoration3 & decoration4
@@ -125,6 +128,31 @@
 #define LOW_BRIGHTNESS_PERCENT     5
 #define MIN_BRIGHTNESS_PERCENT     2
 #define CROSSFADE_DELAY 1
+
+#ifdef CHEATER
+#define USE_1_DISPLAYS
+#define SWAP_REDGREEN
+#define ANIM_LED_COUNT 20
+#define DEFAULT_BRIGHTNESS_PERCENT 15
+#define FADE_RATE 0.925
+#define FADE_PERIOD 400
+#define ZONES_CHEATER
+#define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    25
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
+#define BREATHE_PERIOD 300
+#define CROSSFADE_DELAY 50
+#define USE_KEYBOARD
+#define KEYBOARD_COLS 4
+#define KEYBOARD_ROWS 5
+#define KEYBOARD_DATA 4
+#define KEYBOARD_COLL 5
+#define KEYBOARD_COLH 6
+#define KEYBOARD_ROWL 7
+#define KEYBOARD_ROWM 8
+#define KEYBOARD_ROWH 9
+#endif
 
 #ifdef LED_STRIP_72
 #define USE_1_DISPLAYS

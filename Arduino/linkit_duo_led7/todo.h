@@ -1,114 +1,35 @@
+// what are the various syntax forms?
+// $simple
+// [inline ]
+// [[ multi-line
+// ]]
+//
+
+// idea: delimiters: first pair is the positive one and any additional ones are the negative ones
+
+// macro_compiler can't handle raw script like:
+// 10:set:39:run
+// 11:set:14:run
+// 12:set:app:37:run:200,69:sch
+// 13:set:36:run:30000,36:sch
+// 72:set:flu
+// --> needed for auto-restore of original script
+
 // have ability for default arguments to templates
+
 // idea: if two macros are identical, keep only one of them and fix up references
 // 72:set:flu
 // 9:set:flu
+// --> at least a warning about it at first
 
 // don't keep this in resolved
 // %include: hsl-sequencer
 
 // what happens passing wrong things to (( ((( [[[
 
-// rolling crossfade
-// leading edge does step #1
-// leading edge keeps advancing doing step #1
-// goes back to trailing edge (trailing edge starts at zero)
-// each step back advances to the next crossfade step
-// once the trailing edge seens the last crossfast step start advancing the trailing edge
-// the leading edge stops advancing when it hits the edge
-// 
-// leading edge starts at zero, goes to limit + count of crossfade steps
-//
-// 0 1 2 3 4 5 6 7 8 9
-// X X X X X X X X X X 
-// 0
-// 1 0
-// 2 1 0
-// 3 2 1 0
-// 4 3 2 1 0
-// 5 4 3 2 1 0
-// 5 5 4 3 2 1 0
-// 5 5 5 4 3 2 1 0
-// 5 5 5 5 4 3 2 1 0
-// 5 5 5 5 5 4 3 2 1 0
-// 5 5 5 5 5 5 4 3 2 1
-// 5 5 5 5 5 5 5 4 3 2
-// 5 5 5 5 5 5 5 5 4 3
-// 5 5 5 5 5 5 5 5 5 4
-// 5 5 5 5 5 5 5 5 5 5
-
-// leading and trailing edge iterate through each led position
-// leading edge stays at max once it hits it
-// trailing edge stays at zero until leading edge hits count of crossfade steps
-// trailing edge goes all the way to max
-// leading edge could go past max + crossfade steps
-//   led position computed from it but maxes out at limit
-//   crossfade step computed from it, as (leading edge position - led position) maxing out at max crossfade step
-//
-//def at_most(a,b):
-//  return a if a <= b else b  
-//
-//num_leds = 10
-//max_led = num_leds - 1
-//num_steps = 5
-//max_step = num_steps - 1
-//max_loops = max_led + max_step + 1
-//
-//for i in range(max_loops):
-//  last_led_pos = at_most(i, max_led)
-//  for led_pos in range(last_led_pos + 1):
-//    step = at_most(i - led_pos, max_step)
-//    print str(led_pos) + ":" + str(step), 
-//  print
-//
-//0:0
-//0:1 1:0
-//0:2 1:1 2:0
-//0:3 1:2 2:1 3:0
-//0:4 1:3 2:2 3:1 4:0
-//0:4 1:4 2:3 3:2 4:1 5:0
-//0:4 1:4 2:4 3:3 4:2 5:1 6:0
-//0:4 1:4 2:4 3:4 4:3 5:2 6:1 7:0
-//0:4 1:4 2:4 3:4 4:4 5:3 6:2 7:1 8:0
-//0:4 1:4 2:4 3:4 4:4 5:4 6:3 7:2 8:1 9:0
-//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:3 8:2 9:1
-//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:4 8:3 9:2
-//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:4 8:4 9:3
-//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:4 8:4 9:4
-//
-// 
-//
-//
-//
-//
-//
-//
-//def do_led(led_pos, cfstep):
-//  print str(led_pos) + ":" + str(cfstep),
-//
-//def do_step(step):
-//  last_led_pos = at_most(step, max_led)
-//  for led_pos in range(last_led_pos + 1):
-//    cfstep = at_most(step - led_pos, max_step)
-//    do_led(led_pos + offset, cfstep)
-//  print
-//
-//offset = 10
-//window = 19
-//num_leds = window - offset + 1
-//max_led = num_leds - 1
-//num_steps = 6
-//max_step = num_steps - 1
-//max_loops = max_led + max_step + 1
-//
-//for step in range(max_loops):
-//  do_step(step)
-
-
-
 // these are not tested for:
 //No available macro numbers available during final number assignment
 //is needed as a carry-over macro but is already assigned
-
 
 // DRY up delimiter strings
 // standardize on dictionaries for delimiters
@@ -1322,3 +1243,99 @@ kitt kar like back and forth
 //0,19,0,0,20,0,k
 //command: era:grn:120,255,39:hsl:2,0,2:tst
 //0,20,0,0,20,0,k
+
+
+// rolling crossfade
+// leading edge does step #1
+// leading edge keeps advancing doing step #1
+// goes back to trailing edge (trailing edge starts at zero)
+// each step back advances to the next crossfade step
+// once the trailing edge seens the last crossfast step start advancing the trailing edge
+// the leading edge stops advancing when it hits the edge
+// 
+// leading edge starts at zero, goes to limit + count of crossfade steps
+//
+// 0 1 2 3 4 5 6 7 8 9
+// X X X X X X X X X X 
+// 0
+// 1 0
+// 2 1 0
+// 3 2 1 0
+// 4 3 2 1 0
+// 5 4 3 2 1 0
+// 5 5 4 3 2 1 0
+// 5 5 5 4 3 2 1 0
+// 5 5 5 5 4 3 2 1 0
+// 5 5 5 5 5 4 3 2 1 0
+// 5 5 5 5 5 5 4 3 2 1
+// 5 5 5 5 5 5 5 4 3 2
+// 5 5 5 5 5 5 5 5 4 3
+// 5 5 5 5 5 5 5 5 5 4
+// 5 5 5 5 5 5 5 5 5 5
+
+// leading and trailing edge iterate through each led position
+// leading edge stays at max once it hits it
+// trailing edge stays at zero until leading edge hits count of crossfade steps
+// trailing edge goes all the way to max
+// leading edge could go past max + crossfade steps
+//   led position computed from it but maxes out at limit
+//   crossfade step computed from it, as (leading edge position - led position) maxing out at max crossfade step
+//
+//def at_most(a,b):
+//  return a if a <= b else b  
+//
+//num_leds = 10
+//max_led = num_leds - 1
+//num_steps = 5
+//max_step = num_steps - 1
+//max_loops = max_led + max_step + 1
+//
+//for i in range(max_loops):
+//  last_led_pos = at_most(i, max_led)
+//  for led_pos in range(last_led_pos + 1):
+//    step = at_most(i - led_pos, max_step)
+//    print str(led_pos) + ":" + str(step), 
+//  print
+//
+//0:0
+//0:1 1:0
+//0:2 1:1 2:0
+//0:3 1:2 2:1 3:0
+//0:4 1:3 2:2 3:1 4:0
+//0:4 1:4 2:3 3:2 4:1 5:0
+//0:4 1:4 2:4 3:3 4:2 5:1 6:0
+//0:4 1:4 2:4 3:4 4:3 5:2 6:1 7:0
+//0:4 1:4 2:4 3:4 4:4 5:3 6:2 7:1 8:0
+//0:4 1:4 2:4 3:4 4:4 5:4 6:3 7:2 8:1 9:0
+//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:3 8:2 9:1
+//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:4 8:3 9:2
+//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:4 8:4 9:3
+//0:4 1:4 2:4 3:4 4:4 5:4 6:4 7:4 8:4 9:4
+//
+// 
+//
+//
+//
+//
+//
+//
+//def do_led(led_pos, cfstep):
+//  print str(led_pos) + ":" + str(cfstep),
+//
+//def do_step(step):
+//  last_led_pos = at_most(step, max_led)
+//  for led_pos in range(last_led_pos + 1):
+//    cfstep = at_most(step - led_pos, max_step)
+//    do_led(led_pos + offset, cfstep)
+//  print
+//
+//offset = 10
+//window = 19
+//num_leds = window - offset + 1
+//max_led = num_leds - 1
+//num_steps = 6
+//max_step = num_steps - 1
+//max_loops = max_led + max_step + 1
+//
+//for step in range(max_loops):
+//  do_step(step)

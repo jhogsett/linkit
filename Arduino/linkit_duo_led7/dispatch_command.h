@@ -215,7 +215,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
     
     case CMD_PIN: 
-      set_pin(arg0, arg1); 
+      reset_args = do_pin(arg0, arg1); 
       break;
 
     case CMD_SCHEDULE: 
@@ -300,6 +300,11 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
 
   case CMD_POP:
     do_pop(arg0);
+    reset_args = false; 
+    break;    
+
+  case CMD_KEY:
+    do_get_key(arg0);
     reset_args = false; 
     break;    
   }

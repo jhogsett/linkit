@@ -21,7 +21,11 @@ void Commands::process_events()
     // process the effects and update the display if needed
     if(!effects_paused && effects_processor->process_effects())
       flush_all();
+
+#ifdef USE_KEYBOARD
+    if(!keyboard_paused)
+      process_keyboard();
+#endif
   }
 }
 #endif
-

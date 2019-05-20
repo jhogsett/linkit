@@ -13,6 +13,8 @@
 #define DRAW_MODE_PLUS  1
 #define DRAW_MODE_MIX   2
 
+//#define ROLLING_CROSSFADE      
+
 class Buffer
 {
   public:
@@ -57,7 +59,10 @@ class Buffer
   void set_draw_mode(byte mode = DRAW_MODE_WRITE);
   byte get_draw_mode();
   void uniform_cross_fade(int frame_delay);
+
+#ifdef ROLLING_CROSSFADE      
   void rolling_cross_fade(int frame_delay);
+#endif
 
   // todo: is there an alternative to storing all these pointers?
   private:
@@ -87,8 +92,11 @@ class Buffer
 
   void shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse);
 
+#ifdef ROLLING_CROSSFADE      
   void do_rolling_position(byte led_pos, byte cfstep);
   void do_rolling_step(int step, byte max_led, byte max_step, byte offset);
+#endif
+
   void cross_fade_step(byte step);
 };
 
@@ -210,6 +218,7 @@ void Buffer::uniform_cross_fade(int frame_delay)
   }
 }
 
+#ifdef ROLLING_CROSSFADE      
 void Buffer::do_rolling_position(byte led_pos, byte cfstep)
 {
   rgb_color *pb = buffers[current_display] + led_pos;
@@ -250,6 +259,7 @@ void Buffer::rolling_cross_fade(int frame_delay)
     delay(frame_delay);
   }
 }
+#endif
 
 void Buffer::rotate()
 {
