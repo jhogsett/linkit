@@ -2,12 +2,25 @@
 
 import sys
 import argparse
-import terminal_colors as tc
-import app_ui as ui
 import os
-
 #import time
 #import datetime
+
+import terminal_colors as tc
+import app_ui as ui
+import utils 
+
+# ----------------------------------------
+
+def begin():
+    pass
+
+def run():
+    pass
+
+# ----------------------------------------
+
+# ========================================
 
 global app_description, verbose_mode, quiet_mode
 app_description = None
@@ -38,18 +51,21 @@ def initialize():
     validate_options()
     tc.begin(quiet_mode)
     ui.begin(verbose_mode, quiet_mode)
+    begin()
     introduction()
 
 def loop():
-    pass
+    run()
+
+# ========================================
+# ========================================
 
 if __name__ == '__main__':
     initialize()
-    while True:
-        try:
-            loop()
-        except KeyboardInterrupt:
-            sys.exit("\nExiting...\n")
-        except Exception:
-            raise
+    try:
+        loop()
+    except KeyboardInterrupt:
+        sys.exit("\nExiting...\n")
+    except Exception:
+        raise
 
