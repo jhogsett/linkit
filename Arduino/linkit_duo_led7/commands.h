@@ -50,7 +50,11 @@ class Commands
   void reset();
   void set_brightness_level(int arg0, int arg1 = 0);
   bool dispatch_command(int cmd, byte *dispatch_data = NULL);
+
+#ifdef USE_MULTIPLE_DISPLAYS
   void flush_all(bool force_display = false);
+#endif
+  
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
   static Scheduler scheduler;
 
@@ -90,7 +94,11 @@ class Commands
 #endif
 
   void flush(bool force_display = false, bool force_effects_processing = false);
+
+#ifdef USE_MULTIPLE_DISPLAYS
   void set_display(byte display);
+#endif
+
   void set_buffer(byte nbuffer);
   bool do_pin(byte pin, byte mode);
   void clear();
@@ -121,10 +129,23 @@ class Commands
   void dispatch_color(byte cmd, int arg0, int arg1);
   void dispatch_math(byte cmd);
 
+#ifdef USE_MAPPING
   void do_xy_position(int arg0, int arg1, int arg2);
+#endif
+
   void do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect=NO_EFFECT);
+
+#ifdef USE_FAN  
   void do_fan(bool fan_on, bool auto_set=false);
+#endif
+
+#ifdef USE_SPEAKER
+  void do_tone(int frequency, int duration);
+#endif
+
   void do_app_setup();
+
+  void do_tone(byte pin, int frequency, int duration);
 
   void do_test_inquiry(byte type);
   void do_test(int type, int arg1, int arg2);
@@ -157,11 +178,14 @@ class Commands
   static Commands * me;
   static Sequencer sequencer;
   FadeEffects *fade_effects;
+
+#ifdef USE_FAN  
   bool user_fan_on;
+#endif
 
 #ifdef USE_KEYBOARD
   byte keyboard_capturing_macro = -1;
-  byte keyboard_captured_macro = -1;
+//  byte keyboard_captured_macro = -1;
   byte keyboard_long_press_macro = -1;
   byte keyboard_sample_count;
   bool keyboard_paused = false;
@@ -169,15 +193,16 @@ class Commands
   int keyboard_capture_count;
   byte keyboard_current_key;
   byte keyboard_captured_key;
-  void keyboard_reset();
+  void keyboard_reset(bool reset_macros);
   void pause_keyboard(bool paused);
+  void set_capture_mode(bool capturing, byte key);
   void process_keyboard();
   void set_address_pin(byte position, byte bit, byte pin);
   void set_keyboard_row(byte row);
   void set_keyboard_col(byte col);
   bool get_keyboard_data();
   byte scan_keyboard();
-  void do_get_key(byte type, byte macro);
+  void do_get_key(byte type, byte press_macro, byte long_press_macro);
 #endif
   
 #ifdef USE_MAPPING
@@ -246,10 +271,12 @@ void Commands::begin(
 
   //this->default_brightness = maps.get_led(5, 7);
 
+#ifdef USE_FAN  
   this->user_fan_on = false;
+#endif
 
 #ifdef USE_KEYBOARD
-  keyboard_reset();
+  keyboard_reset(true);
 #endif
 }
 
@@ -280,8 +307,10 @@ void Commands::pause(byte type = PAUSE_ALL)
     case PAUSE_ALL:
       pause_effects(true);
       pause_schedules(true);
+
 #ifdef USE_KEYBOARD
-      pause_keyboard(true);
+//    this is inconvenient
+//      pause_keyboard(true);
 #endif
       break;
 
@@ -367,6 +396,7 @@ void Commands::pause_keyboard(bool paused)
 }
 #endif
 
+#ifdef USE_MULTIPLE_DISPLAYS
 void Commands::set_display(byte display)
 {
   buffer->set_display(display);
@@ -374,6 +404,7 @@ void Commands::set_display(byte display)
   // reset to the default zone on a display change (? this confused me when working on glasses, maybe not needed)
   buffer->set_zone(0);
 }
+#endif
 
 #define PIN_MODE_LOW 0
 #define PIN_MODE_HIGH 1
@@ -399,16 +430,19 @@ bool Commands::do_pin(byte pin, byte mode)
 }
 
 #ifdef USE_KEYBOARD
-void Commands::keyboard_reset()
+void Commands::keyboard_reset(bool reset_macros=false)
 {
   keyboard_capture_mode = false;
   keyboard_capture_count = 0;
   keyboard_current_key = 0;
   keyboard_captured_key = 0; 
   keyboard_sample_count = 0;
-  keyboard_capturing_macro = -1;
-  keyboard_captured_macro = -1;
-  keyboard_long_press_macro = -1;
+  if(reset_macros)
+  {
+    keyboard_capturing_macro = -1;
+  //  keyboard_captured_macro = -1;
+    keyboard_long_press_macro = -1;
+  }
 }
 
 void Commands::set_address_pin(byte position, byte bit, byte pin)
@@ -455,16 +489,11 @@ byte Commands::scan_keyboard()
 }
 #endif
 
-void Commands::process_keyboard()
+void Commands::set_capture_mode(bool capturing, byte key = 0)
 {
-  if(keyboard_sample_count == 0)
+  keyboard_capture_mode = capturing;
+  if(capturing)
   {
-     byte key = scan_keyboard();
-    if(key != 0)
-    {
-      if(!keyboard_capture_mode)
-      {
-        keyboard_capture_mode = true;
         keyboard_capture_count = 0;
         keyboard_current_key = key;        
 
@@ -472,18 +501,35 @@ void Commands::process_keyboard()
         {
           macros.run_macro(keyboard_capturing_macro);
         }
+  }
+  else
+  {
+        keyboard_captured_key = keyboard_current_key;
+        keyboard_current_key = 0;    
+  }
 }
+
+void Commands::process_keyboard()
+{
+  if(keyboard_sample_count == 0)
+  {
+    byte key = scan_keyboard();
+    if(key)
+    {
+      if(!keyboard_capture_mode)
+      {
+        set_capture_mode(true, key);  
+      }
       else
       {
         keyboard_capture_count += 1;
 
-        if(keyboard_long_press_macro >= 0 && keyboard_capture_count >= KEYBOARD_LONG_PRESS)
+        if(keyboard_capture_count >= KEYBOARD_LONG_PRESS && keyboard_long_press_macro >= 0)
         {
           macros.run_macro(keyboard_long_press_macro);
-          keyboard_capture_mode = false;
-          keyboard_captured_key = keyboard_current_key;
-          keyboard_current_key = 0;    
-          while(scan_keyboard() != 0);
+          set_capture_mode(false);      
+          while(scan_keyboard() != 0)
+            ;
         }
       }
     }
@@ -491,14 +537,11 @@ void Commands::process_keyboard()
     {
       if(keyboard_capture_mode)
       {
-        keyboard_capture_mode = false;
-        keyboard_captured_key = keyboard_current_key;
-        keyboard_current_key = 0;    
-
-        if(keyboard_captured_macro >= 0)
-        {
-          macros.run_macro(keyboard_captured_macro);
-        }
+        set_capture_mode(false);      
+//        if(keyboard_captured_macro >= 0)
+//        {
+//          macros.run_macro(keyboard_captured_macro);
+//        }
       }
     }
   }
@@ -509,41 +552,42 @@ void Commands::process_keyboard()
 #define KEY_CAPTURED 0
 #define KEY_COUNT 1
 #define KEY_CURRENT 2
-#define KEY_SET_CAPTURED_MACRO 3
-#define KEY_SET_CAPTURING_MACRO 4
-#define KEY_SET_LONG_PRESS_MACRO 5
+#define KEY_SET_MACROS 3
+#define KEY_READ 4
+//#define KEY_SET_CAPTURED_MACRO 3
+//#define KEY_SET_CAPTURING_MACRO 4
+//#define KEY_SET_LONG_PRESS_MACRO 5
 
-void Commands::do_get_key(byte type, byte macro)
+void Commands::do_get_key(byte type, byte press_macro, byte long_press_macro)
 {
   int result = 0;  
-  if(type == KEY_SET_CAPTURED_MACRO)
+  switch(type)
   {
-    keyboard_captured_macro = macro;
-    return;
+    case KEY_CAPTURED:
+      result = keyboard_captured_key;
+      keyboard_captured_key = 0;
+      break;
+
+    case KEY_COUNT:
+      result = keyboard_capture_count;
+      break;
+
+    case KEY_CURRENT:
+      result = keyboard_current_key;
+      break;
+
+    case KEY_SET_MACROS:
+      keyboard_capturing_macro = press_macro;
+      keyboard_long_press_macro = long_press_macro;
+      return;
+
+    case KEY_READ:
+      command_processor->send_ints(keyboard_captured_key);
+      command_processor->send_ints(keyboard_capture_count);
+      keyboard_captured_key = 0;
+      return;
   }
-  else if(type == KEY_SET_CAPTURING_MACRO)
-  {
-    keyboard_capturing_macro = macro;
-    return;
-  }
-  else if(type == KEY_SET_LONG_PRESS_MACRO)
-  {
-    keyboard_long_press_macro = macro;
-    return;
-  }
-  else if(type == KEY_CAPTURED)
-  {
-    result = keyboard_captured_key;
-    keyboard_captured_key = 0;
-  }
-  else if(type == KEY_COUNT)
-  {
-    result = keyboard_capture_count;
-  }
-  else if(type == KEY_CURRENT)
-  {
-    result = keyboard_current_key;
-  }
+
   command_processor->sub_args[0] = result;
   command_processor->sub_args[1] = 0;
   command_processor->sub_args[2] = 0;
@@ -598,8 +642,16 @@ void Commands::set_brightness_level(int arg0, int arg1)
   }
   
   renderer->set_default_brightness(level);
+
+#ifdef USE_FAN   
   do_fan(level >= FAN_AUTO_ON_BRIGHTNESS, true);  
+#endif
+
+#ifdef USE_MULTIPLE_DISPLAYS  
   flush_all(true);
+#else
+  flush(true);
+#endif
 }
 
 #ifdef USE_BLEND
@@ -1159,6 +1211,7 @@ void Commands::flush(bool force_display, bool force_effects_processing)
 
 // todo: force a particular rendering buffer and display 
 // instead of setting and unsetting
+#ifdef USE_MULTIPLE_DISPLAYS
 void Commands::flush_all(bool force_display)
 {
   byte orig_display = buffer->get_current_display();
@@ -1171,6 +1224,7 @@ void Commands::flush_all(bool force_display)
 
   buffer->set_display(orig_display);
 }
+#endif
 
 // reset internal states without pausing
 void Commands::reset(){
@@ -1198,6 +1252,7 @@ void Commands::clear(){
   // that have to pause again afterwards; moved to reset
   resume();
 
+#ifdef USE_MULTIPLE_DISPLAYS
   byte orig_display = buffer->get_current_display();
   for(byte i = 0; i < NUM_BUFFERS; i++)
   {
@@ -1207,9 +1262,16 @@ void Commands::clear(){
   }
 
   buffer->set_display(orig_display);
+#else
+    buffer->reset_black_level();
+    buffer->erase(true);                                                          
+#endif
+
   buffer->set_draw_mode();
 
+#ifdef USE_FAN  
   do_fan(false);
+#endif
 
 #ifdef USE_KEYBOARD
   keyboard_reset();
@@ -1901,7 +1963,7 @@ void Commands::do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect){
   buffer->push_color(data, 1, false, DYNAMIC_COLOR | effect, 0, 0, false);
 }
 
-// todo: optional
+#ifdef USE_FAN  
 void Commands::do_fan(bool fan_on, bool auto_set)
 {
   if(auto_set){
@@ -1919,6 +1981,20 @@ void Commands::do_fan(bool fan_on, bool auto_set)
     user_fan_on = fan_on;
   }
 }
+#endif
+
+#ifdef USE_SPEAKER
+void Commands::do_tone(int frequency, int duration)
+{
+  if(frequency < 1)
+    frequency = DEFAULT_FREQUENCY;
+
+  if(duration < 1)
+    duration = DEFAULT_DURATION;
+  
+  tone(SPEAKER_PIN, frequency, duration);
+}
+#endif
 
 void Commands::do_app_setup(){
   scheduler.reset_all_schedules();

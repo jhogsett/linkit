@@ -34,7 +34,10 @@ class Render
 #ifdef USE_COLOR_CACHE
   rgb_color compute_dynamic_breathe(rgb_color color);
 #endif
+
+#ifdef USE_DYNAMIC_BREATHE
 rgb_color get_dynamic_breathe(rgb_color color);
+#endif
 
   static rgb_color black;
 
@@ -94,11 +97,13 @@ rgb_color Render::compute_dynamic_breathe(rgb_color color)
 }
 #endif
 
+#ifdef USE_DYNAMIC_BREATHE
 rgb_color Render::get_dynamic_breathe(rgb_color color)
 {
   byte color_index = this->breathe_effects->alt_breathe() ? color.green : color.red;
   return ColorMath::correct_color(Colors::get_palette()[color_index]);
 }
+#endif
 
 #ifdef USE_COLOR_CACHE
 rgb_color Render::get_breathe(rgb_color color, float scale, byte effect, rgb_color orig_color, rgb_color* color_cache)
@@ -106,47 +111,15 @@ rgb_color Render::get_breathe(rgb_color color, float scale, byte effect, rgb_col
 rgb_color Render::get_breathe(rgb_color color, float scale, byte effect, rgb_color orig_color)
 #endif
 {
-    rgb_color result;
     byte effect_only = effect & NOT_DYNAMIC_COLOR;
+
+#ifdef USE_DYNAMIC_BREATHE
+    rgb_color result;
     result = (effect_only == BREATHE_ON_D) ? get_dynamic_breathe(orig_color) : color;
     return ColorMath::scale_color(result, scale);
-
-//     if(effect_only == BREATHE_ON_D){
-//       // dynamic breathe
-
-// #ifdef USE_COLOR_CACHE
-//       if(orig_color.red < COLOR_CACHE_SIZE && orig_color.green < COLOR_CACHE_SIZE){
-//         // eligible for cache
-
-//         byte index = orig_color.green * COLOR_CACHE_SIZE + orig_color.red;
-
-//         if(ColorMath::equal(black, color_cache[index]))
-//           color_cache[index] = ColorMath::scale_color(compute_dynamic_breathe(orig_color), default_brightness_scale);
-
-//         result = color_cache[index];
-//       } else {
-//         // not eligible for cache
-//         result = ColorMath::scale_color(compute_dynamic_breathe(orig_color), default_brightness_scale);
-//       }
-// #endif
-
-//         result = ColorMath::scale_color(get_dynamic_breathe(orig_color), default_brightness_scale);
-
-
-
-//     } else {
-//       result = ColorMath::scale_color(color, scale);
-//     }
-
-    // if(effect_only == BREATHE_ON_D)
-    // {
-    //   result = get_dynamic_breathe(orig_color);
-    // }
-    // else
-    // {
-    //   result = color;
-    // }
-    
+#else
+    return ColorMath::scale_color(color, scale);
+#endif
 }
 
 // this is a destructive rendering: the original color value is reduced

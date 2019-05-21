@@ -20,7 +20,11 @@ void Commands::process_events()
 
     // process the effects and update the display if needed
     if(!effects_paused && effects_processor->process_effects())
+#ifdef USE_MULTIPLE_DISPLAYS    
       flush_all();
+#else
+      flush();
+#endif
 
 #ifdef USE_KEYBOARD
     if(!keyboard_paused)

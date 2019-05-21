@@ -121,10 +121,11 @@ void BlinkEffects::rebuild_cache()
   for(byte i = 1; i <= MAX_BLINK_SEGMENTS; i++)
     this->blink_cache[i] = blink_1_6_test(BLINK_MIN + i);
 
-  this->blink_cache[7] = blink_a_test();
-  this->blink_cache[8] = !this->blink_cache[7];
+  bool blink_a = blink_a_test();
+  this->blink_cache[7] = blink_a;
+  this->blink_cache[8] = !blink_a;
 
-  this->blink_cache[9] = this->blink_cache[7];
+  this->blink_cache[9] = blink_a;
 }
 
 bool BlinkEffects::blink_on(byte effect)

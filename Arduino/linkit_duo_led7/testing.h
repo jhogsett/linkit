@@ -48,65 +48,82 @@ void Commands::do_test_inquiry(byte type)
       result = NUM_PALETTE_COLORS;
       break;
     case TEST_INQUIRY_OFFSET:
+#ifdef USE_TEST_FRAMEWORK
       result = buffer->get_offset();
+#endif
       break;
     case TEST_INQUIRY_WINDOW:
+#ifdef USE_TEST_FRAMEWORK
       result = buffer->get_window();
+#endif
       break;
     case TEST_INQUIRY_DEFAULT_BRIGHTNESS:
+#ifdef USE_TEST_FRAMEWORK
       result = buffer->get_default_brightness();
+#endif
       break;
     case TEST_INQUIRY_MINIMUM_BRIGHTNESS:
+#ifdef USE_TEST_FRAMEWORK
       result = renderer->get_minimum_brightness();
+#endif
       break;
     case TEST_INQUIRY_REVERSE:
+#ifdef USE_TEST_FRAMEWORK
       result = buffer->get_reverse() ? 1 : 0;
+#endif
       break;
     case TEST_INQUIRY_DEFAULT_FADE_RATE:
+#ifdef USE_TEST_FRAMEWORK
       // fade rate passed x 10K
       result = FADE_RATE * 10000;
+#endif
       break;
     case TEST_INQUIRY_FADE_RATE:
+#ifdef USE_TEST_FRAMEWORK
       result = fade_effects->get_fade_rate() * 10000;
+#endif
       break;
     case TEST_INQUIRY_MAPPING_ENABLED:
+#ifdef USE_TEST_FRAMEWORK
 #ifdef USE_MAPPING
       result = 1;
-#else
-      result = 0;
+#endif
 #endif
       break;
 
     case TEST_INQUIRY_DEFAULT_LIGHTNESS:
+#ifdef USE_TEST_FRAMEWORK
       result = (255 * (buffer->get_default_brightness() / 100.0)) + 1;
+#endif
       break;
 
     case TEST_INQUIRY_MINIMUM_LIGHTNESS:
+#ifdef USE_TEST_FRAMEWORK
       result = (255 * (renderer->get_minimum_brightness() / 100.0)) + 1;
+#endif
       break;
 
     case TEST_INQUIRY_MAX_STRING_LENGTH:
       result = command_processor->get_max_string_length();
       break;
+
     case TEST_INQUIRY_TEST_FRAMEWORK_ENABLED:
 #ifdef USE_TEST_FRAMEWORK
       result = 1;
-#else
-      result = 0;
 #endif
       break;
     case TEST_INQUIRY_EXTRA_SHUFFLES_ENABLED:
+#ifdef USE_TEST_FRAMEWORK
 #ifdef USE_EXTRA_SHUFFLES
       result = 1;
-#else
-      result = 0;
+#endif
 #endif
       break;
     case TEST_INQUIRY_BLEND_ENABLED:
+#ifdef USE_TEST_FRAMEWORK
 #ifdef USE_BLEND
       result = 1;
-#else
-      result = 0;
+#endif
 #endif
       break;
 

@@ -13,8 +13,6 @@
 #define DRAW_MODE_PLUS  1
 #define DRAW_MODE_MIX   2
 
-//#define ROLLING_CROSSFADE      
-
 class Buffer
 {
   public:
@@ -34,11 +32,15 @@ class Buffer
   void fade(float rate);
   void fade_fast();
   byte get_window();
+
+#ifdef USE_MULTIPLE_DISPLAYS
   void set_display(byte display);
+  byte get_current_display();
+#endif
+
   void set_buffer(byte buffer);
   rgb_color * get_buffer();
   byte * get_effects_buffer();
-  byte get_current_display();
   rgb_color * get_render_buffer();
   void set_offset_override(int offset, bool fixup);
   void set_window_override(int window, bool fixup);
@@ -49,7 +51,7 @@ class Buffer
   void set_reverse(bool reverse);
   bool get_reverse();
   void rotate();
-  byte get_display();
+  // byte get_display();
   byte get_zones();
   void set_black_level(rgb_color black_level);
   void reset_black_level();
@@ -121,10 +123,10 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte
   this->draw_mode = DRAW_MODE_WRITE;
 }
 
-byte Buffer::get_display()
-{
-  return this->current_display;
-}
+// byte Buffer::get_display()
+// {
+//   return this->current_display;
+// }
 
 void Buffer::reset()
 {
@@ -453,6 +455,7 @@ void Buffer::set_zone(byte zone)
   this->offset_override = OVERRIDE_OFF;
 }
 
+#ifdef USE_MULTIPLE_DISPLAYS
 void Buffer::set_display(byte display)
 {
   this->current_display = display;
@@ -462,6 +465,7 @@ byte Buffer::get_current_display()
 {
   return this->current_display;
 }
+#endif
 
 rgb_color * Buffer::get_buffer()
 {

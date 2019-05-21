@@ -61,7 +61,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
       break;
  
     case CMD_DISPLAY: 
+#ifdef USE_MULTIPLE_DISPLAYS
       set_display(arg0); 
+#endif
       break;
 
     case CMD_ZONE: 
@@ -276,7 +278,9 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     break;
 
   case CMD_FAN:
+#ifdef USE_FAN  
     do_fan(arg0);
+#endif
     break;
 
   case CMD_APP:
@@ -304,9 +308,15 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     break;    
 
   case CMD_KEY:
-    do_get_key(arg0, arg1);
+    do_get_key(arg0, arg1, arg2);
     reset_args = false; 
     break;    
+
+  case CMD_TONE:
+#ifdef USE_SPEAKER
+    do_tone(arg0, arg1);
+#endif
+    break;
   }
   
   if(reset_args)
