@@ -14,10 +14,12 @@ import led_command as lc
 poll_frequency = 20
 long_press = 50
 too_short_press = 3
-short_press_tone = 1800
+short_press_tone = 2800
 short_press_duration = 50
-long_press_tone = 1700
-long_press_duration = 100
+alt_press_tone = 2200
+alt_press_duration = 50
+long_press_tone = 3100
+long_press_duration = 200
 
 # ----------------------------------------
 
@@ -31,7 +33,15 @@ def begin():
 def short_beep():
     lc.command(str(short_press_tone) + "," + str(short_press_duration) + ":ton")
 
+def alt_beep():
+    lc.command(str(alt_press_tone) + "," + str(alt_press_duration) + ":ton")
+
 def long_beep():
+    lc.command(str(long_press_tone) + "," + str(long_press_duration) + ":ton")
+
+def long_beep2():
+    lc.command(str(long_press_tone) + "," + str(long_press_duration) + ":ton")
+    time.sleep(long_press_duration / 1000.0)
     lc.command(str(long_press_tone) + "," + str(long_press_duration) + ":ton")
 
 num_keys = 16
@@ -95,7 +105,7 @@ def on_key(key, long_press):
     key -= 1
     if keys[key]:
         keys[key] = False
-        long_beep()
+        alt_beep()
     else:
         keys[key] = True
         short_beep()
