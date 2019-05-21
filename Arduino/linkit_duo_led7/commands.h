@@ -1,3 +1,4 @@
+#define BREATHE_PERIOD 300
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
@@ -10,6 +11,8 @@
 #ifdef USE_MAPPING
 #include "map_defs.h"
 #endif
+
+//#define ROLLING_CROSSFADE      
 
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
 #define DIM_BRIGHTNESS_PERCENT (default_brightness / 2)
@@ -47,7 +50,11 @@ class Commands
   void reset();
   void set_brightness_level(int arg0, int arg1 = 0);
   bool dispatch_command(int cmd, byte *dispatch_data = NULL);
+
+#ifdef USE_MULTIPLE_DISPLAYS
   void flush_all(bool force_display = false);
+#endif
+  
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
   static Scheduler scheduler;
 
@@ -57,8 +64,8 @@ class Commands
   void resume(int type);
   void pause_effects(bool paused);
   void pause_schedules(bool paused);
-  void restore_paused_state();
-  void save_paused_state();
+//  void restore_paused_state();
+//  void save_paused_state();
   rgb_color * offset_buffer();
 
   #ifdef USE_BLEND
@@ -87,9 +94,13 @@ class Commands
 #endif
 
   void flush(bool force_display = false, bool force_effects_processing = false);
+
+#ifdef USE_MULTIPLE_DISPLAYS
   void set_display(byte display);
+#endif
+
   void set_buffer(byte nbuffer);
-  void set_pin(byte pin, byte mode);
+  bool do_pin(byte pin, byte mode);
   void clear();
   void do_rotate(byte times, byte steps, bool flush);
   void do_delay(int milliseconds);
@@ -118,10 +129,23 @@ class Commands
   void dispatch_color(byte cmd, int arg0, int arg1);
   void dispatch_math(byte cmd);
 
+#ifdef USE_MAPPING
   void do_xy_position(int arg0, int arg1, int arg2);
+#endif
+
   void do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect=NO_EFFECT);
+
+#ifdef USE_FAN  
   void do_fan(bool fan_on, bool auto_set=false);
+#endif
+
+#ifdef USE_SPEAKER
+  void do_tone(int frequency, int duration);
+#endif
+
   void do_app_setup();
+
+  void do_tone(byte pin, int frequency, int duration);
 
   void do_test_inquiry(byte type);
   void do_test(int type, int arg1, int arg2);
@@ -146,15 +170,40 @@ class Commands
   BreatheEffects *breathe_effects;
   bool effects_paused = false;
   bool schedules_paused = false;
-  bool effects_were_paused = false;
-  bool schedules_were_paused = false;
+//  bool effects_were_paused = false;
+//  bool schedules_were_paused = false;
   byte default_brightness;
   byte visible_led_count;
   static Macros macros;
   static Commands * me;
   static Sequencer sequencer;
   FadeEffects *fade_effects;
+
+#ifdef USE_FAN  
   bool user_fan_on;
+#endif
+
+#ifdef USE_KEYBOARD
+  byte keyboard_capturing_macro = -1;
+//  byte keyboard_captured_macro = -1;
+  byte keyboard_long_press_macro = -1;
+  byte keyboard_sample_count;
+  bool keyboard_paused = false;
+  bool keyboard_capture_mode;
+  int keyboard_capture_count;
+  byte keyboard_current_key;
+  byte keyboard_captured_key;
+  void keyboard_reset(bool reset_macros);
+  void pause_keyboard(bool paused);
+  void set_capture_mode(bool capturing, byte key);
+  void process_keyboard();
+  void set_address_pin(byte position, byte bit, byte pin);
+  void set_keyboard_row(byte row);
+  void set_keyboard_col(byte col);
+  bool get_keyboard_data();
+  byte scan_keyboard();
+  void do_get_key(byte type, byte press_macro, byte long_press_macro);
+#endif
   
 #ifdef USE_MAPPING
   Maps maps;
@@ -222,7 +271,13 @@ void Commands::begin(
 
   //this->default_brightness = maps.get_led(5, 7);
 
+#ifdef USE_FAN  
   this->user_fan_on = false;
+#endif
+
+#ifdef USE_KEYBOARD
+  keyboard_reset(true);
+#endif
 }
 
 #include "event_loop.h"
@@ -235,13 +290,15 @@ bool Commands::dispatch_function(int cmd, byte *dispatch_data)
 #define PAUSE_ALL        0
 #define PAUSE_EFFECTS    1
 #define PAUSE_SCHEDULES  2
-#define PAUSE_PUSH       3
+#define PAUSE_KEYBOARD   3
+//#define PAUSE_PUSH       3
 
 // change to resume as was
 #define RESUME_ALL       0 
 #define RESUME_EFFECTS   1
 #define RESUME_SCHEDULES 2
-#define RESUME_POP       3 
+#define RESUME_KEYBOARD  3
+//#define RESUME_POP       3 
 
 void Commands::pause(byte type = PAUSE_ALL)
 {
@@ -250,6 +307,11 @@ void Commands::pause(byte type = PAUSE_ALL)
     case PAUSE_ALL:
       pause_effects(true);
       pause_schedules(true);
+
+#ifdef USE_KEYBOARD
+//    this is inconvenient
+//      pause_keyboard(true);
+#endif
       break;
 
     case PAUSE_EFFECTS:
@@ -260,11 +322,17 @@ void Commands::pause(byte type = PAUSE_ALL)
       pause_schedules(true);
       break;
 
-    case PAUSE_PUSH:
-      save_paused_state();
-      pause_effects(true);
-      pause_schedules(true);
+#ifdef USE_KEYBOARD
+    case PAUSE_KEYBOARD:
+      pause_keyboard(true);
       break;
+#endif
+
+//    case PAUSE_PUSH:
+//      save_paused_state();
+//      pause_effects(true);
+//      pause_schedules(true);
+//      break;
   }
 }
 
@@ -275,6 +343,9 @@ void Commands::resume(int type = RESUME_ALL)
     case RESUME_ALL:
       pause_effects(false);
       pause_schedules(false);
+#ifdef USE_KEYBOARD
+      pause_keyboard(false);
+#endif
       break;
 
     case RESUME_EFFECTS:
@@ -285,22 +356,28 @@ void Commands::resume(int type = RESUME_ALL)
       pause_schedules(false);
       break;
 
-    case RESUME_POP:
-      restore_paused_state();
+#ifdef USE_KEYBOARD
+    case RESUME_KEYBOARD:
+      pause_keyboard(false);
       break;
+#endif
+
+//    case RESUME_POP:
+//      restore_paused_state();
+//      break;
 
   }
 }
 
-void Commands::save_paused_state(){
-  this->effects_were_paused = this->effects_paused;
-  this->schedules_were_paused = this->schedules_paused;  
-}
-
-void Commands::restore_paused_state(){
-  pause_effects(this->effects_were_paused);
-  pause_schedules(this->schedules_were_paused);
-}
+//void Commands::save_paused_state(){
+//  this->effects_were_paused = this->effects_paused;
+//  this->schedules_were_paused = this->schedules_paused;  
+//}
+//
+//void Commands::restore_paused_state(){
+//  pause_effects(this->effects_were_paused);
+//  pause_schedules(this->schedules_were_paused);
+//}
 
 void Commands::pause_effects(bool paused)
 {
@@ -312,6 +389,14 @@ void Commands::pause_schedules(bool paused)
   schedules_paused = paused;
 }
 
+#ifdef USE_KEYBOARD
+void Commands::pause_keyboard(bool paused)
+{
+  keyboard_paused = paused;
+}
+#endif
+
+#ifdef USE_MULTIPLE_DISPLAYS
 void Commands::set_display(byte display)
 {
   buffer->set_display(display);
@@ -319,12 +404,195 @@ void Commands::set_display(byte display)
   // reset to the default zone on a display change (? this confused me when working on glasses, maybe not needed)
   buffer->set_zone(0);
 }
+#endif
 
-void Commands::set_pin(byte pin, byte mode)
+#define PIN_MODE_LOW 0
+#define PIN_MODE_HIGH 1
+#define PIN_MODE_READ 2
+
+// todo: set arg1 if it's a long press
+bool Commands::do_pin(byte pin, byte mode)
+{
+  if(mode == PIN_MODE_READ)
+  {
+    pinMode(pin, INPUT);
+    command_processor->sub_args[0] = digitalRead(pin) == HIGH ? 1 : 0;
+    command_processor->sub_args[1] = 0;
+    command_processor->sub_args[2] = 0;
+    return false;
+  }
+  else
+  {
+   pinMode(pin, OUTPUT);
+   digitalWrite(pin, mode == 0 ? LOW : HIGH);
+   return true;
+  }
+}
+
+#ifdef USE_KEYBOARD
+void Commands::keyboard_reset(bool reset_macros=false)
+{
+  keyboard_capture_mode = false;
+  keyboard_capture_count = 0;
+  keyboard_current_key = 0;
+  keyboard_captured_key = 0; 
+  keyboard_sample_count = 0;
+  if(reset_macros)
+  {
+    keyboard_capturing_macro = -1;
+  //  keyboard_captured_macro = -1;
+    keyboard_long_press_macro = -1;
+  }
+}
+
+void Commands::set_address_pin(byte position, byte bit, byte pin)
 {
   pinMode(pin, OUTPUT);
-  digitalWrite(pin, mode == 0 ? LOW : HIGH);  
+  digitalWrite(pin, bitRead(position, bit));
 }
+
+void Commands::set_keyboard_row(byte row)
+{
+  set_address_pin(row, 0, KEYBOARD_ROWL);
+  set_address_pin(row, 1, KEYBOARD_ROWM);
+  set_address_pin(row, 2, KEYBOARD_ROWH);
+}
+
+void Commands::set_keyboard_col(byte col)
+{
+  set_address_pin(col, 0, KEYBOARD_COLL);
+  set_address_pin(col, 1, KEYBOARD_COLH);
+}
+
+bool Commands::get_keyboard_data()
+{
+  pinMode(KEYBOARD_DATA, INPUT);
+  return digitalRead(KEYBOARD_DATA) == HIGH ? false : true;
+}
+
+byte Commands::scan_keyboard()
+{
+  byte result = 0;  
+  for(int row = 0; row < KEYBOARD_ROWS; row++)
+  {
+    set_keyboard_row(row);
+    for(int col = 0; col < KEYBOARD_COLS; col++)
+    {
+      set_keyboard_col(col);
+      if(get_keyboard_data())
+      {
+        result = (row * KEYBOARD_COLS) + col + 1;
+      }
+    }
+  }
+  return result;
+}
+#endif
+
+void Commands::set_capture_mode(bool capturing, byte key = 0)
+{
+  keyboard_capture_mode = capturing;
+  if(capturing)
+  {
+        keyboard_capture_count = 0;
+        keyboard_current_key = key;        
+
+        if(keyboard_capturing_macro >= 0)
+        {
+          macros.run_macro(keyboard_capturing_macro);
+        }
+  }
+  else
+  {
+        keyboard_captured_key = keyboard_current_key;
+        keyboard_current_key = 0;    
+  }
+}
+
+void Commands::process_keyboard()
+{
+  if(keyboard_sample_count == 0)
+  {
+    byte key = scan_keyboard();
+    if(key)
+    {
+      if(!keyboard_capture_mode)
+      {
+        set_capture_mode(true, key);  
+      }
+      else
+      {
+        keyboard_capture_count += 1;
+
+        if(keyboard_capture_count >= KEYBOARD_LONG_PRESS && keyboard_long_press_macro >= 0)
+        {
+          macros.run_macro(keyboard_long_press_macro);
+          set_capture_mode(false);      
+          while(scan_keyboard() != 0)
+            ;
+        }
+      }
+    }
+    else
+    {
+      if(keyboard_capture_mode)
+      {
+        set_capture_mode(false);      
+//        if(keyboard_captured_macro >= 0)
+//        {
+//          macros.run_macro(keyboard_captured_macro);
+//        }
+      }
+    }
+  }
+
+  keyboard_sample_count = (keyboard_sample_count + 1) % KEYBOARD_PERIOD;
+}
+
+#define KEY_CAPTURED 0
+#define KEY_COUNT 1
+#define KEY_CURRENT 2
+#define KEY_SET_MACROS 3
+#define KEY_READ 4
+//#define KEY_SET_CAPTURED_MACRO 3
+//#define KEY_SET_CAPTURING_MACRO 4
+//#define KEY_SET_LONG_PRESS_MACRO 5
+
+void Commands::do_get_key(byte type, byte press_macro, byte long_press_macro)
+{
+  int result = 0;  
+  switch(type)
+  {
+    case KEY_CAPTURED:
+      result = keyboard_captured_key;
+      keyboard_captured_key = 0;
+      break;
+
+    case KEY_COUNT:
+      result = keyboard_capture_count;
+      break;
+
+    case KEY_CURRENT:
+      result = keyboard_current_key;
+      break;
+
+    case KEY_SET_MACROS:
+      keyboard_capturing_macro = press_macro;
+      keyboard_long_press_macro = long_press_macro;
+      return;
+
+    case KEY_READ:
+      command_processor->send_ints(keyboard_captured_key);
+      command_processor->send_ints(keyboard_capture_count);
+      keyboard_captured_key = 0;
+      return;
+  }
+
+  command_processor->sub_args[0] = result;
+  command_processor->sub_args[1] = 0;
+  command_processor->sub_args[2] = 0;
+}
+
 
 // arg0  > 0 thru 100 -> set percent brightness
 // arg0 <= 0:
@@ -374,8 +642,16 @@ void Commands::set_brightness_level(int arg0, int arg1)
   }
   
   renderer->set_default_brightness(level);
+
+#ifdef USE_FAN   
   do_fan(level >= FAN_AUTO_ON_BRIGHTNESS, true);  
+#endif
+
+#ifdef USE_MULTIPLE_DISPLAYS  
   flush_all(true);
+#else
+  flush(true);
+#endif
 }
 
 #ifdef USE_BLEND
@@ -441,9 +717,11 @@ void Commands::do_crossfade(byte type = CROSSFADE_UNIFORM)
     case CROSSFADE_UNIFORM:
       buffer->uniform_cross_fade(CROSSFADE_DELAY);
       break;
+#ifdef ROLLING_CROSSFADE      
     case CROSSFADE_ROLLING:
       buffer->rolling_cross_fade(CROSSFADE_DELAY);
       break;  
+#endif
   }
   
 //  rgb_color * render_buffer = buffer->get_render_buffer();
@@ -933,6 +1211,7 @@ void Commands::flush(bool force_display, bool force_effects_processing)
 
 // todo: force a particular rendering buffer and display 
 // instead of setting and unsetting
+#ifdef USE_MULTIPLE_DISPLAYS
 void Commands::flush_all(bool force_display)
 {
   byte orig_display = buffer->get_current_display();
@@ -945,6 +1224,7 @@ void Commands::flush_all(bool force_display)
 
   buffer->set_display(orig_display);
 }
+#endif
 
 // reset internal states without pausing
 void Commands::reset(){
@@ -972,6 +1252,7 @@ void Commands::clear(){
   // that have to pause again afterwards; moved to reset
   resume();
 
+#ifdef USE_MULTIPLE_DISPLAYS
   byte orig_display = buffer->get_current_display();
   for(byte i = 0; i < NUM_BUFFERS; i++)
   {
@@ -981,9 +1262,20 @@ void Commands::clear(){
   }
 
   buffer->set_display(orig_display);
+#else
+    buffer->reset_black_level();
+    buffer->erase(true);                                                          
+#endif
+
   buffer->set_draw_mode();
 
+#ifdef USE_FAN  
   do_fan(false);
+#endif
+
+#ifdef USE_KEYBOARD
+  keyboard_reset();
+#endif
 }
 
 void Commands::do_delay(int milliseconds)
@@ -1671,24 +1963,38 @@ void Commands::do_dynamic_color(byte arg0, byte arg1, byte arg2, byte effect){
   buffer->push_color(data, 1, false, DYNAMIC_COLOR | effect, 0, 0, false);
 }
 
-// todo: optional
+#ifdef USE_FAN  
 void Commands::do_fan(bool fan_on, bool auto_set)
 {
   if(auto_set){
     if(fan_on){
       // turn fan on  
-      set_pin(FAN_PIN, true);
+      do_pin(FAN_PIN, PIN_MODE_HIGH);
     } else {
       // turn fan off if not user-enabled
       if(!user_fan_on)
-        set_pin(FAN_PIN, false);
+        do_pin(FAN_PIN, PIN_MODE_LOW);
     }
   } else {
     // set fan according to setting
-    set_pin(FAN_PIN, fan_on);
+    do_pin(FAN_PIN, fan_on ? PIN_MODE_HIGH : PIN_MODE_LOW);
     user_fan_on = fan_on;
   }
 }
+#endif
+
+#ifdef USE_SPEAKER
+void Commands::do_tone(int frequency, int duration)
+{
+  if(frequency < 1)
+    frequency = DEFAULT_FREQUENCY;
+
+  if(duration < 1)
+    duration = DEFAULT_DURATION;
+  
+  tone(SPEAKER_PIN, frequency, duration);
+}
+#endif
 
 void Commands::do_app_setup(){
   scheduler.reset_all_schedules();

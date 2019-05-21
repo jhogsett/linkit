@@ -33,14 +33,20 @@ class BreatheEffects
   float breathe_ratio();
   void set_breathe_time(int time);
   rgb_color breathe_crossfade(rgb_color color1, rgb_color color2);
+
+#ifdef USE_DYNAMIC_BREATHE
   bool alt_breathe() { return this->breathe_alt; }
+#endif
 
   private:
 
   int breathe_time = BREATHE_TIME;
   int breathe_counter = 0;
   char breathe_direction = 1;
+
+#ifdef USE_DYNAMIC_BREATHE
   bool breathe_alt = false;
+#endif
 };
 
 #ifndef BYTE_MAP
@@ -110,7 +116,9 @@ void BreatheEffects::reset()
   breathe_step = 0;
   breathe_counter = 0;
   breathe_direction = 1;
+#ifdef USE_DYNAMIC_BREATHE
   breathe_alt = false;
+#endif
 }
 
 bool BreatheEffects::process()
@@ -124,8 +132,10 @@ bool BreatheEffects::process()
     if(next_breathe_step >= BREATHE_MAX_STEP)
     {
       breathe_direction *= -1;
+#ifdef USE_DYNAMIC_BREATHE
       if(breathe_direction > 0)
         this->breathe_alt = !this->breathe_alt;
+#endif
     }
 
     breathe_step = breathe_step + breathe_direction;

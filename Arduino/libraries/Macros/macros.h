@@ -496,6 +496,14 @@ void Macros::run_macro(byte macro, int times, int delay_)
           // remaining macro has been consumed
           return;
         }
+        else if(cmd == CMD_RETURN_IF)
+        {
+          // simple conditional, return if arg0 == arg1
+          if(command_processor->sub_args[0] == command_processor->sub_args[1])
+          {
+            return;
+          }
+        }
         else
         {
           if(!(this->dispatch_function)(cmd, macro_buffer))

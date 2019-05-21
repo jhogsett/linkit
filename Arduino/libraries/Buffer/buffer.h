@@ -32,11 +32,15 @@ class Buffer
   void fade(float rate);
   void fade_fast();
   byte get_window();
+
+#ifdef USE_MULTIPLE_DISPLAYS
   void set_display(byte display);
+  byte get_current_display();
+#endif
+
   void set_buffer(byte buffer);
   rgb_color * get_buffer();
   byte * get_effects_buffer();
-  byte get_current_display();
   rgb_color * get_render_buffer();
   void set_offset_override(int offset, bool fixup);
   void set_window_override(int window, bool fixup);
@@ -47,7 +51,7 @@ class Buffer
   void set_reverse(bool reverse);
   bool get_reverse();
   void rotate();
-  byte get_display();
+  // byte get_display();
   byte get_zones();
   void set_black_level(rgb_color black_level);
   void reset_black_level();
@@ -57,7 +61,10 @@ class Buffer
   void set_draw_mode(byte mode = DRAW_MODE_WRITE);
   byte get_draw_mode();
   void uniform_cross_fade(int frame_delay);
+
+#ifdef ROLLING_CROSSFADE      
   void rolling_cross_fade(int frame_delay);
+#endif
 
   // todo: is there an alternative to storing all these pointers?
   private:
@@ -87,8 +94,11 @@ class Buffer
 
   void shift_buffer(rgb_color * buffer, byte * effects, byte max, byte start, bool reverse);
 
+#ifdef ROLLING_CROSSFADE      
   void do_rolling_position(byte led_pos, byte cfstep);
   void do_rolling_step(int step, byte max_led, byte max_step, byte offset);
+#endif
+
   void cross_fade_step(byte step);
 };
 
@@ -113,10 +123,10 @@ void Buffer::begin(PololuLedStripBase **ledStrips, byte default_brightness, byte
   this->draw_mode = DRAW_MODE_WRITE;
 }
 
-byte Buffer::get_display()
-{
-  return this->current_display;
-}
+// byte Buffer::get_display()
+// {
+//   return this->current_display;
+// }
 
 void Buffer::reset()
 {
@@ -210,6 +220,7 @@ void Buffer::uniform_cross_fade(int frame_delay)
   }
 }
 
+#ifdef ROLLING_CROSSFADE      
 void Buffer::do_rolling_position(byte led_pos, byte cfstep)
 {
   rgb_color *pb = buffers[current_display] + led_pos;
@@ -250,6 +261,7 @@ void Buffer::rolling_cross_fade(int frame_delay)
     delay(frame_delay);
   }
 }
+#endif
 
 void Buffer::rotate()
 {
@@ -443,6 +455,7 @@ void Buffer::set_zone(byte zone)
   this->offset_override = OVERRIDE_OFF;
 }
 
+#ifdef USE_MULTIPLE_DISPLAYS
 void Buffer::set_display(byte display)
 {
   this->current_display = display;
@@ -452,6 +465,7 @@ byte Buffer::get_current_display()
 {
   return this->current_display;
 }
+#endif
 
 rgb_color * Buffer::get_buffer()
 {

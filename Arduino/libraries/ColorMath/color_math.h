@@ -12,11 +12,13 @@
 #define SINE_INTS
 //#define SINE_FLOATS
 
-// #define SINE_24_STEPS
+#define SINE_24_STEPS
+
 // #define SINE_36_STEPS
 // #define SINE_48_STEPS
 // #define SINE_60_STEPS
-#define SINE_90_STEPS
+
+// #define SINE_90_STEPS
 
 #if defined(SINE_24_STEPS)
 #define NUM_SINES    25
@@ -64,7 +66,7 @@ class ColorMath
   static rgb_color crossfade_colors(byte step, rgb_color color1, rgb_color color2);
   static rgb_color correct_color(rgb_color color);
   static byte crossfade_steps(){ return CROSSFADE_STEPS; }
-  static rgb_color complimentary_color(rgb_color color);
+  // static rgb_color complimentary_color(rgb_color color);
   static bool equal(rgb_color color1, rgb_color color2);
   static float get_cosine(byte step);
   static float get_sine(byte step);
@@ -479,65 +481,65 @@ const float PROGMEM ColorMath::sines[NUM_SINES]
 #ifdef SINE_24_STEPS
 /* ruby code
   steps = 24
-  cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
-  sines   = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
+  cosines = (0..steps).map{|n| (((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5) * 255).floor}
+  sines = (0..steps).map{|n| (((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5)* 255).floor}
 */
-const float PROGMEM ColorMath::cosines[NUM_SINES]
+const int PROGMEM ColorMath::cosines[NUM_SINES]
 = {
-    0.0,
-    0.017037086855466,
-    0.066987298107781,
-    0.146446609406726,
-    0.25,
-    0.37059047744874,
-    0.5,
-    0.62940952255126,
-    0.75,
-    0.853553390593274,
-    0.933012701892219,
-    0.982962913144534,
-    1.0,
-    0.982962913144534,
-    0.933012701892219,
-    0.853553390593274,
-    0.75,
-    0.62940952255126,
-    0.5,
-    0.37059047744874,
-    0.25,
-    0.146446609406726,
-    0.066987298107781,
-    0.017037086855466,
-    0.0
+    0, 
+    4, 
+    17, 
+    37, 
+    63, 
+    94, 
+    127, 
+    160, 
+    191, 
+    217, 
+    237, 
+    250, 
+    255, 
+    250, 
+    237, 
+    217, 
+    191, 
+    160, 
+    127, 
+    94, 
+    63, 
+    37, 
+    17, 
+    4, 
+    0
 };
 
-const float PROGMEM ColorMath::sines[NUM_SINES]
+const int PROGMEM ColorMath::sines[NUM_SINES]
 = {
-    0.5,
-    0.37059047744874,
-    0.25,
-    0.146446609406726,
-    0.066987298107781,
-    0.017037086855466,
-    0.0,
-    0.017037086855466,
-    0.066987298107781,
-    0.146446609406726,
-    0.25,
-    0.37059047744874,
-    0.5,
-    0.62940952255126,
-    0.75,
-    0.853553390593274,
-    0.933012701892219,
-    0.982962913144534,
-    1.0,
-    0.982962913144534,
-    0.933012701892219,
-    0.853553390593274,
-    0.75,
-    0.62940952255126,
-    0.5
+    127, 
+    94, 
+    63, 
+    37, 
+    17, 
+    4, 
+    0, 
+    4, 
+    17, 
+    37, 
+    63, 
+    94, 
+    127, 
+    160, 
+    191, 
+    217, 
+    237, 
+    250, 
+    255, 
+    250, 
+    237, 
+    217, 
+    191, 
+    160, 
+    127
 };
 
 #elif defined(SINE_36_STEPS)

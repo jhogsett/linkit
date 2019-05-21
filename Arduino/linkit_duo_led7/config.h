@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define USE_TEST_FRAMEWORK // 3%
+// #define USE_TEST_FRAMEWORK // 3%
 // #define USE_EXTRA_SHUFFLES // 1%
 // #define USE_BLEND          // 2%
 
@@ -22,7 +22,10 @@
 
 // single 90-LED strip for dev
 // blinkit
-#define LED_STRIP_90
+// #define LED_STRIP_90
+
+// 16-LED Uno Cheater Box / Remote
+#define CHEATER
 
 // 2 50-led strands
 // decoration3 & decoration4
@@ -116,6 +119,9 @@
 #define BREATHE_PERIOD 300
 #define NUM_SEQUENCERS 16
 #define FAN_PIN 13
+#define SPEAKER_PIN 10
+#define DEFAULT_FREQUENCY 1800
+#define DEFAULT_DURATION 30
 #define FAN_AUTO_ON_BRIGHTNESS 50
 #define NUM_MACRO_CHARS 15
 #define NUM_MEMORY_MACROS 4
@@ -125,6 +131,38 @@
 #define LOW_BRIGHTNESS_PERCENT     5
 #define MIN_BRIGHTNESS_PERCENT     2
 #define CROSSFADE_DELAY 1
+#define KEYBOARD_COLS 4
+#define KEYBOARD_ROWS 5
+#define KEYBOARD_DATA 4
+#define KEYBOARD_COLL 5
+#define KEYBOARD_COLH 6
+#define KEYBOARD_ROWL 7
+#define KEYBOARD_ROWM 8
+#define KEYBOARD_ROWH 9
+#define KEYBOARD_PERIOD 50
+#define KEYBOARD_LONG_PRESS 50
+//#define USE_FAN
+//#define  USE_MULTIPLE_DISPLAYS
+
+
+#ifdef CHEATER
+#define USE_1_DISPLAYS
+#define SWAP_REDGREEN
+#define ANIM_LED_COUNT 16
+#define DEFAULT_BRIGHTNESS_PERCENT 15
+#define FADE_RATE 0.925
+#define FADE_PERIOD 400
+#define ZONES_CHEATER
+#define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    25
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
+#define BLINK_PERIOD 2000
+#define BREATHE_PERIOD 150
+#define CROSSFADE_DELAY 50
+#define USE_KEYBOARD
+#define USE_SPEAKER
+#endif
 
 #ifdef LED_STRIP_72
 #define USE_1_DISPLAYS
