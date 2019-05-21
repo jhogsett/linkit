@@ -10,6 +10,7 @@ rsync -ut /Media/SD-P1/dev/linkit/python/weather.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/weather_conditions.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/led_command.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/app_ui.py /root
+rsync -ut /Media/SD-P1/dev/linkit/python/utils.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/wx.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/sunrise.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/update /root
