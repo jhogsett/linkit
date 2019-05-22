@@ -43,11 +43,14 @@ def default_callback(key, long_press):
 
 def poll_forever():
     while(True):
-        poll()
-        poll_wait()
+        poll_once()
 
 def poll_wait():
     time.sleep(sleep_time)
+
+def poll_once():
+    poll()
+    poll_wait()
 
 def poll():
     result = lc.command_str("4:key")
