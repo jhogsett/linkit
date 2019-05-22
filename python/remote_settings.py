@@ -1,55 +1,55 @@
 short_press = [
-    { "macro": 10,            "effect": "" },
-    { "color": "wht",         "effect": "wht:sfd:flo" },
-    { "color": "red",         "effect": "red:sfd:flo" },
-    { "cmd": "-1:lev",        "effect": "" },
+    { "macro": 10,            "effect": "blu:sfd" },
+    { "color": "wht",         "effect": "wht:ffd:flo" },
+    { "color": "lav",         "effect": "lav:ffd:flo" },
+    { "cmd": "-1:lev",        "effect": "-1:lev" },
 
-    { "macro": 11,            "effect": "" },
-    { "color": "tun",         "effect": "tun:sfd:flo" },
-    { "color": "pnk",         "effect": "pnk:sfd:flo" },
-    { "cmd": "-2:lev",        "effect": "" },
+    { "macro": 11,            "effect": "grn:sfd" },
+    { "color": "tun",         "effect": "tun:ffd:flo" },
+    { "color": "pnk",         "effect": "pnk:ffd:flo" },
+    { "cmd": "-2:lev",        "effect": "-2:lev" },
 
-    { "macro": 12,            "effect": "" },
-    { "color": "sod",         "effect": "sod:sfd:flo" },
-    { "color": "pur",         "effect": "pur:sfd:flo" },
-    { "cmd": "-3:lev",        "effect": "" },
+    { "macro": 12,            "effect": "yel:sfd" },
+    { "color": "sod",         "effect": "sod:ffd:flo" },
+    { "color": "pur",         "effect": "pur:ffd:flo" },
+    { "cmd": "-3:lev",        "effect": "-3:lev" },
 
-    { "macro": 13,            "effect": "" },
-    { "color": "neo",         "effect": "neo:sfd:flo" },
-    { "color": "mag",         "effect": "mag:sfd:flo" },
-    { "cmd": "-4:lev",        "effect": "" },
+    { "macro": 13,            "effect": "red:sfd" },
+    { "color": "neo",         "effect": "neo:ffd:flo" },
+    { "color": "mag",         "effect": "mag:ffd:flo" },
+    { "cmd": "-4:lev",        "effect": "-4:lev" },
 
-    { "raw": "stp",           "effect": "" },
-    { "raw": "stp",           "effect": "" },
-    { "color": "ros",         "effect": "ros:sfd:flo" },
-    { "cmd": "0:lev",         "effect": "" }
+    { "raw": "stp",           "effect": "era:flu" },
+    { "raw": "stp",           "effect": "era:flu" },
+    { "color": "ros",         "effect": "ros:ffd:flo" },
+    { "cmd": "0:lev",         "effect": "0:lev" }
 ]
 
 long_press = [
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
+    { "color": "blu", "effect": "blu:sfd" },
+    { "color": "lbl", "effect": "lbl:sfd" },
+    { "color": "pur", "effect": "pur:sfd" },
+    { "color": "sky", "effect": "sky:sfd" },
 
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
+    { "color": "grn", "effect": "grn:sfd" },
+    { "color": "lgr", "effect": "lgr:sfd" },
+    { "color": "sea", "effect": "sea:sfd" },
+    { "color": "cyn", "effect": "cyn:sfd" },
 
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
+    { "color": "yel", "effect": "yel:sfd" },
+    { "color": "amb", "effect": "amb:sfd" },
+    { "color": "olv", "effect": "olv:sfd" },
+    { "color": "lav", "effect": "lav:sfd" },
 
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
+    { "color": "red", "effect": "red:sfd" },
+    { "color": "org", "effect": "org:sfd" },
+    { "color": "neo", "effect": "neo:sfd" },
+    { "color": "tur", "effect": "tur:sfd" },
 
-    { "cmd": "blk:flo:cfa", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" },
-    { "cmd": "", "effect": "" }
+    { "random": "0,-1:rnd", "effect": "0,-1:rnd:flu" },
+    { "random": "1,-1:rnd", "effect": "1,-1:rnd:flu" },
+    { "random": "2,-1:rnd", "effect": "2,-1:rnd:flu" },
+    { "random": "2:rnd:flo", "effect": "2:rnd:flo:flu" }
 ]
 
 

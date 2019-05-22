@@ -14,9 +14,14 @@ rsync -ut /Media/SD-P1/dev/linkit/python/utils.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/wx.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/sunrise.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/update /root
+rsync -ut /Media/SD-P1/dev/linkit/python/remote.py /root
+rsync -ut /Media/SD-P1/dev/linkit/python/remote_settings.py /root
+rsync -ut /Media/SD-P1/dev/linkit/python/multicast.py /root
+rsync -ut /Media/SD-P1/dev/linkit/python/keyboard.py /root
 /etc/init.d/http_command restart
 /etc/init.d/udp_command restart
 /etc/init.d/weather restart
 /etc/init.d/sunrise restart
 /etc/init.d/sunset start
+/etc/init.d/remote restart
 

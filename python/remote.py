@@ -20,10 +20,10 @@ import remote_settings as settings
 def begin():
     lc.begin(verbose_mode)
     mc.begin("remote", verbose_mode)
+    lc.command("3,-1,-1:key")
     kb.begin(key_callback, verbose_mode)
-
     lc.stop_all()
-    lc.command("1:cnt:4:cnt")
+    lc.command("1:cnt:4:cnt:ton")
 
 def run():
     while True:
@@ -35,19 +35,31 @@ def key_callback(key, long_press):
 
     if "macro" in button:
         do_macro(button["macro"])
-        kb.long_beep()
+        if not long_press:
+            kb.long_beep()
 
     if "color" in button:
         do_color(button["color"])
-        kb.alt_beep()
+        if not long_press:
+            kb.alt_beep()
+
+    if "random" in button:
+        do_random(button["random"])
+        if not long_press:
+            kb.alt_beep()
 
     if "cmd" in button:
         do_cmd(button["cmd"])
-        kb.short_beep()
+        if not long_press:
+            kb.short_beep()
 
     if "raw" in button:
         do_raw(button["raw"])
-        kb.long_beep()
+        if not long_press:
+            kb.long_beep()
+
+    if "effect" in button:
+        do_effect(button["effect"])
 
 # ----------------------------------------
 
@@ -59,6 +71,10 @@ def do_color(color):
     command = "2:pau:" + color + ":flo:1:cnt:flu"
     mc.broadcast(command)
 
+def do_random(random):
+    command = "2:pau:" + random + ":1:cnt:flu"
+    mc.broadcast(command)
+
 def do_macro(macro):
     command = "1:pau:2:cnt:" + str(macro) + ":run"
     mc.broadcast(command)
@@ -66,6 +82,9 @@ def do_macro(macro):
 def do_raw(stop):
     command = stop
     mc.broadcast(command)
+
+def do_effect(effect):
+    lc.command(effect)
 
 # ========================================
 
