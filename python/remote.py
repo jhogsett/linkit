@@ -74,7 +74,7 @@ def broadcast(cmd):
     ui.report_verbose_alt("broadcast: " + cmd)
 
 def send_local(cmd):
-    command = "::3:pau:" + cmd + ":3:cnt"
+    command = "::1:pau:" + cmd + ":1:cnt"
     lc.command(command)
     ui.report_verbose_alt2("local: " + command)
 
