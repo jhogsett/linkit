@@ -11,7 +11,7 @@ global responses, background_threads
 responses = {}
 background_threads = []
 
-def begin(host_name_, verbose_mode_=False, multicast_group_ip_=None, multicast_port_=None, timeout_in_seconds_=None, multicast_group_=None, num_times_=None, msg_delay_=None):
+def begin(host_name_, verbose_mode_=False, multicast_group_ip_=None, multicast_port_=None, timeout_in_seconds_=None, num_times_=None, msg_delay_=None):
     global host_name, verbose_mode, multicast_group_ip, multicast_port, timeout_in_seconds, multicast_group, num_times, no_keys, msg_delay
 
     host_name = host_name_
@@ -26,7 +26,6 @@ def begin(host_name_, verbose_mode_=False, multicast_group_ip_=None, multicast_p
     multicast_group = (multicast_group_ip, multicast_port)
 
     ui.begin(verbose_mode)
-    ui.report_verbose("verbose mode enabled")
 
 def conclude():
     wait_for_active_threads()

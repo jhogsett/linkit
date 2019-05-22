@@ -31,7 +31,7 @@ def begin(callback=None, verbose_mode_=False):
 
     verbose_mode = verbose_mode_   
 
-    lc.begin(verbose_mode)
+    lc.begin() #verbose_mode)
     lc.stop_all()
 
     enable_keyboard()
@@ -66,18 +66,23 @@ def poll():
 
 # ========================================
 
+def send(command):
+    lc.command(command)
+    ui.report_verbose_alt("sent: " + command)
+
 def enable_keyboard():
-    lc.command("4,0:cfg:1:cnt:3:cnt")
+    send(":::pau")
+    send("4,0:cfg:1:cnt:4:cnt")
 
 def store_long_beep_on_device():
-    lc.command_str("3,-1,0:key:0:set:" + str(long_press_tone) + "," + str(long_press_duration) + ":ton")
+    send("3,-1,0:key:0:set:" + str(long_press_tone) + "," + str(long_press_duration) + ":ton")
 
 def short_beep():
-    lc.command(str(short_press_tone) + "," + str(short_press_duration) + ":ton")
+    send(str(short_press_tone) + "," + str(short_press_duration) + ":ton")
 
 def alt_beep():
-    lc.command(str(alt_press_tone) + "," + str(alt_press_duration) + ":ton")
+    send(str(alt_press_tone) + "," + str(alt_press_duration) + ":ton")
 
 def long_beep():
-    lc.command(str(long_press_tone) + "," + str(long_press_duration) + ":ton")
+    send(str(long_press_tone) + "," + str(long_press_duration) + ":ton")
 

@@ -17,13 +17,18 @@ import remote_settings as settings
 
 # ----------------------------------------
 
+num_sends = 5
+send_delay = 0.1
+
 def begin():
-    lc.begin(verbose_mode)
-    mc.begin("remote", verbose_mode)
-    lc.command("3,-1,-1:key")
+    lc.begin() #verbose_mode)
+    mc.begin("remote", verbose_mode, None, None, None, num_sends, send_delay)
+    send_local("3,-1,-1:key")
     kb.begin(key_callback, verbose_mode)
     lc.stop_all()
-    lc.command("1:cnt:4:cnt:ton")
+    lc.command(":::pau")
+    lc.command("1:cnt")
+    lc.command("4:cnt:ton")
 
 def run():
     while True:
@@ -32,6 +37,7 @@ def run():
 def key_callback(key, long_press):
     button_set = settings.long_press if long_press else settings.short_press
     button = button_set[key-1]
+    ui.report_verbose_alt(str(button))
 
     if "macro" in button:
         do_macro(button["macro"])
@@ -63,28 +69,37 @@ def key_callback(key, long_press):
 
 # ----------------------------------------
 
+def broadcast(cmd):
+    mc.broadcast(cmd)
+    ui.report_verbose_alt("broadcast: " + cmd)
+
+def send_local(cmd):
+    command = "::3:pau:" + cmd + ":3:cnt"
+    lc.command(command)
+    ui.report_verbose_alt2("local: " + command)
+
 def do_cmd(cmd):
     command = "3:pau:" + cmd + ":3:cnt"
-    mc.broadcast(command)
+    broadcast(command)
 
 def do_color(color):
     command = "2:pau:" + color + ":flo:1:cnt:flu"
-    mc.broadcast(command)
+    broadcast(command)
 
 def do_random(random):
     command = "2:pau:" + random + ":1:cnt:flu"
-    mc.broadcast(command)
+    broadcast(command)
 
 def do_macro(macro):
     command = "1:pau:2:cnt:" + str(macro) + ":run"
-    mc.broadcast(command)
+    broadcast(command)
 
 def do_raw(stop):
     command = stop
-    mc.broadcast(command)
+    broadcast(command)
 
 def do_effect(effect):
-    lc.command(effect)
+    send_local(effect)
 
 # ========================================
 
