@@ -12,13 +12,13 @@
 #define SINE_INTS
 //#define SINE_FLOATS
 
-#define SINE_24_STEPS
+// #define SINE_24_STEPS
 
 // #define SINE_36_STEPS
 // #define SINE_48_STEPS
 // #define SINE_60_STEPS
 
-// #define SINE_90_STEPS
+#define SINE_90_STEPS
 
 #if defined(SINE_24_STEPS)
 #define NUM_SINES    25
@@ -86,8 +86,8 @@ class ColorMath
   static const float PROGMEM cosines[NUM_SINES];
   static const float PROGMEM sines[NUM_SINES];
 #elif defined(SINE_INTS)
-  static const int PROGMEM cosines[NUM_SINES];
-  static const int PROGMEM sines[NUM_SINES];
+  static const byte PROGMEM cosines[NUM_SINES];
+  static const byte PROGMEM sines[NUM_SINES];
 #endif
 
 #ifdef USE_BLEND
@@ -484,7 +484,7 @@ const float PROGMEM ColorMath::sines[NUM_SINES]
   cosines = (0..steps).map{|n| (((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5) * 255).floor}
   sines = (0..steps).map{|n| (((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5)* 255).floor}
 */
-const int PROGMEM ColorMath::cosines[NUM_SINES]
+const byte PROGMEM ColorMath::cosines[NUM_SINES]
 = {
     0, 
     4, 
@@ -513,7 +513,7 @@ const int PROGMEM ColorMath::cosines[NUM_SINES]
     0
 };
 
-const int PROGMEM ColorMath::sines[NUM_SINES]
+const byte PROGMEM ColorMath::sines[NUM_SINES]
 = {
     127, 
     94, 
@@ -544,92 +544,91 @@ const int PROGMEM ColorMath::sines[NUM_SINES]
 
 #elif defined(SINE_36_STEPS)
 /* ruby code
-  steps = 24
-  cosines = (0..steps).map{|n| ((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
-  sines = (0..steps).map{|n| ((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5).round(15)}
-only elements 0-12 are needed of cosines array to compute both sine and cosine values
+  steps = 36
+  cosines = (0..steps).map{|n| (((1.0 - Math.cos((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5) * 255).floor}
+  sines = (0..steps).map{|n| (((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5)* 255).floor}
 */
 
-const float PROGMEM ColorMath::cosines[NUM_SINES]
+const byte PROGMEM ColorMath::cosines[NUM_SINES]
 = {
-    0.0,
-    0.007596123493896,
-    0.030153689607046,
-    0.066987298107781,
-    0.116977778440511,
-    0.17860619515673,
-    0.25,
-    0.328989928337166,
-    0.413175911166535,
-    0.5,
-    0.586824088833465,
-    0.671010071662834,
-    0.75,
-    0.82139380484327,
-    0.883022221559489,
-    0.933012701892219,
-    0.969846310392954,
-    0.992403876506104,
-    1.0,
-    0.992403876506104,
-    0.969846310392954,
-    0.933012701892219,
-    0.883022221559489,
-    0.82139380484327,
-    0.75,
-    0.671010071662835,
-    0.586824088833465,
-    0.5,
-    0.413175911166535,
-    0.328989928337165,
-    0.25,
-    0.17860619515673,
-    0.116977778440511,
-    0.066987298107781,
-    0.030153689607046,
-    0.007596123493896,
-    0.0
+    0,
+    1,
+    7,
+    17,
+    29,
+    45,
+    63,
+    83,
+    105,
+    127,
+    149,
+    171,
+    191,
+    209,
+    225,
+    237,
+    247,
+    253,
+    255,
+    253,
+    247,
+    237,
+    225,
+    209,
+    191,
+    171,
+    149,
+    127,
+    105,
+    83,
+    63,
+    45,
+    29,
+    17,
+    7,
+    1,
+    0
 };
 
-const float PROGMEM ColorMath::sines[NUM_SINES]
+const byte PROGMEM ColorMath::sines[NUM_SINES]
 = {
-    0.5,
-    0.413175911166535,
-    0.328989928337166,
-    0.25,
-    0.17860619515673,
-    0.116977778440511,
-    0.066987298107781,
-    0.030153689607046,
-    0.007596123493896,
-    0.0,
-    0.007596123493896,
-    0.030153689607046,
-    0.066987298107781,
-    0.116977778440511,
-    0.17860619515673,
-    0.25,
-    0.328989928337166,
-    0.413175911166535,
-    0.5,
-    0.586824088833465,
-    0.671010071662834,
-    0.75,
-    0.82139380484327,
-    0.883022221559489,
-    0.933012701892219,
-    0.969846310392954,
-    0.992403876506104,
-    1.0,
-    0.992403876506104,
-    0.969846310392954,
-    0.933012701892219,
-    0.883022221559489,
-    0.82139380484327,
-    0.75,
-    0.671010071662835,
-    0.586824088833465,
-    0.5
+    127,
+    105,
+    83,
+    63,
+    45,
+    29,
+    17,
+    7,
+    1,
+    0,
+    1,
+    7,
+    17,
+    29,
+    45,
+    63,
+    83,
+    105,
+    127,
+    149,
+    171,
+    191,
+    209,
+    225,
+    237,
+    247,
+    253,
+    255,
+    253,
+    247,
+    237,
+    225,
+    209,
+    191,
+    171,
+    149,
+    127
 };
 
 #elif defined(SINE_48_STEPS)
@@ -639,7 +638,7 @@ const float PROGMEM ColorMath::sines[NUM_SINES]
   sines = (0..steps).map{|n| (((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5)* 255).floor}
 */
 
-const int PROGMEM ColorMath::cosines[NUM_SINES]
+const byte PROGMEM ColorMath::cosines[NUM_SINES]
 = {
     0,
     1,
@@ -692,7 +691,7 @@ const int PROGMEM ColorMath::cosines[NUM_SINES]
     0
 };
 
-const int PROGMEM ColorMath::sines[NUM_SINES]
+const byte PROGMEM ColorMath::sines[NUM_SINES]
 = {
     127,
     110,
@@ -752,12 +751,12 @@ const int PROGMEM ColorMath::sines[NUM_SINES]
   sines = (0..steps).map{|n| (((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5)* 255).floor}
 */
 
-const int PROGMEM ColorMath::cosines[NUM_SINES]
+const byte PROGMEM ColorMath::cosines[NUM_SINES]
 = {
 0, 0, 2, 6, 11, 17, 24, 32, 42, 52, 63, 75, 88, 100, 114, 127, 140, 154, 166, 179, 191, 202, 212, 222, 230, 237, 243, 248, 252, 254, 255, 254, 252, 248, 243, 237, 230, 222, 212, 202, 191, 179, 166, 154, 140, 127, 114, 100, 88, 75, 63, 52, 42, 32, 24, 17, 11, 6, 2, 0, 0
 };
 
-const int PROGMEM ColorMath::sines[NUM_SINES]
+const byte PROGMEM ColorMath::sines[NUM_SINES]
 = {
 127, 114, 100, 88, 75, 63, 52, 42, 32, 24, 17, 11, 6, 2, 0, 0, 0, 2, 6, 11, 17, 24, 32, 42, 52, 63, 75, 88, 100, 114, 127, 140, 154, 166, 179, 191, 202, 212, 222, 230, 237, 243, 248, 252, 254, 255, 254, 252, 248, 243, 237, 230, 222, 212, 202, 191, 179, 166, 154, 140, 127
 };
@@ -769,12 +768,12 @@ const int PROGMEM ColorMath::sines[NUM_SINES]
   sines = (0..steps).map{|n| (((1.0 - Math.sin((Math::PI * 2) * (n / (steps * 1.0)))) * 0.5)* 255).floor}
 */
 
-const int PROGMEM ColorMath::cosines[NUM_SINES]
+const byte PROGMEM ColorMath::cosines[NUM_SINES]
 = {
 0, 0, 1, 2, 4, 7, 11, 14, 19, 24, 29, 35, 42, 49, 56, 63, 71, 79, 88, 96, 105, 114, 123, 131, 140, 149, 158, 166, 175, 183, 191, 198, 205, 212, 219, 225, 230, 235, 240, 243, 247, 250, 252, 253, 254, 255, 254, 253, 252, 250, 247, 243, 240, 235, 230, 225, 219, 212, 205, 198, 191, 183, 175, 166, 158, 149, 140, 131, 123, 114, 105, 96, 88, 79, 71, 63, 56, 49, 42, 35, 29, 24, 19, 14, 11, 7, 4, 2, 1, 0, 0
 };
 
-const int PROGMEM ColorMath::sines[NUM_SINES]
+const byte PROGMEM ColorMath::sines[NUM_SINES]
 = {
 127, 118, 109, 100, 92, 83, 75, 67, 59, 52, 45, 38, 32, 27, 21, 17, 12, 9, 6, 3, 1, 0, 0, 0, 0, 1, 3, 6, 9, 12, 17, 21, 27, 32, 38, 45, 52, 59, 67, 75, 83, 92, 100, 109, 118, 127, 136, 145, 154, 162, 171, 179, 187, 195, 202, 209, 216, 222, 227, 233, 237, 242, 245, 248, 251, 253, 254, 254, 254, 254, 253, 251, 248, 245, 242, 237, 233, 227, 222, 216, 209, 202, 195, 187, 179, 171, 162, 154, 145, 136, 127
 

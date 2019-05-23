@@ -317,6 +317,10 @@ void Dependencies::begin()
   commands.reset();
   commands.set_brightness_level(0);
   commands.scheduler.reset_all_schedules();
+
+#ifdef USE_SPEAKER
+  commands.do_tone(0,0);
+#endif
   
   commands.do_run_macro(DEFAULT_MACRO);
 }

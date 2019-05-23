@@ -167,11 +167,11 @@ void Commands::do_test(int type, int arg1, int arg2)
       // arg2 - (depends on inquiry)
       do_test_inquiry(arg1);
       break;
-#ifdef USE_TEST_FRAMEWORK
     case TEST_TYPE_DUMP_MACRO:
       // arg1 - macro number
       do_test_macro(arg1);
       break;
+#ifdef USE_TEST_FRAMEWORK
     case TEST_TYPE_DUMP_BUFFER:
       // arg1 - start
       // arg2 - count
@@ -264,6 +264,7 @@ void Commands::do_test_function(byte type, int arg2)
       break;
   }  
 }
+#endif
 
 void Commands::do_test_macro(byte macro_number)
 {
@@ -280,6 +281,7 @@ void Commands::do_test_macro(byte macro_number)
   }
 }
 
+#ifdef USE_TEST_FRAMEWORK
 void Commands::dump_buffer_colors(rgb_color * buffer, byte start, byte count, bool correct_color)
 {
   // WHY IS THIS 216 BYTES?

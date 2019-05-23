@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-// #define USE_TEST_FRAMEWORK // 3%
+#define USE_TEST_FRAMEWORK // 3%
 // #define USE_EXTRA_SHUFFLES // 1%
 // #define USE_BLEND          // 2%
 
@@ -25,7 +25,7 @@
 // #define LED_STRIP_90
 
 // 16-LED Uno Cheater Box / Remote
-#define CHEATER
+#define REMOTE
 
 // 2 50-led strands
 // decoration3 & decoration4
@@ -115,13 +115,13 @@
 #define DEFAULT_BRIGHTNESS_PERCENT 20
 #define FADE_RATE 0.925
 #define FADE_PERIOD 100
-#define BLINK_PERIOD 6000
-#define BREATHE_PERIOD 300
+#define BLINK_PERIOD 3000
+#define BREATHE_PERIOD 150
 #define NUM_SEQUENCERS 16
 #define FAN_PIN 13
 #define SPEAKER_PIN 10
-#define DEFAULT_FREQUENCY 1800
-#define DEFAULT_DURATION 30
+#define DEFAULT_FREQUENCY 2850
+#define DEFAULT_DURATION 200
 #define FAN_AUTO_ON_BRIGHTNESS 50
 #define NUM_MACRO_CHARS 15
 #define NUM_MEMORY_MACROS 4
@@ -145,20 +145,19 @@
 //#define  USE_MULTIPLE_DISPLAYS
 
 
-#ifdef CHEATER
+#ifdef REMOTE
 #define USE_1_DISPLAYS
 #define SWAP_REDGREEN
 #define ANIM_LED_COUNT 16
 #define DEFAULT_BRIGHTNESS_PERCENT 15
 #define FADE_RATE 0.925
 #define FADE_PERIOD 400
-#define ZONES_CHEATER
+#define BLINK_PERIOD 5000
+#define ZONES_REMOTE
 #define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
 #define HIGH_BRIGHTNESS_PERCENT    25
 #define LOW_BRIGHTNESS_PERCENT     5
 #define MIN_BRIGHTNESS_PERCENT     2
-#define BLINK_PERIOD 2000
-#define BREATHE_PERIOD 150
 #define CROSSFADE_DELAY 50
 #define USE_KEYBOARD
 #define USE_SPEAKER

@@ -7,7 +7,7 @@
 
 //#if defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV)
 
-#if defined(ZONES_CHEATER)
+#if defined(ZONES_REMOTE)
 
 #define NUM_ZONES 11
 #define FINE_ZONES 8 //                               pairs                         top & bottom  
