@@ -74,8 +74,7 @@ def poll():
 # ========================================
 
 def send(command):
-    lc.command("::3:pau")
-    lc.command(command + ":3:cnt:1:cnt")
+    lc.command("::3:pau:" + command + ":3:cnt:1:cnt")
     ui.report_verbose_alt("sent: " + command)
 
 def enable_keyboard():
