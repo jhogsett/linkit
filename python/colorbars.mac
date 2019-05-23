@@ -1,0 +1,30 @@
+# ----------------------------------------------------------------
+# Color Bars v.0.0 
+# ----------------------------------------------------------------
+
+
+
+[[group NUM-COLOR-BARS RENDER-TIME
+    [start]
+        (start-all)
+        NUM-COLOR-BARS, <AUTO-FILL>, ` int( <NUM-LEDS> / NUM-COLOR-BARS) `
+        duplicate
+        (hsl-sequencer-start)
+        (render RENDER-TIME)
+
+    [start-all]
+        (((bar-init NUM-COLOR-BARS)))
+
+    (((bar NUM-COLOR-BARS BAR)))
+]]
+
+[[bar-init BAR
+    (init-BAR)
+]]
+
+[[bar BAR PALETTE
+    [init-BAR]
+        PALETTE
+        add-dynamic-color 
+]]
+

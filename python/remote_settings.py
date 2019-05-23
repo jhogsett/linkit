@@ -20,7 +20,7 @@ short_press = [
     { "cmd": "-4:lev",        "effect": "-4:lev" },
 
     { "raw": "stp",           "effect": "era:flu" },
-    { "raw": "stp",           "effect": "era:flu" },
+    { "raw": "stp",           "effect": "stp" },
     { "color": "ros",         "effect": "ros:ffd:flo" },
     { "cmd": "0:lev",         "effect": "0:lev" }
 ]
@@ -29,22 +29,22 @@ long_press = [
     { "color": "blu", "effect": "blu:sfd" },
     { "color": "lbl", "effect": "lbl:sfd" },
     { "color": "pur", "effect": "pur:sfd" },
-    { "color": "sky", "effect": "sky:sfd" },
+    { "color": "sky", "effect": "10:run" },
 
     { "color": "grn", "effect": "grn:sfd" },
     { "color": "lgr", "effect": "lgr:sfd" },
     { "color": "sea", "effect": "sea:sfd" },
-    { "color": "cyn", "effect": "cyn:sfd" },
+    { "color": "cyn", "effect": "11:run" },
 
     { "color": "yel", "effect": "yel:sfd" },
     { "color": "amb", "effect": "amb:sfd" },
     { "color": "olv", "effect": "olv:sfd" },
-    { "color": "lav", "effect": "lav:sfd" },
+    { "color": "lav", "effect": "12:run" },
 
     { "color": "red", "effect": "red:sfd" },
     { "color": "org", "effect": "org:sfd" },
     { "color": "neo", "effect": "neo:sfd" },
-    { "color": "tur", "effect": "tur:sfd" },
+    { "color": "tur", "effect": "13:run" },
 
     { "random": "0,-1:rnd", "effect": "0,-1:rnd:flu" },
     { "random": "1,-1:rnd", "effect": "1,-1:rnd:flu" },
