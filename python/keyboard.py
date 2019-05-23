@@ -13,12 +13,19 @@ verbose_mode = False
 poll_frequency = 20
 long_press = 50
 too_short_press = 3
-short_press_tone = 3300
+
+short_press_tone = 2925
 short_press_duration = 50
-alt_press_tone = 3100
+
+alt_press_tone = 2325
 alt_press_duration = 50
-long_press_tone = 2900
+
+long_press_tone = 1825
 long_press_duration = 200
+
+alt_long_press_tone = 3225
+alt_long_press_duration = 200
+
 sleep_time = 1.0 / poll_frequency
 key_callback = None
 
@@ -67,8 +74,8 @@ def poll():
 # ========================================
 
 def send(command):
-    command = "::3:pau:" + command + ":3:cnt:1:cnt"
-    lc.command(command)
+    lc.command("::3:pau")
+    lc.command(command + ":3:cnt:1:cnt")
     ui.report_verbose_alt("sent: " + command)
 
 def enable_keyboard():
@@ -86,4 +93,7 @@ def alt_beep():
 
 def long_beep():
     send(str(long_press_tone) + "," + str(long_press_duration) + ":ton")
+
+def alt_long_beep():
+    send(str(alt_long_press_tone) + "," + str(alt_long_press_duration) + ":ton")
 

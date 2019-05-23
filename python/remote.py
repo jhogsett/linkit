@@ -42,12 +42,12 @@ def key_callback(key, long_press):
     if "macro" in button:
         do_macro(button["macro"])
         if not long_press:
-            kb.long_beep()
+            kb.alt_beep()
 
     if "color" in button:
         do_color(button["color"])
         if not long_press:
-            kb.alt_beep()
+            kb.short_beep()
 
     if "random" in button:
         do_random(button["random"])
@@ -57,7 +57,7 @@ def key_callback(key, long_press):
     if "cmd" in button:
         do_cmd(button["cmd"])
         if not long_press:
-            kb.short_beep()
+            kb.alt_long_beep()
 
     if "raw" in button:
         do_raw(button["raw"])
@@ -74,9 +74,9 @@ def broadcast(cmd):
     ui.report_verbose_alt("broadcast: " + cmd)
 
 def send_local(cmd):
-    command = "::1:pau:" + cmd + ":1:cnt"
-    lc.command(command)
-    ui.report_verbose_alt2("local: " + command)
+    lc.command("::1:pau")
+    lc.command(cmd + ":1:cnt")
+    ui.report_verbose_alt2("local: " + cmd)
 
 def do_cmd(cmd):
     command = "3:pau:" + cmd + ":3:cnt"
