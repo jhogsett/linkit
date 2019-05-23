@@ -9,6 +9,8 @@ get_variable_start       = "<"
 get_variable_end         = ">"
 set_macro_start          = "["
 set_macro_end            = "]"
+alt_arg_group_start      = "["
+alt_arg_group_end        = "]"
 run_macro_start          = "("
 run_macro_end            = ")"
 allocate_sequencer_start = "{"
@@ -53,6 +55,7 @@ meta_template_delimiters       = {meta_template_start : meta_template_end}
 multi_macro_delimiters         = {multi_macro_start : multi_macro_end}
 conditional_delimiters         = {conditional_start : conditional_end}
 refresh_block_delimiters       = {refresh_block_start : refresh_block_start}
+alt_arg_group_delimiters       = {alt_arg_group_start : alt_arg_group_end}
 
 empty_delimiters               = {}
 empty_delimiter                = []
@@ -69,8 +72,8 @@ set_template_non_delimiters    = multi_macro_delimiters
 expand_template_non_delimiters = meta_template_delimiters
 
 # for proper segmentation while parsing lines
-expand_template_grouping       = python_delimiters                                          # keep python expression contents together in template arguments
-meta_template_grouping         = utils.merge_dicts(set_macro_delimiters, python_delimiters) # keep set macro arguments and python expressions together
+expand_template_grouping       = python_delimiters                                         # keep python expression contents together in template arguments
+meta_template_grouping         = utils.merge_dicts(alt_arg_group_delimiters, python_delimiters) # keep set alternate arguments and python expressions together
 
 # for locating by type for renaming
 macro_marker_delimiters        = utils.merge_dicts(run_macro_delimiters, set_macro_delimiters)

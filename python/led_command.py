@@ -526,7 +526,10 @@ def commands():
         100: "dif",
         101: "avg",
         102: "drw",
-        103: "pop"
+        103: "pop",
+        104: "key",
+        105: "ton",
+        106: "rif"
     }
 
 def get_args_byte_count(marker):
