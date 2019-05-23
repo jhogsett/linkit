@@ -58,14 +58,18 @@ class Commands
   static bool dispatch_function(int cmd, byte *dispatch_data = NULL);
   static Scheduler scheduler;
 
+#ifdef USE_SPEAKER
+  void do_tone(int frequency, int duration);
+#endif
+
   private:
   
   void pause(byte type);
   void resume(int type);
   void pause_effects(bool paused);
   void pause_schedules(bool paused);
-//  void restore_paused_state();
-//  void save_paused_state();
+  void restore_paused_state();
+  void save_paused_state();
   rgb_color * offset_buffer();
 
   #ifdef USE_BLEND
@@ -139,20 +143,14 @@ class Commands
   void do_fan(bool fan_on, bool auto_set=false);
 #endif
 
-#ifdef USE_SPEAKER
-  void do_tone(int frequency, int duration);
-#endif
-
   void do_app_setup();
-
-  void do_tone(byte pin, int frequency, int duration);
 
   void do_test_inquiry(byte type);
   void do_test(int type, int arg1, int arg2);
 //  void do_test_process(int times, bool schedules);
 
-#ifdef USE_TEST_FRAMEWORK
   void do_test_macro(byte macro_number);
+#ifdef USE_TEST_FRAMEWORK
   void do_test_buffer(byte start, byte count);
   void do_test_effects(byte start, byte count);
   void do_test_render(byte start, byte count);
@@ -170,14 +168,15 @@ class Commands
   BreatheEffects *breathe_effects;
   bool effects_paused = false;
   bool schedules_paused = false;
-//  bool effects_were_paused = false;
-//  bool schedules_were_paused = false;
+  bool effects_were_paused = false;
+  bool schedules_were_paused = false;
   byte default_brightness;
   byte visible_led_count;
   static Macros macros;
   static Commands * me;
   static Sequencer sequencer;
   FadeEffects *fade_effects;
+  bool reset_effects_on_command = true;
 
 #ifdef USE_FAN  
   bool user_fan_on;
@@ -290,15 +289,15 @@ bool Commands::dispatch_function(int cmd, byte *dispatch_data)
 #define PAUSE_ALL        0
 #define PAUSE_EFFECTS    1
 #define PAUSE_SCHEDULES  2
-#define PAUSE_KEYBOARD   3
-//#define PAUSE_PUSH       3
+#define PAUSE_PUSH       3
+#define PAUSE_KEYBOARD   4
 
 // change to resume as was
 #define RESUME_ALL       0 
 #define RESUME_EFFECTS   1
 #define RESUME_SCHEDULES 2
-#define RESUME_KEYBOARD  3
-//#define RESUME_POP       3 
+#define RESUME_POP       3 
+#define RESUME_KEYBOARD  4
 
 void Commands::pause(byte type = PAUSE_ALL)
 {
@@ -328,11 +327,11 @@ void Commands::pause(byte type = PAUSE_ALL)
       break;
 #endif
 
-//    case PAUSE_PUSH:
-//      save_paused_state();
-//      pause_effects(true);
-//      pause_schedules(true);
-//      break;
+    case PAUSE_PUSH:
+      save_paused_state();
+      pause_effects(true);
+      pause_schedules(true);
+      break;
   }
 }
 
@@ -362,22 +361,22 @@ void Commands::resume(int type = RESUME_ALL)
       break;
 #endif
 
-//    case RESUME_POP:
-//      restore_paused_state();
-//      break;
+    case RESUME_POP:
+      restore_paused_state();
+      break;
 
   }
 }
 
-//void Commands::save_paused_state(){
-//  this->effects_were_paused = this->effects_paused;
-//  this->schedules_were_paused = this->schedules_paused;  
-//}
-//
-//void Commands::restore_paused_state(){
-//  pause_effects(this->effects_were_paused);
-//  pause_schedules(this->schedules_were_paused);
-//}
+void Commands::save_paused_state(){
+  this->effects_were_paused = this->effects_paused;
+  this->schedules_were_paused = this->schedules_paused;  
+}
+
+void Commands::restore_paused_state(){
+  pause_effects(this->effects_were_paused);
+  pause_schedules(this->schedules_were_paused);
+}
 
 void Commands::pause_effects(bool paused)
 {
@@ -487,7 +486,6 @@ byte Commands::scan_keyboard()
   }
   return result;
 }
-#endif
 
 void Commands::set_capture_mode(bool capturing, byte key = 0)
 {
@@ -592,7 +590,7 @@ void Commands::do_get_key(byte type, byte press_macro, byte long_press_macro)
   command_processor->sub_args[1] = 0;
   command_processor->sub_args[2] = 0;
 }
-
+#endif
 
 // arg0  > 0 thru 100 -> set percent brightness
 // arg0 <= 0:
@@ -1600,6 +1598,7 @@ void Commands::do_next_window(int arg0, int arg1, int arg2)
 #define CONFIG_SET_BREATHE_TIME   1
 #define CONFIG_SET_FADE_RATE      2
 #define CONFIG_SET_DEFAULT_EFFECT 3
+#define CONFIG_SET_CMD_FX_RESET   4
 
 // arg0 setting to configure
 // arg1 value to set (0 = default)
@@ -1618,9 +1617,12 @@ void Commands::do_configure(int arg0, int arg1)
       set_fade_rate(arg1);
       break;
 
-    // todo: is this used?
     case CONFIG_SET_DEFAULT_EFFECT:
       buffer->set_default_effect(arg1);
+      break;
+
+    case CONFIG_SET_CMD_FX_RESET:
+      reset_effects_on_command = arg1;
       break;
   }
 }
@@ -1984,15 +1986,38 @@ void Commands::do_fan(bool fan_on, bool auto_set)
 #endif
 
 #ifdef USE_SPEAKER
+// frequency is hertz
+// duration is microseconds
 void Commands::do_tone(int frequency, int duration)
 {
+
+// 1000 cycles means each cycle is 1/1000 of a second, 1 millisecond
+  
+
   if(frequency < 1)
     frequency = DEFAULT_FREQUENCY;
 
   if(duration < 1)
     duration = DEFAULT_DURATION;
-  
-  tone(SPEAKER_PIN, frequency, duration);
+
+  // convert frequency to cycle length / 2
+  frequency = int((1000000.0 / frequency) / 2);
+
+  // convert milliseconds to cycle periods
+  duration = int((duration * 1000.0) / frequency);
+
+  pinMode(SPEAKER_PIN, OUTPUT);
+
+  bool on = true;
+  byte dummy = 0;
+  for(int i = 0; i < duration; i++){
+     digitalWrite(SPEAKER_PIN, on ? HIGH : LOW);
+      if(on)
+        on = false;
+      else
+        on = true;
+      delayMicroseconds(frequency);
+  }
 }
 #endif
 

@@ -10,7 +10,8 @@ void Commands::process_events()
 
     // resync the effects to a blank state to minimize visual artifacts 
     // of pausing and restarting if there are display changes
-    effects_processor->reset_effects();
+    if(reset_effects_on_command)
+      effects_processor->reset_effects();
   }
   else 
   {

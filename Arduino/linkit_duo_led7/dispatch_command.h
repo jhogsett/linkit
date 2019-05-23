@@ -308,8 +308,10 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     break;    
 
   case CMD_KEY:
+#ifdef USE_KEYBOARD
     do_get_key(arg0, arg1, arg2);
     reset_args = false; 
+#endif
     break;    
 
   case CMD_TONE:
