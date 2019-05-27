@@ -1,0 +1,85 @@
+
+# ----------------------------------------------------------------
+# Groups of Objects animation
+# ----------------------------------------------------------------
+
+%include symbols
+%include hsl-sequencer
+%include objects-groups
+%include colorbars
+
+$render-time <object-time>
+$refresh-time <object-time>
+
+$num-groups 1
+$group-width `<NUM-LEDS>/<num-groups>`
+$group-time <object-time>
+
+$objects-per-group 2
+$object-time 100
+$object-instance-time 25
+$object-sequencer sine-sequencer
+$object-step 1
+$smooth-factor 3
+
+$right 0
+$right-start 0
+$right-width <group-width>
+
+$left 1
+$left-start 8
+$left-width <group-width>
+
+$num-colorbars 4
+$colorbar-render-time 120
+
+$lamp-render-time 200
+$lamp-colors 1
+$demo-time 30000
+
+%play-macro mellow
+
+[fancy 10]
+    start-application
+    (hsl-sequencer-start)
+    (objects-groups-start)
+
+(((objects-groups-group <num-groups>  <group-time> [<right-start>, <left-start>] [<right-width>, <left-width>] <objects-per-group> <erase-group>)))
+((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <smooth-factor> <draw-object>))
+
+[erase-group]
+    erase-buffer
+
+[draw-object]
+    pop
+    add-palette-color
+
+[mellow 11]
+    start-application
+    (hsl-sequencer-start)
+    (colorbars-start)
+
+((colorbars-group <num-colorbars> <colorbar-render-time>))
+
+[lamp 12]
+  start-application
+  (hsl-sequencer-start)
+  (lamp-render <lamp-render-time>)
+
+[lamp-render]
+  0, <lamp-colors>
+  add-palette-colors
+  <lamp-colors>, <AUTO-FILL>, `<NUM-LEDS> / <lamp-colors>`
+  duplicate
+  refresh-display
+
+[demo 13]
+  (demo-choose)
+  (demo-choose <demo-time>)
+
+[demo-choose]
+  13,10
+  get-random-number
+  run-macro
+  (demo-choose <demo-time>)
+
