@@ -13,17 +13,29 @@ import led_command as lc
 
 # ----------------------------------------
 
+music = 1.059463094359295
+duration = 1000
+start = 309 #309
+end = 4500
+
 def begin():
     lc.begin(verbose_mode);
 
+
+
+
 def run():
-    # for n in range(100, 4000, 10):
+    # for n in range(400, 4400, 5):
     # for n in range(1800, 2000, 1):
     # for n in range(2300, 2500, 3):
     # for n in range(2900, 2950, 1):
-    for n in range(3100, 3500, 3):
-        print n
-        lc.command(str(n) + ",200:ton")
+    # for n in range(3100, 3500, 3):
+
+    freq = start
+    while freq < end:
+        print int(freq)
+        lc.command(str(int(freq)) + "," + str(duration) + ":ton")
+        freq = freq * music
 
 # ----------------------------------------
 
