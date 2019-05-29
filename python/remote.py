@@ -13,7 +13,9 @@ import led_command as lc
 
 import multicast as mc
 import keyboard as kb
-import remote_settings as settings
+import tones
+#import remote_settings as settings
+global settings
 
 # ----------------------------------------
 
@@ -21,14 +23,31 @@ num_sends = 5
 send_delay = 0.1
 
 def begin():
+    global settings
     lc.begin() #verbose_mode)
+
+    if not lc.keyboard_enabled():
+        ui.report_error("Keyboard is not enabled on this device")
+        sys.exit("\nExiting...\n")
+
+    cols = lc.get_keyboard_cols()
+    if cols == 4:
+        import remote_settings as settings
+        ui.report_verbose("Using 20-key layout")
+    elif cols == 1:
+        import mini_settings as settings
+        ui.report_verbose("Using 5-key layout")
+    else:
+        ui.report_error("Keyboard on this device is not recognized")
+        sys.exit("\nExiting...\n")
+
     mc.begin("remote", verbose_mode, None, None, None, num_sends, send_delay)
-    send_local("3,-1,-1:key")
+#    send_local("3,-1,-1:key")
     kb.begin(key_callback, verbose_mode)
     lc.stop_all()
     lc.command(":::pau")
-    lc.command("1:cnt")
-    lc.command("4:cnt:ton")
+    lc.command("1:cnt:4:cnt")
+    tones.hello()
 
 def run():
     while True:
@@ -42,27 +61,27 @@ def key_callback(key, long_press):
     if "macro" in button:
         do_macro(button["macro"])
         if not long_press:
-            kb.alt_beep()
+            tones.activate()
 
     if "color" in button:
         do_color(button["color"])
         if not long_press:
-            kb.short_beep()
+            tones.keypress()
 
     if "random" in button:
         do_random(button["random"])
         if not long_press:
-            kb.alt_beep()
+            kb.long_activate()
 
     if "cmd" in button:
         do_cmd(button["cmd"])
         if not long_press:
-            kb.alt_long_beep()
+            tones.activate2()
 
     if "raw" in button:
         do_raw(button["raw"])
         if not long_press:
-            kb.long_beep()
+            tones.gone()
 
     if "effect" in button:
         do_effect(button["effect"])

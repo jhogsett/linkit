@@ -64,7 +64,7 @@ def store_long_press_tone(note=None, duration=None):
     if note == None:
         note = tone_high
     if duration == None:
-        duration = short
+        duration = long
     freq = tones[note]
 
     # this causes two beeps on first key press

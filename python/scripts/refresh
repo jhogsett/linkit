@@ -16,6 +16,7 @@ rsync -ut /Media/SD-P1/dev/linkit/python/sunrise.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/update /root
 rsync -ut /Media/SD-P1/dev/linkit/python/remote.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/remote_settings.py /root
+rsync -ut /Media/SD-P1/dev/linkit/python/mini_settings.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/multicast.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/keyboard.py /root
 /etc/init.d/http_command restart

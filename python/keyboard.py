@@ -5,7 +5,7 @@ import time
 import app_ui as ui
 import utils 
 import led_command as lc
-import tones as t
+import tones
 
 global poll_frequency, long_press, too_short_press
 global sleep_time, key_callback, verbose_mode
@@ -28,14 +28,14 @@ def begin(callback=None, verbose_mode_=False):
     lc.begin() #verbose_mode)
     lc.stop_all()
 
-    t.begin(verbose_mode)
+    tones.begin(verbose_mode)
 
     enable_keyboard()
-    t.store_long_press_tone()
+    tones.store_long_press_tone()
 
 def default_callback(key, long_press):
     print "key: {} long press: {}".format(key, long_press)
-    t.activate2() if long_press else t.activate()
+    tones.long_activate() if long_press else t.activate()
 
 def poll_forever():
     while(True):
@@ -68,6 +68,6 @@ def send(command):
 
 def enable_keyboard():
     send(":::pau")
+    send("3,-1,-1:key")
     send("4,0:cfg:1:cnt:4:cnt")
-
 

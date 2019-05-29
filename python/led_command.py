@@ -180,6 +180,15 @@ def get_num_fine_zones():
 def get_fixed_palette_size():
     return get_device_config(22)
 
+def get_keyboard_rows():
+    return get_device_config(23)
+
+def get_keyboard_cols():
+    return get_device_config(24)
+
+def keyboard_enabled():
+    return get_keyboard_rows() > 0 and get_keyboard_cols() > 0
+
 def get_last_macro_bytes():
     bytes_per_macro = get_num_macro_bytes()
     return (1024 - ((1024 / bytes_per_macro) * bytes_per_macro))
@@ -198,7 +207,9 @@ def get_device_profile():
         "NUM-PALETTE-COLORS": get_palette_size(),
         "START-MACRO": get_first_eeprom_macro(),
         "END-MACRO": get_last_eeprom_macro(),
-        "CHAR-BUFFER-SIZE": get_max_string_length()
+        "CHAR-BUFFER-SIZE": get_max_string_length(),
+        "KEYBOARD-ROWS": get_keyboard_rows(),
+        "KEYBOARD-COLS": get_keyboard_cols()
     }        
 
 def push_command(cmd_text=None):
