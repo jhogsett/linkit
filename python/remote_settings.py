@@ -19,7 +19,7 @@ short_press = [
     { "color": "mag",         "effect": "mag:ffd:flo" },
     { "cmd": "-4:lev",        "effect": "-4:lev" },
 
-    { "raw": "stp",           "effect": "era:flu" },
+    { "raw": "stp",           "effect": "-1:sch:era:flu" },
     { "raw": "",              "effect": "stp" },
     { "color": "ros",         "effect": "ros:ffd:flo" },
     { "cmd": "0:lev",         "effect": "0:lev" }
