@@ -19,6 +19,7 @@ rsync -ut /Media/SD-P1/dev/linkit/python/remote_settings.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/mini_settings.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/multicast.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/keyboard.py /root
+rsync -ut /Media/SD-P1/dev/linkit/python/tones.py /root
 /etc/init.d/http_command restart
 /etc/init.d/udp_command restart
 /etc/init.d/weather restart
