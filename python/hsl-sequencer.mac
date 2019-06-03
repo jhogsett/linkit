@@ -36,4 +36,10 @@ $TIME 100
 
     set-palette-by-hue
 
+[[with-time STEP-TIME
+    {seq-hsl}, 360
+    start-wheel-sequence
+
+    (step STEP-TIME)
+]]
 
