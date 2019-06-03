@@ -430,6 +430,11 @@ byte Macros::set_macro_from_serial(byte macro)
   return set_macro(macro, command_processor->get_input_buffer());
 }
 
+// arg[2] for CMD_RETURN_IF
+#define RETURN_IF_EQUAL 0
+#define RETURN_IF_LESS 1
+#define RETURN_IF_MORE 2
+
 // arg[0] macro number to run, default = 0
 // arg[1] number of times to run, default = 1
 // arg[2] milliseconds delay between runs, default = no delay
@@ -496,10 +501,18 @@ void Macros::run_macro(byte macro, int times, int delay_)
         }
         else if(cmd == CMD_RETURN_IF)
         {
-          // simple conditional, return if arg0 == arg1
-          if(command_processor->sub_args[0] == command_processor->sub_args[1])
-          {
-            return;
+          int a = command_processor->sub_args[0];
+          int b = command_processor->sub_args[1];
+          int type = command_processor->sub_args[2];
+          if(type == RETURN_IF_EQUAL){
+            if(a == b)
+              return;
+          } else if(type == RETURN_IF_LESS){
+            if(a < b)
+              return;
+          } else if(type == RETURN_IF_MORE){
+            if(a > b)
+              return;
           }
         }
         else

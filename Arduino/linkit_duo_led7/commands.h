@@ -1473,11 +1473,11 @@ int Commands::random_num(int max, int min)
 // seq - get next number from #0
 // 
 // seq - get next number from sequence #0
-// 1:-1:seq - get current number from #1
-// 1:-2:seq - get opposite of current number from #1 (for range 0-9 and current number 4, this would be 5)
-// 1:-3:seq - reset #1 to low and return it
-// 1:0:2:seq - get next number from #1, stepping by 2
-// 1:0:-1:seq - get next number from #1, stepping by -1 (THIS DOESN'T SEEM TO WORK)
+// 1,-1:seq - get current number from #1
+// 1,-2:seq - get opposite of current number from #1 (for range 0-9 and current number 4, this would be 5)
+// 1,-3:seq - reset #1 to low and return it
+// 1,0,2:seq - get next number from #1, stepping by 2
+// 1,0,-1:seq - get next number from #1, stepping by -1 (THIS DOESN'T SEEM TO WORK)
 
 int Commands::do_sequence(byte type, int arg0, int arg1, int arg2)
 {

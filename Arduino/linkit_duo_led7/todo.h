@@ -1,3 +1,15 @@
+// (macro) 5
+// would run the macro five times
+// (macro schedule) times 
+// would be invalid
+
+// mini remote propeller
+//0:set:0:seq:pal
+//1:set:rnd:3:blk:4,-1:cpy
+//2:set:0,4:seq:era:1:run:0,16:run:flu
+//3:set:0:run:flu
+
+
 // can't use variable assignment in conditionals
 // save table of python expressions
 

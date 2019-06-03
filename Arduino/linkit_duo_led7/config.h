@@ -22,10 +22,10 @@
 
 // single 90-LED strip for dev
 // blinkit
-// #define LED_STRIP_90
+#define LED_STRIP_90
 
 // 16-LED Remote
-#define REMOTE
+// #define REMOTE
 
 // 16-LED Mini Remote
 // #define MINI_REMOTE
