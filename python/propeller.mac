@@ -1,0 +1,52 @@
+
+%include symbols
+%include hsl-sequencer
+
+$step-time 667
+$color-time 300
+$min-step-time 75
+$max-step-time 350
+$time-step 5
+$time-step-sequencer swing-sequencer
+
+#0:set:0:seq:pal
+#1:set:rnd:3:blk:4,-1:cpy
+#2:set:0,4:seq:era:1:run:0,16:run:flu
+#3:set:0:run:flu
+
+
+[start]
+    start-application
+    (setup)
+#    (hsl-sequencer-start)
+    (step <max-step-time>)
+    ((hsl-sequencer-with-time <color-time>))
+
+[setup]
+    <draw>, 4
+    run-macro
+
+    {seq-propeller}, <max-step-time>, <min-step-time>
+#    start-wheel-sequence
+    <time-step-sequencer>
+
+[draw]
+    0
+    add-dynamic-color
+
+    3
+    black
+
+[step]
+    {{{
+        rotate
+
+        {seq-propeller}, <GET-NEXT>, <time-step>
+        advance-sequence
+        store
+
+        <step>
+        recall
+        set-schedule
+    }}}
+

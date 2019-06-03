@@ -5,8 +5,9 @@
 
 %include symbols
 %include hsl-sequencer
-%include objects-groups
+#%include objects-groups
 %include colorbars
+%include propeller
 
 $render-time <object-time>
 $refresh-time <object-time>
@@ -42,10 +43,11 @@ $demo-time 30000
 [fancy 10]
     start-application
     (hsl-sequencer-start)
-    (objects-groups-start)
+#    (objects-groups-start)
+    (propeller-start)
 
-(((objects-groups-group <num-groups>  <group-time> [<right-start>, <left-start>] [<right-width>, <left-width>] <objects-per-group> <erase-group>)))
-((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <smooth-factor> <draw-object>))
+#(((objects-groups-group <num-groups>  <group-time> [<right-start>, <left-start>] [<right-width>, <left-width>] <objects-per-group> <erase-group>)))
+#((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <smooth-factor> <draw-object>))
 
 [erase-group]
     erase-buffer
