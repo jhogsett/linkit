@@ -158,7 +158,7 @@ long_commands = {
  "clear-schedules" : "-1:sch",
  "keyboard" : "key",
  "tone" : "ton",
- "return-if-equal" : "rif",
+ "return" : "rif",
  "true" : "1",
  "false" : "0",
  "enable" : "1",

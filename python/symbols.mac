@@ -117,6 +117,12 @@ $EXTREME 7
 $REVERSE-ENABLED 1
 $REVERSE-DISABLED 0
 
+# return if
+$IF-EQUAL 0
+$IF-LESS 1
+$IF-MORE 2
+
+
 # standard render function, consumes partial final macro
 [render !]
   refresh-display

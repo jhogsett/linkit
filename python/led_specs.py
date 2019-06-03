@@ -2041,6 +2041,10 @@ def specs():
     if test("getting next window works"):
       expect_sequence("0,10:seq:sto:red", "red:0,0,2:snw:sto", [0, 0, 2, 4, 6, 0, 0, 2, 4], [0, 2, 2, 2, 2, 8, 2, 2, 2])
 
+#    if test("a newly set sequencer returns the low value on the first advance"):
+#      expect_sequence("0,4,2:seq:sto:red", "0:seq:sto:rep", [])
+
+
   if group("swing sequencing"):
 
     if test("it does a swing sequence with only an upper limit"):
@@ -2110,6 +2114,7 @@ def specs():
     if test("getting next window works"):
       expect_sequence("0,10:sqs:sto:org", "org:0,0,2:snw:sto", [0, 0, 2, 4, 6, 6, 4, 2, 0, 0, 2, 4], [0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
+
   if group("wheel cosine sequencing"):
 
     if test("it does a wheel cosine sequence with only an upper limit"):
@@ -2175,6 +2180,7 @@ def specs():
 
     if test("getting next window works"):
       expect_sequence("0,10:swc:sto:grn", "grn:0,0,2:snw:sto", [0, 0, 3, 9, 3, 0, 0, 3, 9], [0, 3, 6, 0, 6, 3, 3, 6, 0])
+
 
   if group("wheel sine sequencing"):
 
@@ -2760,6 +2766,27 @@ def specs():
     if test("mth operations should automatically recall accumulators into arguments"):
       expect_accumulators("neo:3,9:psh:mul:sto", "27,0,0")
 
+
+########################################################################
+# Return operations
+########################################################################
+  if group("return operations"):
+
+    if test("should return if arg0 and arg1 are equal"):
+      lc.command("0:set:red:0,0,0:rif:blu")
+      expect_buffer("0:run", 0, 3, "20,0,0,0,0,0,0,0,0")
+
+    if test("should return if arg0 < arg1"):
+      lc.command("0:set:red:0,0,1:rif:blu:1,2,1:rif:grn")
+      expect_buffer("0:run", 0, 4, "0,0,20,20,0,0,0,0,0,0,0,0")
+
+    if test("should return if arg0 > arg1"):
+      lc.command("0:set:red:0,0,2:rif:blu:2,1,2:rif:grn")
+      expect_buffer("0:run", 0, 4, "0,0,20,20,0,0,0,0,0,0,0,0")
+
+    if test("it leaves args intact"):
+      lc.command("0:set:1,2,0:rif:pos:red:flo")
+      expect_buffer("0:run", 0, 4, "0,0,0,20,0,0,20,0,0,0,0,0")
 
 
 ########################################################################                     
