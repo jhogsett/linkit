@@ -1,3 +1,7 @@
+// should return if clear the args?
+// might make sense to test them but leave them unchanged
+// maybe should clear out arg2, or both arg1 and arg2 since arg0 is being tested
+
 // (macro) 5
 // would run the macro five times
 // (macro schedule) times 

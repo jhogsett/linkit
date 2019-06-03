@@ -504,16 +504,18 @@ void Macros::run_macro(byte macro, int times, int delay_)
           int a = command_processor->sub_args[0];
           int b = command_processor->sub_args[1];
           int type = command_processor->sub_args[2];
-          if(type == RETURN_IF_EQUAL){
-            if(a == b)
-              return;
-          } else if(type == RETURN_IF_LESS){
-            if(a < b)
-              return;
-          } else if(type == RETURN_IF_MORE){
-            if(a > b)
-              return;
-          }
+          bool do_return = false;
+
+          if(type == RETURN_IF_EQUAL) do_return = a == b;
+          else if(type == RETURN_IF_LESS) do_return = a < b;
+          else if(type == RETURN_IF_MORE) do_return = a > b;
+
+          // clear these to isolate` orginal value being tested
+          command_processor->sub_args[1] = 0;
+          command_processor->sub_args[2] = 0;
+
+          if(do_return)
+            return;
         }
         else
         {
