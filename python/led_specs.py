@@ -2784,9 +2784,9 @@ def specs():
       lc.command("0:set:red:0,0,2:rif:blu:2,1,2:rif:grn")
       expect_buffer("0:run", 0, 4, "0,0,20,20,0,0,0,0,0,0,0,0")
 
-    if test("it leaves args intact"):
+    if test("it leaves arg0 intact"):
       lc.command("0:set:1,2,0:rif:pos:red:flo")
-      expect_buffer("0:run", 0, 4, "0,0,0,20,0,0,20,0,0,0,0,0")
+      expect_buffer("0:run", 0, 4, "0,0,0,20,0,0,0,0,0,0,0,0")
 
 
 ########################################################################                     
