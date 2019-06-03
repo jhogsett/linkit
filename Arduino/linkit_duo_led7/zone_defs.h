@@ -7,8 +7,13 @@
 
 //#if defined(APOLLO_LIGHTS2) || defined(APOLLO_LIGHTS2_DEV)
 
-#if defined(ZONES_REMOTE)
+#if defined(ZONES_SIGN)
+#define NUM_ZONES 7
+#define FINE_ZONES 4 //                               fourths       halves  
+const byte PROGMEM zone_offsets[NUM_ZONES]= {   0,    0, 4,  8, 12, 0,  8 };
+const byte PROGMEM zone_windows[NUM_ZONES] = { 16,    4, 8, 12, 16, 8, 16 };
 
+#elif defined(ZONES_REMOTE)
 #define NUM_ZONES 11
 #define FINE_ZONES 8 //                               pairs                         top & bottom  
 const byte PROGMEM zone_offsets[NUM_ZONES]= {   0,    0, 2, 4, 6,  8, 10, 12, 14,   0,  8 };

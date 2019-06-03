@@ -1,3 +1,8 @@
+// can't use variable assignment in conditionals
+// save table of python expressions
+
+// delay before beep on startup
+
 
 // macro return if
 

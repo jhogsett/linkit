@@ -35,6 +35,8 @@
 #define TEST_INQUIRY_NUM_SEQUENCERS 20
 #define TEST_INQUIRY_NUM_FINE_ZONES 21
 #define TEST_INQUIRY_FIXED_PALETTE_SIZE 22
+#define TEST_INQUIRY_KEYBOARD_ROWS 23
+#define TEST_INQUIRY_KEYBOARD_COLS 24
 
 void Commands::do_test_inquiry(byte type)
 {
@@ -152,6 +154,22 @@ void Commands::do_test_inquiry(byte type)
 
     case TEST_INQUIRY_FIXED_PALETTE_SIZE:
       result = NUM_COLORS;
+      break;
+
+    case TEST_INQUIRY_KEYBOARD_ROWS:
+#ifdef USE_KEYBOARD
+      result = KEYBOARD_ROWS;
+#else
+      result = 0;
+#endif    
+      break;
+    
+    case TEST_INQUIRY_KEYBOARD_COLS:
+#ifdef USE_KEYBOARD
+      result = KEYBOARD_COLS;
+#else
+      result = 0;
+#endif    
       break;
     }  
 

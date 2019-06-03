@@ -24,8 +24,14 @@
 // blinkit
 // #define LED_STRIP_90
 
-// 16-LED Uno Cheater Box / Remote
+// 16-LED Remote
 #define REMOTE
+
+// 16-LED Mini Remote
+// #define MINI_REMOTE
+
+// 16-LED Text Sign on projector2
+// #define SIGN
 
 // 2 50-led strands
 // decoration3 & decoration4
@@ -120,7 +126,7 @@
 #define NUM_SEQUENCERS 16
 #define FAN_PIN 13
 #define SPEAKER_PIN 10
-#define DEFAULT_FREQUENCY 2850
+#define DEFAULT_FREQUENCY 2078
 #define DEFAULT_DURATION 200
 #define FAN_AUTO_ON_BRIGHTNESS 50
 #define NUM_MACRO_CHARS 15
@@ -161,6 +167,40 @@
 #define CROSSFADE_DELAY 50
 #define USE_KEYBOARD
 #define USE_SPEAKER
+#endif
+
+#ifdef MINI_REMOTE
+#define USE_1_DISPLAYS
+#define SWAP_REDGREEN
+#define ANIM_LED_COUNT 16
+#define DEFAULT_BRIGHTNESS_PERCENT 15
+#define FADE_RATE 0.925
+#define FADE_PERIOD 400
+#define BLINK_PERIOD 5000
+#define ZONES_REMOTE
+#define MAX_BRIGHTNESS_PERCENT     33 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    25
+#define LOW_BRIGHTNESS_PERCENT     5
+#define MIN_BRIGHTNESS_PERCENT     2
+#define CROSSFADE_DELAY 50
+#define USE_KEYBOARD
+#define USE_SPEAKER
+#define KEYBOARD_COLS 1
+#endif
+
+#ifdef SIGN
+#define USE_1_DISPLAYS
+#define ANIM_LED_COUNT 16
+#define DEFAULT_BRIGHTNESS_PERCENT 33
+#define FADE_RATE 0.925
+#define FADE_PERIOD 400
+#define BLINK_PERIOD 3000
+#define ZONES_SIGN
+#define MAX_BRIGHTNESS_PERCENT     75 // symbolized auto brightness levels
+#define HIGH_BRIGHTNESS_PERCENT    50
+#define LOW_BRIGHTNESS_PERCENT     35
+#define MIN_BRIGHTNESS_PERCENT     20
+#define CROSSFADE_DELAY 50
 #endif
 
 #ifdef LED_STRIP_72
