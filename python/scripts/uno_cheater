@@ -1,0 +1,21 @@
+#!/bin/sh /etc/rc.common
+ 
+SCRIPT_NAME="Uno Cheater"
+SCRIPT_PGM="uno_cheater.py"
+SCRIPT_PATH="/root/uno_cheater.py"
+#LOG_FILE="/root/dev/linkit/python/http_command.log"
+LOG_FILE="/dev/null"
+
+START=99
+STOP=50
+ 
+start() {       
+        echo "Starting $SCRIPT_NAME"
+        $SCRIPT_PATH >> $LOG_FILE 2>&1 &
+}                
+ 
+stop() {         
+        echo "Stopping $SCRIPT_NAME"
+        killall -9 `basename $SCRIPT_PGM`
+}
+

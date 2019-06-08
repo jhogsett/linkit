@@ -20,10 +20,12 @@ rsync -ut /Media/SD-P1/dev/linkit/python/mini_settings.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/multicast.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/keyboard.py /root
 rsync -ut /Media/SD-P1/dev/linkit/python/tones.py /root
+rsync -ut /Media/SD-P1/dev/linkit/python/uno_cheater.py /root
 /etc/init.d/http_command restart
 /etc/init.d/udp_command restart
 /etc/init.d/weather restart
 /etc/init.d/sunrise restart
 /etc/init.d/sunset start
 /etc/init.d/remote restart
+/etc/init.d/uno_cheater restart
 
