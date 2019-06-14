@@ -25,4 +25,13 @@ $hsl-sequencer-TIME <draw-time>
   add-palette-color
   <FILL-COLORS>
   fill
+
+[[with-time COLOR-TIME
+  start-application
+  (draw <draw-time>)
+
+  ((hsl-sequencer-with-time COLOR-TIME))
+
+ (render <render-time>)
+]]
  

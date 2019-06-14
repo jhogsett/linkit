@@ -17,6 +17,7 @@ $outer-rotate-time 8
 $color-sequence-time 250
 $time-factor 10
 $brightness <DEFAULT-BRIGHTNESS>
+$colors-time 5000
 
 %play-macro start
 
@@ -28,7 +29,7 @@ $brightness <DEFAULT-BRIGHTNESS>
   set-brightness
 >>>
 
-  (hsl-sequencer-start)
+  ((hsl-sequencer-with-time <color-sequence-time>))
   (setup)
 
 [demo11 11]
@@ -38,7 +39,10 @@ $brightness <DEFAULT-BRIGHTNESS>
   (start)
 
 [demo12 12]
-  (colors-start)
+  (startup-colors)
+
+[startup-colors]
+  ((colors-with-time <colors-time>))
 
 [setup]
   (set-schedules)
