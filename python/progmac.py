@@ -209,7 +209,7 @@ def program_macros(program_name):
     if verbose_mode:
         ui.report_verbose("compiled script:")
         for script_text in compiled_script:
-            ui.report_verbose_alt(script_text)
+            ui.report_verbose_alt3(script_text)
 
     script_ok = False
     if compilation_succeeded:
@@ -254,7 +254,7 @@ def program_macros(program_name):
         print
         ui.report_info("compiled script:")
         for script_text in compiled_script:
-            ui.report_info_alt(script_text)
+            ui.report_info_alt3(script_text)
 
     return script_ok
 

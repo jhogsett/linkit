@@ -60,6 +60,7 @@ def begin(led_command_, verbose_mode_, quiet_mode, presets_, starting_macro, end
     allow_mutability = allow_mutability_
     presets = presets_
     resolve_presets(presets)
+    add_default_resolved()
 
     utils.begin(False, __file__)
     #tc.begin(quiet_mode)
@@ -134,6 +135,7 @@ def reset(presets_={}):
       presets = presets_
 
     resolve_presets(presets)
+    add_default_resolved()
     allow_mutability = False
     translated = []
     translation = {}
@@ -199,6 +201,7 @@ def load_file(filename, default_ext=".mac"):
                 module_name = os.path.basename(include_filename)
                 include_lines, no_prefix = no_prefix_directive_check(include_lines)
                 include_lines = remove_macro_numbers(include_lines)
+                include_lines = add_inclusion_marker(include_lines)
                 if not no_prefix:
                     include_lines = prefix_module_on_macros(module_name, include_lines)
                     include_lines = prefix_module_on_variables(module_name, include_lines)
@@ -498,6 +501,12 @@ def remove_macro_numbers(script_lines):
     for line in script_lines:
         line = line.strip()
         new_lines.append(remove_fixed_macro_numbers(line))
+    return new_lines
+
+def add_inclusion_marker(script_lines):
+    marker = "$INCLUDED False"
+    new_lines = script_lines
+    new_lines.append(marker)
     return new_lines
 
 
@@ -1781,6 +1790,14 @@ def resolve_presets(presets):
         #ui.report_verbose("setting preset resolved value " + tc.yellow(key + "=" + str(presets[key])))
         set_resolved(key, presets[key])
 
+# inserts resolved values for compiler use
+def add_default_resolved():
+    default_resolved = {
+        "INCLUDED" : False
+    }
+    for key in default_resolved:
+        ui.report_verbose("setting default resolved value " + key + "=" + str(default_resolved[key]))
+        set_resolved(key, default_resolved[key])
 
 ########################################################################
 ## general table management

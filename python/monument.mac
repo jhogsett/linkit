@@ -33,7 +33,12 @@ $hsl-sequencer-TIME <color-sequence-time>
   (start)
 
 [demo12 12]
-  (colors-start)
+#  (colors-start)
+#  ((colors-start))
+  (start-colors)
+
+[start-colors]
+  ((colors-start))
 
 [setup]
   (set-schedules)

@@ -5,7 +5,7 @@
 %include symbols
 %include hsl-sequencer
 
-%play-macro start
+%play-macro startup
 
 $render-time 100
 $draw-time 1000
@@ -14,11 +14,10 @@ $the-color <RED>
 %allow-mutability
 $hsl-sequencer-TIME <draw-time>
 
-[start 10]
-  start-application
-  (draw <draw-time>)
-  (hsl-sequencer-start)
-  (render <render-time>)
+<<< not <INCLUDED>
+[startup 10]
+  ((start))
+>>>
 
 [draw]
   <the-color>
@@ -26,12 +25,17 @@ $hsl-sequencer-TIME <draw-time>
   <FILL-COLORS>
   fill
 
+[[start
+  start-application
+  (draw <draw-time>)
+  ((hsl-sequencer-with-time <draw-time>))
+  (render <render-time>)
+]]
+
 [[with-time COLOR-TIME
   start-application
   (draw <draw-time>)
-
   ((hsl-sequencer-with-time COLOR-TIME))
-
- (render <render-time>)
+  (render <render-time>)
 ]]
  
