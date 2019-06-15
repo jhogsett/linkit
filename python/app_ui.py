@@ -34,6 +34,9 @@ def report_info_alt(message):
 def report_info_alt2(message):
     print tc.yellow(message)
 
+def report_info_alt3(message):
+    print tc.white(message)
+
 def report_warn(message):
     print tc.yellow(message)
 
@@ -51,6 +54,10 @@ def report_verbose_alt(message=""):
 def report_verbose_alt2(message=""):
     if verbose_mode:
         print tc.red(message)
+
+def report_verbose_alt3(message=""):
+    if verbose_mode:
+        print tc.white(message)
 
 def verbose_entry(key, value):
     if verbose_mode:
