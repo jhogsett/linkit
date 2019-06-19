@@ -31,6 +31,10 @@ void Commands::process_events()
     if(!keyboard_paused)
       process_keyboard();
 #endif
+#ifdef USE_KEYBOARD2
+    if(!keyboard.is_paused())
+      keyboard.process();
+#endif
   }
 }
 #endif

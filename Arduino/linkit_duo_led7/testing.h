@@ -157,7 +157,7 @@ void Commands::do_test_inquiry(byte type)
       break;
 
     case TEST_INQUIRY_KEYBOARD_ROWS:
-#ifdef USE_KEYBOARD
+#if defined(USE_KEYBOARD) || defined(USE_KEYBOARD2)
       result = KEYBOARD_ROWS;
 #else
       result = 0;
@@ -165,7 +165,7 @@ void Commands::do_test_inquiry(byte type)
       break;
     
     case TEST_INQUIRY_KEYBOARD_COLS:
-#ifdef USE_KEYBOARD
+#if defined(USE_KEYBOARD) || defined(USE_KEYBOARD2)
       result = KEYBOARD_COLS;
 #else
       result = 0;

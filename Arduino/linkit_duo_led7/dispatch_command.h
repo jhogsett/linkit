@@ -308,7 +308,7 @@ bool Commands::dispatch_command(int cmd, byte *dispatch_data){
     break;    
 
   case CMD_KEY:
-#ifdef USE_KEYBOARD
+#if defined(USE_KEYBOARD) || defined(USE_KEYBOARD2)
     do_get_key(arg0, arg1, arg2);
     reset_args = false; 
 #endif

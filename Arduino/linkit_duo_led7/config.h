@@ -11,8 +11,8 @@
 // device profile selection
 ///////////////////////////
 
-// 36-LED annunciator
-// #define ANNUNCIATOR
+//// 36-LED annunciator
+//// #define ANNUNCIATOR
 
 // 54-LED annunciator #2
 // #define ANNUNCIATOR2
@@ -22,26 +22,20 @@
 
 // single 90-LED strip for dev
 // blinkit
-#define LED_STRIP_90
-
-// 16-LED Remote
-// #define REMOTE
-
-// 16-LED Mini Remote
-// #define MINI_REMOTE
-
-// 16-LED Text Sign on projector2
-// #define SIGN
+// #define LED_STRIP_90
 
 // 2 50-led strands
 // decoration3 & decoration4
 // #define LED_STRAND_100
 
-// 44-LED Hard Hat
-// decoration4
-// #define HARDHAT
-// 44-LED Wearable and Hard Hat
-// #define WEARABLE_AND_HARDHAT
+//// 44-LED Hard Hat
+//// decoration4
+//// #define HARDHAT
+//// 44-LED Wearable and Hard Hat
+//// #define WEARABLE_AND_HARDHAT
+
+// 16-LED Mini Remote
+#define MINI_REMOTE
 
 // 19-LED Mini Disc
 // #define MONUMENT
@@ -58,6 +52,12 @@
 // 200-LED display/overhead
 // need to reduce char buffer to 50 to avoid memory corruption
 // #define RADIUS8
+
+// 16-LED Remote
+// #define REMOTE
+
+// 16-LED Text Sign on projector2
+// #define SIGN
 
 // 100-LED sphere
 // #define SPHERE
@@ -165,7 +165,7 @@
 #define LOW_BRIGHTNESS_PERCENT     5
 #define MIN_BRIGHTNESS_PERCENT     2
 #define CROSSFADE_DELAY 50
-#define USE_KEYBOARD
+#define USE_KEYBOARD2
 #define USE_SPEAKER
 #endif
 
@@ -183,7 +183,7 @@
 #define LOW_BRIGHTNESS_PERCENT     5
 #define MIN_BRIGHTNESS_PERCENT     2
 #define CROSSFADE_DELAY 50
-#define USE_KEYBOARD
+#define USE_KEYBOARD2
 #define USE_SPEAKER
 #define KEYBOARD_COLS 1
 #endif

@@ -12,6 +12,10 @@
 #include "map_defs.h"
 #endif
 
+#ifdef USE_KEYBOARD2
+#include "keyboard.h"
+#endif
+
 //#define ROLLING_CROSSFADE      
 
 #define MAX_BRIGHTNESS_PERCENT (default_brightness * 4)
@@ -201,7 +205,14 @@ class Commands
   void set_keyboard_col(byte col);
   bool get_keyboard_data();
   byte scan_keyboard();
+#endif
+
+#if defined(USE_KEYBOARD) || defined(USE_KEYBOARD2)
   void do_get_key(byte type, byte press_macro, byte long_press_macro);
+#endif
+
+#ifdef USE_KEYBOARD2
+  Keyboard keyboard;
 #endif
   
 #ifdef USE_MAPPING
@@ -277,6 +288,11 @@ void Commands::begin(
 #ifdef USE_KEYBOARD
   keyboard_reset(true);
 #endif
+
+#ifdef USE_KEYBOARD2
+  keyboard.begin(&macros);
+  keyboard.reset(true);
+#endif
 }
 
 #include "event_loop.h"
@@ -306,11 +322,8 @@ void Commands::pause(byte type = PAUSE_ALL)
     case PAUSE_ALL:
       pause_effects(true);
       pause_schedules(true);
-
-#ifdef USE_KEYBOARD
 //    this is inconvenient
 //      pause_keyboard(true);
-#endif
       break;
 
     case PAUSE_EFFECTS:
@@ -324,6 +337,12 @@ void Commands::pause(byte type = PAUSE_ALL)
 #ifdef USE_KEYBOARD
     case PAUSE_KEYBOARD:
       pause_keyboard(true);
+      break;
+#endif
+
+#ifdef USE_KEYBOARD2
+    case PAUSE_KEYBOARD:
+      keyboard.pause(true);
       break;
 #endif
 
@@ -345,6 +364,9 @@ void Commands::resume(int type = RESUME_ALL)
 #ifdef USE_KEYBOARD
       pause_keyboard(false);
 #endif
+#ifdef USE_KEYBOARD2
+      keyboard.pause(false);
+#endif
       break;
 
     case RESUME_EFFECTS:
@@ -358,6 +380,12 @@ void Commands::resume(int type = RESUME_ALL)
 #ifdef USE_KEYBOARD
     case RESUME_KEYBOARD:
       pause_keyboard(false);
+      break;
+#endif
+
+#ifdef USE_KEYBOARD2
+    case RESUME_KEYBOARD:
+      keyboard.pause(false);
       break;
 #endif
 
@@ -546,15 +574,14 @@ void Commands::process_keyboard()
 
   keyboard_sample_count = (keyboard_sample_count + 1) % KEYBOARD_PERIOD;
 }
+#endif
 
+#ifdef USE_KEYBOARD
 #define KEY_CAPTURED 0
 #define KEY_COUNT 1
 #define KEY_CURRENT 2
 #define KEY_SET_MACROS 3
 #define KEY_READ 4
-//#define KEY_SET_CAPTURED_MACRO 3
-//#define KEY_SET_CAPTURING_MACRO 4
-//#define KEY_SET_LONG_PRESS_MACRO 5
 
 void Commands::do_get_key(byte type, byte press_macro, byte long_press_macro)
 {
@@ -583,6 +610,49 @@ void Commands::do_get_key(byte type, byte press_macro, byte long_press_macro)
       command_processor->send_ints(keyboard_captured_key);
       command_processor->send_ints(keyboard_capture_count);
       keyboard_captured_key = 0;
+      return;
+  }
+
+  command_processor->sub_args[0] = result;
+  command_processor->sub_args[1] = 0;
+  command_processor->sub_args[2] = 0;
+}
+#endif
+
+#ifdef USE_KEYBOARD2
+#define KEY_CAPTURED 0
+#define KEY_COUNT 1
+#define KEY_CURRENT 2
+#define KEY_SET_MACROS 3
+#define KEY_READ 4
+
+void Commands::do_get_key(byte type, byte press_macro, byte long_press_macro)
+{
+  int result = 0;  
+  switch(type)
+  {
+    case KEY_CAPTURED:
+      result = keyboard.get_captured_key();
+      keyboard.clear_captured_key();
+      break;
+
+    case KEY_COUNT:
+      result = keyboard.get_capture_count();
+      break;
+
+    case KEY_CURRENT:
+      result = keyboard.get_current_key();
+      break;
+
+    case KEY_SET_MACROS:
+      keyboard.set_capturing_macro(press_macro);
+      keyboard.set_long_press_macro(long_press_macro);
+      return;
+
+    case KEY_READ:
+      command_processor->send_ints(keyboard.get_captured_key());
+      command_processor->send_ints(keyboard.get_capture_count());
+      keyboard.clear_captured_key();
       return;
   }
 
@@ -1273,6 +1343,9 @@ void Commands::clear(){
 
 #ifdef USE_KEYBOARD
   keyboard_reset();
+#endif
+#ifdef USE_KEYBOARD2
+  keyboard.reset();
 #endif
 }
 

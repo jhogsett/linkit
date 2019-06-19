@@ -1,4 +1,19 @@
-// should return if clear the args?
+// addressable udp
+
+// move keyboard stuff to its own file
+
+// do a final scan of script looking for unresolved things in delimiters
+
+// need a meta variable indicating that the file is the root, not being included (only add [start 10] if root)
+// add a hidden variable to an included file set to True that will get namespaced,
+// then can do a conditional with <<< module-name-included >>>
+// its also added to the root file, set to False
+// shortcut: this could be auto-tested if the conditional has no arguments
+
+// a way to test for variable existence?
+
+
+// should return-if clear the args?
 // might make sense to test them but leave them unchanged
 // maybe should clear out arg2, or both arg1 and arg2 since arg0 is being tested
 
