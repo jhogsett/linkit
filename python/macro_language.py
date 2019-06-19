@@ -63,6 +63,7 @@ empty_python                   = python_delimiters.keys()[0] + python_delimiters
 
 include_marker                 = directive_marker + "include"
 allow_mutability_marker        = directive_marker + "allow-mutability"
+no_prefix_marker               = directive_marker + "no-prefix"
 
 # for isolating shorter delimiters
 get_variable_non_delimiters    = utils.merge_dicts(double_angle_delimiters, conditional_delimiters)

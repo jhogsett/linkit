@@ -192,7 +192,7 @@ def load_file(filename, default_ext=".mac"):
         line = line.strip()
         if len(line) == 0:
             continue
-        if line.startswith("%include"):
+        if line.startswith(ml.include_marker):
             args = line.split()
             include_filename = args[1]
             if len(include_filename) > 0 and include_filename not in includes.keys():
@@ -220,7 +220,7 @@ def no_prefix_directive_check(script_lines):
     result = False
     for line in script_lines:
         line = line.strip()
-        if line.startswith("%no-prefix"):
+        if line.startswith(ml.no_prefix_marker):
             result = True
         else:
             new_lines.append(line)
@@ -520,8 +520,8 @@ def produce_preprocesssed_script(lines):
         value = resolved[resolve]
         if type(value) is type(" "):
             if resolve.startswith(ml.directive_marker):
-                include_marker = ml.include_marker
-                if not resolve.startswith(include_marker):
+                #include_marker = ml.include_marker
+                if not resolve.startswith(ml.include_marker):
                     new_lines.append(resolve + " " + str(resolved[resolve]))
             else:
                 new_lines.append(ml.set_variable_marker + resolve + " " + str(resolved[resolve]))
@@ -707,8 +707,7 @@ def process_directives(script_lines):
 
 def ingest_directives():
     global allow_mutability
-    marker = ml.allow_mutability_marker
-    if marker in resolved:
+    if ml.allow_mutability_marker in resolved:
         allow_mutability = True
 
 ## ----------------------------------------------------
