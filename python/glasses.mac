@@ -19,13 +19,7 @@ $object-time 100
 $object-instance-time 25
 $object-sequencer sine-sequencer
 $object-step 1
-$object-darkening 2
 $smooth-factor 3
-
-$eye-start 8
-$eye-mid 32
-$eye-width 48
-$eye-size 24
 
 $right 0
 $right-start 0
@@ -34,6 +28,13 @@ $right-width <group-width>
 $left 1
 $left-start 56
 $left-width <group-width>
+
+$object-darkening 2
+
+$eye-start 8
+$eye-mid 32
+$eye-width 48
+$eye-size 24
 
 %play-macro start
 
@@ -85,8 +86,8 @@ $left-width <group-width>
         fill
     }}
 
-(((objects-groups-group <num-groups> <group-time> [<right-start>, <left-start>] [<right-width>, <left-width>] <objects-per-group> <erase-group>)))
-((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <object-darkening> <smooth-factor> <draw-object>))
+(((objects-groups-group <num-groups>  <group-time> [<right-start>, <left-start>] [<right-width>, <left-width>] <objects-per-group> <erase-group>)))
+((objects-groups-start-template <num-groups> <group-width> <group-time> <render-time> <objects-per-group> <object-time> <object-sequencer> <object-step> <object-instance-time> <smooth-factor> <draw-object>))
 
 [erase-group]
     erase-buffer
