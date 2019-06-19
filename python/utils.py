@@ -258,11 +258,13 @@ def reverse_find(subject, term):
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
    return ''.join(random.choice(chars) for _ in range(size))
 
-def hash_object(object, with_dashes=True):
+def hash_object(object, brief=True, with_dashes=True):
     md5 = hashlib.md5()
     md5.update(str(object))
     hash = md5.hexdigest()
-    if with_dashes:
+    if brief:
+        hash = hash[1:8]
+    elif with_dashes:
         hash = hash[1:8] + "-" + hash[8:16] + "-" + hash[16:24] + "-" + hash[24:32]
     return hash
 

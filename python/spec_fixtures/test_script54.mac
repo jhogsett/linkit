@@ -1,0 +1,13 @@
+
+$times 5
+$delay 10
+
+[start]
+  (doit) <times>
+  (doit) <times> <delay>
+
+[doit]
+  {{{
+    red
+  }}}
+
