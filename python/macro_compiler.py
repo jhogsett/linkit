@@ -201,8 +201,8 @@ def load_file(filename, default_ext=".mac"):
                 module_name = os.path.basename(include_filename)
                 include_lines, no_prefix = no_prefix_directive_check(include_lines)
                 include_lines = remove_macro_numbers(include_lines)
-                include_lines = add_inclusion_marker(include_lines)
                 if not no_prefix:
+                    include_lines = add_inclusion_marker(include_lines)
                     include_lines = prefix_module_on_macros(module_name, include_lines)
                     include_lines = prefix_module_on_variables(module_name, include_lines)
                     include_lines = prefix_module_on_templates(module_name, include_lines)
@@ -504,7 +504,7 @@ def remove_macro_numbers(script_lines):
     return new_lines
 
 def add_inclusion_marker(script_lines):
-    marker = "$INCLUDED False"
+    marker = "$INCLUDED True"
     new_lines = script_lines
     new_lines.append(marker)
     return new_lines
@@ -1796,7 +1796,7 @@ def add_default_resolved():
         "INCLUDED" : False
     }
     for key in default_resolved:
-        ui.report_verbose("setting default resolved value " + key + "=" + str(default_resolved[key]))
+        #ui.report_verbose("setting default resolved value " + key + "=" + str(default_resolved[key]))
         set_resolved(key, default_resolved[key])
 
 ########################################################################
