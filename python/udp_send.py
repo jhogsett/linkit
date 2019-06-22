@@ -10,6 +10,8 @@ import fcntl
 import struct
 import app_ui as ui
 import threading
+import utils
+import multicast as mc
 
 app_description = "LED Multicast Sender v.0.0 10-1-2017"
 
@@ -90,17 +92,23 @@ def cast_socket():
 
   return sock
 
-def add_key(command):
-  return host_name + "/" + str(time.time()) + ";" + command
+def add_key(command, regex=None):
+  key = []
+  key.append(host_name)
+  key.append(str(time.time()))
+  if regex:
+    key.append(regex)
+  keystr = "/".join(key)
+  return keystr + ";" + command
 
 global responses
 responses = []
 
-def send_socket_message(sock, message, times):
+def send_socket_message(sock, message, times, regex):
   global responses
   responses = []
   if no_keys != True:
-    message = add_key(message)
+    message = add_key(message, regex)
   for n in range(0, times):
     # Send data to the multicast group
     ui.report_verbose('sending "%s"' % message)
@@ -124,23 +132,23 @@ def send_socket_message(sock, message, times):
     if n < (times - 1):
       time.sleep(msg_delay * (2 ** n))
 
-def send_message(message, num_times_=None):
+def send_message(message, regex=None, num_times_=None):
   if num_times_ == None:
     num_times_ = num_times
   sock = cast_socket()
-  send_socket_message(sock, message, num_times_)
+  send_socket_message(sock, message, num_times_, regex)
   sock.close()
 
 background_threads = []
 
-def handle_background_message(message):
-  send_message(message)
+def handle_background_message(message, regex):
+  send_message(message, regex)
   thread = threading.current_thread()
   background_threads.remove(thread)
   ui.report_verbose("terminating thread: " + str(thread))
 
-def send_background_message(message):
-  thread = threading.Thread(target=handle_background_message, args=(message,))
+def send_background_message(message, regex):
+  thread = threading.Thread(target=handle_background_message, args=(message, regex, ))
   ui.report_verbose("new thread: " + str(thread))
   background_threads.append(thread)
   thread.start()
@@ -151,8 +159,19 @@ def wait_for_active_threads():
     for t in background_threads:
       t.join()
 
+def parse_command(command):
+  message = command
+  regex = None
+  if command.startswith("/"):
+    split = utils.reverse_find(command, "/")
+    if split != 0:
+      message = command[split + 1:]
+      regex = command[1:split]
+  return message, regex
+
 if command != None:
-  send_background_message(command)
+  message, regex = parse_command(command)
+  send_background_message(message, regex)
   sys.exit();
 
 if rollcall == True:
@@ -174,23 +193,30 @@ ui.info_entry("sending keys", str(no_keys == False))
 ui.info_entry("message delay", str(msg_delay))
 print
 
+mc.begin(host_name, verbose_mode)
+
 while True:
     try:
         cmd = raw_input(tc.yellow('command: '))
         if cmd == "":
-            send_background_message(last_cmd)
+            message, regex = parse_command(last_cmd)
+            mc.broadcast(message, regex)
+            send_background_message(message, regex)
             #send_message(last_cmd, num_times)
         else:
-           send_background_message(cmd)
-           #send_message(cmd, num_times)
-           last_cmd = cmd
+            message, regex = parse_command(cmd)
+            mc.broadcast(message, regex)
+            #send_background_message(message, regex)
+            last_cmd = cmd
     except EOFError:
         sock.close()
+        #wait_for_active_threads()
+        mc.conclude()
         sys.exit("\nExiting...\n")
-        wait_for_active_threads()
     except KeyboardInterrupt:
         sock.close()
-        wait_for_active_threads()
+        #wait_for_active_threads()
+        mc.conclude()
         sys.exit("\nExiting...\n")
     except Exception:
         sock.close()

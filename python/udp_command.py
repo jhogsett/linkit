@@ -11,6 +11,8 @@ import argparse
 import led_command as lc
 import app_ui as ui
 import fcntl
+import utils
+import re
 
 app_description = "LED Multicast Commander v.0.0 10-1-2017"
 timeout_in_seconds = 10
@@ -52,6 +54,13 @@ numkeys = 20
 def get_key(message):
   return message.split(";")[0]
 
+def parse_key(key):
+  parts = key.split("/")
+  host = parts[0]
+  time = parts[1]
+  regex = parts[2] if len(parts) > 2 else None
+  return host, time, regex
+
 def get_command(message):
   return message.split(";")[1]
 
@@ -79,6 +88,18 @@ def handle_command(cmd_text):
         key = "no key"
         cmd = cmd_text
         watermark = 0
+
+    host, time, regex = parse_key(key)
+
+    ui.verbose_entry("host", host)
+    ui.verbose_entry("time", time)
+    ui.verbose_entry("regex", regex)
+
+    if regex:
+        matcher = re.compile(regex)
+        if not matcher.match(host_name):
+            ui.report_verbose("skipping - host name: " + host_name + " does not match regex: " + regex)
+            return True
 
     if verbose_mode:
         ui.verbose_entry("command", cmd)

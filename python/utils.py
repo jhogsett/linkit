@@ -6,6 +6,8 @@ import time
 import random
 import string
 import hashlib
+import socket
+import fcntl
 
 global script_directory
 script_directory = None
@@ -267,4 +269,18 @@ def hash_object(object, brief=True, with_dashes=True):
     elif with_dashes:
         hash = hash[1:8] + "-" + hash[8:16] + "-" + hash[16:24] + "-" + hash[24:32]
     return hash
+
+def get_host_name():
+  return socket.gethostname()
+
+def get_ip_address(ifname='apcli0'):
+  try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+      s.fileno(),
+      0x8915,  # SIOCGIFADDR
+      struct.pack('256s', ifname[:15])
+    )[20:24])
+  except:
+    return ""
 

@@ -30,8 +30,8 @@ def begin(host_name_, verbose_mode_=False, multicast_group_ip_=None, multicast_p
 def conclude():
     wait_for_active_threads()
 
-def broadcast(message, targets=None):
-    message = create_key(message, targets)
+def broadcast(message, regex=None):
+    message = create_key(message, regex)
     send_background_message(message)
 
 def received():
@@ -39,12 +39,14 @@ def received():
 
 # ========================================
 
-def create_key(message, targets):
-    key = host_name + "/" + str(time.time())
-    if targets:
-        key = key + "/" + targets
-    key = key + ";" + message
-    return key
+def create_key(message, regex=None):
+  key = []
+  key.append(host_name)
+  key.append(str(time.time()))
+  if regex:
+    key.append(regex)
+  keystr = "/".join(key)
+  return keystr + ";" + message
 
 # ========================================
 
@@ -95,7 +97,7 @@ def handle_background_message(message):
     ui.report_verbose("terminating thread: " + str(thread))
 
 def send_background_message(message):
-    thread = threading.Thread(target=handle_background_message, args=(message,))
+    thread = threading.Thread(target=handle_background_message, args=(message, ))
     ui.report_verbose("new thread: " + str(thread))
     background_threads.append(thread)
     thread.start()
