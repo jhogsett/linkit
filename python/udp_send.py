@@ -132,7 +132,7 @@ def send_socket_message(sock, message, times, regex):
     if n < (times - 1):
       time.sleep(msg_delay * (2 ** n))
 
-def send_message(message, regex=None, num_times_=None):
+def send_message(message, regex=None, num_times_=1):
   if num_times_ == None:
     num_times_ = num_times
   sock = cast_socket()
@@ -175,7 +175,7 @@ if command != None:
   sys.exit();
 
 if rollcall == True:
-  send_message("::", 1)
+  send_message("::")
   responses.sort()
   for response in responses:
     ui.report_info(response)
