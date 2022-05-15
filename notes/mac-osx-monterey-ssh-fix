@@ -1,0 +1,11 @@
+geraldhogsett@Geralds-MacBook-Pro .ssh % cat config
+Host *
+    UseKeychain yes
+    AddKeysToAgent yes
+    IdentityFile ~/.ssh/id_rsa
+
+Host apollo.local
+    KexAlgorithms +diffie-hellman-group1-sha1
+
+Host blinkit.local
+    KexAlgorithms +diffie-hellman-group1-sha1
