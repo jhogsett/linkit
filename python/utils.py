@@ -120,7 +120,7 @@ def get_filename(file_path):
   return os.path.basename(file_path)
 
 def get_extension(file_path):
-  filename, extension = os.path.splitext(filename)
+  filename, extension = os.path.splitext(file_path)
   return extension
 
 def get_filename_only(file_path):
