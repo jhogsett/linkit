@@ -494,8 +494,9 @@ def setup():
     introduction()
 
 num_displays = 5
-global current_display_type
+global current_display_type, api_limiter
 current_display_type = 0
+api_limiter = 0
 
 def get_latest_data():
     global daily_data, forecast_data
@@ -506,8 +507,17 @@ def get_latest_data():
         write_daily_data(daily_data)
         write_forecast_data(forecast_data)
 
+API_LIMIT = 10
+
 def time_to_get_data():
-    return current_display_type == 0
+    global current_display_type, api_limiter           
+    if current_display_type != 0:
+        return False
+
+    if api_limiter >= API_LIMIT:
+        api_limiter = 0
+
+    return api_limiter == 0
 
 def loop():
     global current_display_type
