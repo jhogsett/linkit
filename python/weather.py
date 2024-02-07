@@ -342,7 +342,7 @@ def render_forecast_temperature():
                 # convert to hue 0-255
                 # hue = temperature * 3
                 # hue = int(temperature * 255.0 / temperature_range)
-                hue = temperature * 2
+                hue = (temperature * 2) + 30
                 #print "hue: " + str(hue)
 
                 week_slots[x][y] = hsl_color(hue)
@@ -494,8 +494,9 @@ def setup():
     introduction()
 
 num_displays = 5
-global current_display_type
+global current_display_type, api_limiter
 current_display_type = 0
+api_limiter = 0
 
 def get_latest_data():
     global daily_data, forecast_data
@@ -506,8 +507,21 @@ def get_latest_data():
         write_daily_data(daily_data)
         write_forecast_data(forecast_data)
 
+API_LIMIT = 10
+
 def time_to_get_data():
-    return current_display_type == 0
+    global current_display_type, api_limiter           
+    if current_display_type != 0:
+        return False
+
+    result = api_limiter == 0
+
+    api_limiter += 1
+    if api_limiter >= API_LIMIT:
+        api_limiter = 0
+
+    return result
+
 
 def loop():
     global current_display_type
