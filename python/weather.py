@@ -342,7 +342,7 @@ def render_forecast_temperature():
                 # convert to hue 0-255
                 # hue = temperature * 3
                 # hue = int(temperature * 255.0 / temperature_range)
-                hue = temperature * 2
+                hue = (temperature * 2) + 30
                 #print "hue: " + str(hue)
 
                 week_slots[x][y] = hsl_color(hue)
