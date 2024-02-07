@@ -514,10 +514,14 @@ def time_to_get_data():
     if current_display_type != 0:
         return False
 
+    result = api_limiter == 0
+
+    api_limiter += 1
     if api_limiter >= API_LIMIT:
         api_limiter = 0
 
-    return api_limiter == 0
+    return result
+
 
 def loop():
     global current_display_type
