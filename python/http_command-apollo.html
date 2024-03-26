@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="http_command.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="https://use.fontawesome.com/ad7de9f8f2.js"></script>
 </head>
@@ -22,7 +22,7 @@
       <li><a data-toggle="tab" href="#car"><i class="fa fa-car"></i> Car</a></li>
       <li><a data-toggle="tab" href="#links"><i class="fa fa-external-link"></i> Links</a></li>
     </ul>
-    
+
     <script type="text/javascript">
       $('#maintabs a').click(function(e) {
         e.preventDefault();
@@ -34,177 +34,177 @@
         var id = $(e.target).attr("href").substr(1);
         window.location.hash = id;
       });
-      
+
       $(document).ready(function(){
         //on load of the page: switch to the currently selected tab
         var hash = window.location.hash;
         $('#maintabs a[href="' + hash + '"]').tab('show');
       });
     </script>
-    
+
     <div class="tab-content">
 
       <div id="main" class="tab-pane fade in active">
         <h3>Main</h3>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=2:level"><span class="glyphicon glyphicon-upload"></span> 2%</a></div>                             
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=2:level"><span class="glyphicon glyphicon-upload"></span> 2%</a></div>
           <div class="col-xs-6"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?cmd=demo"><span class="glyphicon glyphicon-upload"></span> Demo</a></div>
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=5:level"><span class="glyphicon glyphicon-upload"></span> 5%</a></div>                           
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=clear"><span class="glyphicon glyphicon-upload"></span> Clear</a></div>                               
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=10:level"><span class="glyphicon glyphicon-upload"></span> 10%</a></div>                           
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=erase"><span class="glyphicon glyphicon-upload"></span> Erase</a></div>                               
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=20:level"><span class="glyphicon glyphicon-upload"></span> 20%</a></div>                           
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=fade"><span class="glyphicon glyphicon-upload"></span> Fade</a></div>                               
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=50:level"><span class="glyphicon glyphicon-upload"></span> 50%</a></div>                         
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=wipe"><span class="glyphicon glyphicon-upload"></span> Wipe</a></div>                               
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=70:level"><span class="glyphicon glyphicon-upload"></span> 70%</a></div>                         
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=cfade"><span class="glyphicon glyphicon-upload"></span> Crossfade</a></div>                               
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=100:level"><span class="glyphicon glyphicon-upload"></span> 100%</a></div>                           
-          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=hipower"><span class="glyphicon glyphicon-upload"></span> Always On</a></div>                               
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=0:level"><span class="glyphicon glyphicon-upload"></span> Auto</a></div>                           
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=5:level"><span class="glyphicon glyphicon-upload"></span> 5%</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=clear"><span class="glyphicon glyphicon-upload"></span> Clear</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=10:level"><span class="glyphicon glyphicon-upload"></span> 10%</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=erase"><span class="glyphicon glyphicon-upload"></span> Erase</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=20:level"><span class="glyphicon glyphicon-upload"></span> 20%</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=fade"><span class="glyphicon glyphicon-upload"></span> Fade</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=50:level"><span class="glyphicon glyphicon-upload"></span> 50%</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=wipe"><span class="glyphicon glyphicon-upload"></span> Wipe</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=70:level"><span class="glyphicon glyphicon-upload"></span> 70%</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=cfade"><span class="glyphicon glyphicon-upload"></span> Crossfade</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=100:level"><span class="glyphicon glyphicon-upload"></span> 100%</a></div>
+          <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=hipower"><span class="glyphicon glyphicon-upload"></span> Always On</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?cmd=0:level"><span class="glyphicon glyphicon-upload"></span> Auto</a></div>
           <div class="col-xs-6"><a class="btn btn-success btn-lg btn-block" role="button" href="/command?cmd=lopower"><span class="glyphicon glyphicon-upload"></span> Brain Saver</a></div>
-        </div>                                                                                                                                                                                                  
+        </div>
       </div>
 
       <div id="apps" class="tab-pane fade">
         <h3>Apps</h3>
-        <div class="row">                                                                                                                                                                   
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=sparkle3.py#apps"><span class="glyphicon glyphicon-upload"></span> Sparkle3</a></div> 
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=sparkle3.py#apps"><span class="glyphicon glyphicon-upload"></span> Sparkle3</a></div>
           <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?sys=/etc/init.d/circleci+start#apps"><span class="glyphicon glyphicon-upload"></span> CircleCI Start</a></div>
-        </div>                                                                                                                                                                            
-        <div class="row">                                                                                                                                                                                           
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                               
-        </div>   
-        <div class="row">                                                                                                                                                                   
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=colors.py#apps"><span class="glyphicon glyphicon-upload"></span> Colors</a></div> 
-          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?sys=/etc/init.d/circleci+stop#apps"><span class="glyphicon glyphicon-upload"></span> CircleCI Stop</a></div>    
-        </div>                                                                                                                                                                            
-        <div class="row">                                                                                                                                                                                           
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                               
-        </div>   
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=stop#apps"><span class="glyphicon glyphicon-upload"></span> Stop App</a></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+100#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 100 LEDs</a></div>           
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+100+11+1+20#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 100 LEDs </a></div>            
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+93#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 93 LEDs</a></div>           
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+93+11+1+20#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 93 LEDs </a></div>            
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+72#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 72 LEDs</a></div>           
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+72+9+1+20#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 72 LEDs </a></div>            
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+64#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 64 LEDs</a></div>           
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+64+8+1+20#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 64 LEDs </a></div>            
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                                   
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+8+2+1#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 8 LEDs</a></div>           
-          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+8+2+1+10#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 8 LEDs </a></div>            
-        </div>                                                                                                                                                                                                  
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=colors.py#apps"><span class="glyphicon glyphicon-upload"></span> Colors</a></div>
+          <div class="col-xs-6"><a class="btn btn-primary btn-lg btn-block" role="button" href="/command?sys=/etc/init.d/circleci+stop#apps"><span class="glyphicon glyphicon-upload"></span> CircleCI Stop</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=stop#apps"><span class="glyphicon glyphicon-upload"></span> Stop App</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+100#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 100 LEDs</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+100+11+1+20#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 100 LEDs </a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+93#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 93 LEDs</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+93+11+1+20#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 93 LEDs </a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+72#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 72 LEDs</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+72+9+1+20#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 72 LEDs </a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+64#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 64 LEDs</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+64+8+1+20#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 64 LEDs </a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-info btn-lg btn-block" role="button" href="/command?run=demo5.py+:+8+2+1#apps"><span class="glyphicon glyphicon-upload"></span> Demo5 8 LEDs</a></div>
+          <div class="col-xs-6"><a class="btn btn-warning btn-lg btn-block" role="button" href="/command?run=demohsl4.py+:+8+2+1+10#apps"><span class="glyphicon glyphicon-upload"></span> DemoHSL4 8 LEDs </a></div>
+        </div>
       </div>
 
       <div id="colors" class="tab-pane fade">
-        <h3>Colors</h3>                                                                                                                                                                                          
-        <div class="row">    
+        <h3>Colors</h3>
+        <div class="row">
           <div class="col-xs-6"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?cmd=white:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> White</a></div>
-          <div class="col-xs-6"><a class="btn btn-gray btn-lg btn-block" role="button" href="/command?cmd=gray:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Gray</a></div>            
-        </div>                                                                                                                                                                                              
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                              
-        </div>                                                                                                                                                                                             
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-6"><a class="btn btn-red btn-lg btn-block" role="button" href="/command?cmd=red:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Red</a></div>                    
-          <div class="col-xs-6"><a class="btn btn-cyan btn-lg btn-block" role="button" href="/command?cmd=cyan:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Cyan</a></div>     
-        </div>                                                                                                                                                                                              
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                              
-        </div>                                                                                                                                                                                             
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-6"><a class="btn btn-green btn-lg btn-block" role="button" href="/command?cmd=green:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Green</a></div>                
-          <div class="col-xs-6"><a class="btn btn-magenta btn-lg btn-block" role="button" href="/command?cmd=magenta:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Magenta</a></div>     
-        </div>                                                                                                                                                                                              
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                              
-        </div>                                                                                                                                                                                             
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-6"><a class="btn btn-blue btn-lg btn-block" role="button" href="/command?cmd=blue:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Blue</a></div>     
-          <div class="col-xs-6"><a class="btn btn-yellow btn-lg btn-block" role="button" href="/command?cmd=yellow:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Yellow</a></div>     
-        </div>                                                                                                                                                                                              
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                              
-        </div>                                                                                                                                                                                             
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-6"><a class="btn btn-purple btn-lg btn-block" role="button" href="/command?cmd=purple:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Purple</a></div>     
-          <div class="col-xs-6"><a class="btn btn-orange btn-lg btn-block" role="button" href="/command?cmd=orange:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Orange</a></div>     
-        </div>                                                                                                                                                                                              
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                              
-        </div>                                                                                                                                                                                             
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-6"><a class="btn btn-ltblue btn-lg btn-block" role="button" href="/command?cmd=ltblue:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Light Blue</a></div>     
-          <div class="col-xs-6"><a class="btn btn-ltgreen btn-lg btn-block" role="button" href="/command?cmd=ltgreen:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Light Green</a></div>     
-        </div>                                                                                                                                                                                              
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-12">&nbsp;</div>                                                                                                                                                              
-        </div>                                                                                                                                                                                             
-        <div class="row">                                                                                                                                                                                  
-          <div class="col-xs-6"><a class="btn btn-pink btn-lg btn-block" role="button" href="/command?cmd=pink:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Pink</a></div>     
-          <div class="col-xs-6"><a class="btn btn-seafoam btn-lg btn-block" role="button" href="/command?cmd=seafoam:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Sea Foam</a></div>     
-        </div>                                                                                                                                                                                              
+          <div class="col-xs-6"><a class="btn btn-gray btn-lg btn-block" role="button" href="/command?cmd=gray:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Gray</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-red btn-lg btn-block" role="button" href="/command?cmd=red:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Red</a></div>
+          <div class="col-xs-6"><a class="btn btn-cyan btn-lg btn-block" role="button" href="/command?cmd=cyan:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Cyan</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-green btn-lg btn-block" role="button" href="/command?cmd=green:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Green</a></div>
+          <div class="col-xs-6"><a class="btn btn-magenta btn-lg btn-block" role="button" href="/command?cmd=magenta:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Magenta</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-blue btn-lg btn-block" role="button" href="/command?cmd=blue:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Blue</a></div>
+          <div class="col-xs-6"><a class="btn btn-yellow btn-lg btn-block" role="button" href="/command?cmd=yellow:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Yellow</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-purple btn-lg btn-block" role="button" href="/command?cmd=purple:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Purple</a></div>
+          <div class="col-xs-6"><a class="btn btn-orange btn-lg btn-block" role="button" href="/command?cmd=orange:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Orange</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-ltblue btn-lg btn-block" role="button" href="/command?cmd=ltblue:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Light Blue</a></div>
+          <div class="col-xs-6"><a class="btn btn-ltgreen btn-lg btn-block" role="button" href="/command?cmd=ltgreen:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Light Green</a></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12">&nbsp;</div>
+        </div>
+        <div class="row">
+          <div class="col-xs-6"><a class="btn btn-pink btn-lg btn-block" role="button" href="/command?cmd=pink:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Pink</a></div>
+          <div class="col-xs-6"><a class="btn btn-seafoam btn-lg btn-block" role="button" href="/command?cmd=seafoam:flood:cfade#colors"><span class="glyphicon glyphicon-upload"></span> Sea Foam</a></div>
+        </div>
       </div>
 
       <div id="extra" class="tab-pane fade">
@@ -287,9 +287,9 @@
 
       <div id="car" class="tab-pane fade">
         <h3>Car</h3>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=stop#car"><span class="glyphicon glyphicon-upload"></span> Stop!</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-danger btn-lg btn-block" role="button" href="/command?run=stop#car"><span class="glyphicon glyphicon-upload"></span> Stop!</a></div>
+        </div>
         <div class="row"><div class="col-xs-12">&nbsp;</div></div>
         <div class="row">
           <div class="col-xs-12"><a class="btn btn-default btn-lg btn-block" role="button" href="/command?run=demohsl4.py+100:level+72+13+1+100#car"><span class="glyphicon glyphicon-upload"></span> Day Rainbow</a></div>
@@ -303,116 +303,116 @@
 
       <div id="links" class="tab-pane fade">
         <h3>Links</h3>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><h4>Devices by 10.x.x.x</h4></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.24:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.24</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><h4>Devices by 10.x.x.x</h4></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.24:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.24</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.38:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.38</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.38:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.38</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.54:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.54</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.54:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.54</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.188:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.188</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.188:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.188</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.195:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.195</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://10.0.0.195:8080/command"><span class="glyphicon glyphicon-upload"></span> 10.0.0.195</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><h4>Main Pages</h4></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-info btn-lg btn-block" role="button" href="/http_command.html"><span class="glyphicon glyphicon-upload"></span> Main</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><h4>Main Pages</h4></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-info btn-lg btn-block" role="button" href="/http_command.html"><span class="glyphicon glyphicon-upload"></span> Main</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-info btn-lg btn-block" role="button" href="/http_command-apollo.html"><span class="glyphicon glyphicon-upload"></span> Car</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-info btn-lg btn-block" role="button" href="/http_command-apollo.html"><span class="glyphicon glyphicon-upload"></span> Car</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-info btn-lg btn-block" role="button" href="/http_command-wear.html"><span class="glyphicon glyphicon-upload"></span> Wearable</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-info btn-lg btn-block" role="button" href="/http_command-wear.html"><span class="glyphicon glyphicon-upload"></span> Wearable</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-info btn-lg btn-block" role="button" href="/http_command-xmas.html"><span class="glyphicon glyphicon-upload"></span> Xmas</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-info btn-lg btn-block" role="button" href="/http_command-xmas.html"><span class="glyphicon glyphicon-upload"></span> Xmas</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><h4>Devices by Name</h4></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://mylinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> mylinkit.local</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><h4>Devices by Name</h4></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://mylinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> mylinkit.local</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://alinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> alinkit.local</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://alinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> alinkit.local</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://plinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> plinkit.local</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://plinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> plinkit.local</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://wlinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> wlinkit.local</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://wlinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> wlinkit.local</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://xlinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> xlinkit.local</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://xlinkit.local:8080/command"><span class="glyphicon glyphicon-upload"></span> xlinkit.local</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><h4>Devices by 192.168.x.x</h4></div>    
-        </div>                                                                                                                                                                                                  
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.108:8080/command"><span class="glyphicon glyphicon-upload"></span> 192.168.43.108</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><h4>Devices by 192.168.x.x</h4></div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.108:8080/command"><span class="glyphicon glyphicon-upload"></span> 192.168.43.108</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
-        <div class="row">                                                                                                                                                                                       
-          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.87:8080/command"><span class="glyphicon glyphicon-upload"></span> 192.168.43.87</a></div>    
-        </div>                                                                                                                                                                                                  
+        <div class="row">
+          <div class="col-xs-12"><a class="btn btn-warning btn-lg btn-block" role="button" href="http://192.168.43.87:8080/command"><span class="glyphicon glyphicon-upload"></span> 192.168.43.87</a></div>
+        </div>
         <div class="row">
           <div class="col-xs-12">&nbsp;</div>
         </div>
       </div>
-      
+
     </div>
   </div>
 </body>
